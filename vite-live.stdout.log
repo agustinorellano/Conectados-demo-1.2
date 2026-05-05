@@ -1,0 +1,30 @@
+
+  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m1692[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://127.0.0.1:[1m4173[22m/[39m
+[2m08:19:23[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css[22m
+[2m08:19:36[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/dashboard/DashboardView.jsx, /src/index.css[22m
+[2m08:19:41[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css[22m
+[2m08:19:43[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/workplace/WorkplaceView.jsx, /src/index.css[22m
+[2m08:20:31[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/workplace/WorkplaceView.jsx, /src/index.css[22m
+[2m08:20:38[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/workplace/WorkplaceView.jsx, /src/index.css[22m
+[2m08:21:01[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/splash/SplashScreen.jsx, /src/index.css[22m
+[2m08:21:35[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/auth/AuthScreen.jsx, /src/index.css[22m
+[2m08:21:54[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/onboarding/OnboardingScreen.jsx, /src/index.css[22m
+[2m08:22:16[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\agust\Documents\Codex\2026-04-20-contexto-estoy-creando-una-app-tipo\src\components\layout\AppHeader.jsx, /src/index.css[22m
+[2m08:22:25[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/auth/AuthScreen.jsx, /src/index.css[22m
+[2m08:34:47[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/matchmaking/SwipeBoard.jsx, /src/index.css[22m
+[2m08:35:12[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css[22m
+[2m08:39:32[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/profile/ProfileView.jsx, /src/index.css[22m
+[2m08:40:38[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/profile/ProfileView.jsx, /src/index.css[22m
+[2m08:40:45[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css[22m
+[2m08:41:06[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css[22m
+[2m08:55:22[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/profile/ProfileView.jsx, /src/index.css[22m
+[2m09:00:41[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css[22m
+[2m09:01:19[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/dashboard/DashboardView.jsx, /src/index.css[22m
+[2m09:02:19[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/dashboard/DashboardView.jsx, /src/index.css[22m
+[2m09:02:27[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css[22m
+[2m09:09:30[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\agust\Documents\Codex\2026-04-20-contexto-estoy-creando-una-app-tipo\src\components\dashboard\DashboardMetricCard.jsx, /src/index.css[22m
+[2m09:09:30[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\agust\Documents\Codex\2026-04-20-contexto-estoy-creando-una-app-tipo\src\components\dashboard\DashboardAreaCard.jsx, /src/index.css[22m
+[2m09:09:30[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/dashboard/DashboardView.jsx, /src/index.css[22m
+[2m09:09:30[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\agust\Documents\Codex\2026-04-20-contexto-estoy-creando-una-app-tipo\src\components\dashboard\DashboardMetricCard.jsx, /src/index.css[22m

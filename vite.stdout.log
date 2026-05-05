@@ -1,0 +1,11 @@
+
+> data-plus@0.0.1 dev
+> vite --host 127.0.0.1 --port 4173
+
+
+  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m668[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://127.0.0.1:[1m4173[22m/[39m
+[2m11:21:58[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/assistant/AssistantView.jsx[22m
+[2m11:21:58[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m11:22:32[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/index.css[22m

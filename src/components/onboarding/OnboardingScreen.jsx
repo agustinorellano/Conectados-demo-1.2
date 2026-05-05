@@ -1,0 +1,164 @@
+import { Camera, ImagePlus } from 'lucide-react';
+import { useRef } from 'react';
+
+function readFileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(new Error('No se pudo leer el archivo seleccionado.'));
+    reader.readAsDataURL(file);
+  });
+}
+
+function OnboardingScreen({ onFinish, profile, onProfileChange }) {
+  const logoInputRef = useRef(null);
+  const galleryInputRef = useRef(null);
+  const steps = [
+    'Completamos el perfil de tu empresa con objetivos, rubro y capacidad operativa.',
+    'Activamos el scoring para mostrar solo alianzas con valor economico real.',
+    'Centralizamos tareas, chats y seguimiento para no sacar la interaccion fuera de Data Plus.'
+  ];
+
+  const handleLogoSelected = async (event) => {
+    const [file] = Array.from(event.target.files || []);
+    if (!file) return;
+    const logoImage = await readFileAsDataUrl(file);
+    onProfileChange((current) => ({ ...current, logoImage }));
+  };
+
+  const handleGallerySelected = async (event) => {
+    const files = Array.from(event.target.files || []).slice(0, 4);
+    if (!files.length) return;
+    const gallery = await Promise.all(files.map(readFileAsDataUrl));
+    onProfileChange((current) => ({
+      ...current,
+      gallery: [...(current.gallery || []), ...gallery].slice(0, 6)
+    }));
+  };
+
+  return (
+    <section className="min-h-screen bg-[linear-gradient(180deg,#F8F9FB_0%,#F3F5F7_100%)] px-4 py-8 sm:px-6">
+      <div className="mx-auto max-w-6xl space-y-6">
+        <div className="rounded-[28px] border border-[var(--stroke)] bg-white px-6 py-7 shadow-sm sm:px-8">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#1871D8]">
+            Onboarding inteligente
+          </p>
+          <h2 className="mt-3 text-3xl font-bold tracking-tight text-[var(--text)]">
+            Configuramos el motor de alianzas en tres pasos.
+          </h2>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--muted)]">
+            Combinamos onboarding guiado con carga real de datos para que el
+            sistema entienda tu negocio y active matchmaking con sentido comercial.
+          </p>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-3">
+          {steps.map((step, index) => (
+            <article
+              className="rounded-[28px] border border-[var(--stroke)] bg-white p-6 shadow-sm"
+              key={step}
+            >
+              <span className="inline-flex rounded-full bg-[#1871D8]/8 px-3 py-1 text-sm font-semibold text-[#1871D8]">
+                0{index + 1}
+              </span>
+              <p className="mt-4 text-sm leading-7 text-[var(--text)]">{step}</p>
+            </article>
+          ))}
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+          <article className="rounded-[28px] border border-[var(--stroke)] bg-white p-6 shadow-sm">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#1871D8]">
+              Marca del comercio
+            </p>
+            <div className="mt-5 flex items-center gap-4">
+              <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-[24px] bg-slate-100">
+                {profile.logoImage ? (
+                  <img alt={profile.name} className="h-full w-full object-cover" src={profile.logoImage} />
+                ) : (
+                  <span className="font-['Space_Grotesk'] text-2xl font-bold text-[#0B412F]">
+                    {profile.name
+                      .split(' ')
+                      .slice(0, 2)
+                      .map((part) => part[0])
+                      .join('')}
+                  </span>
+                )}
+              </div>
+              <button
+                className="inline-flex items-center gap-2 rounded-[16px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-100"
+                onClick={() => logoInputRef.current?.click()}
+                type="button"
+              >
+                <Camera className="h-4 w-4" />
+                Subir logo
+              </button>
+              <input
+                accept="image/*"
+                className="hidden"
+                onChange={handleLogoSelected}
+                ref={logoInputRef}
+                type="file"
+              />
+            </div>
+          </article>
+
+          <article className="rounded-[28px] border border-[var(--stroke)] bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#1871D8]">
+                  Visuales del comercio
+                </p>
+                <p className="mt-2 text-sm leading-7 text-[var(--muted)]">
+                  Suma imagenes del local, equipo o merchandising para que tu perfil se vea mas real.
+                </p>
+              </div>
+              <button
+                className="inline-flex items-center gap-2 rounded-[16px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-100"
+                onClick={() => galleryInputRef.current?.click()}
+                type="button"
+              >
+                <ImagePlus className="h-4 w-4" />
+                Agregar
+              </button>
+              <input
+                accept="image/*"
+                className="hidden"
+                multiple
+                onChange={handleGallerySelected}
+                ref={galleryInputRef}
+                type="file"
+              />
+            </div>
+
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+              {(profile.gallery || []).slice(0, 3).map((image, index) => (
+                <img
+                  alt={`Visual ${index + 1}`}
+                  className="h-28 w-full rounded-[22px] object-cover"
+                  key={`${image}-${index}`}
+                  src={image}
+                />
+              ))}
+            </div>
+          </article>
+        </div>
+
+        <div className="flex flex-col gap-4 rounded-[28px] border border-[var(--stroke)] bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-8">
+          <div className="max-w-xl">
+            <strong className="text-base text-[var(--text)]">Tip de retencion</strong>
+            <p className="mt-2 text-sm leading-7 text-[var(--muted)]">
+              El primer flujo lleva directo a Matchmaking para generar una accion
+              de alto impacto en los primeros minutos de uso.
+            </p>
+          </div>
+          <button className="primary-button" onClick={onFinish} type="button">
+            Ir a mi espacio
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default OnboardingScreen;
