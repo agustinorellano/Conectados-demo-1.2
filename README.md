@@ -13,7 +13,7 @@ UI demo en React + Vite para una plataforma B2B de matchmaking entre empresas.
 npm install
 ```
 
-## Levantar el proyecto en local
+## Levantar el proyecto local
 
 Usá este comando:
 
