@@ -4,6 +4,7 @@ import BottomNav from './components/layout/BottomNav';
 import SplashScreen from './components/splash/SplashScreen';
 import AuthScreen from './components/auth/AuthScreen';
 import OnboardingScreen from './components/onboarding/OnboardingScreen';
+import ActivationScreen from './components/activation/ActivationScreen';
 import DashboardView from './components/dashboard/DashboardView';
 import SwipeBoard from './components/matchmaking/SwipeBoard';
 import ProfileView from './components/profile/ProfileView';
@@ -17,6 +18,8 @@ import {
   chatConversations,
   currentCompany,
   dashboardData,
+  demoInitialMatch,
+  demoMeetings,
   recommendationColumns,
   recommendedCompanies,
   tasks
@@ -30,11 +33,20 @@ import {
 function App() {
   const [stage, setStage] = useState('splash');
   const [activeView, setActiveView] = useState('dashboard');
-  const [matches, setMatches] = useState([]);
+  const [matches, setMatches] = useState([demoInitialMatch]);
   const [userPlan, setUserPlan] = useState('starter');
   const [dailyMatchCount, setDailyMatchCount] = useState(0);
   const [workplaceArea, setWorkplaceArea] = useState('general');
   const [companyProfile, setCompanyProfile] = useState(() => createInitialProfile(currentCompany));
+  const [meetings, setMeetings] = useState(demoMeetings);
+
+  const handleToggleMeeting = (id) =>
+    setMeetings((prev) =>
+      prev.map((m) => (m.id === id ? { ...m, done: !m.done } : m))
+    );
+
+  const handleScheduleMeeting = (meeting) =>
+    setMeetings((prev) => [...prev, { ...meeting, id: `meet-${Date.now()}`, done: false }]);
   const [taskState, setTaskState] = useState(
     tasks.map((task, index) => ({
       ...task,
@@ -111,6 +123,7 @@ function App() {
           <ChatView
             chatConversations={chatConversations}
             matches={matches}
+            onScheduleMeeting={handleScheduleMeeting}
             recommendedCompanies={personalizedCompanies}
             userPlan={userPlan}
           />
@@ -127,7 +140,7 @@ function App() {
           />
         );
       case 'help':
-        return <HelpCenterView />;
+        return <HelpCenterView onNavigateToChat={() => setActiveView('chats')} />;
       case 'pricing':
         return (
           <PricingView currentPlan={userPlan} onCheckoutSuccess={(plan) => setUserPlan(plan)} />
@@ -157,12 +170,15 @@ function App() {
         return (
           <DashboardView
             dashboardData={personalizedDashboardData}
+            meetings={meetings}
             onAreaSelect={(area) => {
               setWorkplaceArea(area);
               setActiveView('workplace');
             }}
+            onNavigateToChats={() => setActiveView('chats')}
             onOpenAlliances={() => setActiveView('alliances')}
             onOpenAssistant={() => setActiveView('assistant')}
+            onToggleMeeting={handleToggleMeeting}
             userPlan={userPlan}
           />
         );
@@ -185,7 +201,24 @@ function App() {
   }
 
   if (stage === 'auth') {
-    return <AuthScreen onContinue={() => setStage('onboarding')} />;
+    return (
+      <AuthScreen
+        onContinue={(isNewUser) => setStage(isNewUser ? 'onboarding' : 'activation')}
+      />
+    );
+  }
+
+  if (stage === 'activation') {
+    return (
+      <ActivationScreen
+        onFinish={() => {
+          setActiveView('alliances');
+          setStage('app');
+        }}
+        onProfileChange={setCompanyProfile}
+        profile={companyProfile}
+      />
+    );
   }
 
   if (stage === 'onboarding') {

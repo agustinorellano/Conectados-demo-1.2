@@ -5,7 +5,7 @@ import ChatWindow from './ChatWindow';
 const PROPOSAL_TEMPLATE =
   'Tengo una propuesta para colaborar entre nuestras empresas que puede generar valor en conjunto. Me gustaria comentarte la idea y explorar como podemos trabajar juntos.';
 
-function ChatView({ chatConversations, matches, recommendedCompanies = [], userPlan = 'starter' }) {
+function ChatView({ chatConversations, matches, onScheduleMeeting, recommendedCompanies = [], userPlan = 'starter' }) {
   const [activeConversationId, setActiveConversationId] = useState(
     chatConversations[0]?.id || null
   );
@@ -136,8 +136,12 @@ function ChatView({ chatConversations, matches, recommendedCompanies = [], userP
           <ChatWindow
             conversation={activeConversation}
             onChangeDraft={setProposalDraft}
+            onConvertToOpportunity={() => {
+              updateActiveConversation((conv) => ({ ...conv, status: 'Alianza activa' }));
+            }}
             onProposalPreset={handleProposalPreset}
             onQuickAction={setProposalDraft}
+            onScheduleMeeting={onScheduleMeeting}
             onSend={handleSend}
             proposalDraft={proposalDraft}
           />

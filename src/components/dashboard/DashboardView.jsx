@@ -1,147 +1,396 @@
-import { ArrowRight, BriefcaseBusiness, MapPin, MessageSquareText, Users } from 'lucide-react';
-import { useMemo, useState } from 'react';
-import DashboardMetricCard from './DashboardMetricCard';
-import DashboardProgressRow from './DashboardProgressRow';
+import {
+  ArrowRight,
+  Bell,
+  Check,
+  Plus,
+  TrendingUp,
+  Video
+} from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useState } from 'react';
+import CalendarWidget from './CalendarWidget';
 
-const periods = [
-  { key: 'dia', label: 'Dia' },
-  { key: 'semana', label: 'Semana' },
-  { key: 'mes', label: 'Mes' }
+const metricCards = [
+  { key: 'total', label: 'Alianzas Totales', value: 24, featured: true, sub: '+18% vs mes anterior' },
+  { key: 'closed', label: 'Acuerdos Cerrados', value: 10, sub: 'Crecio este mes' },
+  { key: 'active', label: 'Alianzas Activas', value: 12, sub: 'Crecio este mes' },
+  { key: 'pending', label: 'En Negociacion', value: 2, sub: 'En revision' }
 ];
 
-function DashboardView({ dashboardData, onAreaSelect, onOpenAssistant, onOpenAlliances }) {
-  const { commerce, quickMetrics, areaCards, matchmaking, scoreByPeriod } = dashboardData;
-  const [selectedPeriod, setSelectedPeriod] = useState('semana');
+const weeklyActivity = [
+  { day: 'L', value: 5 },
+  { day: 'M', value: 11 },
+  { day: 'X', value: 8 },
+  { day: 'J', value: 14, best: true },
+  { day: 'V', value: 10 },
+  { day: 'S', value: 4 },
+  { day: 'D', value: 2 }
+];
 
-  const rows = useMemo(
-    () =>
-      areaCards.map((area) => ({
-        ...area,
-        ...area.periods[selectedPeriod]
-      })),
-    [areaCards, selectedPeriod]
-  );
+const MAX_BAR_VALUE = 14;
+const BAR_MAX_PX = 112;
+
+const featuredReminder = {
+  company: 'Bloom Floreria',
+  time: '15:00 — 16:00 hs',
+  label: 'Hoy'
+};
+
+const initialReminders = [
+  { id: 1, text: 'Seguimiento con Luna Beauty', sub: '2 dias sin respuesta — alta prioridad', done: false },
+  { id: 2, text: 'Reunion Bloom Floreria', sub: 'Hoy a las 15:00 hs', done: false },
+  { id: 3, text: 'Propuesta pendiente — Sushi Nakama', sub: 'Enviada hace 3 dias, sin respuesta', done: false }
+];
+
+const allianceList = [
+  { id: 1, name: 'Bloom Floreria', meta: 'Ult. contacto: Hoy — Activa', initials: 'BF', color: 'bg-emerald-100 text-emerald-700' },
+  { id: 2, name: 'Sushi Nakama', meta: 'Ult. contacto: Ayer — En progreso', initials: 'SN', color: 'bg-blue-100 text-blue-700' },
+  { id: 3, name: 'Luna Beauty', meta: 'Ult. contacto: Hace 2 dias', initials: 'LB', color: 'bg-pink-100 text-pink-700' },
+  { id: 4, name: 'Core Wellness', meta: 'Ult. contacto: Hace 4 dias', initials: 'CW', color: 'bg-violet-100 text-violet-700' },
+  { id: 5, name: 'Digital Craft', meta: 'Ult. contacto: Hace 1 semana', initials: 'DC', color: 'bg-amber-100 text-amber-700' }
+];
+
+const teamCollab = [
+  {
+    id: 1,
+    name: 'Bloom Floreria',
+    initials: 'BF',
+    task: 'Campaña cápsula de temporada — local + redes sociales',
+    status: 'Acuerdo Cerrado',
+    statusTone: 'emerald'
+  },
+  {
+    id: 2,
+    name: 'Sushi Nakama',
+    initials: 'SN',
+    task: 'Canje gastronómico — beneficio cruzado entre marcas',
+    status: 'En Progreso',
+    statusTone: 'blue'
+  },
+  {
+    id: 3,
+    name: 'Luna Beauty',
+    initials: 'LB',
+    task: 'Colección cápsula Primavera / Verano con activación conjunta',
+    status: 'En Progreso',
+    statusTone: 'blue'
+  },
+  {
+    id: 4,
+    name: 'Core Wellness',
+    initials: 'CW',
+    task: 'Cross-promo mensual en redes y newsletter compartido',
+    status: 'Pendiente',
+    statusTone: 'amber'
+  }
+];
+
+const statusStyle = {
+  emerald: 'bg-emerald-50 border-emerald-100 text-emerald-700',
+  blue: 'bg-blue-50 border-blue-100 text-blue-700',
+  amber: 'bg-amber-50 border-amber-100 text-amber-700'
+};
+
+function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssistant, onOpenAlliances, onNavigateToChats, onToggleMeeting, userPlan }) {
+  const [reminders, setReminders] = useState(initialReminders);
+
+  const pendingCount = reminders.filter((r) => !r.done).length;
+  const toggleReminder = (id) =>
+    setReminders((prev) => prev.map((r) => (r.id === id ? { ...r, done: !r.done } : r)));
+  const resolveAll = () => setReminders((prev) => prev.map((r) => ({ ...r, done: true })));
 
   return (
-    <div className="space-y-6 sm:space-y-7">
-      <section className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-[#1871D8] via-[#135db0] to-[#0B412F] p-5 text-white shadow-[0_28px_60px_rgba(11,65,47,0.18)] sm:p-7">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.22),transparent_34%)]" />
-        <div className="relative flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
-          <div className="max-w-3xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/75">
-              Dashboard ejecutivo
+    <div className="space-y-5">
+      {/* 4 METRIC CARDS */}
+      <section className="grid grid-cols-2 gap-4 xl:grid-cols-4">
+        {metricCards.map((card, index) => (
+          <motion.div
+            className={`rounded-[24px] p-5 shadow-sm ${
+              card.featured
+                ? 'bg-[#0B412F] text-white'
+                : 'bg-white ring-1 ring-inset ring-slate-200'
+            }`}
+            initial={{ opacity: 0, y: 12 }}
+            key={card.key}
+            transition={{ duration: 0.3, delay: index * 0.06 }}
+            viewport={{ once: true }}
+            whileInView={{ opacity: 1, y: 0 }}
+          >
+            <div className="flex items-start justify-between gap-2">
+              <p
+                className={`text-[0.65rem] font-semibold uppercase tracking-[0.24em] leading-snug ${
+                  card.featured ? 'text-white/60' : 'text-slate-400'
+                }`}
+              >
+                {card.label}
+              </p>
+              <div
+                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${
+                  card.featured ? 'bg-white/15' : 'bg-slate-100'
+                }`}
+              >
+                <ArrowRight
+                  className={`h-3.5 w-3.5 -rotate-45 ${card.featured ? 'text-white/70' : 'text-slate-500'}`}
+                />
+              </div>
+            </div>
+            <p
+              className={`mt-4 font-['Inter'] text-[2.6rem] font-extrabold leading-none tracking-[-0.05em] ${
+                card.featured ? 'text-white' : 'text-[#1A1A1A]'
+              }`}
+            >
+              {card.value}
             </p>
-            <h1 className="mt-3 font-['Space_Grotesk'] text-3xl font-bold tracking-tight sm:text-[2.1rem]">
-              {commerce.name}
-            </h1>
-            <div className="mt-3 flex flex-wrap gap-2 text-sm text-white/85">
-              <span className="rounded-full bg-white/12 px-3 py-1.5 backdrop-blur">
-                {commerce.category}
-              </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/12 px-3 py-1.5 backdrop-blur">
-                <MapPin className="h-3.5 w-3.5" />
-                {commerce.location}
-              </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/12 px-3 py-1.5 backdrop-blur">
-                <Users className="h-3.5 w-3.5" />
-                {commerce.size}
+            <div className={`mt-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 ${
+              card.featured ? 'bg-white/15' : 'bg-slate-100'
+            }`}>
+              <TrendingUp className={`h-3 w-3 ${card.featured ? 'text-white/70' : 'text-slate-500'}`} />
+              <span className={`text-[0.65rem] font-semibold ${card.featured ? 'text-white/70' : 'text-slate-500'}`}>
+                {card.sub}
               </span>
             </div>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            <button
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-[#1871D8] shadow-lg transition duration-200 hover:-translate-y-0.5 hover:shadow-xl"
-              onClick={onOpenAssistant}
-              type="button"
-            >
-              <MessageSquareText className="h-4 w-4" />
-              Consultar IA
-            </button>
-            <button
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/14 bg-white/10 px-4 py-3 text-sm font-semibold text-white backdrop-blur transition duration-200 hover:-translate-y-0.5"
-              onClick={onOpenAlliances}
-              type="button"
-            >
-              <BriefcaseBusiness className="h-4 w-4" />
-              Ir a Match
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {quickMetrics.map((metric) => (
-          <DashboardMetricCard
-            change={metric.change}
-            key={metric.label}
-            label={metric.label}
-            prefix={metric.prefix}
-            suffix={metric.suffix}
-            tone={metric.tone}
-            trend={metric.trend}
-            value={metric.value}
-          />
+          </motion.div>
         ))}
       </section>
 
-      <section className="rounded-[28px] bg-white p-5 shadow-[0_4px_20px_rgba(0,0,0,0.05)] ring-1 ring-inset ring-slate-200 sm:p-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-xs font-medium uppercase tracking-[0.22em] text-[#1871D8]">
-              Estado general
-            </p>
-            <h2 className="mt-2 font-['Space_Grotesk'] text-2xl font-bold tracking-tight text-[#1A1A1A]">
-              Score {scoreByPeriod[selectedPeriod].score}%
-            </h2>
-          </div>
+      {/* MIDDLE ROW: Bar chart + Recordatorio */}
+      <div className="grid gap-5 xl:grid-cols-[1.5fr_1fr]">
+        {/* Actividad Semanal — bar chart */}
+        <section className="rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-inset ring-slate-200">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#1871D8]">
+            Analítica
+          </p>
+          <h2 className="mt-2 font-['Space_Grotesk'] text-2xl font-bold tracking-tight text-[#1A1A1A]">
+            Actividad Semanal
+          </h2>
+          <p className="mt-1 text-sm text-slate-500">Matches e interacciones de los últimos 7 dias</p>
 
-          <div className="inline-flex rounded-[18px] bg-slate-100 p-1">
-            {periods.map((period) => (
-              <button
-                className={`rounded-[14px] px-4 py-2 text-sm font-semibold transition ${
-                  selectedPeriod === period.key
-                    ? 'bg-white text-[#1871D8] shadow-sm'
-                    : 'text-slate-500 hover:text-slate-700'
-                }`}
-                key={period.key}
-                onClick={() => setSelectedPeriod(period.key)}
-                type="button"
-              >
-                {period.label}
-              </button>
+          <div className="mt-6 flex h-[130px] items-end gap-2.5">
+            {weeklyActivity.map((bar, i) => (
+              <div className="flex flex-1 flex-col items-center gap-2.5" key={bar.day}>
+                <motion.div
+                  animate={{ height: `${(bar.value / MAX_BAR_VALUE) * BAR_MAX_PX}px` }}
+                  className={`w-full rounded-full ${
+                    bar.best
+                      ? 'bg-[#22c55e]'
+                      : i >= 5
+                      ? 'bg-slate-200'
+                      : 'bg-[#0B412F]'
+                  }`}
+                  initial={{ height: 0 }}
+                  transition={{ duration: 0.65, delay: i * 0.07, ease: [0.34, 1.1, 0.64, 1] }}
+                />
+                <span
+                  className={`text-[11px] font-semibold ${
+                    bar.best ? 'text-[#22c55e]' : 'text-slate-400'
+                  }`}
+                >
+                  {bar.day}
+                </span>
+              </div>
             ))}
           </div>
-        </div>
 
-        <div className="mt-6 space-y-3">
-          {rows.map((area) => (
-            <DashboardProgressRow area={area} key={`${area.area}-${selectedPeriod}`} onClick={onAreaSelect} />
-          ))}
-        </div>
-      </section>
-
-      <section className="rounded-[28px] bg-white p-5 shadow-[0_4px_20px_rgba(0,0,0,0.05)] ring-1 ring-inset ring-slate-200 sm:p-6">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-xs font-medium uppercase tracking-[0.22em] text-[#0B412F]">
-              Matchmaking
-            </p>
-            <h2 className="mt-2 font-['Space_Grotesk'] text-2xl font-bold tracking-tight text-[#1A1A1A]">
-              {matchmaking.title}
-            </h2>
-            <p className="mt-2 text-sm text-[#4A4A4A]">{matchmaking.description}</p>
+          <div className="mt-5 flex flex-wrap gap-4 border-t border-slate-100 pt-4">
+            <div className="flex items-center gap-1.5">
+              <div className="h-2.5 w-2.5 rounded-full bg-[#0B412F]" />
+              <span className="text-xs text-slate-500">Actividad</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="h-2.5 w-2.5 rounded-full bg-[#22c55e]" />
+              <span className="text-xs text-slate-500">Mejor dia</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="h-2.5 w-2.5 rounded-full bg-slate-200" />
+              <span className="text-xs text-slate-500">Fin de semana</span>
+            </div>
           </div>
+        </section>
+
+        {/* Recordatorio destacado + lista */}
+        <section className="flex flex-col rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-inset ring-slate-200">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-amber-500">
+            Prioridad
+          </p>
+          <h2 className="mt-2 font-['Space_Grotesk'] text-2xl font-bold tracking-tight text-[#1A1A1A]">
+            {featuredReminder.company}
+          </h2>
+          <p className="mt-1 text-sm text-slate-500">
+            {featuredReminder.label} — {featuredReminder.time}
+          </p>
+
           <button
-            className="inline-flex items-center gap-2 text-sm font-semibold text-[#1871D8] transition hover:text-[#135db0]"
-            onClick={onOpenAlliances}
+            className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-[18px] bg-[#0B412F] px-4 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#0a3828] hover:shadow-md"
             type="button"
           >
-            Buscar alianzas
-            <ArrowRight className="h-4 w-4" />
+            <Video className="h-4 w-4" />
+            Iniciar Reunion
           </button>
-        </div>
-      </section>
+
+          <div className="mt-5 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <Bell className="h-3.5 w-3.5 text-amber-400" />
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-[0.2em]">
+                Recordatorios
+              </span>
+              {pendingCount > 0 && (
+                <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-amber-100 text-[10px] font-bold text-amber-700">
+                  {pendingCount}
+                </span>
+              )}
+            </div>
+            {pendingCount > 0 && (
+              <button
+                className="text-xs font-semibold text-[#0B412F] transition hover:opacity-70"
+                onClick={resolveAll}
+                type="button"
+              >
+                Resolver todo
+              </button>
+            )}
+          </div>
+
+          <div className="mt-3 flex-1 space-y-2 overflow-auto">
+            <AnimatePresence>
+              {reminders.map((reminder) => (
+                <motion.div
+                  animate={{ opacity: reminder.done ? 0.4 : 1 }}
+                  className="flex items-center gap-3 rounded-[16px] bg-slate-50 px-3 py-3 ring-1 ring-inset ring-slate-200"
+                  initial={{ opacity: 1 }}
+                  key={reminder.id}
+                  layout
+                  transition={{ duration: 0.18 }}
+                >
+                  <button
+                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200 ${
+                      reminder.done
+                        ? 'border-emerald-400 bg-emerald-400 text-white'
+                        : 'border-slate-300 bg-white text-transparent hover:border-emerald-400'
+                    }`}
+                    onClick={() => toggleReminder(reminder.id)}
+                    type="button"
+                  >
+                    <Check className="h-3 w-3" />
+                  </button>
+                  <div className="min-w-0 flex-1">
+                    <p
+                      className={`text-xs font-semibold leading-snug transition-all ${
+                        reminder.done ? 'text-slate-400 line-through' : 'text-[#1A1A1A]'
+                      }`}
+                    >
+                      {reminder.text}
+                    </p>
+                    <p className="mt-0.5 text-[10px] text-slate-400">{reminder.sub}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        </section>
+      </div>
+
+      {/* CALENDAR WIDGET */}
+      <CalendarWidget meetings={meetings} onToggleMeeting={onToggleMeeting} />
+
+      {/* BOTTOM ROW: Mis Alianzas + Equipos Conectados */}
+      <div className="grid gap-5 xl:grid-cols-[1fr_1.5fr]">
+        {/* Mis Alianzas */}
+        <section className="rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-inset ring-slate-200">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#1871D8]">
+                Alianzas
+              </p>
+              <h2 className="mt-2 font-['Space_Grotesk'] text-2xl font-bold tracking-tight text-[#1A1A1A]">
+                Mis Alianzas
+              </h2>
+            </div>
+            <button
+              className="inline-flex items-center gap-1.5 rounded-[14px] bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-600 transition hover:bg-slate-200"
+              onClick={onOpenAlliances}
+              type="button"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              Nueva
+            </button>
+          </div>
+
+          <div className="mt-5 space-y-1">
+            {allianceList.map((alliance, i) => (
+              <motion.div
+                className="flex cursor-pointer items-center gap-3 rounded-[16px] px-3 py-3 transition hover:bg-slate-50"
+                initial={{ opacity: 0, x: -8 }}
+                key={alliance.id}
+                transition={{ duration: 0.22, delay: i * 0.04 }}
+                viewport={{ once: true }}
+                whileInView={{ opacity: 1, x: 0 }}
+              >
+                <div
+                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-[14px] text-xs font-bold ${alliance.color}`}
+                >
+                  {alliance.initials}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-[#1A1A1A]">{alliance.name}</p>
+                  <p className="text-xs text-slate-500">{alliance.meta}</p>
+                </div>
+                <ArrowRight className="h-3.5 w-3.5 shrink-0 text-slate-300" />
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        {/* Equipos Conectados — Team Collaboration */}
+        <section className="rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-inset ring-slate-200">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#0B412F]">
+                Match Activos
+              </p>
+              <h2 className="mt-2 font-['Space_Grotesk'] text-2xl font-bold tracking-tight text-[#1A1A1A]">
+                Equipos Conectados
+              </h2>
+            </div>
+            <button
+              className="inline-flex items-center gap-1.5 rounded-[14px] bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-600 transition hover:bg-slate-200"
+              onClick={onNavigateToChats}
+              type="button"
+            >
+              Ver chats
+              <ArrowRight className="h-3.5 w-3.5" />
+            </button>
+          </div>
+
+          <div className="mt-5 space-y-2">
+            {teamCollab.map((team, i) => (
+              <motion.div
+                className="flex items-center gap-4 rounded-[20px] bg-slate-50 px-4 py-4 ring-1 ring-inset ring-slate-200"
+                initial={{ opacity: 0, y: 8 }}
+                key={team.id}
+                transition={{ duration: 0.25, delay: i * 0.05 }}
+                viewport={{ once: true }}
+                whileInView={{ opacity: 1, y: 0 }}
+              >
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[18px] bg-gradient-to-br from-[#1871D8] to-[#0B412F] font-['Space_Grotesk'] text-xs font-bold text-white shadow-sm">
+                  {team.initials}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-[#1A1A1A]">{team.name}</p>
+                  <p className="mt-0.5 truncate text-xs text-slate-500">
+                    Trabajando en{' '}
+                    <span className="font-semibold text-slate-700">{team.task}</span>
+                  </p>
+                </div>
+                <span
+                  className={`shrink-0 rounded-full border px-3 py-1 text-xs font-semibold ${statusStyle[team.statusTone]}`}
+                >
+                  {team.status}
+                </span>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      </div>
     </div>
   );
 }

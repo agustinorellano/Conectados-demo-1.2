@@ -89,7 +89,11 @@ function AuthScreen({ onContinue }) {
               </label>
             </div>
 
-            <button className="primary-button mt-6 w-full" onClick={onContinue} type="button">
+            <button
+              className="primary-button mt-6 w-full"
+              onClick={() => onContinue(mode === 'register')}
+              type="button"
+            >
               {mode === 'login' ? 'Entrar a la plataforma' : 'Crear espacio de trabajo'}
             </button>
 

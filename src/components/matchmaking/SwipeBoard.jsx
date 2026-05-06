@@ -1,27 +1,22 @@
 import {
   Bookmark,
   Heart,
-  RotateCcw,
-  Sparkles,
-  Star,
-  X,
-  Zap
+  Search,
+  X
 } from 'lucide-react';
 import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion';
 import { useMemo, useState } from 'react';
 import CompanyCard from './CompanyCard';
+import CompanyDetailModal from './CompanyDetailModal';
 import { calculateMatchScore, shouldRevealCompany, willCreateMatch } from '../../utils/matchmaking';
 
 const SWIPE_THRESHOLD_X = 110;
-const SWIPE_THRESHOLD_Y = -90;
 
 const actionButtons = [
-  { key: 'rewind', icon: RotateCcw, tone: 'bg-amber-50 text-amber-600 ring-amber-100' },
-  { key: 'skip', icon: X, tone: 'bg-rose-50 text-rose-600 ring-rose-100' },
-  { key: 'superLike', icon: Sparkles, tone: 'bg-blue-50 text-[#1871D8] ring-blue-100' },
-  { key: 'like', icon: Heart, tone: 'bg-emerald-50 text-emerald-600 ring-emerald-100' },
-  { key: 'boost', icon: Zap, tone: 'bg-violet-50 text-violet-600 ring-violet-100' },
-  { key: 'topPicks', icon: Star, tone: 'bg-amber-50 text-yellow-600 ring-yellow-100' }
+  { key: 'skip', icon: X, tone: 'bg-rose-50 text-rose-500 ring-rose-100', size: 'h-14 w-14' },
+  { key: 'save', icon: Bookmark, tone: 'bg-amber-50 text-amber-500 ring-amber-100', size: 'h-12 w-12' },
+  { key: 'like', icon: Heart, tone: 'bg-emerald-50 text-emerald-500 ring-emerald-100', size: 'h-14 w-14' },
+  { key: 'profile', icon: Search, tone: 'bg-blue-50 text-[#1871D8] ring-blue-100', size: 'h-12 w-12' }
 ];
 
 function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPlan }) {
@@ -37,10 +32,14 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
   const [history, setHistory] = useState([]);
   const [flashMessage, setFlashMessage] = useState(null);
   const [exitState, setExitState] = useState({ x: 0, y: 0 });
+  const [viewingCompany, setViewingCompany] = useState(null);
+
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const rotate = useTransform(x, [-220, 220], [-10, 10]);
   const nextScale = useTransform(x, [-180, 0, 180], [0.95, 0.97, 0.95]);
+  const likeOpacity = useTransform(x, [20, 110], [0, 1]);
+  const nopeOpacity = useTransform(x, [-20, -110], [0, 1]);
 
   const activeCompany = deck[activeIndex];
   const nextCompany = deck[activeIndex + 1];
@@ -52,10 +51,9 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
     showFlash.timeoutId = window.setTimeout(() => setFlashMessage(null), 1300);
   };
 
-  const queueNextCompany = (state, actionKey) => {
+  const queueNextCompany = (state) => {
     if (!activeCompany) return;
-
-    setHistory((current) => [...current, { index: activeIndex, actionKey }]);
+    setHistory((current) => [...current, { index: activeIndex }]);
     setExitState(state);
     window.setTimeout(() => {
       x.set(0);
@@ -66,187 +64,185 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
 
   const handleSkip = () => {
     showFlash('Descartada.');
-    queueNextCompany({ x: -180, y: 18 }, 'skip');
+    queueNextCompany({ x: -180, y: 18 });
   };
 
-  const handleLike = (kind = 'like') => {
+  const handleLike = () => {
     if (!activeCompany) return;
-
     if (matchLimitReached) {
       showFlash('Limite diario alcanzado.');
       return;
     }
-
     if (willCreateMatch(activeCompany, activeCompany.score)) {
-      onMatch({
-        ...activeCompany,
-        matchKind: kind
-      });
+      onMatch?.(activeCompany);
+      showFlash(`Match con ${activeCompany.name}!`);
+    } else {
+      showFlash('Like enviado.');
     }
-
-    showFlash(kind === 'superLike' ? 'Super Like enviado.' : 'Like enviado.');
-    queueNextCompany(
-      kind === 'superLike' ? { x: 0, y: -160 } : { x: 180, y: 12 },
-      kind
-    );
+    queueNextCompany({ x: 180, y: -18 });
   };
 
-  const handleRewind = () => {
-    const previous = history[history.length - 1];
-    if (!previous) {
-      showFlash('No hay perfil para recuperar.');
-      return;
-    }
-
-    setHistory((current) => current.slice(0, -1));
-    x.set(0);
-    y.set(0);
-    setExitState({ x: 0, y: 0 });
-    setActiveIndex(previous.index);
-    showFlash('Perfil recuperado.');
-  };
-
-  const handleBoost = () => {
+  const handleSave = () => {
     if (!activeCompany) return;
-    showFlash(`${activeCompany.name} recibió boost.`);
+    showFlash(`${activeCompany.name} guardada.`);
   };
 
-  const handleTopPicks = () => {
+  const handleViewProfile = () => {
     if (!activeCompany) return;
-    showFlash(`${activeCompany.name} marcada como top pick.`);
+    setViewingCompany(activeCompany);
   };
 
   const handleAction = (actionKey) => {
     switch (actionKey) {
-      case 'rewind':
-        handleRewind();
-        break;
-      case 'skip':
-        handleSkip();
-        break;
-      case 'superLike':
-        handleLike('superLike');
-        break;
-      case 'like':
-        handleLike('like');
-        break;
-      case 'boost':
-        handleBoost();
-        break;
-      case 'topPicks':
-        handleTopPicks();
-        break;
-      default:
-        break;
+      case 'skip': handleSkip(); break;
+      case 'save': handleSave(); break;
+      case 'like': handleLike(); break;
+      case 'profile': handleViewProfile(); break;
+      default: break;
     }
   };
 
   const handleDragEnd = (_, info) => {
-    if (info.offset.y < SWIPE_THRESHOLD_Y) {
-      handleLike('superLike');
-      return;
-    }
-
     if (info.offset.x < -SWIPE_THRESHOLD_X) {
       handleSkip();
       return;
     }
-
     if (info.offset.x > SWIPE_THRESHOLD_X) {
-      handleLike('like');
+      handleLike();
       return;
     }
-
     x.set(0);
     y.set(0);
   };
 
   return (
-    <div className="space-y-5">
-      <section className="rounded-[32px] bg-gradient-to-b from-slate-50 to-white p-5 shadow-sm ring-1 ring-inset ring-slate-200">
-        <div className="relative mx-auto min-h-[640px] max-w-xl">
-          {nextCompany ? (
-            <motion.div
-              className="absolute inset-x-4 top-5 z-10 opacity-50"
-              style={{ scale: nextScale }}
-            >
-              <CompanyCard company={nextCompany} score={nextCompany.score} />
-            </motion.div>
-          ) : null}
+    <>
+      <div className="space-y-5">
+        <section className="rounded-[32px] bg-gradient-to-b from-slate-50 to-white p-5 shadow-sm ring-1 ring-inset ring-slate-200">
+          <div className="relative mx-auto min-h-[600px] max-w-md">
+            {nextCompany ? (
+              <motion.div
+                className="absolute inset-x-4 top-4 z-10 opacity-50"
+                style={{ scale: nextScale }}
+              >
+                <CompanyCard company={nextCompany} />
+              </motion.div>
+            ) : null}
 
-          <AnimatePresence initial={false} mode="wait">
-            {activeCompany ? (
-              <motion.div
-                animate={{ opacity: 1, x: 0, y: 0, rotate: 0, scale: 1 }}
-                className="absolute inset-0 z-20"
-                drag
-                dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-                exit={{ opacity: 0, x: exitState.x, y: exitState.y }}
-                initial={{ opacity: 0, y: 16, scale: 0.98 }}
-                key={activeCompany.id}
-                onDragEnd={handleDragEnd}
-                style={{ x, y, rotate }}
-                transition={{ duration: 0.2 }}
-                whileHover={{ scale: 1.01 }}
+            <AnimatePresence initial={false} mode="wait">
+              {activeCompany ? (
+                <motion.div
+                  animate={{ opacity: 1, x: 0, y: 0, rotate: 0, scale: 1 }}
+                  className="absolute inset-0 z-20 cursor-grab active:cursor-grabbing"
+                  drag="x"
+                  dragConstraints={{ left: 0, right: 0 }}
+                  dragElastic={0.7}
+                  exit={{ opacity: 0, x: exitState.x, y: exitState.y, transition: { duration: 0.2 } }}
+                  initial={{ opacity: 0, y: 16, scale: 0.98 }}
+                  key={activeCompany.id}
+                  onDragEnd={handleDragEnd}
+                  style={{ x, y, rotate }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {/* LIKE overlay */}
+                  <motion.div
+                    className="pointer-events-none absolute left-5 top-5 z-30 rotate-[-16deg]"
+                    style={{ opacity: likeOpacity }}
+                  >
+                    <div className="rounded-xl border-[3px] border-[#22c55e] bg-[#22c55e]/10 px-4 py-1.5 backdrop-blur-sm">
+                      <span className="font-['Space_Grotesk'] text-2xl font-black tracking-wider text-[#22c55e]">
+                        LIKE
+                      </span>
+                    </div>
+                  </motion.div>
+
+                  {/* NOPE overlay */}
+                  <motion.div
+                    className="pointer-events-none absolute right-5 top-5 z-30 rotate-[16deg]"
+                    style={{ opacity: nopeOpacity }}
+                  >
+                    <div className="rounded-xl border-[3px] border-rose-500 bg-rose-500/10 px-4 py-1.5 backdrop-blur-sm">
+                      <span className="font-['Space_Grotesk'] text-2xl font-black tracking-wider text-rose-500">
+                        NOPE
+                      </span>
+                    </div>
+                  </motion.div>
+
+                  <CompanyCard company={activeCompany} />
+                </motion.div>
+              ) : (
+                <motion.div
+                  animate={{ opacity: 1 }}
+                  className="absolute inset-0 flex items-center justify-center rounded-[28px] bg-white p-10 text-center shadow-sm ring-1 ring-inset ring-slate-200"
+                  initial={{ opacity: 0 }}
+                  key="empty"
+                >
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-[0.24em] text-[#1871D8]">
+                      Deck completo
+                    </p>
+                    <h3 className="mt-3 font-['Space_Grotesk'] text-2xl font-bold tracking-tight text-[#1A1A1A]">
+                      No hay mas empresas por evaluar
+                    </h3>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </section>
+
+        {/* Action buttons */}
+        <div className="flex items-center justify-center gap-4">
+          {actionButtons.map((button) => {
+            const Icon = button.icon;
+            return (
+              <motion.button
+                className={`inline-flex items-center justify-center rounded-full shadow-sm ring-1 ring-inset transition-shadow hover:shadow-md ${button.tone} ${button.size}`}
+                key={button.key}
+                onClick={() => handleAction(button.key)}
+                type="button"
+                whileHover={{ scale: 1.12 }}
+                whileTap={{ scale: 0.92 }}
               >
-                <CompanyCard company={activeCompany} score={activeCompany.score} />
-              </motion.div>
-            ) : (
-              <motion.div
-                animate={{ opacity: 1 }}
-                className="absolute inset-0 flex items-center justify-center rounded-[28px] bg-white p-10 text-center shadow-sm ring-1 ring-inset ring-slate-200"
-                initial={{ opacity: 0 }}
-                key="empty"
-              >
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-[0.24em] text-[#1871D8]">
-                    Deck completo
-                  </p>
-                  <h3 className="mt-3 font-['Space_Grotesk'] text-2xl font-bold tracking-tight text-[#1A1A1A]">
-                    No hay mas empresas por evaluar
-                  </h3>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                <Icon className="h-5 w-5" />
+              </motion.button>
+            );
+          })}
         </div>
-      </section>
 
-      <div className="flex flex-wrap items-center justify-center gap-3">
-        {actionButtons.map((button) => {
-          const Icon = button.icon;
-          return (
+        {flashMessage ? (
+          <motion.div
+            animate={{ opacity: 1, y: 0 }}
+            className="mx-auto max-w-sm rounded-[18px] bg-slate-900 px-4 py-3 text-center text-sm font-medium text-white shadow-sm"
+            exit={{ opacity: 0 }}
+            initial={{ opacity: 0, y: 8 }}
+          >
+            {flashMessage}
+          </motion.div>
+        ) : null}
+
+        {matchLimitReached ? (
+          <div className="mx-auto max-w-md rounded-[22px] border border-amber-200 bg-amber-50 p-4 text-center text-sm leading-6 text-amber-900">
+            Llegaste al limite diario del plan Starter.
             <button
-              className={`inline-flex h-14 w-14 items-center justify-center rounded-full shadow-sm ring-1 ring-inset transition duration-200 hover:scale-110 active:scale-95 ${button.tone}`}
-              key={button.key}
-              onClick={() => handleAction(button.key)}
+              className="mt-3 inline-flex rounded-full bg-amber-500 px-3 py-2 text-xs font-semibold text-white"
+              onClick={onOpenPricing}
               type="button"
             >
-              <Icon className="h-5 w-5" />
+              Ver planes
             </button>
-          );
-        })}
+          </div>
+        ) : null}
       </div>
 
-      {flashMessage ? (
-        <div className="mx-auto max-w-sm rounded-[18px] bg-slate-900 px-4 py-3 text-center text-sm font-medium text-white shadow-sm">
-          {flashMessage}
-        </div>
-      ) : null}
-
-      {matchLimitReached ? (
-        <div className="mx-auto max-w-md rounded-[22px] border border-amber-200 bg-amber-50 p-4 text-center text-sm leading-6 text-amber-900">
-          Llegaste al limite diario del plan Starter.
-          <button
-            className="mt-3 inline-flex rounded-full bg-amber-500 px-3 py-2 text-xs font-semibold text-white"
-            onClick={onOpenPricing}
-            type="button"
-          >
-            Ver planes
-          </button>
-        </div>
-      ) : null}
-    </div>
+      {viewingCompany && (
+        <CompanyDetailModal
+          company={viewingCompany}
+          onClose={() => setViewingCompany(null)}
+          onLike={handleLike}
+        />
+      )}
+    </>
   );
 }
 

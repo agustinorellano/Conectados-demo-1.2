@@ -1,4 +1,4 @@
-import { BookText, Bot, LifeBuoy, Sparkles } from 'lucide-react';
+import { BookText, Bot, LifeBuoy, MessageSquare, Sparkles } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useMemo, useState } from 'react';
 
@@ -8,7 +8,7 @@ const helpTabs = {
     intro: 'Cuatro pasos concretos para pasar de descubrir empresas a cerrar acuerdos.',
     cards: [
       { title: 'Descubri empresas', detail: 'Explora perfiles con score comercial y detecta oportunidades con verdadero fit.' },
-      { title: 'Hace match', detail: 'Decidí rapido con swipe y prioriza empresas que pueden mover ventas.' },
+      { title: 'Hace match', detail: 'Decide rapido con swipe y prioriza empresas que pueden mover ventas.' },
       { title: 'Envia propuesta', detail: 'Activa una conversacion con copy guiado y foco comercial claro.' },
       { title: 'Cerra acuerdos', detail: 'Lleva la oportunidad a tareas y seguimiento dentro de Workplace.' }
     ]
@@ -17,16 +17,16 @@ const helpTabs = {
     label: 'Buenas practicas',
     intro: 'Pequenos habitos que mejoran conversion y velocidad de cierre.',
     cards: [
-      { title: 'Pitches concretos', detail: 'Habla de valor economico, audiencia y canales antes que de afinidad.' },
-      { title: 'Seguimiento rapido', detail: 'Converti cada interes en tarea dentro del mismo dia.' },
-      { title: 'Brief visible', detail: 'Comparte objetivos, ticket y alcance esperado desde el primer mensaje.' }
+      { title: 'Pitches concretos', detail: 'Habla de valor economico, audiencia y canales antes que de afinidad.', animType: 'pitch' },
+      { title: 'Seguimiento rapido', detail: 'Converti cada interes en tarea dentro del mismo dia.', animType: 'followup' },
+      { title: 'Brief visible', detail: 'Comparte objetivos, ticket y alcance esperado desde el primer mensaje.', animType: 'brief' }
     ]
   },
   support: {
     label: 'Soporte',
     intro: 'Respuestas rapidas para dudas operativas y comerciales.',
     cards: [
-      { title: 'Asesor IA', detail: 'Pedi ayuda para redactar propuestas, priorizar aliados y ordenar ejecucion.' },
+      { title: 'Asesor IA', detail: 'Pedi ayuda para redactar propuestas, priorizar aliados y ordenar ejecucion.', cta: true },
       { title: 'Equipo Data Plus', detail: 'Escalamos bloqueos funcionales o comerciales dentro del producto.' },
       { title: 'Centro de ayuda', detail: 'Documentacion viva con casos de uso, mejores practicas y novedades.' }
     ]
@@ -49,12 +49,7 @@ function HowCardAnimation({ title }) {
             className="absolute left-4 right-4 rounded-[18px] bg-white p-3 shadow-sm ring-1 ring-inset ring-slate-200"
             key={index}
             style={{ top: `${16 + index * 44}px` }}
-            transition={{
-              repeat: Infinity,
-              duration: 2.6,
-              ease: 'easeInOut',
-              delay: index * 0.18
-            }}
+            transition={{ repeat: Infinity, duration: 2.6, ease: 'easeInOut', delay: index * 0.18 }}
           >
             <div className="h-2 w-20 rounded-full bg-[#1871D8]/20" />
             <div className="mt-2 h-2 w-32 rounded-full bg-slate-200" />
@@ -116,7 +111,76 @@ function HowCardAnimation({ title }) {
   );
 }
 
-function HelpCenterView() {
+function PracticeCardAnimation({ animType }) {
+  if (animType === 'pitch') {
+    return (
+      <div className="flex h-28 items-center rounded-[20px] bg-slate-50 px-4 ring-1 ring-inset ring-slate-200">
+        <div className="w-full space-y-2">
+          {['92%', '74%', '58%'].map((w, i) => (
+            <motion.div
+              animate={{ width: ['0%', w] }}
+              className="h-2.5 rounded-full bg-[#1871D8]/20"
+              key={w}
+              transition={{ repeat: Infinity, duration: 2.2, ease: 'easeInOut', delay: i * 0.25 }}
+            />
+          ))}
+          <motion.div
+            animate={{ opacity: [0, 1, 1] }}
+            className="inline-flex rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-[#1871D8]"
+            transition={{ repeat: Infinity, duration: 2.2, ease: 'easeInOut', delay: 0.7 }}
+          >
+            Enviado
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
+
+  if (animType === 'followup') {
+    return (
+      <div className="flex h-28 items-center justify-center rounded-[20px] bg-slate-50 px-4 ring-1 ring-inset ring-slate-200">
+        <div className="w-full space-y-2">
+          <div className="flex items-center gap-3 rounded-[14px] bg-white p-3 shadow-sm ring-1 ring-inset ring-slate-200">
+            <motion.div
+              animate={{ scale: [1, 1.2, 1], backgroundColor: ['#e2e8f0', '#34d399', '#34d399'] }}
+              className="h-5 w-5 rounded-full"
+              transition={{ repeat: Infinity, duration: 2.0, ease: 'easeInOut' }}
+            />
+            <div className="h-2.5 flex-1 rounded-full bg-slate-200" />
+          </div>
+          <motion.div
+            animate={{ opacity: [0, 1] }}
+            className="text-center text-xs font-semibold text-emerald-600"
+            transition={{ repeat: Infinity, duration: 2.0, ease: 'easeInOut', delay: 0.6 }}
+          >
+            Tarea creada
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex h-28 items-center rounded-[20px] bg-slate-50 px-4 ring-1 ring-inset ring-slate-200">
+      <div className="w-full space-y-2">
+        {[
+          { w: '60%', color: 'bg-amber-400' },
+          { w: '80%', color: 'bg-[#1871D8]/30' },
+          { w: '45%', color: 'bg-emerald-400' }
+        ].map((item, i) => (
+          <motion.div
+            animate={{ width: ['0%', item.w] }}
+            className={`h-2 rounded-full ${item.color}`}
+            key={i}
+            transition={{ repeat: Infinity, duration: 2.3, ease: 'easeInOut', delay: i * 0.2 }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function HelpCenterView({ onNavigateToChat }) {
   const [activeTab, setActiveTab] = useState('how');
   const [modalOpen, setModalOpen] = useState(false);
   const activeContent = useMemo(() => helpTabs[activeTab], [activeTab]);
@@ -175,17 +239,40 @@ function HelpCenterView() {
                 {String(index + 1).padStart(2, '0')}
               </div>
             </div>
+
             <h3 className="mt-5 font-['Space_Grotesk'] text-xl font-bold tracking-tight text-[#1A1A1A]">
               {card.title}
             </h3>
             <p className="mt-3 text-sm leading-6 text-[#4A4A4A]">{card.detail}</p>
-            {activeTab === 'how' ? <div className="mt-5"><HowCardAnimation title={card.title} /></div> : null}
+
+            {activeTab === 'how' && (
+              <div className="mt-5">
+                <HowCardAnimation title={card.title} />
+              </div>
+            )}
+
+            {activeTab === 'practice' && card.animType && (
+              <div className="mt-5">
+                <PracticeCardAnimation animType={card.animType} />
+              </div>
+            )}
+
+            {activeTab === 'support' && card.cta && (
+              <button
+                className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-[18px] bg-[#1871D8] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#135db0] hover:shadow-md"
+                onClick={() => onNavigateToChat ? onNavigateToChat() : setModalOpen(true)}
+                type="button"
+              >
+                <MessageSquare className="h-4 w-4" />
+                Abrir chat
+              </button>
+            )}
           </motion.article>
         ))}
       </section>
 
       <button
-        className="fixed bottom-28 right-5 z-40 inline-flex items-center gap-2 rounded-full bg-[#0B412F] px-4 py-3 text-sm font-semibold text-white shadow-[0_16px_32px_rgba(11,65,47,0.22)]"
+        className="fixed bottom-28 right-5 z-40 inline-flex items-center gap-2 rounded-full bg-[#0B412F] px-4 py-3 text-sm font-semibold text-white shadow-[0_16px_32px_rgba(11,65,47,0.22)] transition hover:-translate-y-0.5"
         onClick={() => setModalOpen(true)}
         type="button"
       >
@@ -217,7 +304,7 @@ function HelpCenterView() {
                   </h3>
                 </div>
                 <button
-                  className="rounded-full bg-slate-100 px-3 py-2 text-sm font-medium text-slate-500"
+                  className="rounded-full bg-slate-100 px-3 py-2 text-sm font-medium text-slate-500 transition hover:bg-slate-200"
                   onClick={() => setModalOpen(false)}
                   type="button"
                 >
@@ -240,6 +327,17 @@ function HelpCenterView() {
                 className="mt-5 min-h-[112px] w-full resize-none rounded-[20px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-6 text-[#1A1A1A] outline-none focus:border-[#1871D8]/35 focus:ring-4 focus:ring-[#1871D8]/8"
                 placeholder="Contame que queres resolver y te ayudo a ordenarlo."
               />
+
+              {onNavigateToChat && (
+                <button
+                  className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-[18px] bg-[#1871D8] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#135db0]"
+                  onClick={() => { setModalOpen(false); onNavigateToChat(); }}
+                  type="button"
+                >
+                  <MessageSquare className="h-4 w-4" />
+                  Abrir chat directamente
+                </button>
+              )}
             </motion.div>
           </motion.div>
         ) : null}

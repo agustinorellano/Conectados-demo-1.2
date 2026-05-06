@@ -1,3 +1,161 @@
+const demoCompanies = [
+  {
+    id: 'bloom-floreria',
+    name: 'Bloom Floreria',
+    type: 'retail_fisico',
+    industry: 'Floreria',
+    location: 'Buenos Aires',
+    size: '1-5',
+    channels: ['local', 'redes', 'whatsapp'],
+    objectives: {
+      main_goal: 'trafico',
+      current_followers: 14200,
+      target_followers: 25000,
+      engagement_goal: 'alto',
+      avg_ticket: 28000,
+      monthly_sales_goal: 6500000,
+      growth_expected: 20
+    },
+    alliance_profile: {
+      offers: ['espacio', 'audiencia', 'producto'],
+      needs: ['visibilidad', 'trafico'],
+      open_to_alliance: true,
+      preferred_segments: ['indumentaria', 'cafeteria', 'belleza', 'decoracion']
+    },
+    sales_process: { has_crm: false, follow_up_leads: true, response_time: 'menos_1h', conversion_tracking: false },
+    marketing_process: { has_strategy: true, tracks_metrics: true, content_frequency: 'diario', paid_ads: false },
+    operations_process: { has_inventory_system: true, has_defined_processes: true, team_trained: true },
+    attention_process: { has_support_channel: true, measures_satisfaction: true, response_protocol: true, handles_complaints: true },
+    scores: { overall: 7.2, ventas: 6.1, marketing: 7.8, operaciones: 7.0, atencion: 7.4 },
+    score_history: [],
+    onboarding_completed: true
+  },
+  {
+    id: 'sushi-nakama',
+    name: 'Sushi Nakama',
+    type: 'ambos',
+    industry: 'Gastronomia',
+    location: 'Mendoza',
+    size: '6-20',
+    channels: ['local', 'delivery', 'redes'],
+    objectives: {
+      main_goal: 'ventas',
+      current_followers: 22400,
+      target_followers: 40000,
+      engagement_goal: 'alto',
+      avg_ticket: 35000,
+      monthly_sales_goal: 11000000,
+      growth_expected: 25
+    },
+    alliance_profile: {
+      offers: ['audiencia', 'espacio', 'clientes'],
+      needs: ['ventas', 'branding'],
+      open_to_alliance: true,
+      preferred_segments: ['indumentaria', 'bebidas', 'bienestar']
+    },
+    sales_process: { has_crm: true, follow_up_leads: true, response_time: 'menos_1h', conversion_tracking: true },
+    marketing_process: { has_strategy: true, tracks_metrics: true, content_frequency: 'diario', paid_ads: true },
+    operations_process: { has_inventory_system: true, has_defined_processes: true, team_trained: true },
+    attention_process: { has_support_channel: true, measures_satisfaction: true, response_protocol: true, handles_complaints: true },
+    scores: { overall: 8.0, ventas: 7.6, marketing: 8.2, operaciones: 7.9, atencion: 8.1 },
+    score_history: [],
+    onboarding_completed: true
+  },
+  {
+    id: 'core-wellness',
+    name: 'Core Wellness',
+    type: 'ambos',
+    industry: 'Bienestar',
+    location: 'Cordoba',
+    size: '6-20',
+    channels: ['local', 'web', 'redes'],
+    objectives: {
+      main_goal: 'engagement',
+      current_followers: 18700,
+      target_followers: 35000,
+      engagement_goal: 'alto',
+      avg_ticket: 52000,
+      monthly_sales_goal: 14000000,
+      growth_expected: 30
+    },
+    alliance_profile: {
+      offers: ['audiencia', 'clientes', 'espacio'],
+      needs: ['visibilidad', 'canales'],
+      open_to_alliance: true,
+      preferred_segments: ['indumentaria', 'salud', 'gastronomia']
+    },
+    sales_process: { has_crm: true, follow_up_leads: true, response_time: 'menos_1h', conversion_tracking: true },
+    marketing_process: { has_strategy: true, tracks_metrics: true, content_frequency: 'semanal', paid_ads: true },
+    operations_process: { has_inventory_system: true, has_defined_processes: true, team_trained: true },
+    attention_process: { has_support_channel: true, measures_satisfaction: true, response_protocol: true, handles_complaints: true },
+    scores: { overall: 8.3, ventas: 7.8, marketing: 8.5, operaciones: 8.0, atencion: 8.4 },
+    score_history: [],
+    onboarding_completed: true
+  },
+  {
+    id: 'moda-sustentable',
+    name: 'Moda Sustentable',
+    type: 'ecommerce',
+    industry: 'Moda',
+    location: 'Rosario',
+    size: '1-5',
+    channels: ['web', 'redes', 'marketplace'],
+    objectives: {
+      main_goal: 'branding',
+      current_followers: 31200,
+      target_followers: 55000,
+      engagement_goal: 'alto',
+      avg_ticket: 44000,
+      monthly_sales_goal: 9000000,
+      growth_expected: 35
+    },
+    alliance_profile: {
+      offers: ['producto', 'audiencia'],
+      needs: ['canales', 'visibilidad', 'ventas'],
+      open_to_alliance: true,
+      preferred_segments: ['belleza', 'indumentaria', 'accesorios']
+    },
+    sales_process: { has_crm: false, follow_up_leads: true, response_time: '1_24h', conversion_tracking: true },
+    marketing_process: { has_strategy: true, tracks_metrics: true, content_frequency: 'diario', paid_ads: false },
+    operations_process: { has_inventory_system: true, has_defined_processes: false, team_trained: true },
+    attention_process: { has_support_channel: true, measures_satisfaction: false, response_protocol: true, handles_complaints: true },
+    scores: { overall: 7.5, ventas: 6.8, marketing: 8.4, operaciones: 6.9, atencion: 7.2 },
+    score_history: [],
+    onboarding_completed: true
+  },
+  {
+    id: 'digital-craft',
+    name: 'Digital Craft',
+    type: 'ecommerce',
+    industry: 'Marketing Digital',
+    location: 'Buenos Aires',
+    size: '6-20',
+    channels: ['web', 'redes', 'marketplace'],
+    objectives: {
+      main_goal: 'ventas',
+      current_followers: 48000,
+      target_followers: 80000,
+      engagement_goal: 'medio',
+      avg_ticket: 120000,
+      monthly_sales_goal: 28000000,
+      growth_expected: 28
+    },
+    alliance_profile: {
+      offers: ['clientes', 'logistica', 'producto'],
+      needs: ['branding', 'audiencia'],
+      open_to_alliance: true,
+      preferred_segments: ['retail', 'indumentaria', 'tecnologia']
+    },
+    sales_process: { has_crm: true, follow_up_leads: true, response_time: 'menos_1h', conversion_tracking: true },
+    marketing_process: { has_strategy: true, tracks_metrics: true, content_frequency: 'diario', paid_ads: true },
+    operations_process: { has_inventory_system: true, has_defined_processes: true, team_trained: true },
+    attention_process: { has_support_channel: true, measures_satisfaction: true, response_protocol: true, handles_complaints: true },
+    scores: { overall: 8.9, ventas: 8.8, marketing: 8.7, operaciones: 9.0, atencion: 8.6 },
+    score_history: [],
+    onboarding_completed: true
+  }
+];
+
 const companies = [
   {
     id: 'top-white',
@@ -456,6 +614,56 @@ const alliances = [
       new_clients: 16,
       notes: 'Se descarto por bajo fit percibido.'
     }
+  },
+  {
+    company_a_id: 'top-white',
+    company_b_id: 'bloom-floreria',
+    match_score: 88,
+    alliance_type: 'co_marketing',
+    status: 'contactada',
+    proposal: 'Activacion conjunta con flores y moda para fechas especiales.',
+    justification: 'Audiencias complementarias con alto interes en estetica y regalos.',
+    results: { sales_impact: 12, new_clients: 67, notes: 'Primer contacto positivo.' }
+  },
+  {
+    company_a_id: 'top-white',
+    company_b_id: 'sushi-nakama',
+    match_score: 79,
+    alliance_type: 'alianza_fisica',
+    status: 'sugerida',
+    proposal: 'Beneficios cruzados para clientes VIP en fechas clave.',
+    justification: 'Ambas marcas apuntan a un publico con alto ticket y lifestyle aspiracional.',
+    results: { sales_impact: 8, new_clients: 41, notes: 'Pendiente primer contacto.' }
+  },
+  {
+    company_a_id: 'top-white',
+    company_b_id: 'core-wellness',
+    match_score: 84,
+    alliance_type: 'bundle',
+    status: 'sugerida',
+    proposal: 'Pack bienestar + moda para temporada de verano.',
+    justification: 'Fuerte fit en valores de marca y segmento objetivo compartido.',
+    results: { sales_impact: 11, new_clients: 72, notes: 'Alta compatibilidad de audiencia.' }
+  },
+  {
+    company_a_id: 'top-white',
+    company_b_id: 'moda-sustentable',
+    match_score: 76,
+    alliance_type: 'co_marketing',
+    status: 'sugerida',
+    proposal: 'Coleccion capsular con foco en moda responsable.',
+    justification: 'Valores de marca alineados, audiencias jovenes con sensibilidad sustentable.',
+    results: { sales_impact: 9, new_clients: 53, notes: 'Interes mutuo confirmado.' }
+  },
+  {
+    company_a_id: 'top-white',
+    company_b_id: 'digital-craft',
+    match_score: 71,
+    alliance_type: 'cross_selling',
+    status: 'sugerida',
+    proposal: 'Servicios de marketing digital para potenciar campanas de temporada.',
+    justification: 'Complementariedad tecnica con alto potencial de conversion.',
+    results: { sales_impact: 7, new_clients: 38, notes: 'Requiere reunion de alineacion.' }
   }
 ];
 
@@ -539,6 +747,20 @@ export const currentCompany = {
     }))
 };
 
+const allCompanies = [...companies, ...demoCompanies];
+
+const companyImages = {
+  'bloom-floreria': 'https://images.unsplash.com/photo-1490750967868-88df5691cc0a?w=800&q=80&fit=crop',
+  'sushi-nakama': 'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=800&q=80&fit=crop',
+  'core-wellness': 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&q=80&fit=crop',
+  'moda-sustentable': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80&fit=crop',
+  'digital-craft': 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80&fit=crop',
+  'luna-beauty': 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=800&q=80&fit=crop',
+  'cafe-patio': 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&q=80&fit=crop',
+  'fit-studio': 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80&fit=crop',
+  'tech-hub': 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80&fit=crop',
+};
+
 export const recommendedCompanies = alliances
   .filter(
     (alliance) =>
@@ -546,7 +768,7 @@ export const recommendedCompanies = alliances
       alliance.status !== 'rechazada'
   )
   .map((alliance) => {
-    const company = companies.find((item) => item.id === alliance.company_b_id);
+    const company = allCompanies.find((item) => item.id === alliance.company_b_id);
     return {
       id: company.id,
       name: company.name,
@@ -576,7 +798,11 @@ export const recommendedCompanies = alliances
         conversionLift: `+${alliance.results.sales_impact}%`
       },
       proposal: alliance.proposal,
-      allianceStatus: alliance.status
+      allianceStatus: alliance.status,
+      gallery: companyImages[company.id] ? [companyImages[company.id]] : [],
+      offersArr: company.alliance_profile.offers,
+      needsArr: company.alliance_profile.needs,
+      description: alliance.justification,
     };
   });
 
@@ -650,6 +876,7 @@ export const chatConversations = [
     activity: 'Coordinacion',
     lastMessage: 'Necesitamos assets para la activacion conjunta con Luna Beauty.',
     unread: 0,
+    isTeam: true,
     messages: [
       {
         id: 'mk-1',
@@ -664,10 +891,78 @@ export const chatConversations = [
         time: '09:05'
       }
     ]
+  },
+  {
+    id: 'bloom-floreria-chat',
+    company: 'Bloom Floreria',
+    logo: 'BF',
+    sector: 'Floreria',
+    location: 'Buenos Aires',
+    status: 'Match activo',
+    lastInteraction: 'Hace 1 hora',
+    activity: 'Activa',
+    lastMessage: 'Genial! Podemos armar algo para San Valentin con flores y coleccion capsular.',
+    unread: 2,
+    messages: [
+      {
+        id: 'bloom-1',
+        sender: 'me',
+        text: 'Hola! Vi tu perfil y creo que tenemos un fit muy bueno para una activacion conjunta.',
+        time: '10:05'
+      },
+      {
+        id: 'bloom-2',
+        sender: 'them',
+        text: 'Genial! Podemos armar algo para San Valentin con flores y coleccion capsular.',
+        time: '10:42'
+      }
+    ]
+  },
+  {
+    id: 'sushi-nakama-chat',
+    company: 'Sushi Nakama',
+    logo: 'SN',
+    sector: 'Gastronomia',
+    location: 'Mendoza',
+    status: 'Esperando respuesta',
+    lastInteraction: 'Ayer',
+    activity: 'Seguimiento',
+    lastMessage: 'Nos parece interesante la propuesta de beneficios cruzados para clientes VIP.',
+    unread: 0,
+    messages: [
+      {
+        id: 'sushi-1',
+        sender: 'me',
+        text: 'Hola! Tenemos una idea para generar trafico mutuo entre nuestros locales en fechas clave.',
+        time: '16:30'
+      },
+      {
+        id: 'sushi-2',
+        sender: 'them',
+        text: 'Nos parece interesante la propuesta de beneficios cruzados para clientes VIP.',
+        time: '17:15'
+      },
+      {
+        id: 'sushi-3',
+        sender: 'me',
+        text: 'Perfecto, te mando el brief desde la plataforma para que lo revises.',
+        time: '17:20'
+      }
+    ]
   }
 ];
 
 export const chatPreviews = chatConversations;
+
+export const demoInitialMatch = {
+  id: 'bloom-floreria',
+  name: 'Bloom Floreria',
+  logo: 'BF',
+  sector: 'Floreria',
+  location: 'Buenos Aires',
+  size: '1-5 personas',
+  matchKind: 'like'
+};
 
 export const recommendationColumns = {
   pending: recommendations
@@ -816,6 +1111,74 @@ export const dashboardData = {
     highlightedAlliance: alliances.find((alliance) => alliance.status === 'en_negociacion')
   }
 };
+
+// ─── Demo meetings (pre-populated for calendar) ──────────────────────────────
+const today = new Date();
+const fmt = (d) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const offset = (days) => {
+  const d = new Date(today);
+  d.setDate(today.getDate() + days);
+  return fmt(d);
+};
+
+export const demoMeetings = [
+  {
+    id: 'meet-1',
+    title: 'Reunión Bloom Florería',
+    company: 'Bloom Florería',
+    companyInitials: 'BF',
+    date: offset(0),
+    time: '15:00',
+    endTime: '16:00',
+    type: 'video',
+    done: false
+  },
+  {
+    id: 'meet-2',
+    title: 'Seguimiento Sushi Nakama',
+    company: 'Sushi Nakama',
+    companyInitials: 'SN',
+    date: offset(2),
+    time: '11:00',
+    endTime: '11:30',
+    type: 'video',
+    done: false
+  },
+  {
+    id: 'meet-3',
+    title: 'Cierre propuesta Luna Beauty',
+    company: 'Luna Beauty',
+    companyInitials: 'LB',
+    date: offset(5),
+    time: '14:00',
+    endTime: '15:00',
+    type: 'video',
+    done: false
+  },
+  {
+    id: 'meet-4',
+    title: 'Kick-off Core Wellness',
+    company: 'Core Wellness',
+    companyInitials: 'CW',
+    date: offset(9),
+    time: '10:00',
+    endTime: '11:00',
+    type: 'video',
+    done: false
+  },
+  {
+    id: 'meet-5',
+    title: 'Revisión Digital Craft',
+    company: 'Digital Craft',
+    companyInitials: 'DC',
+    date: offset(14),
+    time: '16:00',
+    endTime: '16:30',
+    type: 'video',
+    done: false
+  }
+];
 
 export {
   alliances,
