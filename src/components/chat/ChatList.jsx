@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+﻿import { useCallback, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Edit3, Handshake, Search, Users, X } from 'lucide-react';
 import ChatItem from './ChatItem';
@@ -104,7 +104,7 @@ function ChatList({
           </h2>
         </div>
         <button
-          className="flex h-8 w-8 items-center justify-center rounded-[12px] bg-[#0B412F] text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#0a3828] hover:shadow-md"
+          className="flex h-8 w-8 items-center justify-center rounded-[12px] bg-[#141E30] text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#1A2C45] hover:shadow-md"
           onClick={allowDirectMessage ? onCreateOutbound : undefined}
           title={allowDirectMessage ? 'Nueva conversación' : 'Disponible en Plan Scale'}
           type="button"
@@ -152,7 +152,7 @@ function ChatList({
               type="button"
               className={`shrink-0 rounded-full px-3 py-1 text-[11px] font-semibold transition-all ${
                 isActive
-                  ? 'bg-[#0B412F] text-white shadow-sm'
+                  ? 'bg-[#141E30] text-white shadow-sm'
                   : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
               }`}
             >
@@ -184,7 +184,7 @@ function ChatList({
             <button
               onClick={debouncedQuery ? handleClearSearch : (allowDirectMessage ? onCreateOutbound : undefined)}
               type="button"
-              className="rounded-[12px] bg-[#0B412F] px-4 py-2 text-[12px] font-semibold text-white transition hover:bg-[#0a3828]"
+              className="rounded-[12px] bg-[#141E30] px-4 py-2 text-[12px] font-semibold text-white transition hover:bg-[#1A2C45]"
             >
               {debouncedQuery ? 'Limpiar búsqueda' : 'Iniciar nueva conversación'}
             </button>

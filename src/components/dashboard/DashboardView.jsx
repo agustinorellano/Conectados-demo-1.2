@@ -1,4 +1,4 @@
-import {
+﻿import {
   ArrowRight,
   Bell,
   Check,
@@ -165,7 +165,7 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
           <motion.div
             className={`rounded-[24px] p-5 shadow-sm ${
               card.featured
-                ? 'bg-[#0B412F] text-white'
+                ? 'bg-[#141E30] text-white'
                 : 'bg-white ring-1 ring-inset ring-slate-200'
             }`}
             initial={{ opacity: 0, y: 12 }}
@@ -233,7 +233,7 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
                       ? 'bg-[#22c55e]'
                       : i >= 5
                       ? 'bg-slate-200'
-                      : 'bg-[#0B412F]'
+                      : 'bg-[#141E30]'
                   }`}
                   initial={{ height: 0 }}
                   transition={{ duration: 0.65, delay: i * 0.07, ease: [0.34, 1.1, 0.64, 1] }}
@@ -251,7 +251,7 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
 
           <div className="mt-5 flex flex-wrap gap-4 border-t border-slate-100 pt-4">
             <div className="flex items-center gap-1.5">
-              <div className="h-2.5 w-2.5 rounded-full bg-[#0B412F]" />
+              <div className="h-2.5 w-2.5 rounded-full bg-[#141E30]" />
               <span className="text-xs text-slate-500">Actividad</span>
             </div>
             <div className="flex items-center gap-1.5">
@@ -278,7 +278,7 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
           </p>
 
           <button
-            className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-[18px] bg-[#0B412F] px-4 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#0a3828] hover:shadow-md"
+            className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-[18px] bg-[#141E30] px-4 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#1A2C45] hover:shadow-md"
             type="button"
           >
             <Video className="h-4 w-4" />
@@ -299,7 +299,7 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
             </div>
             {pendingCount > 0 && (
               <button
-                className="text-xs font-semibold text-[#0B412F] transition hover:opacity-70"
+                className="text-xs font-semibold text-[#141E30] transition hover:opacity-70"
                 onClick={resolveAll}
                 type="button"
               >
@@ -366,7 +366,7 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
           </div>
           <button
             className="inline-flex items-center gap-2 rounded-[16px] px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:-translate-y-0.5"
-            style={{ background: 'linear-gradient(135deg, #16a34a, #22c55e)', boxShadow: '0 4px 16px rgba(34,197,94,0.25)' }}
+            style={{ background: 'linear-gradient(135deg, #141E30, #35577D)', boxShadow: '0 4px 16px rgba(20,30,48,0.25)' }}
             onClick={onOpenAllianceRoom}
             type="button"
           >
@@ -524,7 +524,7 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
         <section className="rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-inset ring-slate-200">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#0B412F]">
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#141E30]">
                 Match Activos
               </p>
               <h2 className="mt-2 font-['Space_Grotesk'] text-2xl font-bold tracking-tight text-[#1A1A1A]">
@@ -551,7 +551,7 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
                 viewport={{ once: true }}
                 whileInView={{ opacity: 1, y: 0 }}
               >
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[18px] bg-gradient-to-br from-[#1871D8] to-[#0B412F] font-['Space_Grotesk'] text-xs font-bold text-white shadow-sm">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[18px] bg-gradient-to-br from-[#141E30] to-[#35577D] font-['Space_Grotesk'] text-xs font-bold text-white shadow-sm">
                   {team.initials}
                 </div>
                 <div className="min-w-0 flex-1">

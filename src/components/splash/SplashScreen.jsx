@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+﻿import { useEffect } from 'react';
 
 function SplashScreen({ onComplete }) {
   useEffect(() => {
@@ -7,12 +7,12 @@ function SplashScreen({ onComplete }) {
   }, [onComplete]);
 
   return (
-    <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0B412F] px-6 py-12 text-white">
+    <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#141E30] px-6 py-12 text-white">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(24,113,216,0.24),transparent_24%),radial-gradient(circle_at_80%_16%,rgba(46,204,112,0.22),transparent_18%)]" />
       <div className="absolute h-72 w-72 rounded-full bg-white/6 blur-3xl" />
       <div className="relative z-10 mx-auto max-w-md text-center">
         <div className="mx-auto mb-6 flex h-28 w-28 items-center justify-center rounded-[2rem] border border-white/12 bg-white/8 shadow-2xl shadow-black/10">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-xl font-bold text-[#0B412F]">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-xl font-bold text-[#141E30]">
             DP
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+﻿import { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   BriefcaseBusiness,
@@ -642,7 +642,7 @@ function NewCardForm({ status, onCancel, onCreate }) {
         <button
           type="button"
           onClick={handleCreate}
-          className="flex-1 rounded-xl bg-[#0B412F] py-1.5 text-xs font-semibold text-white transition hover:bg-emerald-800"
+          className="flex-1 rounded-xl bg-[#141E30] py-1.5 text-xs font-semibold text-white transition hover:bg-emerald-800"
         >
           Crear
         </button>
@@ -702,7 +702,7 @@ function OpportunityCard({ opp, onOpen, onOpenResultsTab, onPriorityChange, onCo
       draggable
       onDragStart={handleDragStart}
       onClick={() => onOpen(opp)}
-      whileHover={{ y: -3, boxShadow: '0 8px 28px rgba(11,65,47,0.12)' }}
+      whileHover={{ y: -3, boxShadow: '0 8px 28px rgba(20,30,48,0.12)' }}
       transition={{ duration: 0.15 }}
       className="rounded-[20px] bg-white ring-1 ring-slate-100 p-4 shadow-sm cursor-pointer select-none space-y-3"
     >
@@ -913,7 +913,7 @@ function CardDetailModal({ opp, onClose, onUpdate }) {
                 onClick={() => setTab(t)}
                 className={`px-4 py-2 text-sm font-medium capitalize transition rounded-t-lg ${
                   tab === t
-                    ? 'text-[#0B412F] border-b-2 border-[#0B412F]'
+                    ? 'text-[#141E30] border-b-2 border-[#141E30]'
                     : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
@@ -1043,7 +1043,7 @@ function CardDetailModal({ opp, onClose, onUpdate }) {
                 <button
                   type="button"
                   onClick={addSubtask}
-                  className="px-3 py-2 rounded-xl bg-[#0B412F] text-white text-sm font-semibold hover:bg-emerald-800 transition"
+                  className="px-3 py-2 rounded-xl bg-[#141E30] text-white text-sm font-semibold hover:bg-emerald-800 transition"
                 >
                   <Plus className="w-4 h-4" />
                 </button>
@@ -1095,7 +1095,7 @@ function CardDetailModal({ opp, onClose, onUpdate }) {
                   type="button"
                   onClick={addComment}
                   disabled={!commentText.trim()}
-                  className="px-3 rounded-xl bg-[#0B412F] text-white text-sm font-semibold hover:bg-emerald-800 transition disabled:opacity-40"
+                  className="px-3 rounded-xl bg-[#141E30] text-white text-sm font-semibold hover:bg-emerald-800 transition disabled:opacity-40"
                 >
                   <MessageSquare className="w-4 h-4" />
                 </button>
@@ -1222,7 +1222,7 @@ function WorkplaceSidebar({ sidebarView, setSidebarView, quickFilter, setQuickFi
                 onClick={() => setSidebarView(id)}
                 className={`w-full flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-medium transition ${
                   sidebarView === id
-                    ? 'bg-[#0B412F] text-white'
+                    ? 'bg-[#141E30] text-white'
                     : 'text-slate-600 hover:bg-slate-50'
                 }`}
               >
@@ -1353,14 +1353,14 @@ function FilterBar({ search, setSearch, typeFilter, setTypeFilter, priorityFilte
         <button
           type="button"
           onClick={() => setView('kanban')}
-          className={`p-1.5 rounded-lg transition ${view === 'kanban' ? 'bg-white shadow-sm text-[#0B412F]' : 'text-slate-400 hover:text-slate-600'}`}
+          className={`p-1.5 rounded-lg transition ${view === 'kanban' ? 'bg-white shadow-sm text-[#141E30]' : 'text-slate-400 hover:text-slate-600'}`}
         >
           <LayoutDashboard className="w-4 h-4" />
         </button>
         <button
           type="button"
           onClick={() => setView('list')}
-          className={`p-1.5 rounded-lg transition ${view === 'list' ? 'bg-white shadow-sm text-[#0B412F]' : 'text-slate-400 hover:text-slate-600'}`}
+          className={`p-1.5 rounded-lg transition ${view === 'list' ? 'bg-white shadow-sm text-[#141E30]' : 'text-slate-400 hover:text-slate-600'}`}
         >
           <List className="w-4 h-4" />
         </button>

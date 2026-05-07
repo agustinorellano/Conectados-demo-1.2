@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { ArrowUp, Paperclip, Zap } from 'lucide-react';
 
 const quickActionMap = {
@@ -79,7 +79,7 @@ function ProposalInput({
         />
 
         <button
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#0B412F] text-white shadow-sm transition hover:bg-[#0a3828] hover:-translate-y-0.5"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#141E30] text-white shadow-sm transition hover:bg-[#1A2C45] hover:-translate-y-0.5"
           onClick={handleSend}
           type="button"
         >

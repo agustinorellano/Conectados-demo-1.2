@@ -1,4 +1,4 @@
-import { Check, Crown, Sparkles, Zap } from 'lucide-react';
+﻿import { Check, Crown, Sparkles, Zap } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
 
@@ -60,7 +60,7 @@ function PricingView({ currentPlan, onCheckoutSuccess }) {
 
   return (
     <div className="space-y-6 sm:space-y-7">
-      <section className="rounded-[28px] bg-gradient-to-br from-[#1871D8] via-[#145db1] to-[#0B412F] px-5 py-6 text-white shadow-[0_28px_60px_rgba(11,65,47,0.18)] sm:px-7">
+      <section className="rounded-[28px] bg-gradient-to-br from-[#1871D8] via-[#145db1] to-[#141E30] px-5 py-6 text-white shadow-[0_28px_60px_rgba(20,30,48,0.18)] sm:px-7">
         <p className="text-xs font-medium uppercase tracking-[0.24em] text-white/70">
           Pricing
         </p>
@@ -83,7 +83,7 @@ function PricingView({ currentPlan, onCheckoutSuccess }) {
             <motion.article
               className={`relative rounded-[28px] border p-6 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-lg ${
                 dark
-                  ? 'border-[#0B412F] bg-[#0B412F] text-white'
+                  ? 'border-[#141E30] bg-[#141E30] text-white'
                   : featured
                     ? 'border-[#1871D8]/15 bg-white ring-2 ring-[#1871D8]/10'
                     : 'border-slate-200 bg-white'
@@ -167,10 +167,10 @@ function PricingView({ currentPlan, onCheckoutSuccess }) {
                       ? 'bg-white/10 text-white'
                       : 'bg-slate-100 text-slate-500'
                     : dark
-                      ? 'bg-white text-[#0B412F] hover:shadow-lg'
+                      ? 'bg-white text-[#141E30] hover:shadow-lg'
                       : featured
                         ? 'bg-[#1871D8] text-white hover:shadow-lg'
-                        : 'bg-[#0B412F] text-white hover:shadow-lg'
+                        : 'bg-[#141E30] text-white hover:shadow-lg'
                 }`}
                 disabled={isCurrent}
                 onClick={() => setCheckoutPlan(plan.id)}
@@ -193,7 +193,7 @@ function PricingView({ currentPlan, onCheckoutSuccess }) {
           >
             <motion.div
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              className="w-full max-w-lg rounded-[28px] bg-white p-6 shadow-[0_24px_80px_rgba(8,33,24,0.18)]"
+              className="w-full max-w-lg rounded-[28px] bg-white p-6 shadow-[0_24px_80px_rgba(20,30,48,0.18)]"
               exit={{ opacity: 0, y: 12, scale: 0.98 }}
               initial={{ opacity: 0, y: 16, scale: 0.98 }}
             >

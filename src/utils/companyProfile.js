@@ -51,8 +51,8 @@ export function createInitialProfile(company) {
     gallery:
       company.gallery ||
       [
-        createScenePlaceholder('#1871D8', '#0B412F', 'Visual merchandising'),
-        createScenePlaceholder('#0B412F', '#2ECC70', 'Equipo y local')
+        createScenePlaceholder('#1871D8', '#141E30', 'Visual merchandising'),
+        createScenePlaceholder('#141E30', '#35577D', 'Equipo y local')
       ],
     socialLinks: {
       instagram: company.socialLinks?.instagram || 'https://instagram.com/dataplus.demo',

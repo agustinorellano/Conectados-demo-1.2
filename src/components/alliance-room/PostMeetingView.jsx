@@ -295,8 +295,8 @@ export default function PostMeetingView({ alliance, onClose }) {
           <button
             className="flex items-center gap-2.5 rounded-[18px] px-6 py-3.5 text-sm font-bold text-white transition hover:-translate-y-0.5"
             style={{
-              background: 'linear-gradient(135deg, #16a34a, #22c55e)',
-              boxShadow: '0 8px 32px rgba(34,197,94,0.25)',
+              background: 'linear-gradient(135deg, #141E30, #35577D)',
+              boxShadow: '0 8px 32px rgba(20,30,48,0.25)',
             }}
             type="button"
           >

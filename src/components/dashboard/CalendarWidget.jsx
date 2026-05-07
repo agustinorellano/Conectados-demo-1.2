@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion';
+﻿import { AnimatePresence, motion } from 'framer-motion';
 import { Check, ChevronLeft, ChevronRight, Video } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
@@ -138,9 +138,9 @@ function WeekView({ selectedDate, meetings, onSelect, onToggleDone }) {
             <button
               className={`flex flex-col items-center gap-1 rounded-[14px] py-2 text-xs font-semibold transition ${
                 isSelected
-                  ? 'bg-[#0B412F] text-white'
+                  ? 'bg-[#141E30] text-white'
                   : isToday
-                  ? 'bg-[#0B412F]/10 text-[#0B412F]'
+                  ? 'bg-[#141E30]/10 text-[#141E30]'
                   : 'text-slate-500 hover:bg-slate-100'
               }`}
               key={iso}
@@ -200,9 +200,9 @@ function MonthView({ year, month, selectedDate, meetings, onSelect }) {
             <button
               className={`flex flex-col items-center rounded-[10px] py-1 transition ${
                 isSelected
-                  ? 'bg-[#0B412F] text-white'
+                  ? 'bg-[#141E30] text-white'
                   : isToday
-                  ? 'bg-[#0B412F]/10 text-[#0B412F] font-bold'
+                  ? 'bg-[#141E30]/10 text-[#141E30] font-bold'
                   : 'text-slate-700 hover:bg-slate-100'
               }`}
               key={iso}
@@ -283,7 +283,7 @@ function CalendarWidget({ meetings = [], onToggleMeeting, onScheduleMeeting }) {
             {views.map(({ key, label }) => (
               <button
                 className={`rounded-[11px] px-3 py-1.5 text-xs font-semibold transition ${
-                  view === key ? 'bg-white text-[#0B412F] shadow-sm' : 'text-slate-500'
+                  view === key ? 'bg-white text-[#141E30] shadow-sm' : 'text-slate-500'
                 }`}
                 key={key}
                 onClick={() => setView(key)}
@@ -367,7 +367,7 @@ function CalendarWidget({ meetings = [], onToggleMeeting, onScheduleMeeting }) {
                 {selectedDate === todayIso() ? 'Hoy' : 'Día seleccionado'}
               </p>
               {selectedDayMeetings.length > 0 && (
-                <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#0B412F] text-[10px] font-bold text-white">
+                <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#141E30] text-[10px] font-bold text-white">
                   {selectedDayMeetings.length}
                 </span>
               )}

@@ -1,4 +1,4 @@
-import { BookText, Bot, LifeBuoy, MessageSquare, Sparkles } from 'lucide-react';
+﻿import { BookText, Bot, LifeBuoy, MessageSquare, Sparkles } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useMemo, useState } from 'react';
 
@@ -77,7 +77,7 @@ function HowCardAnimation({ title }) {
         <div className="w-full rounded-[18px] bg-white px-4 py-3 shadow-sm ring-1 ring-inset ring-slate-200">
           <motion.div
             animate={{ width: ['0%', '92%', '92%'] }}
-            className="h-3 rounded-full bg-[#0B412F]/12"
+            className="h-3 rounded-full bg-[#141E30]/12"
             transition={{ repeat: Infinity, duration: 2.4, ease: 'easeInOut' }}
           />
           <motion.div
@@ -202,7 +202,7 @@ function HelpCenterView({ onNavigateToChat }) {
               className={`rounded-full px-4 py-2 text-sm font-medium transition ${
                 activeTab === key
                   ? 'bg-[#1871D8] text-white'
-                  : 'bg-slate-100 text-slate-500 hover:text-[#0B412F]'
+                  : 'bg-slate-100 text-slate-500 hover:text-[#141E30]'
               }`}
               key={key}
               onClick={() => setActiveTab(key)}
@@ -222,7 +222,7 @@ function HelpCenterView({ onNavigateToChat }) {
             key={card.title}
             transition={{ duration: 0.28, delay: index * 0.04 }}
             viewport={{ once: true }}
-            whileHover={{ y: -6, scale: 1.03, boxShadow: '0 18px 36px rgba(8,33,24,0.08)' }}
+            whileHover={{ y: -6, scale: 1.03, boxShadow: '0 18px 36px rgba(20,30,48,0.08)' }}
             whileInView={{ opacity: 1, y: 0 }}
           >
             <div className="flex items-center gap-3">
@@ -272,7 +272,7 @@ function HelpCenterView({ onNavigateToChat }) {
       </section>
 
       <button
-        className="fixed bottom-28 right-5 z-40 inline-flex items-center gap-2 rounded-full bg-[#0B412F] px-4 py-3 text-sm font-semibold text-white shadow-[0_16px_32px_rgba(11,65,47,0.22)] transition hover:-translate-y-0.5"
+        className="fixed bottom-28 right-5 z-40 inline-flex items-center gap-2 rounded-full bg-[#141E30] px-4 py-3 text-sm font-semibold text-white shadow-[0_16px_32px_rgba(20,30,48,0.22)] transition hover:-translate-y-0.5"
         onClick={() => setModalOpen(true)}
         type="button"
       >
@@ -290,7 +290,7 @@ function HelpCenterView({ onNavigateToChat }) {
           >
             <motion.div
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              className="w-full max-w-xl rounded-[28px] bg-white p-6 shadow-[0_24px_80px_rgba(8,33,24,0.18)]"
+              className="w-full max-w-xl rounded-[28px] bg-white p-6 shadow-[0_24px_80px_rgba(20,30,48,0.18)]"
               exit={{ opacity: 0, y: 12, scale: 0.98 }}
               initial={{ opacity: 0, y: 16, scale: 0.98 }}
             >

@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+﻿import { motion } from 'framer-motion';
 
 /* ── Status dot color ────────────────────────────────────────────── */
 function statusDotClass(state) {
@@ -31,7 +31,7 @@ function ChatItem({ conversation, isActive, onSelect }) {
       <div className="flex items-start gap-3">
         {/* Avatar */}
         <div className="relative shrink-0">
-          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-[#1871D8] to-[#0B412F] font-['Space_Grotesk'] text-[11px] font-bold text-white">
+          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-[#141E30] to-[#35577D] font-['Space_Grotesk'] text-[11px] font-bold text-white">
             {initials}
           </div>
           {unread > 0 && (

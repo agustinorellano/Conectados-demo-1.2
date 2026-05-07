@@ -1,4 +1,4 @@
-import { Handshake, Send } from 'lucide-react';
+﻿import { Handshake, Send } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 function MatchOverlay({ company, onClose, onGoToChats }) {
@@ -13,7 +13,7 @@ function MatchOverlay({ company, onClose, onGoToChats }) {
         >
           <motion.div
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            className="w-full max-w-lg rounded-[32px] bg-white p-6 shadow-[0_30px_90px_rgba(8,33,24,0.18)]"
+            className="w-full max-w-lg rounded-[32px] bg-white p-6 shadow-[0_30px_90px_rgba(20,30,48,0.18)]"
             exit={{ opacity: 0, y: 16, scale: 0.98 }}
             initial={{ opacity: 0, y: 18, scale: 0.98 }}
           >
@@ -29,7 +29,7 @@ function MatchOverlay({ company, onClose, onGoToChats }) {
             </p>
 
             <div className="mt-6 flex items-center justify-center">
-              <div className="rounded-full bg-gradient-to-r from-[#1871D8] to-[#34C759] p-5 text-white shadow-lg">
+              <div className="rounded-full bg-gradient-to-r from-[#141E30] to-[#35577D] p-5 text-white shadow-lg">
                 <Handshake className="h-8 w-8" />
               </div>
             </div>

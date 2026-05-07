@@ -434,8 +434,8 @@ function PreRoomBriefing({ alliance, onEnter }) {
             onClick={onEnter}
             className="group relative inline-flex items-center gap-3 overflow-hidden rounded-[20px] px-8 py-4 text-base font-bold text-white transition-all hover:-translate-y-0.5"
             style={{
-              background: 'linear-gradient(135deg, #16a34a, #22c55e)',
-              boxShadow: '0 8px 32px rgba(34,197,94,0.3)',
+              background: 'linear-gradient(135deg, #141E30, #35577D)',
+              boxShadow: '0 8px 32px rgba(20,30,48,0.3)',
             }}
             type="button"
           >

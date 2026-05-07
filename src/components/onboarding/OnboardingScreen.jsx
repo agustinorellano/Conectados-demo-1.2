@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion';
+﻿import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Zap } from 'lucide-react';
 import { useState } from 'react';
 
@@ -48,7 +48,7 @@ function MultiPill({ options, selected, onChange }) {
         <button
           className={`rounded-full px-4 py-2 text-sm font-medium transition ${
             selected.includes(opt)
-              ? 'bg-[#0B412F] text-white'
+              ? 'bg-[#141E30] text-white'
               : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
           }`}
           key={opt}
@@ -69,7 +69,7 @@ function SinglePill({ options, selected, onChange }) {
         <button
           className={`rounded-full px-4 py-2 text-sm font-medium transition ${
             selected === opt
-              ? 'bg-[#0B412F] text-white'
+              ? 'bg-[#141E30] text-white'
               : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
           }`}
           key={opt}
@@ -89,7 +89,7 @@ function YesNoToggle({ value, onChange }) {
       {[true, false].map((v) => (
         <button
           className={`rounded-lg px-5 py-1.5 text-sm font-medium transition ${
-            value === v ? 'bg-white shadow-sm text-[#0B412F]' : 'text-slate-500'
+            value === v ? 'bg-white shadow-sm text-[#141E30]' : 'text-slate-500'
           }`}
           key={String(v)}
           onClick={() => onChange(v)}
@@ -286,8 +286,8 @@ function StepActivacion({ formData, onFinish }) {
 
   return (
     <div className="space-y-5">
-      <div className="rounded-[22px] bg-[#0B412F]/5 p-5 ring-1 ring-inset ring-[#0B412F]/10">
-        <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-[#0B412F]">
+      <div className="rounded-[22px] bg-[#141E30]/5 p-5 ring-1 ring-inset ring-[#141E30]/10">
+        <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-[#141E30]">
           Resumen del perfil
         </p>
         <div className="space-y-3">
@@ -311,7 +311,7 @@ function StepActivacion({ formData, onFinish }) {
       </div>
 
       <button
-        className="inline-flex w-full items-center justify-center gap-2 rounded-[18px] bg-[#0B412F] px-6 py-4 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#0a3828] hover:shadow-md"
+        className="inline-flex w-full items-center justify-center gap-2 rounded-[18px] bg-[#141E30] px-6 py-4 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#1A2C45] hover:shadow-md"
         onClick={onFinish}
         type="button"
       >
@@ -380,7 +380,7 @@ function OnboardingScreen({ onFinish, onProfileChange }) {
         {/* Progress header */}
         <div className="mb-6 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0B412F] text-sm font-bold text-white">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#141E30] text-sm font-bold text-white">
               DP
             </div>
             <div>
@@ -398,9 +398,9 @@ function OnboardingScreen({ onFinish, onProfileChange }) {
               <div
                 className={`h-1.5 rounded-full transition-all duration-300 ${
                   i < step
-                    ? 'w-3 bg-[#0B412F]'
+                    ? 'w-3 bg-[#141E30]'
                     : i === step
-                    ? 'w-6 bg-[#0B412F]'
+                    ? 'w-6 bg-[#141E30]'
                     : 'w-3 bg-slate-200'
                 }`}
                 key={i}
@@ -415,7 +415,7 @@ function OnboardingScreen({ onFinish, onProfileChange }) {
           <div className="h-1 bg-slate-100">
             <motion.div
               animate={{ width: `${progress}%` }}
-              className="h-full bg-[#0B412F]"
+              className="h-full bg-[#141E30]"
               initial={false}
               transition={{ duration: 0.35, ease: 'easeOut' }}
             />
@@ -514,7 +514,7 @@ function OnboardingScreen({ onFinish, onProfileChange }) {
                 Anterior
               </button>
               <button
-                className="inline-flex items-center gap-2 rounded-[14px] bg-[#0B412F] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                className="inline-flex items-center gap-2 rounded-[14px] bg-[#141E30] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
                 onClick={goNext}
                 type="button"
               >

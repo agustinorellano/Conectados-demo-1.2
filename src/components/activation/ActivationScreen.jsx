@@ -1,4 +1,4 @@
-import { Camera, ImagePlus, Zap } from 'lucide-react';
+﻿import { Camera, ImagePlus, Zap } from 'lucide-react';
 import { useRef } from 'react';
 
 function readFileAsDataUrl(file) {
@@ -93,7 +93,7 @@ function ActivationScreen({ onFinish, profile, onProfileChange }) {
                     src={profile.logoImage}
                   />
                 ) : (
-                  <span className="font-['Space_Grotesk'] text-2xl font-bold text-[#0B412F]">
+                  <span className="font-['Space_Grotesk'] text-2xl font-bold text-[#141E30]">
                     {profile.name
                       .split(' ')
                       .slice(0, 2)
@@ -172,7 +172,7 @@ function ActivationScreen({ onFinish, profile, onProfileChange }) {
             </p>
           </div>
           <button
-            className="inline-flex shrink-0 items-center gap-2 rounded-[18px] bg-[#0B412F] px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#0a3828] hover:shadow-md"
+            className="inline-flex shrink-0 items-center gap-2 rounded-[18px] bg-[#141E30] px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#1A2C45] hover:shadow-md"
             onClick={onFinish}
             type="button"
           >

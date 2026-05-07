@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 
 function AuthScreen({ onContinue }) {
   const [mode, setMode] = useState('login');
@@ -38,7 +38,7 @@ function AuthScreen({ onContinue }) {
         <article className="flex rounded-[28px] border border-[var(--stroke)] bg-white p-6 shadow-sm sm:p-8">
           <div className="my-auto w-full">
             <div className="mb-6 flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0B412F] text-lg font-bold text-white">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#141E30] text-lg font-bold text-white">
                 DP
               </div>
               <div>

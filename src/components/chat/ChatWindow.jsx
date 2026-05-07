@@ -1,4 +1,4 @@
-import { Calendar, Send, Share2, TrendingUp, X } from 'lucide-react';
+﻿import { Calendar, Send, Share2, TrendingUp, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import MessageBubble from './MessageBubble';
@@ -88,7 +88,7 @@ function MeetingModal({ conversation, onClose, onConfirm }) {
 
           {/* Company badge */}
           <div className="flex items-center gap-3 border-b border-slate-100 bg-slate-50 px-6 py-4">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-gradient-to-br from-[#1871D8] to-[#0B412F] font-['Space_Grotesk'] text-xs font-bold text-white shadow-sm">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-gradient-to-br from-[#141E30] to-[#35577D] font-['Space_Grotesk'] text-xs font-bold text-white shadow-sm">
               {initials}
             </div>
             <div>
@@ -149,7 +149,7 @@ function MeetingModal({ conversation, onClose, onConfirm }) {
                 Cancelar
               </button>
               <button
-                className="flex-1 rounded-[16px] bg-[#0B412F] py-3 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#0a3828] hover:shadow-md"
+                className="flex-1 rounded-[16px] bg-[#141E30] py-3 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#1A2C45] hover:shadow-md"
                 type="submit"
               >
                 Confirmar
@@ -307,7 +307,7 @@ function TaskModal({ conversation, onClose, onConfirm }) {
 
           {/* Submit */}
           <button
-            className="w-full rounded-[16px] bg-[#0B412F] py-3.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#0a3828] hover:shadow-md"
+            className="w-full rounded-[16px] bg-[#141E30] py-3.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#1A2C45] hover:shadow-md"
             type="submit"
           >
             Crear Task
@@ -514,7 +514,7 @@ function ContextPanel({ conversation, onCreateTask, onOpenAllianceRoom }) {
               type="button"
               className={`flex w-full items-center gap-2.5 rounded-[12px] border px-3 py-2.5 text-left text-[12px] font-semibold transition-all ${
                 action.highlight
-                  ? 'border-[#0B412F]/20 bg-[#0B412F]/5 text-[#0B412F] hover:bg-[#0B412F]/10'
+                  ? 'border-[#141E30]/20 bg-[#141E30]/5 text-[#141E30] hover:bg-[#141E30]/10'
                   : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:border-slate-300'
               }`}
             >
@@ -630,7 +630,7 @@ function ChatWindow({
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-center gap-3 min-w-0">
               {/* Circular avatar */}
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#1871D8] to-[#0B412F] font-['Space_Grotesk'] text-sm font-bold text-white shadow-sm">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#141E30] to-[#35577D] font-['Space_Grotesk'] text-sm font-bold text-white shadow-sm">
                 {getInitials(conversation.logo, conversation.company)}
               </div>
 
@@ -673,7 +673,7 @@ function ChatWindow({
               className={`ml-auto inline-flex items-center gap-1.5 rounded-[12px] px-3 py-1.5 text-xs font-bold shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${
                 converted
                   ? 'bg-emerald-500 text-white'
-                  : 'bg-[#0B412F] text-white hover:bg-[#0a3828]'
+                  : 'bg-[#141E30] text-white hover:bg-[#1A2C45]'
               }`}
               disabled={converted}
               onClick={handleConvert}

@@ -18,16 +18,15 @@ const navItems = [
 function BottomNav({ activeView, onNavigate }) {
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-50 bg-white/96 backdrop-blur-xl"
+      className="fixed inset-x-0 bottom-0 z-50 backdrop-blur-xl"
       style={{
-        boxShadow: '0 -1px 0 rgba(0,0,0,0.08), 0 -6px 20px rgba(0,0,0,0.04)',
-        // Extra top padding so the bubble has room to float above the nav edge
+        background: 'rgba(13, 22, 36, 0.92)',
+        borderTop: '1px solid rgba(255,255,255,0.07)',
+        boxShadow: '0 -4px 32px rgba(20,30,48,0.5), 0 -1px 0 rgba(255,255,255,0.05)',
         paddingTop: '28px',
       }}
     >
-      <div
-        className="mx-auto grid max-w-4xl grid-cols-5 px-2 pb-[max(env(safe-area-inset-bottom),10px)]"
-      >
+      <div className="mx-auto grid max-w-4xl grid-cols-5 px-2 pb-[max(env(safe-area-inset-bottom),10px)]">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = item.id === activeView;
@@ -39,44 +38,39 @@ function BottomNav({ activeView, onNavigate }) {
               onClick={() => onNavigate(item.id)}
               type="button"
             >
-              {/* ── Floating bubble ─────────────────────────────────────
-                  Center sits 28px above the nav top edge (same as paddingTop).
-                  layoutId makes Framer Motion spring-slide between tabs.
-              ─────────────────────────────────────────────────────────── */}
               {isActive && (
                 <motion.div
                   layoutId="nav-bubble"
-                  className="absolute left-1/2 -translate-x-1/2 rounded-full bg-[#0B412F]"
+                  className="absolute left-1/2 -translate-x-1/2 rounded-full"
                   style={{
                     top: '-28px',
                     width: '54px',
                     height: '54px',
+                    background: 'linear-gradient(135deg, #243B55 0%, #35577D 100%)',
                     boxShadow:
-                      '0 8px 26px rgba(11,65,47,0.45), 0 2px 8px rgba(11,65,47,0.22)',
+                      '0 8px 26px rgba(59,130,246,0.35), 0 2px 8px rgba(20,30,48,0.4), 0 0 0 1px rgba(126,184,212,0.2)',
                     zIndex: 60,
                   }}
                   transition={{ type: 'spring', stiffness: 420, damping: 30 }}
                 />
               )}
 
-              {/* ── Icon ─────────────────────────────────────────────── */}
               <span
                 className="relative flex items-center justify-center"
                 style={{ width: '54px', height: '54px', marginTop: '-28px', zIndex: 61 }}
               >
                 <Icon
                   className={`transition-colors duration-200 ${
-                    isActive ? 'text-white' : 'text-slate-400'
+                    isActive ? 'text-white' : 'text-slate-500'
                   }`}
                   size={22}
                   strokeWidth={isActive ? 2.2 : 1.6}
                 />
               </span>
 
-              {/* ── Label ────────────────────────────────────────────── */}
               <span
                 className={`relative text-[10px] font-semibold leading-tight tracking-tight transition-colors duration-200 ${
-                  isActive ? 'text-[#0B412F]' : 'text-slate-400'
+                  isActive ? 'text-[#7EB8D4]' : 'text-slate-600'
                 }`}
                 style={{ zIndex: 61 }}
               >

@@ -149,7 +149,7 @@ function CompanyDetailModal({ company, onClose, onLike }) {
           {/* CTA */}
           <div className="flex gap-2.5 border-t border-slate-100 p-4">
             <button
-              className="flex flex-1 items-center justify-center gap-2 rounded-[18px] bg-[#22c55e] py-3.5 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#16a34a] hover:shadow-md"
+              className="flex flex-1 items-center justify-center gap-2 rounded-[18px] bg-[#141E30] py-3.5 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#1A2C45] hover:shadow-md"
               onClick={() => { onLike(); onClose(); }}
               type="button"
             >

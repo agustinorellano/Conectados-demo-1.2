@@ -1,4 +1,4 @@
-import {
+﻿import {
   ArrowLeft,
   ArrowRight,
   Building2,
@@ -89,7 +89,7 @@ function SummaryChips({ items, tone = 'blue' }) {
 
   const tones = {
     blue: 'border-[#1871D8]/14 bg-[#1871D8]/8 text-[#1567C5]',
-    emerald: 'border-[#0B412F]/10 bg-emerald-50 text-[#0B412F]',
+    emerald: 'border-[#141E30]/10 bg-emerald-50 text-[#141E30]',
     amber: 'border-amber-200 bg-amber-50 text-amber-700'
   };
 
@@ -316,7 +316,7 @@ function CompanyProfile({ company, onAreaSelect, onSave }) {
 
   return (
     <div className="space-y-6 sm:space-y-7">
-      <section className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-[#1871D8] via-[#135db0] to-[#0B412F] p-5 text-white shadow-[0_28px_60px_rgba(11,65,47,0.18)] sm:p-7">
+      <section className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-[#1871D8] via-[#135db0] to-[#141E30] p-5 text-white shadow-[0_28px_60px_rgba(20,30,48,0.18)] sm:p-7">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.22),transparent_34%)]" />
         <div className="relative flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
           <div className="flex items-start gap-4">
@@ -396,7 +396,7 @@ function CompanyProfile({ company, onAreaSelect, onSave }) {
       </section>
 
       {savedMessage ? (
-        <div className="rounded-[20px] bg-[#0B412F] px-4 py-3 text-sm font-medium text-white shadow-sm">
+        <div className="rounded-[20px] bg-[#141E30] px-4 py-3 text-sm font-medium text-white shadow-sm">
           {savedMessage}
         </div>
       ) : null}
@@ -693,7 +693,7 @@ function CompanyProfile({ company, onAreaSelect, onSave }) {
       <section className="rounded-[28px] bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.05)] ring-1 ring-inset ring-slate-200">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="text-xs font-medium uppercase tracking-[0.22em] text-[#0B412F]">
+            <p className="text-xs font-medium uppercase tracking-[0.22em] text-[#141E30]">
               Areas internas
             </p>
             <h2 className="mt-2 font-['Space_Grotesk'] text-2xl font-bold tracking-tight text-[#1A1A1A]">
