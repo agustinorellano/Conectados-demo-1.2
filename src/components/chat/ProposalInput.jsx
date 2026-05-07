@@ -1,4 +1,5 @@
-import { Send, Sparkles, Zap } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowUp, Paperclip, Zap } from 'lucide-react';
 
 const quickActionMap = {
   'Propuesta comercial':
@@ -11,20 +12,48 @@ const quickActionMap = {
 
 function ProposalInput({
   onChange,
-  onProposalPreset,
   onQuickAction,
   onSend,
   quickActions,
   value
 }) {
+  const [inputValue, setInputValue] = useState(value || '');
+
+  const handleSend = () => {
+    if (!inputValue.trim()) return;
+    onSend?.();
+    setInputValue('');
+    onChange?.('');
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
+  const handleChange = (e) => {
+    setInputValue(e.target.value);
+    onChange?.(e.target.value);
+  };
+
+  const handleQuickAction = (action) => {
+    const text = quickActionMap[action] || action;
+    setInputValue(text);
+    onChange?.(text);
+    onQuickAction?.(text);
+  };
+
   return (
-    <div className="border-t border-slate-200 bg-white/92 p-4 backdrop-blur">
-      <div className="flex flex-wrap gap-2">
-        {quickActions.map((action) => (
+    <div className="border-t border-slate-200 bg-white/92 px-4 pt-3 pb-4 backdrop-blur">
+      {/* Quick chips */}
+      <div className="flex gap-2 overflow-x-auto pb-2 [scrollbar-width:none]">
+        {(quickActions || []).map((action) => (
           <button
-            className="rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-600 transition hover:border-[#1871D8]/20 hover:bg-blue-50 hover:text-[#1871D8]"
+            className="shrink-0 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-[11px] font-medium text-slate-600 transition hover:border-[#1871D8]/20 hover:bg-blue-50 hover:text-[#1871D8]"
             key={action}
-            onClick={() => onQuickAction(quickActionMap[action] || action)}
+            onClick={() => handleQuickAction(action)}
             type="button"
           >
             {action}
@@ -32,37 +61,34 @@ function ProposalInput({
         ))}
       </div>
 
-      <div className="mt-3 flex flex-col gap-3 lg:flex-row lg:items-end">
-        <div className="flex-1">
-          <textarea
-            className="min-h-[112px] w-full resize-none rounded-[20px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-6 text-[#1A1A1A] shadow-sm outline-none transition focus:border-[#1871D8]/30 focus:bg-white focus:ring-4 focus:ring-[#1871D8]/8"
-            onChange={(event) => onChange(event.target.value)}
-            placeholder="Tengo una propuesta para colaborar entre nuestras empresas que puede generar valor en conjunto..."
-            value={value}
-          />
-        </div>
+      {/* Input row */}
+      <div className="flex items-center gap-2">
+        <button
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-slate-400 transition hover:text-slate-600"
+          type="button"
+        >
+          <Paperclip className="h-4 w-4" />
+        </button>
 
-        <div className="flex gap-3">
-          <button
-            className="inline-flex items-center justify-center gap-2 rounded-[18px] border border-[#1871D8]/14 bg-blue-50 px-4 py-3 text-sm font-semibold text-[#1871D8] shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-            onClick={onProposalPreset}
-            type="button"
-          >
-            <Sparkles className="h-4 w-4" />
-            Enviar propuesta
-          </button>
-          <button
-            className="inline-flex items-center justify-center gap-2 rounded-[18px] bg-[#0B412F] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-            onClick={onSend}
-            type="button"
-          >
-            <Send className="h-4 w-4" />
-            Enviar
-          </button>
-        </div>
+        <input
+          className="flex-1 rounded-full border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-[#1A1A1A] outline-none transition placeholder:text-slate-400 focus:border-[#1871D8]/30 focus:bg-white focus:ring-2 focus:ring-[#1871D8]/10"
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          placeholder="Escribe un mensaje..."
+          value={inputValue}
+        />
+
+        <button
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#0B412F] text-white shadow-sm transition hover:bg-[#0a3828] hover:-translate-y-0.5"
+          onClick={handleSend}
+          type="button"
+        >
+          <ArrowUp className="h-4 w-4" />
+        </button>
       </div>
 
-      <div className="mt-3 flex items-center gap-2 text-xs text-slate-500">
+      {/* Zap footer note */}
+      <div className="mt-2 flex items-center gap-2 text-xs text-slate-500">
         <Zap className="h-3.5 w-3.5 text-[#1871D8]" />
         El canal esta orientado a propuestas, alianzas y acuerdos concretos entre empresas.
       </div>

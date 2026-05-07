@@ -13,6 +13,7 @@ import WorkplaceView from './components/workplace/WorkplaceView';
 import AssistantView from './components/assistant/AssistantView';
 import HelpCenterView from './components/manual/HelpCenterView';
 import PricingView from './components/pricing/PricingView';
+import AllianceRoomView from './components/alliance-room/AllianceRoomView';
 import {
   actionItems,
   chatConversations,
@@ -33,6 +34,7 @@ import {
 function App() {
   const [stage, setStage] = useState('splash');
   const [activeView, setActiveView] = useState('dashboard');
+  const [showAllianceRoom, setShowAllianceRoom] = useState(false);
   const [matches, setMatches] = useState([demoInitialMatch]);
   const [userPlan, setUserPlan] = useState('starter');
   const [dailyMatchCount, setDailyMatchCount] = useState(0);
@@ -124,6 +126,7 @@ function App() {
             chatConversations={chatConversations}
             matches={matches}
             onScheduleMeeting={handleScheduleMeeting}
+            onOpenAllianceRoom={() => setShowAllianceRoom(true)}
             recommendedCompanies={personalizedCompanies}
             userPlan={userPlan}
           />
@@ -177,6 +180,7 @@ function App() {
             }}
             onNavigateToChats={() => setActiveView('chats')}
             onOpenAlliances={() => setActiveView('alliances')}
+            onOpenAllianceRoom={() => setShowAllianceRoom(true)}
             onOpenAssistant={() => setActiveView('assistant')}
             onToggleMeeting={handleToggleMeeting}
             userPlan={userPlan}
@@ -233,6 +237,9 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {showAllianceRoom && (
+        <AllianceRoomView onExit={() => setShowAllianceRoom(false)} />
+      )}
       <div className="min-h-screen pb-24">
         <AppHeader activeView={activeView} onNavigate={setActiveView} userPlan={userPlan} />
         <main className="mx-auto min-w-0 max-w-6xl px-4 py-5 sm:px-6 sm:py-7">

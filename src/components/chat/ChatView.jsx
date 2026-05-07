@@ -5,18 +5,49 @@ import ChatWindow from './ChatWindow';
 const PROPOSAL_TEMPLATE =
   'Tengo una propuesta para colaborar entre nuestras empresas que puede generar valor en conjunto. Me gustaria comentarte la idea y explorar como podemos trabajar juntos.';
 
-function ChatView({ chatConversations, matches, onScheduleMeeting, recommendedCompanies = [], userPlan = 'starter' }) {
+const CONV_DEFAULTS = {
+  'luna-beauty':        { tags: ['Cross-selling', 'Belleza'], score: 91, contact: 'Valentina Cruz', businessState: 'activo' },
+  'cafe-patio':         { tags: ['Evento', 'Tráfico local'], score: 74, contact: 'Marcos Pino', businessState: 'pendiente' },
+  'internal-marketing': { tags: ['Coordinación'], score: null, contact: 'Equipo Mkt', businessState: 'activo' },
+  'bloom-floreria':     { tags: ['Bundle', 'Primavera'], score: 88, contact: 'Florencia Del Valle', businessState: 'activo' },
+  'sushi-nakama':       { tags: ['Distribución', 'Gastronomía'], score: 67, contact: 'Naomi Tanaka', businessState: 'pendiente' },
+};
+
+function ChatView({
+  chatConversations,
+  matches,
+  onScheduleMeeting,
+  recommendedCompanies = [],
+  userPlan = 'starter',
+  onOpenAllianceRoom,
+}) {
   const [activeConversationId, setActiveConversationId] = useState(
     chatConversations[0]?.id || null
   );
   const [threads, setThreads] = useState(chatConversations);
   const [proposalDraft, setProposalDraft] = useState('');
+  const [workplaceTasks, setWorkplaceTasks] = useState([]);
   const lastConversationRef = useRef(activeConversationId);
 
-  const activeConversation = useMemo(
-    () => threads.find((conversation) => conversation.id === activeConversationId) || threads[0],
-    [activeConversationId, threads]
+  // Enrich conversations with new fields for the redesigned UI
+  const enrichedThreads = useMemo(
+    () =>
+      threads.map((conv) => ({
+        ...conv,
+        tags: conv.tags || CONV_DEFAULTS[conv.id]?.tags || ['Alianza estratégica'],
+        score: conv.score ?? (CONV_DEFAULTS[conv.id]?.score !== undefined ? CONV_DEFAULTS[conv.id].score : 78),
+        contact: conv.contact || CONV_DEFAULTS[conv.id]?.contact || conv.sector,
+        businessState: conv.businessState || CONV_DEFAULTS[conv.id]?.businessState || 'pendiente',
+      })),
+    [threads]
   );
+
+  const activeConversation = useMemo(
+    () =>
+      enrichedThreads.find((c) => c.id === activeConversationId) || enrichedThreads[0],
+    [activeConversationId, enrichedThreads]
+  );
+
   const recentMatches = matches.slice(0, 2);
 
   useEffect(() => {
@@ -36,10 +67,7 @@ function ChatView({ chatConversations, matches, onScheduleMeeting, recommendedCo
 
   const handleSend = () => {
     const trimmedMessage = proposalDraft.trim();
-
-    if (!trimmedMessage || !activeConversation) {
-      return;
-    }
+    if (!trimmedMessage || !activeConversation) return;
 
     updateActiveConversation((conversation) => ({
       ...conversation,
@@ -51,9 +79,9 @@ function ChatView({ chatConversations, matches, onScheduleMeeting, recommendedCo
           id: `${conversation.id}-${conversation.messages.length + 1}`,
           sender: 'me',
           text: trimmedMessage,
-          time: 'Ahora'
-        }
-      ]
+          time: 'Ahora',
+        },
+      ],
     }));
     setProposalDraft('');
   };
@@ -63,17 +91,12 @@ function ChatView({ chatConversations, matches, onScheduleMeeting, recommendedCo
   };
 
   const handleCreateOutbound = () => {
-    if (userPlan !== 'scale') {
-      return;
-    }
+    if (userPlan !== 'scale') return;
 
     const candidate = recommendedCompanies.find(
-      (company) => !threads.some((conversation) => conversation.company === company.name)
+      (company) => !threads.some((c) => c.company === company.name)
     );
-
-    if (!candidate) {
-      return;
-    }
+    if (!candidate) return;
 
     const outboundConversation = {
       id: `outbound-${candidate.id}`,
@@ -91,62 +114,52 @@ function ChatView({ chatConversations, matches, onScheduleMeeting, recommendedCo
           id: `${candidate.id}-outbound-1`,
           sender: 'me',
           text: PROPOSAL_TEMPLATE,
-          time: 'Ahora'
-        }
-      ]
+          time: 'Ahora',
+        },
+      ],
     };
 
     setThreads((current) => [outboundConversation, ...current]);
     setActiveConversationId(outboundConversation.id);
   };
 
+  const handleCreateTask = (task) => {
+    setWorkplaceTasks((prev) => [
+      ...prev,
+      { ...task, id: Date.now(), conversationId: activeConversationId },
+    ]);
+  };
+
   return (
-    <div className="space-y-6 sm:space-y-7">
-      <section className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-[#1871D8] via-[#145db1] to-[#0B412F] p-5 text-white shadow-[0_28px_60px_rgba(11,65,47,0.18)] sm:p-7">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.22),transparent_34%)]" />
-        <div className="absolute -right-10 top-8 h-44 w-44 rounded-full bg-white/10 blur-3xl" />
-        <div className="absolute bottom-0 left-0 h-28 w-28 rounded-full bg-emerald-300/20 blur-3xl" />
+    <div
+      className="flex overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm"
+      style={{ height: 'calc(100vh - 168px)', minHeight: '560px' }}
+    >
+      <ChatList
+        allowDirectMessage={userPlan === 'scale'}
+        activeId={activeConversation?.id}
+        conversations={enrichedThreads}
+        onCreateOutbound={handleCreateOutbound}
+        onSelect={setActiveConversationId}
+        recentMatches={recentMatches}
+      />
 
-        <div className="relative max-w-3xl">
-          <p className="text-xs font-medium uppercase tracking-[0.24em] text-white/75">
-            Comunicacion comercial
-          </p>
-          <h1 className="mt-3 font-['Space_Grotesk'] text-3xl font-bold tracking-tight sm:text-[2.1rem]">
-            Chats orientados a propuestas y alianzas
-          </h1>
-          <p className="mt-4 max-w-2xl text-sm leading-6 text-white/82 sm:text-base">
-            Cada conversacion esta pensada para abrir oportunidades reales entre
-            empresas, centralizar el seguimiento y mantener el negocio dentro de Data
-            Plus.
-          </p>
-        </div>
-      </section>
-
-      <section className="grid gap-4 xl:grid-cols-[0.92fr_1.48fr]">
-        <ChatList
-          allowDirectMessage={userPlan === 'scale'}
-          activeId={activeConversation?.id}
-          conversations={threads}
-          onCreateOutbound={handleCreateOutbound}
-          onSelect={setActiveConversationId}
-          recentMatches={recentMatches}
+      {activeConversation ? (
+        <ChatWindow
+          conversation={activeConversation}
+          onChangeDraft={setProposalDraft}
+          onConvertToOpportunity={() => {
+            updateActiveConversation((conv) => ({ ...conv, status: 'Alianza activa' }));
+          }}
+          onProposalPreset={handleProposalPreset}
+          onQuickAction={setProposalDraft}
+          onScheduleMeeting={onScheduleMeeting}
+          onSend={handleSend}
+          proposalDraft={proposalDraft}
+          onCreateTask={handleCreateTask}
+          onOpenAllianceRoom={onOpenAllianceRoom}
         />
-
-        {activeConversation ? (
-          <ChatWindow
-            conversation={activeConversation}
-            onChangeDraft={setProposalDraft}
-            onConvertToOpportunity={() => {
-              updateActiveConversation((conv) => ({ ...conv, status: 'Alianza activa' }));
-            }}
-            onProposalPreset={handleProposalPreset}
-            onQuickAction={setProposalDraft}
-            onScheduleMeeting={onScheduleMeeting}
-            onSend={handleSend}
-            proposalDraft={proposalDraft}
-          />
-        ) : null}
-      </section>
+      ) : null}
     </div>
   );
 }
