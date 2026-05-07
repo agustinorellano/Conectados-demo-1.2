@@ -23,10 +23,12 @@ function BottomNav({ activeView, onNavigate }) {
         background: 'rgba(13, 22, 36, 0.92)',
         borderTop: '1px solid rgba(255,255,255,0.07)',
         boxShadow: '0 -4px 32px rgba(20,30,48,0.5), 0 -1px 0 rgba(255,255,255,0.05)',
-        paddingTop: '28px',
+        paddingTop: '12px',
+        borderTopLeftRadius: '20px',
+        borderTopRightRadius: '20px',
       }}
     >
-      <div className="mx-auto grid max-w-4xl grid-cols-5 px-2 pb-[max(env(safe-area-inset-bottom),10px)]">
+      <div className="mx-auto grid max-w-4xl grid-cols-5 px-2 pb-[max(env(safe-area-inset-bottom),14px)]">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = item.id === activeView;
@@ -43,7 +45,7 @@ function BottomNav({ activeView, onNavigate }) {
                   layoutId="nav-bubble"
                   className="absolute left-1/2 -translate-x-1/2 rounded-full"
                   style={{
-                    top: '-28px',
+                    top: '-12px',
                     width: '54px',
                     height: '54px',
                     background: 'linear-gradient(135deg, #243B55 0%, #35577D 100%)',
@@ -57,7 +59,7 @@ function BottomNav({ activeView, onNavigate }) {
 
               <span
                 className="relative flex items-center justify-center"
-                style={{ width: '54px', height: '54px', marginTop: '-28px', zIndex: 61 }}
+                style={{ width: '54px', height: '54px', marginTop: '-12px', zIndex: 61 }}
               >
                 <Icon
                   className={`transition-colors duration-200 ${

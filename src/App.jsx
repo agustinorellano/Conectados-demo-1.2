@@ -236,13 +236,13 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen overflow-x-hidden">
       {showAllianceRoom && (
         <AllianceRoomView onExit={() => setShowAllianceRoom(false)} />
       )}
-      <div className="min-h-screen pb-24">
+      <div className="min-h-screen pb-[78px]">
         <AppHeader activeView={activeView} onNavigate={setActiveView} userPlan={userPlan} />
-        <main className="mx-auto min-w-0 max-w-6xl px-4 py-5 sm:px-6 sm:py-7">
+        <main className="mx-auto min-w-0 max-w-6xl px-5 py-6 sm:px-6 sm:py-8">
           {view}
         </main>
         <BottomNav activeView={activeView} onNavigate={setActiveView} />

@@ -1210,7 +1210,7 @@ const PARTNER_INITIALS_MAP = { 'Bloom Florería': 'BF', 'Sushi Nakama': 'SN', 'L
 
 function WorkplaceSidebar({ sidebarView, setSidebarView, quickFilter, setQuickFilter, partnerFilter, setPartnerFilter }) {
   return (
-    <aside className="w-[220px] shrink-0 rounded-[28px] bg-white ring-1 ring-slate-100 shadow-sm p-4 space-y-5 overflow-y-auto">
+    <aside className="w-[220px] shrink-0 rounded-[20px] bg-white ring-1 ring-slate-100 shadow-sm p-5 space-y-6 overflow-y-auto">
       {/* Vistas */}
       <div>
         <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 mb-2 px-1">Vistas</p>
@@ -1296,7 +1296,7 @@ function FilterBar({ search, setSearch, typeFilter, setTypeFilter, priorityFilte
   const prios = ['all', 'urgente', 'alta', 'media', 'baja'];
 
   return (
-    <div className="flex items-center gap-3 flex-wrap bg-white rounded-[20px] ring-1 ring-slate-100 shadow-sm px-4 py-3">
+    <div className="flex items-center gap-3 flex-wrap bg-white rounded-[20px] ring-1 ring-slate-100 shadow-sm px-5 py-3.5">
       {/* Search */}
       <div className="relative flex-1 min-w-[160px]">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
@@ -1384,7 +1384,7 @@ function KanbanBoard({ filtered, onDrop, onOpen, onOpenResultsTab, onPriorityCha
   };
 
   return (
-    <div className="flex gap-4 flex-1 overflow-x-auto overflow-y-hidden">
+    <div className="flex gap-4 flex-1 overflow-x-auto overflow-y-hidden pb-1">
       {COLUMNS.map(({ key, label, headerCls }) => {
         const cards = filtered.filter((o) => o.status === key);
         const isOver = dragOver === key;
@@ -1394,10 +1394,10 @@ function KanbanBoard({ filtered, onDrop, onOpen, onOpenResultsTab, onPriorityCha
             onDragOver={(e) => { e.preventDefault(); setDragOver(key); }}
             onDragLeave={() => setDragOver(null)}
             onDrop={(e) => handleDrop(e, key)}
-            className={`flex flex-col rounded-[24px] border ${headerCls} min-w-[260px] w-[260px] shrink-0 transition-all ${isOver ? 'ring-2 ring-blue-400 ring-offset-1' : ''}`}
+            className={`flex flex-col rounded-[20px] border ${headerCls} min-w-[268px] w-[268px] shrink-0 transition-all ${isOver ? 'ring-2 ring-blue-400 ring-offset-1' : ''}`}
           >
             {/* Column Header */}
-            <div className={`flex items-center justify-between px-4 py-3 border-b ${headerCls} rounded-t-[24px]`}>
+            <div className={`flex items-center justify-between px-4 py-3.5 border-b ${headerCls} rounded-t-[20px]`}>
               <div className="flex items-center gap-2">
                 <span className="text-sm font-semibold text-slate-700">{label}</span>
                 <span className="rounded-full bg-white/80 px-2 py-0.5 text-[11px] font-bold text-slate-500">
@@ -1414,7 +1414,7 @@ function KanbanBoard({ filtered, onDrop, onOpen, onOpenResultsTab, onPriorityCha
             </div>
 
             {/* Cards */}
-            <div className="flex-1 overflow-y-auto p-3 space-y-3">
+            <div className="flex-1 overflow-y-auto p-4 space-y-3">
               <AnimatePresence>
                 {addingTo === key && (
                   <NewCardForm
@@ -1555,7 +1555,7 @@ function RightPanel({ onFilterMetric, onOpenAlert, opportunities }) {
 
   return (
     <aside className="w-[272px] shrink-0 space-y-4 overflow-y-auto">
-      <div className="rounded-[24px] bg-white ring-1 ring-slate-100 shadow-sm p-4">
+      <div className="rounded-[20px] bg-white ring-1 ring-slate-100 shadow-sm p-5">
         <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-3">Revenue & Alertas</p>
 
         {/* Metrics */}
@@ -1582,7 +1582,7 @@ function RightPanel({ onFilterMetric, onOpenAlert, opportunities }) {
       </div>
 
       {/* Alertas */}
-      <div className="rounded-[24px] bg-white ring-1 ring-slate-100 shadow-sm p-4">
+      <div className="rounded-[20px] bg-white ring-1 ring-slate-100 shadow-sm p-5">
         <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-3">Alertas inteligentes</p>
         <ul className="space-y-2">
           {ALERTS.map((alert) => (
@@ -1610,7 +1610,7 @@ function RightPanel({ onFilterMetric, onOpenAlert, opportunities }) {
       </div>
 
       {/* Partners activos */}
-      <div className="rounded-[24px] bg-white ring-1 ring-slate-100 shadow-sm p-4">
+      <div className="rounded-[20px] bg-white ring-1 ring-slate-100 shadow-sm p-5">
         <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-3">Partners activos</p>
         <ul className="space-y-2">
           {PARTNER_METRICS.map(({ name, initials, colorKey, opps, revenue }) => (
@@ -1718,7 +1718,7 @@ function WorkplaceView({ currentArea = 'general', onTaskMove, tasks = [] }) {
   }, [opportunities]);
 
   return (
-    <div className="flex gap-4 h-[calc(100vh-180px)] overflow-hidden">
+    <div className="flex gap-5 h-[calc(100vh-160px)] overflow-hidden">
       {/* Sidebar */}
       <WorkplaceSidebar
         sidebarView={sidebarView}
@@ -1730,7 +1730,7 @@ function WorkplaceView({ currentArea = 'general', onTaskMove, tasks = [] }) {
       />
 
       {/* Main */}
-      <div className="flex-1 flex flex-col gap-3 min-w-0 overflow-hidden">
+      <div className="flex-1 flex flex-col gap-4 min-w-0 overflow-hidden">
         <FilterBar
           search={searchQuery}
           setSearch={setSearchQuery}

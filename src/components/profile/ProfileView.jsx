@@ -315,8 +315,8 @@ function CompanyProfile({ company, onAreaSelect, onSave }) {
   const gallery = draft.gallery || [];
 
   return (
-    <div className="space-y-6 sm:space-y-7">
-      <section className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-[#1871D8] via-[#135db0] to-[#141E30] p-5 text-white shadow-[0_28px_60px_rgba(20,30,48,0.18)] sm:p-7">
+    <div className="space-y-6 sm:space-y-8">
+      <section className="relative overflow-hidden rounded-[20px] bg-gradient-to-br from-[#1871D8] via-[#135db0] to-[#141E30] p-6 text-white shadow-[0_28px_60px_rgba(20,30,48,0.18)] sm:p-8">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.22),transparent_34%)]" />
         <div className="relative flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
           <div className="flex items-start gap-4">
@@ -396,13 +396,13 @@ function CompanyProfile({ company, onAreaSelect, onSave }) {
       </section>
 
       {savedMessage ? (
-        <div className="rounded-[20px] bg-[#141E30] px-4 py-3 text-sm font-medium text-white shadow-sm">
+        <div className="rounded-[20px] bg-[#141E30] px-5 py-3.5 text-sm font-medium text-white shadow-sm">
           {savedMessage}
         </div>
       ) : null}
 
-      <section className="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
-        <article className="overflow-hidden rounded-[28px] bg-white p-5 shadow-[0_4px_20px_rgba(0,0,0,0.05)] ring-1 ring-inset ring-slate-200 sm:p-6">
+      <section className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
+        <article className="overflow-hidden rounded-[20px] bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.05)] ring-1 ring-inset ring-slate-200">
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-xs font-medium uppercase tracking-[0.22em] text-[#1871D8]">
@@ -493,7 +493,7 @@ function CompanyProfile({ company, onAreaSelect, onSave }) {
           </div>
         </article>
 
-        <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+        <section className="grid gap-5 sm:grid-cols-2 lg:grid-cols-1">
           {metricCards.map((metric) => (
             <MetricCard
               icon={metric.icon}
@@ -507,7 +507,7 @@ function CompanyProfile({ company, onAreaSelect, onSave }) {
         </section>
       </section>
 
-      <section className="grid gap-4 xl:grid-cols-2">
+      <section className="grid gap-5 xl:grid-cols-2">
         <EditableProfileSection
           icon={<Building2 className="h-4 w-4" />}
           isEditing={Boolean(editingSections.general)}
@@ -630,7 +630,7 @@ function CompanyProfile({ company, onAreaSelect, onSave }) {
           />
         </EditableProfileSection>
 
-        <div className="grid gap-4">
+        <div className="grid gap-5">
           <EditableProfileSection
             icon={<Sparkles className="h-4 w-4" />}
             isEditing={Boolean(editingSections.offers)}
@@ -690,7 +690,7 @@ function CompanyProfile({ company, onAreaSelect, onSave }) {
         </div>
       </section>
 
-      <section className="rounded-[28px] bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.05)] ring-1 ring-inset ring-slate-200">
+      <section className="rounded-[20px] bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.05)] ring-1 ring-inset ring-slate-200">
         <div className="flex items-center justify-between gap-3">
           <div>
             <p className="text-xs font-medium uppercase tracking-[0.22em] text-[#141E30]">
@@ -705,7 +705,7 @@ function CompanyProfile({ company, onAreaSelect, onSave }) {
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           {company.internalAreas.map((area) => (
             <button
-              className="group rounded-[22px] bg-slate-50 p-4 text-left ring-1 ring-inset ring-slate-200 transition hover:bg-white hover:shadow-sm"
+              className="group rounded-[20px] bg-slate-50 p-5 text-left ring-1 ring-inset ring-slate-200 transition hover:bg-white hover:shadow-sm"
               key={area.name}
               onClick={() =>
                 onAreaSelect(

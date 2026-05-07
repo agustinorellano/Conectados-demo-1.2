@@ -158,12 +158,12 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
   const resolveAll = () => setReminders((prev) => prev.map((r) => ({ ...r, done: true })));
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {/* 4 METRIC CARDS */}
       <section className="grid grid-cols-2 gap-4 xl:grid-cols-4">
         {metricCards.map((card, index) => (
           <motion.div
-            className={`rounded-[24px] p-5 shadow-sm ${
+            className={`rounded-[20px] p-6 shadow-sm ${
               card.featured
                 ? 'bg-[#141E30] text-white'
                 : 'bg-white ring-1 ring-inset ring-slate-200'
@@ -214,7 +214,7 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
       {/* MIDDLE ROW: Bar chart + Recordatorio */}
       <div className="grid gap-5 xl:grid-cols-[1.5fr_1fr]">
         {/* Actividad Semanal — bar chart */}
-        <section className="rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-inset ring-slate-200">
+        <section className="rounded-[20px] bg-white p-6 shadow-sm ring-1 ring-inset ring-slate-200">
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#1871D8]">
             Analítica
           </p>
@@ -266,7 +266,7 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
         </section>
 
         {/* Recordatorio destacado + lista */}
-        <section className="flex flex-col rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-inset ring-slate-200">
+        <section className="flex flex-col rounded-[20px] bg-white p-6 shadow-sm ring-1 ring-inset ring-slate-200">
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-amber-500">
             Prioridad
           </p>
@@ -351,7 +351,7 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
       <CalendarWidget meetings={meetings} onToggleMeeting={onToggleMeeting} />
 
       {/* NOTES ALIANZAS WIDGET */}
-      <section className="rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-inset ring-slate-200">
+      <section className="rounded-[20px] bg-white p-6 shadow-sm ring-1 ring-inset ring-slate-200">
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#1871D8]">
@@ -475,7 +475,7 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
       {/* BOTTOM ROW: Mis Alianzas + Equipos Conectados */}
       <div className="grid gap-5 xl:grid-cols-[1fr_1.5fr]">
         {/* Mis Alianzas */}
-        <section className="rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-inset ring-slate-200">
+        <section className="rounded-[20px] bg-white p-6 shadow-sm ring-1 ring-inset ring-slate-200">
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#1871D8]">
@@ -521,7 +521,7 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
         </section>
 
         {/* Equipos Conectados — Team Collaboration */}
-        <section className="rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-inset ring-slate-200">
+        <section className="rounded-[20px] bg-white p-6 shadow-sm ring-1 ring-inset ring-slate-200">
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#141E30]">

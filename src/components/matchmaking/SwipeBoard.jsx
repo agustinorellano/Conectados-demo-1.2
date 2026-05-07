@@ -117,8 +117,8 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
 
   return (
     <>
-      <div className="space-y-5">
-        <section className="rounded-[32px] bg-gradient-to-b from-slate-50 to-white p-5 shadow-sm ring-1 ring-inset ring-slate-200">
+      <div className="space-y-6">
+        <section className="rounded-[20px] bg-gradient-to-b from-slate-50 to-white p-6 shadow-sm ring-1 ring-inset ring-slate-200">
           <div className="relative mx-auto min-h-[600px] max-w-md">
             {nextCompany ? (
               <motion.div
@@ -173,7 +173,7 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
               ) : (
                 <motion.div
                   animate={{ opacity: 1 }}
-                  className="absolute inset-0 flex items-center justify-center rounded-[28px] bg-white p-10 text-center shadow-sm ring-1 ring-inset ring-slate-200"
+                  className="absolute inset-0 flex items-center justify-center rounded-[20px] bg-white p-10 text-center shadow-sm ring-1 ring-inset ring-slate-200"
                   initial={{ opacity: 0 }}
                   key="empty"
                 >
@@ -192,7 +192,7 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
         </section>
 
         {/* Action buttons */}
-        <div className="flex items-center justify-center gap-4">
+        <div className="flex items-center justify-center gap-5">
           {actionButtons.map((button) => {
             const Icon = button.icon;
             return (
@@ -222,7 +222,7 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
         ) : null}
 
         {matchLimitReached ? (
-          <div className="mx-auto max-w-md rounded-[22px] border border-amber-200 bg-amber-50 p-4 text-center text-sm leading-6 text-amber-900">
+          <div className="mx-auto max-w-md rounded-[20px] border border-amber-200 bg-amber-50 p-5 text-center text-sm leading-6 text-amber-900">
             Llegaste al limite diario del plan Starter.
             <button
               className="mt-3 inline-flex rounded-full bg-amber-500 px-3 py-2 text-xs font-semibold text-white"
