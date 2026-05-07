@@ -1,35 +1,31 @@
-﻿import { Calendar, Send, Share2, TrendingUp, X } from 'lucide-react';
+import {
+  Calendar, ChevronLeft, Info, MoreHorizontal, Send,
+  Share2, TrendingUp, X
+} from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import MessageBubble from './MessageBubble';
 import ProposalInput from './ProposalInput';
 
-/* ── Derive initials from logo/company ──────────────────────────── */
+/* ── Derive initials ─────────────────────────────────────────────── */
 function getInitials(logo, company) {
   if (logo && /^[A-Z]{1,3}$/.test(logo)) return logo;
   if (!company) return 'XX';
-  return company
-    .split(' ')
-    .slice(0, 2)
-    .map((w) => w[0])
-    .join('')
-    .toUpperCase();
+  return company.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
 }
 
-/* ── 2 weeks from today in YYYY-MM-DD ──────────────────────────── */
+/* ── Date helpers ────────────────────────────────────────────────── */
 function twoWeeksFromNow() {
   const d = new Date();
   d.setDate(d.getDate() + 14);
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
-
-/* ── Today in YYYY-MM-DD ─────────────────────────────────────────── */
 function todayIso() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-/* ── Schedule Meeting Modal ──────────────────────────────────────── */
+/* ── Meeting Modal ───────────────────────────────────────────────── */
 function MeetingModal({ conversation, onClose, onConfirm }) {
   const initials = getInitials(conversation.logo, conversation.company);
   const [date, setDate] = useState(todayIso());
@@ -64,15 +60,12 @@ function MeetingModal({ conversation, onClose, onConfirm }) {
           className="relative mx-4 w-full max-w-sm overflow-hidden rounded-[28px] bg-white shadow-2xl"
           exit={{ opacity: 0, scale: 0.95, y: 8 }}
           initial={{ opacity: 0, scale: 0.95, y: 8 }}
-          onClick={(e) => e.stopPropagation()}
+          onClick={e => e.stopPropagation()}
           transition={{ duration: 0.22, ease: [0.34, 1.1, 0.64, 1] }}
         >
-          {/* Header */}
           <div className="flex items-center justify-between border-b border-slate-100 px-6 py-5">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#1871D8]">
-                Agenda
-              </p>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#1871D8]">Agenda</p>
               <h3 className="mt-1 font-['Space_Grotesk'] text-lg font-bold tracking-tight text-[#1A1A1A]">
                 Agendar Reunión
               </h3>
@@ -86,7 +79,6 @@ function MeetingModal({ conversation, onClose, onConfirm }) {
             </button>
           </div>
 
-          {/* Company badge */}
           <div className="flex items-center gap-3 border-b border-slate-100 bg-slate-50 px-6 py-4">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-gradient-to-br from-[#141E30] to-[#35577D] font-['Space_Grotesk'] text-xs font-bold text-white shadow-sm">
               {initials}
@@ -97,49 +89,46 @@ function MeetingModal({ conversation, onClose, onConfirm }) {
             </div>
           </div>
 
-          {/* Form */}
           <form className="space-y-4 px-6 py-5" onSubmit={handleSubmit}>
             <div>
-              <label className="mb-1.5 block text-xs font-semibold text-slate-500 uppercase tracking-[0.18em]">
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                 Fecha
               </label>
               <input
                 className="w-full rounded-[14px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-[#1A1A1A] outline-none transition focus:border-[#1871D8] focus:ring-2 focus:ring-[#1871D8]/15"
                 min={todayIso()}
-                onChange={(e) => setDate(e.target.value)}
+                onChange={e => setDate(e.target.value)}
                 required
                 type="date"
                 value={date}
               />
             </div>
-
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1.5 block text-xs font-semibold text-slate-500 uppercase tracking-[0.18em]">
+                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                   Inicio
                 </label>
                 <input
                   className="w-full rounded-[14px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-[#1A1A1A] outline-none transition focus:border-[#1871D8] focus:ring-2 focus:ring-[#1871D8]/15"
-                  onChange={(e) => setTime(e.target.value)}
+                  onChange={e => setTime(e.target.value)}
                   required
                   type="time"
                   value={time}
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-xs font-semibold text-slate-500 uppercase tracking-[0.18em]">
+                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                   Fin
                 </label>
                 <input
                   className="w-full rounded-[14px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-[#1A1A1A] outline-none transition focus:border-[#1871D8] focus:ring-2 focus:ring-[#1871D8]/15"
-                  onChange={(e) => setEndTime(e.target.value)}
+                  onChange={e => setEndTime(e.target.value)}
                   required
                   type="time"
                   value={endTime}
                 />
               </div>
             </div>
-
             <div className="flex gap-3 pt-1">
               <button
                 className="flex-1 rounded-[16px] border border-slate-200 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
@@ -175,22 +164,13 @@ function TaskModal({ conversation, onClose, onConfirm }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!title.trim()) return;
-    onConfirm({
-      title: title.trim(),
-      description,
-      priority,
-      dueDate,
-      assignee,
-      alianza,
-      partner: company,
-      source: 'chat',
-    });
+    onConfirm({ title: title.trim(), description, priority, dueDate, assignee, alianza, partner: company, source: 'chat' });
   };
 
   const priorityOptions = [
-    { value: 'alta', label: 'Alta', active: 'bg-red-100 text-red-700 border-red-200', inactive: 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50' },
+    { value: 'alta',  label: 'Alta',  active: 'bg-red-100 text-red-700 border-red-200',    inactive: 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50' },
     { value: 'media', label: 'Media', active: 'bg-amber-100 text-amber-700 border-amber-200', inactive: 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50' },
-    { value: 'baja', label: 'Baja', active: 'bg-slate-100 text-slate-600 border-slate-200', inactive: 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50' },
+    { value: 'baja',  label: 'Baja',  active: 'bg-slate-100 text-slate-600 border-slate-200', inactive: 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50' },
   ];
 
   return (
@@ -206,7 +186,7 @@ function TaskModal({ conversation, onClose, onConfirm }) {
         className="relative mx-4 w-full max-w-sm overflow-hidden rounded-[28px] bg-white shadow-2xl"
         exit={{ opacity: 0, scale: 0.95, y: 8 }}
         initial={{ opacity: 0, scale: 0.95, y: 8 }}
-        onClick={(e) => e.stopPropagation()}
+        onClick={e => e.stopPropagation()}
         transition={{ duration: 0.22, ease: [0.34, 1.1, 0.64, 1] }}
       >
         <div className="flex items-center justify-between border-b border-slate-100 px-6 py-5">
@@ -215,7 +195,7 @@ function TaskModal({ conversation, onClose, onConfirm }) {
             <h3 className="mt-1 font-['Space_Grotesk'] text-lg font-bold tracking-tight text-[#1A1A1A]">Crear Task</h3>
           </div>
           <button
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-slate-200"
             onClick={onClose}
             type="button"
           >
@@ -223,8 +203,7 @@ function TaskModal({ conversation, onClose, onConfirm }) {
           </button>
         </div>
 
-        <form className="space-y-4 overflow-y-auto px-6 py-5 max-h-[70vh]" onSubmit={handleSubmit}>
-          {/* Título */}
+        <form className="max-h-[70vh] space-y-4 overflow-y-auto px-6 py-5" onSubmit={handleSubmit}>
           <div>
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Título</label>
             <input
@@ -234,8 +213,6 @@ function TaskModal({ conversation, onClose, onConfirm }) {
               value={title}
             />
           </div>
-
-          {/* Descripción */}
           <div>
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Descripción</label>
             <textarea
@@ -246,8 +223,6 @@ function TaskModal({ conversation, onClose, onConfirm }) {
               value={description}
             />
           </div>
-
-          {/* Asignar a */}
           <div>
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Asignar a</label>
             <select
@@ -261,8 +236,6 @@ function TaskModal({ conversation, onClose, onConfirm }) {
               {company && <option value={company}>{company}</option>}
             </select>
           </div>
-
-          {/* Prioridad */}
           <div>
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Prioridad</label>
             <div className="flex gap-2">
@@ -280,8 +253,6 @@ function TaskModal({ conversation, onClose, onConfirm }) {
               ))}
             </div>
           </div>
-
-          {/* Fecha límite */}
           <div>
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Fecha límite</label>
             <input
@@ -291,8 +262,6 @@ function TaskModal({ conversation, onClose, onConfirm }) {
               value={dueDate}
             />
           </div>
-
-          {/* Alianza relacionada */}
           <div>
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Alianza relacionada</label>
             <select
@@ -304,8 +273,6 @@ function TaskModal({ conversation, onClose, onConfirm }) {
               <option value="Sin alianza específica">Sin alianza específica</option>
             </select>
           </div>
-
-          {/* Submit */}
           <button
             className="w-full rounded-[16px] bg-[#141E30] py-3.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#1A2C45] hover:shadow-md"
             type="submit"
@@ -318,30 +285,32 @@ function TaskModal({ conversation, onClose, onConfirm }) {
   );
 }
 
-/* ── Score label helper ──────────────────────────────────────────── */
+/* ── Score label ─────────────────────────────────────────────────── */
 function scoreLabel(score) {
   if (score >= 85) return { text: 'Alto potencial', cls: 'text-emerald-600' };
   if (score >= 70) return { text: 'Buen potencial', cls: 'text-emerald-500' };
   return { text: 'Potencial medio', cls: 'text-slate-500' };
 }
 
-/* ── Context Panel ───────────────────────────────────────────────── */
+/* ── Context Panel content ───────────────────────────────────────── */
 const BUSINESS_STATES = ['activo', 'pendiente', 'cerrado'];
 
-function ContextPanel({ conversation, onCreateTask, onOpenAllianceRoom }) {
+function ContextPanelContent({ conversation, onCreateTask, onOpenAllianceRoom, onConvertToOpportunity }) {
   const [bizState, setBizState] = useState(conversation?.businessState || 'pendiente');
   const [tags, setTags] = useState(conversation?.tags || ['Alianza estratégica']);
   const [newTag, setNewTag] = useState('');
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [taskCreated, setTaskCreated] = useState(false);
+  const [converted, setConverted] = useState(false);
 
   useEffect(() => {
     setBizState(conversation?.businessState || 'pendiente');
     setTags(conversation?.tags || ['Alianza estratégica']);
     setTaskCreated(false);
+    setConverted(false);
   }, [conversation?.id]);
 
-  const score = conversation?.score || 78;
+  const score = conversation?.score ?? 78;
   const contact = conversation?.contact || conversation?.sector || '';
   const sl = scoreLabel(score);
 
@@ -351,13 +320,19 @@ function ContextPanel({ conversation, onCreateTask, onOpenAllianceRoom }) {
     : 'text-slate-600 bg-slate-100 border-slate-200';
 
   const bizStateStyle = {
-    'activo':    'bg-emerald-50 text-emerald-700',
-    'pendiente': 'bg-amber-50 text-amber-700',
-    'cerrado':   'bg-slate-100 text-slate-600',
+    activo:    'bg-emerald-50 text-emerald-700',
+    pendiente: 'bg-amber-50 text-amber-700',
+    cerrado:   'bg-slate-100 text-slate-600',
+  };
+
+  const handleConvert = () => {
+    setConverted(true);
+    setBizState('activo');
+    onConvertToOpportunity?.();
   };
 
   return (
-    <div className="flex w-[260px] shrink-0 flex-col border-l border-slate-100 bg-slate-50/50 overflow-y-auto">
+    <div className="flex flex-col">
       {/* Header */}
       <div className="border-b border-slate-100 px-4 py-4">
         <p className="font-['Space_Grotesk'] text-[15px] font-bold text-[#1A1A1A]">
@@ -367,14 +342,12 @@ function ContextPanel({ conversation, onCreateTask, onOpenAllianceRoom }) {
 
       {/* Match Info */}
       <div className="border-b border-slate-100 p-4 space-y-3">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-          Info del Match
-        </p>
+        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">Info del Match</p>
 
         <div className="flex items-center justify-between">
           <div className="min-w-0 flex-1">
             <p className="truncate text-xs font-semibold text-[#1A1A1A]">{conversation?.company}</p>
-            <p className="text-[11px] text-slate-400 truncate">{contact}</p>
+            <p className="truncate text-[11px] text-slate-400">{contact}</p>
           </div>
           {score != null && !conversation?.isTeam && (
             <span className={`ml-2 shrink-0 rounded-full border px-2.5 py-1 text-[11px] font-bold ${scoreColor}`}>
@@ -383,22 +356,21 @@ function ContextPanel({ conversation, onCreateTask, onOpenAllianceRoom }) {
           )}
         </div>
 
-        {/* Match description */}
         {!conversation?.isTeam && (
-          <p className="text-[11px] text-slate-500 leading-relaxed">
+          <p className="text-[11px] leading-relaxed text-slate-500">
             Coincidimos por complementariedad de servicios y audiencia.
           </p>
         )}
 
         {!conversation?.isTeam && (
-          <div className="rounded-[12px] bg-white border border-slate-100 p-3 space-y-1.5">
+          <div className="rounded-[12px] border border-slate-100 bg-white p-3 space-y-1.5">
             <div className="flex items-center justify-between text-[11px]">
               <span className="text-slate-400">Tipo</span>
               <span className="font-semibold text-[#1A1A1A]">Alianza comercial</span>
             </div>
             <div className="flex items-center justify-between text-[11px]">
               <span className="text-slate-400">Sector</span>
-              <span className="font-semibold text-[#1A1A1A] truncate ml-2 text-right">{conversation?.sector}</span>
+              <span className="ml-2 truncate text-right font-semibold text-[#1A1A1A]">{conversation?.sector}</span>
             </div>
             <div className="flex items-center justify-between text-[11px]">
               <span className="text-slate-400">Ciudad</span>
@@ -408,12 +380,29 @@ function ContextPanel({ conversation, onCreateTask, onOpenAllianceRoom }) {
         )}
       </div>
 
-      {/* Business State — 3 horizontal pills */}
+      {/* Score de Oportunidad */}
       {!conversation?.isTeam && (
         <div className="border-b border-slate-100 p-4 space-y-2">
           <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-            Estado del negocio
+            Score de Oportunidad
           </p>
+          <div className="flex items-center justify-between">
+            <span className="text-[13px] font-bold text-[#1A1A1A]">{score} / 100</span>
+            <span className={`text-[11px] font-semibold ${sl.cls}`}>{sl.text}</span>
+          </div>
+          <div className="h-1.5 w-full rounded-full bg-slate-100">
+            <div
+              className="h-1.5 rounded-full bg-emerald-400 transition-all duration-500"
+              style={{ width: `${score}%` }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Business State */}
+      {!conversation?.isTeam && (
+        <div className="border-b border-slate-100 p-4 space-y-2">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">Estado del negocio</p>
           <div className="flex gap-1.5">
             {BUSINESS_STATES.map(state => (
               <button
@@ -423,7 +412,7 @@ function ContextPanel({ conversation, onCreateTask, onOpenAllianceRoom }) {
                 className={`flex-1 rounded-[10px] px-2 py-1.5 text-[11px] font-semibold capitalize transition-all ${
                   bizState === state
                     ? (bizStateStyle[state] || 'bg-slate-100 text-slate-600') + ' shadow-sm ring-1 ring-inset ring-black/5'
-                    : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50'
+                    : 'border border-slate-200 bg-white text-slate-500 hover:bg-slate-50'
                 }`}
               >
                 {state.charAt(0).toUpperCase() + state.slice(1)}
@@ -446,7 +435,7 @@ function ContextPanel({ conversation, onCreateTask, onOpenAllianceRoom }) {
               <button
                 onClick={() => setTags(t => t.filter(x => x !== tag))}
                 type="button"
-                className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-red-500 leading-none"
+                className="leading-none text-slate-400 opacity-0 transition-opacity hover:text-red-500 group-hover:opacity-100"
               >
                 ×
               </button>
@@ -470,43 +459,39 @@ function ContextPanel({ conversation, onCreateTask, onOpenAllianceRoom }) {
           />
           <button
             type="submit"
-            className="rounded-[10px] bg-slate-100 px-3 py-1.5 text-[11px] font-semibold text-slate-600 hover:bg-slate-200 transition"
+            className="rounded-[10px] bg-slate-100 px-3 py-1.5 text-[11px] font-semibold text-slate-600 transition hover:bg-slate-200"
           >
             OK
           </button>
         </form>
       </div>
 
-      {/* Score de Oportunidad */}
-      {!conversation?.isTeam && (
-        <div className="border-b border-slate-100 p-4 space-y-2">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-            Score de Oportunidad
-          </p>
-          <div className="flex items-center justify-between">
-            <span className="text-[13px] font-bold text-[#1A1A1A]">{score} / 100</span>
-            <span className={`text-[11px] font-semibold ${sl.cls}`}>{sl.text}</span>
-          </div>
-          <div className="h-1.5 w-full rounded-full bg-slate-100">
-            <div
-              className="h-1.5 rounded-full bg-emerald-400 transition-all duration-500"
-              style={{ width: `${score}%` }}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Quick Actions */}
-      <div className="border-b border-slate-100 p-4 space-y-2">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-          Acciones rápidas
-        </p>
+      {/* Acciones rápidas */}
+      <div className="p-4 space-y-2">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">Acciones rápidas</p>
         <div className="space-y-1.5">
+          {/* Convertir en oportunidad */}
+          {!conversation?.isTeam && (
+            <button
+              onClick={handleConvert}
+              disabled={converted}
+              type="button"
+              className={`flex w-full items-center gap-2.5 rounded-[12px] border px-3 py-2.5 text-left text-[12px] font-semibold transition-all ${
+                converted
+                  ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                  : 'border-[#141E30]/20 bg-[#141E30]/5 text-[#141E30] hover:bg-[#141E30]/10'
+              }`}
+            >
+              <TrendingUp className="h-3.5 w-3.5 shrink-0" />
+              {converted ? 'Alianza activa ✓' : 'Convertir en oportunidad'}
+            </button>
+          )}
+
           {[
-            { label: 'Marcar oportunidad', onClick: () => setBizState('activo'), icon: '⚡' },
-            { label: 'Cerrar negocio', onClick: () => setBizState('cerrado'), icon: '✓' },
-            { label: 'Agendar seguimiento', onClick: () => {}, icon: '📅' },
-            { label: 'Crear Task', onClick: () => setShowTaskModal(true), icon: '＋', highlight: true },
+            { label: 'Marcar oportunidad',  onClick: () => setBizState('activo'),          icon: '⚡' },
+            { label: 'Cerrar negocio',       onClick: () => setBizState('cerrado'),         icon: '✓' },
+            { label: 'Agendar seguimiento',  onClick: () => {},                            icon: '📅' },
+            { label: 'Crear Task',           onClick: () => setShowTaskModal(true),        icon: '＋', highlight: true },
           ].map(action => (
             <button
               key={action.label}
@@ -515,13 +500,14 @@ function ContextPanel({ conversation, onCreateTask, onOpenAllianceRoom }) {
               className={`flex w-full items-center gap-2.5 rounded-[12px] border px-3 py-2.5 text-left text-[12px] font-semibold transition-all ${
                 action.highlight
                   ? 'border-[#141E30]/20 bg-[#141E30]/5 text-[#141E30] hover:bg-[#141E30]/10'
-                  : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:border-slate-300'
+                  : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50'
               }`}
             >
               <span className="text-sm">{action.icon}</span>
               {action.label}
             </button>
           ))}
+
           {onOpenAllianceRoom && !conversation?.isTeam && (
             <button
               onClick={onOpenAllianceRoom}
@@ -542,7 +528,7 @@ function ContextPanel({ conversation, onCreateTask, onOpenAllianceRoom }) {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="mx-4 mt-3 rounded-[12px] border border-emerald-200 bg-emerald-50 px-3 py-2.5"
+            className="mx-4 mb-4 rounded-[12px] border border-emerald-200 bg-emerald-50 px-3 py-2.5"
           >
             <p className="text-[11px] font-semibold text-emerald-700">
               ✓ Task creada y sincronizada con Workplace
@@ -557,7 +543,7 @@ function ContextPanel({ conversation, onCreateTask, onOpenAllianceRoom }) {
           <TaskModal
             conversation={conversation}
             onClose={() => setShowTaskModal(false)}
-            onConfirm={(task) => {
+            onConfirm={task => {
               onCreateTask?.(task);
               setShowTaskModal(false);
               setTaskCreated(true);
@@ -573,6 +559,7 @@ function ContextPanel({ conversation, onCreateTask, onOpenAllianceRoom }) {
 /* ── ChatWindow ──────────────────────────────────────────────────── */
 function ChatWindow({
   conversation,
+  onBack,
   onChangeDraft,
   onConvertToOpportunity,
   onProposalPreset,
@@ -583,125 +570,125 @@ function ChatWindow({
   onCreateTask,
   onOpenAllianceRoom,
 }) {
-  const [converted, setConverted] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
   const [showMeetingModal, setShowMeetingModal] = useState(false);
   const [meetingScheduled, setMeetingScheduled] = useState(false);
+  const [contextOpen, setContextOpen] = useState(false);
 
-  const handleConvert = () => {
-    setConverted(true);
-    setShowConfirm(true);
-    onConvertToOpportunity?.(conversation);
-    setTimeout(() => setShowConfirm(false), 3000);
-  };
-
-  const handleMeetingConfirm = (meeting) => {
+  const handleMeetingConfirm = meeting => {
     onScheduleMeeting?.(meeting);
     setMeetingScheduled(true);
     setTimeout(() => setMeetingScheduled(false), 3000);
   };
 
-  const quickHeaderActions = [
-    { key: 'meeting', icon: Calendar, label: 'Agendar reunion', onClick: () => setShowMeetingModal(true) },
-    { key: 'proposal', icon: Send, label: 'Enviar propuesta', onClick: onProposalPreset },
-    { key: 'profile', icon: Share2, label: 'Compartir perfil', onClick: null },
-  ];
+  const initials = getInitials(conversation.logo, conversation.company);
+  const contact = conversation.contact || conversation.sector || '';
 
   const statusTone =
     conversation.status === 'En negociacion' || conversation.status === 'Match activo'
-      ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+      ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
       : conversation.status === 'Esperando respuesta' || conversation.status === 'Seguimiento'
-        ? 'border-amber-200 bg-amber-50 text-amber-800'
-        : 'border-slate-200 bg-slate-50 text-slate-600';
+        ? 'bg-amber-50 text-amber-800 border-amber-200'
+        : 'bg-slate-50 text-slate-600 border-slate-200';
 
-  // Inline tags string: "Alianza comercial · {sector} · {location}"
-  const inlineTags = [
-    'Alianza comercial',
-    conversation.sector,
-    conversation.location,
-  ].filter(Boolean).join(' · ');
+  // Quick action pills — shown below header
+  const quickPills = [
+    { key: 'meeting',  icon: Calendar, label: 'Reunión',   onClick: () => setShowMeetingModal(true) },
+    { key: 'proposal', icon: Send,     label: 'Propuesta', onClick: onProposalPreset },
+    { key: 'profile',  icon: Share2,   label: 'Compartir', onClick: null },
+  ];
 
   return (
-    <div className="flex flex-1 min-w-0 overflow-hidden">
+    <div className="relative flex flex-1 min-w-0 overflow-hidden">
+
       {/* ── Main chat column ── */}
       <div className="flex flex-1 min-w-0 flex-col">
-        {/* HEADER */}
-        <header className="border-b border-slate-200 px-5 py-4 shrink-0">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex items-center gap-3 min-w-0">
-              {/* Circular avatar */}
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#141E30] to-[#35577D] font-['Space_Grotesk'] text-sm font-bold text-white shadow-sm">
-                {getInitials(conversation.logo, conversation.company)}
-              </div>
 
-              <div className="min-w-0">
-                <h2 className="font-['Space_Grotesk'] text-lg font-bold tracking-tight text-[#1A1A1A] truncate">
-                  {conversation.company}
-                </h2>
-                {/* Inline tags as text */}
-                <p className="mt-0.5 text-[12px] text-slate-400 truncate">{inlineTags}</p>
-              </div>
-            </div>
-
-            <div className={`shrink-0 rounded-[14px] border px-3 py-1.5 text-right ${statusTone}`}>
-              <p className="text-[0.6rem] font-semibold uppercase tracking-[0.2em] opacity-70">
-                Estado
-              </p>
-              <p className="mt-0.5 text-xs font-bold">{conversation.status}</p>
-            </div>
-          </div>
-
-          {/* ACCIONES RÁPIDAS */}
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            {quickHeaderActions.map((action) => {
-              const Icon = action.icon;
-              return (
-                <button
-                  className="inline-flex items-center gap-1.5 rounded-[12px] border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:border-[#1871D8]/30 hover:text-[#1871D8] hover:shadow-md"
-                  key={action.key}
-                  onClick={action.onClick || undefined}
-                  type="button"
-                >
-                  <Icon className="h-3.5 w-3.5" />
-                  {action.label}
-                </button>
-              );
-            })}
-
-            {/* CONVERTIR EN OPORTUNIDAD */}
+        {/* HEADER — 72px */}
+        <header className="flex h-[72px] shrink-0 items-center gap-3 border-b border-slate-100 px-4">
+          {/* Back button — mobile only */}
+          {onBack && (
             <button
-              className={`ml-auto inline-flex items-center gap-1.5 rounded-[12px] px-3 py-1.5 text-xs font-bold shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${
-                converted
-                  ? 'bg-emerald-500 text-white'
-                  : 'bg-[#141E30] text-white hover:bg-[#1A2C45]'
-              }`}
-              disabled={converted}
-              onClick={handleConvert}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 md:hidden"
+              onClick={onBack}
               type="button"
             >
-              <TrendingUp className="h-3.5 w-3.5" />
-              {converted ? 'Alianza activa' : 'Convertir en oportunidad'}
+              <ChevronLeft className="h-5 w-5" />
             </button>
+          )}
+
+          {/* Avatar — 44px */}
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#141E30] to-[#35577D] font-['Space_Grotesk'] text-[13px] font-bold text-white shadow-sm">
+            {initials}
           </div>
+
+          {/* Name + subtitle */}
+          <div className="min-w-0 flex-1">
+            <h2 className="truncate font-['Space_Grotesk'] text-[15px] font-bold tracking-tight text-[#1A1A1A]">
+              {conversation.company}
+            </h2>
+            <p className="truncate text-[12px] text-slate-400">
+              {[contact, conversation.location].filter(Boolean).join(' · ')}
+            </p>
+          </div>
+
+          {/* Status badge — desktop */}
+          <div className={`hidden shrink-0 rounded-[12px] border px-2.5 py-1 text-xs font-semibold md:block ${statusTone}`}>
+            {conversation.status}
+          </div>
+
+          {/* Context toggle — mobile */}
+          <button
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition hover:bg-slate-50 md:hidden"
+            onClick={() => setContextOpen(true)}
+            type="button"
+          >
+            <Info className="h-4 w-4" />
+          </button>
+
+          {/* More menu — desktop */}
+          <button
+            className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 md:flex"
+            type="button"
+          >
+            <MoreHorizontal className="h-4 w-4" />
+          </button>
         </header>
+
+        {/* QUICK ACTION PILLS — horizontal scroll strip */}
+        <div className="flex shrink-0 gap-2 overflow-x-auto border-b border-slate-100 px-4 py-2.5 [scrollbar-width:none]">
+          {quickPills.map(pill => {
+            const Icon = pill.icon;
+            return (
+              <button
+                key={pill.key}
+                onClick={pill.onClick || undefined}
+                type="button"
+                className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3.5 text-[12px] font-semibold text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:border-[#1871D8]/30 hover:text-[#1871D8] hover:shadow-md"
+              >
+                <Icon className="h-3.5 w-3.5" />
+                {pill.label}
+              </button>
+            );
+          })}
+
+          {/* Alliance Room pill */}
+          {onOpenAllianceRoom && !conversation.isTeam && (
+            <button
+              onClick={onOpenAllianceRoom}
+              type="button"
+              className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-violet-200 bg-violet-50 px-3.5 text-[12px] font-semibold text-violet-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-violet-100 hover:shadow-md"
+            >
+              🎥 Alliance Room
+            </button>
+          )}
+        </div>
 
         {/* CONFIRM FLASHES */}
         <AnimatePresence>
-          {showConfirm && (
-            <motion.div
-              animate={{ opacity: 1, y: 0 }}
-              className="border-b border-emerald-100 bg-emerald-50 px-5 py-2.5 text-sm font-semibold text-emerald-700 shrink-0"
-              exit={{ opacity: 0, y: -8 }}
-              initial={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
-            >
-              Chat convertido en alianza activa. Visible en el Dashboard.
-            </motion.div>
-          )}
           {meetingScheduled && (
             <motion.div
               animate={{ opacity: 1, y: 0 }}
-              className="border-b border-blue-100 bg-blue-50 px-5 py-2.5 text-sm font-semibold text-blue-700 shrink-0"
+              className="shrink-0 border-b border-blue-100 bg-blue-50 px-5 py-2.5 text-sm font-semibold text-blue-700"
               exit={{ opacity: 0, y: -8 }}
               initial={{ opacity: 0, y: -8 }}
               key="meeting-confirm"
@@ -714,11 +701,12 @@ function ChatWindow({
 
         {/* MESSAGES */}
         <div className="flex-1 space-y-4 overflow-y-auto bg-[linear-gradient(180deg,rgba(248,249,250,0.35),rgba(255,255,255,0.65))] px-5 py-5 scroll-smooth">
-          {conversation.messages.map((message) => (
+          {conversation.messages.map(message => (
             <MessageBubble key={message.id} message={message} />
           ))}
         </div>
 
+        {/* INPUT */}
         <ProposalInput
           onChange={onChangeDraft}
           onQuickAction={onQuickAction}
@@ -728,12 +716,59 @@ function ChatWindow({
         />
       </div>
 
-      {/* ── Right context panel ── */}
-      <ContextPanel
-        conversation={conversation}
-        onCreateTask={onCreateTask}
-        onOpenAllianceRoom={onOpenAllianceRoom}
-      />
+      {/* ── Desktop: right context panel ── */}
+      <div className="hidden md:flex w-[260px] shrink-0 flex-col overflow-y-auto border-l border-slate-100 bg-slate-50/50">
+        <ContextPanelContent
+          conversation={conversation}
+          onCreateTask={onCreateTask}
+          onOpenAllianceRoom={onOpenAllianceRoom}
+          onConvertToOpportunity={onConvertToOpportunity}
+        />
+      </div>
+
+      {/* ── Mobile: context bottom sheet ── */}
+      <AnimatePresence>
+        {contextOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              animate={{ opacity: 1 }}
+              className="absolute inset-0 z-20 bg-black/25 md:hidden"
+              exit={{ opacity: 0 }}
+              initial={{ opacity: 0 }}
+              onClick={() => setContextOpen(false)}
+            />
+            {/* Sheet */}
+            <motion.div
+              animate={{ y: 0 }}
+              className="absolute inset-x-0 bottom-0 z-30 flex max-h-[85%] flex-col overflow-hidden rounded-t-[24px] bg-white shadow-2xl md:hidden"
+              exit={{ y: '100%' }}
+              initial={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 28, stiffness: 320 }}
+            >
+              {/* Drag handle */}
+              <div className="flex shrink-0 items-center justify-between px-5 pt-3 pb-0">
+                <div className="mx-auto h-1 w-10 rounded-full bg-slate-300" />
+              </div>
+              <button
+                className="absolute right-4 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-slate-200"
+                onClick={() => setContextOpen(false)}
+                type="button"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+              <div className="overflow-y-auto">
+                <ContextPanelContent
+                  conversation={conversation}
+                  onCreateTask={onCreateTask}
+                  onOpenAllianceRoom={onOpenAllianceRoom}
+                  onConvertToOpportunity={onConvertToOpportunity}
+                />
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* MEETING MODAL */}
       {showMeetingModal && (

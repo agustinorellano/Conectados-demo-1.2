@@ -1,28 +1,10 @@
-﻿import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Edit3, Handshake, Search, Users, X } from 'lucide-react';
+import { Edit3, Search, X } from 'lucide-react';
 import ChatItem from './ChatItem';
 
-/* ── Section header ──────────────────────────────────────────────── */
-function SectionHeader({ icon: Icon, title, count }) {
-  return (
-    <div className="flex items-center gap-2 px-1 py-2">
-      <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-slate-100">
-        <Icon className="h-3 w-3 text-slate-500" />
-      </div>
-      <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
-        {title}
-      </span>
-      {count > 0 && (
-        <span className="ml-auto flex h-4.5 min-w-[18px] items-center justify-center rounded-full bg-slate-200 px-1 text-[10px] font-bold text-slate-600">
-          {count}
-        </span>
-      )}
-    </div>
-  );
-}
+const FILTERS = ['Todos', 'Activos', 'Pendientes', 'Cerrados'];
 
-/* ── Filter pill counts ──────────────────────────────────────────── */
 function getFilterCount(conversations, filter) {
   if (filter === 'Todos') return conversations.length;
   if (filter === 'Activos')
@@ -53,16 +35,12 @@ function matchesSearch(conv, query) {
   );
 }
 
-/* ── ChatList ────────────────────────────────────────────────────── */
-const FILTERS = ['Todos', 'Activos', 'Pendientes', 'Cerrados'];
-
 function ChatList({
   conversations,
   activeId,
   onSelect,
   allowDirectMessage,
   onCreateOutbound,
-  recentMatches,
 }) {
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
@@ -92,19 +70,15 @@ function ChatList({
   const isEmpty = filtered.length === 0;
 
   return (
-    <div className="flex w-[300px] shrink-0 flex-col border-r border-slate-100">
+    <div className="flex h-full flex-col">
+
       {/* ── Header ── */}
-      <div className="flex items-center justify-between px-5 pt-5 pb-3">
-        <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#1871D8]">
-            CONVERSACIONES
-          </p>
-          <h2 className="mt-1 font-['Space_Grotesk'] text-[17px] font-bold tracking-tight text-[#1A1A1A]">
-            Chats
-          </h2>
-        </div>
+      <div className="flex items-center justify-between px-4 pt-5 pb-4">
+        <h2 className="font-['Space_Grotesk'] text-[20px] font-bold tracking-tight text-[#1A1A1A]">
+          Chats
+        </h2>
         <button
-          className="flex h-8 w-8 items-center justify-center rounded-[12px] bg-[#141E30] text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#1A2C45] hover:shadow-md"
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-[#141E30] text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#1A2C45]"
           onClick={allowDirectMessage ? onCreateOutbound : undefined}
           title={allowDirectMessage ? 'Nueva conversación' : 'Disponible en Plan Scale'}
           type="button"
@@ -113,14 +87,14 @@ function ChatList({
         </button>
       </div>
 
-      {/* ── Search bar ── */}
+      {/* ── Search bar — 48px height, radius 16px ── */}
       <div className="px-4 pb-3">
-        <div className="flex items-center gap-2 rounded-[14px] border border-slate-200 bg-slate-50 px-3 py-2 transition focus-within:border-[#1871D8]/30 focus-within:bg-white focus-within:ring-2 focus-within:ring-[#1871D8]/10">
-          <Search className="h-3.5 w-3.5 shrink-0 text-slate-400" />
+        <div className="flex h-12 items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3.5 transition focus-within:border-[#1871D8]/30 focus-within:bg-white focus-within:ring-2 focus-within:ring-[#1871D8]/10">
+          <Search className="h-4 w-4 shrink-0 text-slate-400" />
           <input
             className="flex-1 bg-transparent text-[13px] text-[#1A1A1A] outline-none placeholder:text-slate-400"
             onChange={handleSearchChange}
-            placeholder="Buscar empresa, contacto o team…"
+            placeholder="Buscar empresa o contacto..."
             value={query}
           />
           <AnimatePresence>
@@ -131,9 +105,9 @@ function ChatList({
                 initial={{ opacity: 0, scale: 0.8 }}
                 onClick={handleClearSearch}
                 type="button"
-                className="flex h-4 w-4 items-center justify-center rounded-full bg-slate-300 text-slate-600 hover:bg-slate-400 transition"
+                className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-300 text-slate-600 transition hover:bg-slate-400"
               >
-                <X className="h-2.5 w-2.5" />
+                <X className="h-3 w-3" />
               </motion.button>
             )}
           </AnimatePresence>
@@ -150,7 +124,7 @@ function ChatList({
               key={filter}
               onClick={() => setActiveFilter(filter)}
               type="button"
-              className={`shrink-0 rounded-full px-3 py-1 text-[11px] font-semibold transition-all ${
+              className={`shrink-0 rounded-full px-3.5 py-1.5 text-[11px] font-semibold transition-all ${
                 isActive
                   ? 'bg-[#141E30] text-white shadow-sm'
                   : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
@@ -163,38 +137,39 @@ function ChatList({
         })}
       </div>
 
-      {/* ── Conversation list ── */}
-      <div className="flex-1 overflow-y-auto px-3 pb-3 space-y-0.5">
+      {/* ── Conversation list — 8px gap between items ── */}
+      <div className="flex-1 overflow-y-auto px-3 pb-3">
         {isEmpty ? (
-          /* Empty state */
           <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100">
               <Search className="h-5 w-5 text-slate-400" />
             </div>
             <div>
               <p className="text-[13px] font-semibold text-slate-600">
-                {debouncedQuery
-                  ? 'No se encontraron conversaciones'
-                  : 'Todavía no tenés conversaciones activas'}
+                {debouncedQuery ? 'Sin resultados' : 'No hay conversaciones'}
               </p>
               <p className="mt-1 text-[11px] text-slate-400">
-                {debouncedQuery ? `Sin resultados para "${debouncedQuery}"` : 'Iniciá una nueva para comenzar'}
+                {debouncedQuery ? `Para "${debouncedQuery}"` : 'Iniciá una nueva para comenzar'}
               </p>
             </div>
             <button
               onClick={debouncedQuery ? handleClearSearch : (allowDirectMessage ? onCreateOutbound : undefined)}
               type="button"
-              className="rounded-[12px] bg-[#141E30] px-4 py-2 text-[12px] font-semibold text-white transition hover:bg-[#1A2C45]"
+              className="rounded-full bg-[#141E30] px-4 py-2 text-[12px] font-semibold text-white transition hover:bg-[#1A2C45]"
             >
-              {debouncedQuery ? 'Limpiar búsqueda' : 'Iniciar nueva conversación'}
+              {debouncedQuery ? 'Limpiar búsqueda' : 'Nueva conversación'}
             </button>
           </div>
         ) : (
-          <>
-            {/* Matches section */}
+          <div className="space-y-0.5">
+            {/* Matches */}
             {matchConversations.length > 0 && (
               <>
-                <SectionHeader icon={Handshake} title="Matches" count={matchConversations.length} />
+                {teamConversations.length > 0 && (
+                  <p className="px-2 pb-1 pt-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                    Matches
+                  </p>
+                )}
                 <AnimatePresence initial={false}>
                   {matchConversations.map(conv => (
                     <motion.div
@@ -216,10 +191,12 @@ function ChatList({
               </>
             )}
 
-            {/* Teams section */}
+            {/* Teams */}
             {teamConversations.length > 0 && (
-              <div className="mt-2">
-                <SectionHeader icon={Users} title="Teams" count={teamConversations.length} />
+              <div className={matchConversations.length > 0 ? 'mt-3' : ''}>
+                <p className="px-2 pb-1 pt-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                  Teams
+                </p>
                 <AnimatePresence initial={false}>
                   {teamConversations.map(conv => (
                     <motion.div
@@ -240,10 +217,9 @@ function ChatList({
                 </AnimatePresence>
               </div>
             )}
-          </>
+          </div>
         )}
       </div>
-
     </div>
   );
 }
