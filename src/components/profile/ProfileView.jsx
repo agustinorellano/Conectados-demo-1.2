@@ -314,427 +314,516 @@ function CompanyProfile({ company, onAreaSelect, onSave }) {
 
   const gallery = draft.gallery || [];
 
+  const slug = draft.name
+    .toLowerCase()
+    .replace(/\s+/g, '')
+    .replace(/[^a-z0-9]/g, '');
+
   return (
-    <div className="space-y-6 sm:space-y-8">
-      <section className="relative overflow-hidden rounded-[20px] bg-gradient-to-br from-[#1871D8] via-[#135db0] to-[#141E30] p-6 text-white shadow-[0_28px_60px_rgba(20,30,48,0.18)] sm:p-8">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.22),transparent_34%)]" />
-        <div className="relative flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
-          <div className="flex items-start gap-4">
-            <div className="relative shrink-0">
-              <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-[26px] bg-white/12 shadow-sm ring-1 ring-inset ring-white/20 backdrop-blur">
-                {draft.logoImage ? (
-                  <img alt={draft.name} className="h-full w-full object-cover" src={draft.logoImage} />
-                ) : (
-                  <span className="font-['Space_Grotesk'] text-2xl font-bold text-white">
+    <div className="min-h-screen bg-[#F4F6F9] pb-[100px]">
+      {/* HERO CARD */}
+      <div className="mx-4 mt-4 overflow-hidden rounded-[28px] bg-[#141E30]">
+        {/* Cover */}
+        <div className="relative h-[180px]">
+          {gallery[0] ? (
+            <>
+              <img alt="Cover" className="h-[180px] w-full object-cover" src={gallery[0]} />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#141E30] via-[#141E30]/30 to-transparent" />
+            </>
+          ) : (
+            <div className="h-[180px] bg-gradient-to-br from-[#1A2C45] to-[#141E30]" />
+          )}
+        </div>
+
+        {/* Logo row */}
+        <div className="flex items-start justify-between px-5 -mt-9">
+          <div className="relative shrink-0">
+            <button
+              className="relative h-[72px] w-[72px] overflow-hidden rounded-full ring-4 ring-[#141E30] focus:outline-none"
+              onClick={() => logoInputRef.current?.click()}
+              type="button"
+            >
+              {draft.logoImage ? (
+                <img alt={draft.name} className="h-full w-full object-cover" src={draft.logoImage} />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center bg-[#1A2C45]">
+                  <span className="font-['Space_Grotesk'] text-xl font-bold text-white">
                     {draft.name
                       .split(' ')
                       .slice(0, 2)
                       .map((part) => part[0])
                       .join('')}
                   </span>
-                )}
+                </div>
+              )}
+              <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 transition hover:opacity-100">
+                <Camera className="h-5 w-5 text-white" />
               </div>
-              <button
-                className="absolute -bottom-2 -right-2 inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-[#1871D8] shadow-lg transition hover:scale-105"
-                onClick={() => logoInputRef.current?.click()}
-                type="button"
-              >
-                <Camera className="h-4 w-4" />
-              </button>
-              <input
-                accept="image/*"
-                className="hidden"
-                onChange={handleLogoSelected}
-                ref={logoInputRef}
-                type="file"
-              />
-            </div>
-
-            <div>
-              <p className="text-xs font-medium uppercase tracking-[0.24em] text-white/75">
-                Company Profile
-              </p>
-              <h1 className="mt-3 font-['Space_Grotesk'] text-3xl font-bold tracking-tight sm:text-[2.1rem]">
-                {draft.name}
-              </h1>
-              <div className="mt-3 flex flex-wrap gap-2 text-sm text-white/82">
-                {profileSummary.map((item) => (
-                  <span className="rounded-full bg-white/12 px-3 py-1.5 backdrop-blur" key={item}>
-                    {item}
-                  </span>
-                ))}
-              </div>
-              <p className="mt-4 max-w-2xl text-sm leading-6 text-white/82">{draft.description}</p>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-3 sm:items-end">
-            <div className="flex gap-2">
-              {socialPlatforms.map((platform) => (
-                <SocialLinkButton
-                  href={draft.socialLinks?.[platform.key] || '#'}
-                  icon={platform.icon}
-                  key={platform.key}
-                  label={platform.label}
-                />
-              ))}
-            </div>
-            <button
-              className="inline-flex items-center gap-2 rounded-[18px] bg-white px-4 py-3 text-sm font-semibold text-[#1871D8] shadow-lg"
-              onClick={() => {
-                onSave(draft);
-                setSavedMessage('Cambios guardados. El perfil se actualizo al instante.');
-                window.setTimeout(() => setSavedMessage(''), 1800);
-              }}
-              type="button"
-            >
-              <Save className="h-4 w-4" />
-              Guardar todo
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {savedMessage ? (
-        <div className="rounded-[20px] bg-[#141E30] px-5 py-3.5 text-sm font-medium text-white shadow-sm">
-          {savedMessage}
-        </div>
-      ) : null}
-
-      <section className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
-        <article className="overflow-hidden rounded-[20px] bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.05)] ring-1 ring-inset ring-slate-200">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-xs font-medium uppercase tracking-[0.22em] text-[#1871D8]">
-                Perfil visual
-              </p>
-              <h2 className="mt-2 font-['Space_Grotesk'] text-2xl font-bold tracking-tight text-[#1A1A1A]">
-                Identidad y contenido del comercio
-              </h2>
-            </div>
-            <button
-              className="inline-flex items-center gap-2 rounded-[16px] border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-100"
-              onClick={() => galleryInputRef.current?.click()}
-              type="button"
-            >
-              <ImagePlus className="h-4 w-4" />
-              Agregar imagen
             </button>
             <input
               accept="image/*"
               className="hidden"
-              multiple
-              onChange={handleGallerySelected}
-              ref={galleryInputRef}
+              onChange={handleLogoSelected}
+              ref={logoInputRef}
               type="file"
             />
           </div>
 
-          {gallery.length ? (
-            <div className="mt-5 grid gap-3 md:grid-cols-[1.4fr_0.6fr]">
-              <div className="overflow-hidden rounded-[26px] bg-slate-100">
-                <img
-                  alt="Visual principal del comercio"
-                  className="h-full min-h-[280px] w-full object-cover"
-                  src={gallery[0]}
-                />
-              </div>
-              <div className="grid gap-3">
-                {gallery.slice(1, 3).map((image, index) => (
-                  <img
-                    alt={`Visual secundario ${index + 1}`}
-                    className="h-[133px] w-full rounded-[22px] object-cover"
-                    key={image}
-                    src={image}
-                  />
-                ))}
-              </div>
-            </div>
-          ) : null}
-
-          <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-            {gallery.map((image, index) => (
-              <div
-                className="rounded-[22px] bg-slate-50 p-3 ring-1 ring-inset ring-slate-200"
-                key={`${image}-${index}`}
-              >
-                <img
-                  alt={`Galeria ${index + 1}`}
-                  className="h-24 w-full rounded-[16px] object-cover"
-                  src={image}
-                />
-                <div className="mt-3 flex items-center justify-between gap-2">
-                  <div className="flex gap-2">
-                    <button
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-white text-slate-500 ring-1 ring-inset ring-slate-200 transition hover:text-[#1871D8]"
-                      onClick={() => moveGalleryImage(index, -1)}
-                      type="button"
-                    >
-                      <ArrowLeft className="h-4 w-4" />
-                    </button>
-                    <button
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-white text-slate-500 ring-1 ring-inset ring-slate-200 transition hover:text-[#1871D8]"
-                      onClick={() => moveGalleryImage(index, 1)}
-                      type="button"
-                    >
-                      <ArrowRight className="h-4 w-4" />
-                    </button>
-                  </div>
-                  <button
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-white text-slate-500 ring-1 ring-inset ring-slate-200 transition hover:text-rose-500"
-                    onClick={() => removeGalleryImage(index)}
-                    type="button"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </article>
-
-        <section className="grid gap-5 sm:grid-cols-2 lg:grid-cols-1">
-          {metricCards.map((metric) => (
-            <MetricCard
-              icon={metric.icon}
-              iconAlt={metric.iconAlt}
-              iconTone={metric.iconTone}
-              key={metric.key}
-              title={metric.label}
-              value={company.metrics[metric.key]}
-            />
-          ))}
-        </section>
-      </section>
-
-      <section className="grid gap-5 xl:grid-cols-2">
-        <EditableProfileSection
-          icon={<Building2 className="h-4 w-4" />}
-          isEditing={Boolean(editingSections.general)}
-          onCancel={() => cancelSection('general')}
-          onEdit={() => openSection('general')}
-          onSave={() => saveSection('general')}
-          subtitle="Datos generales"
-          summary={
-            <div className="space-y-4">
-              <div>
-                <p className="text-sm font-semibold text-[#1A1A1A]">{draft.name}</p>
-                <p className="mt-1 text-sm leading-6 text-[#4A4A4A]">{draft.description}</p>
-              </div>
-              <SummaryChips items={draft.industries} />
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="rounded-[20px] bg-slate-50 px-4 py-3 ring-1 ring-inset ring-slate-200">
-                  <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
-                    Ubicacion principal
-                  </p>
-                  <p className="mt-2 text-sm font-medium text-[#1A1A1A]">
-                    {draft.location.city}, {draft.location.country}
-                  </p>
-                </div>
-                <div className="rounded-[20px] bg-slate-50 px-4 py-3 ring-1 ring-inset ring-slate-200">
-                  <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
-                    Sucursales
-                  </p>
-                  <p className="mt-2 text-sm font-medium text-[#1A1A1A]">
-                    {draft.branches.length} activas
-                  </p>
-                </div>
-              </div>
-            </div>
-          }
-          title="Informacion del negocio"
-        >
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-[#1A1A1A]">Nombre</label>
-              <input
-                className="w-full rounded-[16px] border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#1871D8] focus:ring-4 focus:ring-[#1871D8]/10"
-                onChange={(event) => updateDraft('name', event.target.value)}
-                value={draft.name}
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-[#1A1A1A]">Descripcion</label>
-              <input
-                className="w-full rounded-[16px] border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#1871D8] focus:ring-4 focus:ring-[#1871D8]/10"
-                onChange={(event) => updateDraft('description', event.target.value)}
-                value={draft.description}
-              />
-            </div>
-          </div>
-
-          <TagSelector
-            label="Rubros"
-            onChange={(value) => updateDraft('industries', value)}
-            options={INDUSTRY_OPTIONS}
-            placeholder="Agregar rubro personalizado"
-            selected={draft.industries}
-          />
-
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-[#1A1A1A]">Ciudad</label>
-              <input
-                className="w-full rounded-[16px] border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#1871D8] focus:ring-4 focus:ring-[#1871D8]/10"
-                onChange={(event) => updateLocation('city', event.target.value)}
-                value={draft.location.city}
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-[#1A1A1A]">Pais</label>
-              <input
-                className="w-full rounded-[16px] border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#1871D8] focus:ring-4 focus:ring-[#1871D8]/10"
-                onChange={(event) => updateLocation('country', event.target.value)}
-                value={draft.location.country}
-              />
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <div className="flex items-center gap-2 text-sm font-semibold text-[#1A1A1A]">
-              <Link2 className="h-4 w-4 text-[#1871D8]" />
-              Redes sociales
-            </div>
-            <div className="grid gap-3">
-              {socialPlatforms.map((platform) => (
-                <label className="space-y-2" key={platform.key}>
-                  <span className="inline-flex items-center gap-2 text-sm font-medium text-slate-600">
-                    <img alt={platform.label} className="h-5 w-5 rounded-md" src={platform.icon} />
-                    {platform.label}
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <input
-                      className="w-full rounded-[16px] border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#1871D8] focus:ring-4 focus:ring-[#1871D8]/10"
-                      onChange={(event) => updateSocialLink(platform.key, event.target.value)}
-                      value={draft.socialLinks?.[platform.key] || ''}
-                    />
-                    <a
-                      className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-500 transition hover:text-[#1871D8]"
-                      href={draft.socialLinks?.[platform.key] || '#'}
-                      rel="noreferrer"
-                      target="_blank"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                    </a>
-                  </div>
-                </label>
+          <div className="flex items-center gap-2 pt-11">
+            {socialPlatforms
+              .filter((p) => draft.socialLinks?.[p.key])
+              .map((platform) => (
+                <a
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 backdrop-blur transition hover:bg-white/20"
+                  href={draft.socialLinks[platform.key]}
+                  key={platform.key}
+                  rel="noreferrer"
+                  target="_blank"
+                  title={platform.label}
+                >
+                  <img alt={platform.label} className="h-5 w-5 rounded-md object-cover" src={platform.icon} />
+                </a>
               ))}
-            </div>
-          </div>
-
-          <BranchManager
-            branches={draft.branches}
-            onAddBranch={handleAddBranch}
-            onChangeBranch={handleChangeBranch}
-            onDeleteBranch={handleDeleteBranch}
-          />
-        </EditableProfileSection>
-
-        <div className="grid gap-5">
-          <EditableProfileSection
-            icon={<Sparkles className="h-4 w-4" />}
-            isEditing={Boolean(editingSections.offers)}
-            onCancel={() => cancelSection('offers')}
-            onEdit={() => openSection('offers')}
-            onSave={() => saveSection('offers')}
-            subtitle="Perfil de alianza"
-            summary={<SummaryChips items={draft.allianceProfile.offers} tone="emerald" />}
-            title="Que ofrezco"
-          >
-            <TagSelector
-              label="Activos para ofrecer"
-              onChange={(value) => updateAllianceProfile('offers', value)}
-              options={ALLIANCE_TAG_OPTIONS}
-              placeholder="Agregar opcion personalizada"
-              selected={draft.allianceProfile.offers}
-            />
-          </EditableProfileSection>
-
-          <EditableProfileSection
-            icon={<Tags className="h-4 w-4" />}
-            isEditing={Boolean(editingSections.needs)}
-            onCancel={() => cancelSection('needs')}
-            onEdit={() => openSection('needs')}
-            onSave={() => saveSection('needs')}
-            subtitle="Perfil de alianza"
-            summary={<SummaryChips items={draft.allianceProfile.needs} tone="amber" />}
-            title="Que busco"
-          >
-            <TagSelector
-              label="Necesidades comerciales"
-              onChange={(value) => updateAllianceProfile('needs', value)}
-              options={ALLIANCE_TAG_OPTIONS}
-              placeholder="Agregar opcion personalizada"
-              selected={draft.allianceProfile.needs}
-            />
-          </EditableProfileSection>
-
-          <EditableProfileSection
-            icon={<Layers3 className="h-4 w-4" />}
-            isEditing={Boolean(editingSections.segments)}
-            onCancel={() => cancelSection('segments')}
-            onEdit={() => openSection('segments')}
-            onSave={() => saveSection('segments')}
-            subtitle="Perfil de alianza"
-            summary={<SummaryChips items={draft.allianceProfile.keySegments} />}
-            title="Segmentos clave"
-          >
-            <TagSelector
-              label="Rubros con mayor fit"
-              onChange={(value) => updateAllianceProfile('keySegments', value)}
-              options={INDUSTRY_OPTIONS}
-              placeholder="Agregar segmento personalizado"
-              selected={draft.allianceProfile.keySegments}
-            />
-          </EditableProfileSection>
-        </div>
-      </section>
-
-      <section className="rounded-[20px] bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.05)] ring-1 ring-inset ring-slate-200">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <p className="text-xs font-medium uppercase tracking-[0.22em] text-[#141E30]">
-              Areas internas
-            </p>
-            <h2 className="mt-2 font-['Space_Grotesk'] text-2xl font-bold tracking-tight text-[#1A1A1A]">
-              De perfil a ejecucion
-            </h2>
-          </div>
-        </div>
-
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
-          {company.internalAreas.map((area) => (
             <button
-              className="group rounded-[20px] bg-slate-50 p-5 text-left ring-1 ring-inset ring-slate-200 transition hover:bg-white hover:shadow-sm"
-              key={area.name}
-              onClick={() =>
-                onAreaSelect(
-                  area.name === 'Ventas'
-                    ? 'ventas'
-                    : area.name === 'Marketing'
-                      ? 'marketing'
-                      : area.name === 'Operaciones'
-                        ? 'operaciones'
-                        : 'atencion'
-                )
-              }
+              className="flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-xs font-bold text-[#141E30] shadow transition hover:shadow-md"
+              onClick={() => {
+                onSave(draft);
+                setSavedMessage('Cambios guardados.');
+                window.setTimeout(() => setSavedMessage(''), 1800);
+              }}
               type="button"
             >
-              <div className="flex items-center justify-between gap-3">
-                <strong className="text-base text-[#1A1A1A]">{area.name}</strong>
-                <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-500">
-                  {area.status}
+              <Save className="h-3.5 w-3.5" />
+              Guardar
+            </button>
+          </div>
+        </div>
+
+        {/* Company info */}
+        <div className="px-5 pb-5 pt-3">
+          <h1 className="font-['Space_Grotesk'] text-[22px] font-bold leading-tight text-white">
+            {draft.name}
+          </h1>
+          <p className="mt-0.5 text-[12px] text-white/50">@{slug}</p>
+          <p className="mt-2 text-[13px] leading-relaxed text-white/70">{draft.description}</p>
+
+          <div className="my-4 border-t border-white/10" />
+
+          <div className="flex flex-wrap gap-4 text-[13px] text-white/60">
+            <span className="flex items-center gap-1.5">
+              <MapPin className="h-3.5 w-3.5" />
+              {draft.location.city}, {draft.location.country}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Building2 className="h-3.5 w-3.5" />
+              {draft.branches.length} sucursal{draft.branches.length !== 1 ? 'es' : ''}
+            </span>
+            {draft.industries.length > 0 && (
+              <span>{draft.industries[0]}</span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* MAIN CARD — continuous white feed */}
+      <div className="mx-4 mt-3 overflow-hidden rounded-[24px] bg-white shadow-[0_2px_16px_rgba(0,0,0,0.06)]">
+
+        {/* GALERIA VISUAL */}
+        <div className="py-4">
+          <div className="flex items-center justify-between px-5 mb-3">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+              Perfil visual
+            </p>
+            <button
+              className="flex items-center gap-1 text-[11px] font-semibold text-[#1871D8]"
+              onClick={() => galleryInputRef.current?.click()}
+              type="button"
+            >
+              <ImagePlus className="h-3.5 w-3.5" />
+              Agregar
+            </button>
+          </div>
+          <input
+            accept="image/*"
+            className="hidden"
+            multiple
+            onChange={handleGallerySelected}
+            ref={galleryInputRef}
+            type="file"
+          />
+          <div className="flex gap-3 overflow-x-auto px-5 pb-1 [scrollbar-width:none]">
+            {gallery.map((img, i) => (
+              <div className="relative shrink-0" key={i}>
+                <img
+                  alt={`Galeria ${i + 1}`}
+                  className="h-[120px] w-[120px] rounded-[18px] object-cover"
+                  src={img}
+                />
+                <div className="absolute bottom-1.5 left-1.5 flex gap-1">
+                  <button
+                    className="flex h-6 w-6 items-center justify-center rounded-full bg-black/50 text-white"
+                    onClick={() => moveGalleryImage(i, -1)}
+                    type="button"
+                  >
+                    <ArrowLeft className="h-3 w-3" />
+                  </button>
+                  <button
+                    className="flex h-6 w-6 items-center justify-center rounded-full bg-black/50 text-white"
+                    onClick={() => moveGalleryImage(i, 1)}
+                    type="button"
+                  >
+                    <ArrowRight className="h-3 w-3" />
+                  </button>
+                </div>
+                <button
+                  className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-black/50 text-white"
+                  onClick={() => removeGalleryImage(i)}
+                  type="button"
+                >
+                  <Trash2 className="h-3 w-3" />
+                </button>
+              </div>
+            ))}
+            {gallery.length === 0 && (
+              <button
+                className="flex h-[120px] w-[120px] shrink-0 flex-col items-center justify-center gap-2 rounded-[18px] border-2 border-dashed border-slate-200 text-slate-400"
+                onClick={() => galleryInputRef.current?.click()}
+                type="button"
+              >
+                <ImagePlus className="h-5 w-5" />
+                <span className="text-[11px]">Agregar</span>
+              </button>
+            )}
+          </div>
+        </div>
+
+        <div className="mx-5 border-t border-slate-100" />
+
+        {/* QUE OFREZCO */}
+        <div className="px-5 py-5">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+              Que ofrezco
+            </p>
+            {!editingSections.offers && (
+              <button
+                className="text-[11px] font-semibold text-[#1871D8]"
+                onClick={() => openSection('offers')}
+                type="button"
+              >
+                Editar
+              </button>
+            )}
+          </div>
+          {editingSections.offers ? (
+            <div className="space-y-4">
+              <TagSelector
+                label="Activos para ofrecer"
+                onChange={(value) => updateAllianceProfile('offers', value)}
+                options={ALLIANCE_TAG_OPTIONS}
+                placeholder="Agregar opcion personalizada"
+                selected={draft.allianceProfile.offers}
+              />
+              <div className="flex gap-3">
+                <button
+                  className="rounded-full bg-[#141E30] px-4 py-2 text-[12px] font-semibold text-white"
+                  onClick={() => saveSection('offers')}
+                  type="button"
+                >
+                  Guardar
+                </button>
+                <button
+                  className="rounded-full border border-slate-200 px-4 py-2 text-[12px] font-semibold text-slate-600"
+                  onClick={() => cancelSection('offers')}
+                  type="button"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          ) : (
+            <SummaryChips items={draft.allianceProfile.offers} tone="emerald" />
+          )}
+        </div>
+
+        <div className="mx-5 border-t border-slate-100" />
+
+        {/* QUE BUSCO */}
+        <div className="px-5 py-5">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+              Que busco
+            </p>
+            {!editingSections.needs && (
+              <button
+                className="text-[11px] font-semibold text-[#1871D8]"
+                onClick={() => openSection('needs')}
+                type="button"
+              >
+                Editar
+              </button>
+            )}
+          </div>
+          {editingSections.needs ? (
+            <div className="space-y-4">
+              <TagSelector
+                label="Necesidades comerciales"
+                onChange={(value) => updateAllianceProfile('needs', value)}
+                options={ALLIANCE_TAG_OPTIONS}
+                placeholder="Agregar opcion personalizada"
+                selected={draft.allianceProfile.needs}
+              />
+              <div className="flex gap-3">
+                <button
+                  className="rounded-full bg-[#141E30] px-4 py-2 text-[12px] font-semibold text-white"
+                  onClick={() => saveSection('needs')}
+                  type="button"
+                >
+                  Guardar
+                </button>
+                <button
+                  className="rounded-full border border-slate-200 px-4 py-2 text-[12px] font-semibold text-slate-600"
+                  onClick={() => cancelSection('needs')}
+                  type="button"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          ) : (
+            <SummaryChips items={draft.allianceProfile.needs} tone="amber" />
+          )}
+        </div>
+
+        <div className="mx-5 border-t border-slate-100" />
+
+        {/* SEGMENTOS CLAVE */}
+        <div className="px-5 py-5">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+              Segmentos clave
+            </p>
+            {!editingSections.segments && (
+              <button
+                className="text-[11px] font-semibold text-[#1871D8]"
+                onClick={() => openSection('segments')}
+                type="button"
+              >
+                Editar
+              </button>
+            )}
+          </div>
+          {editingSections.segments ? (
+            <div className="space-y-4">
+              <TagSelector
+                label="Rubros con mayor fit"
+                onChange={(value) => updateAllianceProfile('keySegments', value)}
+                options={INDUSTRY_OPTIONS}
+                placeholder="Agregar segmento personalizado"
+                selected={draft.allianceProfile.keySegments}
+              />
+              <div className="flex gap-3">
+                <button
+                  className="rounded-full bg-[#141E30] px-4 py-2 text-[12px] font-semibold text-white"
+                  onClick={() => saveSection('segments')}
+                  type="button"
+                >
+                  Guardar
+                </button>
+                <button
+                  className="rounded-full border border-slate-200 px-4 py-2 text-[12px] font-semibold text-slate-600"
+                  onClick={() => cancelSection('segments')}
+                  type="button"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          ) : (
+            <SummaryChips items={draft.allianceProfile.keySegments} tone="blue" />
+          )}
+        </div>
+
+        <div className="mx-5 border-t border-slate-100" />
+
+        {/* INFORMACION DEL NEGOCIO */}
+        <div className="px-5 py-5">
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+              Informacion del negocio
+            </p>
+            {!editingSections.general && (
+              <button
+                className="text-[11px] font-semibold text-[#1871D8]"
+                onClick={() => openSection('general')}
+                type="button"
+              >
+                Editar
+              </button>
+            )}
+          </div>
+          {editingSections.general ? (
+            <div className="space-y-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-[#1A1A1A]">Nombre</label>
+                  <input
+                    className="w-full rounded-[16px] border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#1871D8] focus:ring-4 focus:ring-[#1871D8]/10"
+                    onChange={(event) => updateDraft('name', event.target.value)}
+                    value={draft.name}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-[#1A1A1A]">Descripcion</label>
+                  <input
+                    className="w-full rounded-[16px] border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#1871D8] focus:ring-4 focus:ring-[#1871D8]/10"
+                    onChange={(event) => updateDraft('description', event.target.value)}
+                    value={draft.description}
+                  />
+                </div>
+              </div>
+              <TagSelector
+                label="Rubros"
+                onChange={(value) => updateDraft('industries', value)}
+                options={INDUSTRY_OPTIONS}
+                placeholder="Agregar rubro personalizado"
+                selected={draft.industries}
+              />
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-[#1A1A1A]">Ciudad</label>
+                  <input
+                    className="w-full rounded-[16px] border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#1871D8] focus:ring-4 focus:ring-[#1871D8]/10"
+                    onChange={(event) => updateLocation('city', event.target.value)}
+                    value={draft.location.city}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-[#1A1A1A]">Pais</label>
+                  <input
+                    className="w-full rounded-[16px] border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#1871D8] focus:ring-4 focus:ring-[#1871D8]/10"
+                    onChange={(event) => updateLocation('country', event.target.value)}
+                    value={draft.location.country}
+                  />
+                </div>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-sm font-semibold text-[#1A1A1A]">
+                  <Link2 className="h-4 w-4 text-[#1871D8]" />
+                  Redes sociales
+                </div>
+                <div className="grid gap-3">
+                  {socialPlatforms.map((platform) => (
+                    <label className="space-y-2" key={platform.key}>
+                      <span className="inline-flex items-center gap-2 text-sm font-medium text-slate-600">
+                        <img alt={platform.label} className="h-5 w-5 rounded-md" src={platform.icon} />
+                        {platform.label}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <input
+                          className="w-full rounded-[16px] border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#1871D8] focus:ring-4 focus:ring-[#1871D8]/10"
+                          onChange={(event) => updateSocialLink(platform.key, event.target.value)}
+                          value={draft.socialLinks?.[platform.key] || ''}
+                        />
+                        <a
+                          className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-500 transition hover:text-[#1871D8]"
+                          href={draft.socialLinks?.[platform.key] || '#'}
+                          rel="noreferrer"
+                          target="_blank"
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                        </a>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <BranchManager
+                branches={draft.branches}
+                onAddBranch={handleAddBranch}
+                onChangeBranch={handleChangeBranch}
+                onDeleteBranch={handleDeleteBranch}
+              />
+              <div className="flex gap-3 pt-2">
+                <button
+                  className="rounded-full bg-[#141E30] px-4 py-2 text-[12px] font-semibold text-white"
+                  onClick={() => saveSection('general')}
+                  type="button"
+                >
+                  Guardar
+                </button>
+                <button
+                  className="rounded-full border border-slate-200 px-4 py-2 text-[12px] font-semibold text-slate-600"
+                  onClick={() => cancelSection('general')}
+                  type="button"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <p className="text-[15px] font-semibold text-[#1A1A1A]">{draft.name}</p>
+              <p className="text-[13px] leading-relaxed text-slate-500">{draft.description}</p>
+              <div className="flex flex-wrap gap-2">
+                <span className="flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-[12px] font-medium text-slate-600">
+                  <MapPin className="h-3.5 w-3.5" />
+                  {draft.location.city}, {draft.location.country}
+                </span>
+                <span className="rounded-full bg-slate-100 px-3 py-1.5 text-[12px] font-medium text-slate-600">
+                  {draft.branches.length} sucursal{draft.branches.length !== 1 ? 'es' : ''}
                 </span>
               </div>
-              <p className="mt-3 text-sm leading-6 text-[#4A4A4A]">{area.context}</p>
-              <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-[#1871D8]">
-                Ver detalle
-                <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-              </span>
-            </button>
-          ))}
+              {socialPlatforms.filter((p) => draft.socialLinks?.[p.key]).length > 0 && (
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {socialPlatforms
+                    .filter((p) => draft.socialLinks?.[p.key])
+                    .map((p) => (
+                      <a
+                        className="flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-[12px] font-medium text-slate-600 transition hover:bg-slate-200"
+                        href={draft.socialLinks[p.key]}
+                        key={p.key}
+                        rel="noreferrer"
+                        target="_blank"
+                      >
+                        <img alt={p.label} className="h-3.5 w-3.5 rounded-sm" src={p.icon} />
+                        <span className="max-w-[140px] truncate">{draft.socialLinks[p.key]}</span>
+                      </a>
+                    ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
-      </section>
+
+        <div className="mx-5 border-t border-slate-100" />
+
+        {/* METRICAS */}
+        <div className="px-5 py-5">
+          <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+            Metricas
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            {metricCards.map((metric) => (
+              <MetricCard
+                icon={metric.icon}
+                iconAlt={metric.iconAlt}
+                iconTone={metric.iconTone}
+                key={metric.key}
+                title={metric.label}
+                value={company.metrics[metric.key]}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* TOAST */}
+      {savedMessage && (
+        <div className="fixed bottom-[90px] left-1/2 z-50 -translate-x-1/2 rounded-full bg-[#141E30] px-5 py-2.5 text-[13px] font-medium text-white shadow-lg">
+          {savedMessage}
+        </div>
+      )}
     </div>
   );
 }
