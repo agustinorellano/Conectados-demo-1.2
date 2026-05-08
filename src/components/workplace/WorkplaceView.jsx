@@ -79,6 +79,27 @@ const ALLIANCE_STATUS = {
   closed:   { label: 'Cerrada',      dot: '#94A3B8', pulse: false },
 };
 
+// Instagram-Stories-style status ring colors
+const STATUS_RING = {
+  urgent:   { color: '#EF4444', glow: 'rgba(239,68,68,0.55)',   pulse: true  },
+  active:   { color: '#10B981', glow: 'rgba(16,185,129,0.50)',  pulse: true  },
+  review:   { color: '#F59E0B', glow: 'rgba(245,158,11,0.48)',  pulse: false },
+  planning: { color: '#3B82F6', glow: 'rgba(59,130,246,0.42)',  pulse: false },
+  closed:   { color: '#94A3B8', glow: 'rgba(148,163,184,0.28)', pulse: false },
+};
+
+// Organic (constellation-style) position offsets from center, per partner count
+const ORGANIC_OFFSETS = {
+  1: [[   0, -130]],
+  2: [[ -85,  -95], [  85,  -95]],
+  3: [[-105,  -70], [  90,  -85], [ -10,  125]],
+  4: [[-115,  -60], [  55, -115], [ 120,   65], [ -60,  115]],
+  5: [[-110,  -75], [  30, -130], [ 132,   -5], [  85,  110], [ -90,   85]],
+  6: [[-115,  -90], [  25, -132], [ 132,  -15], [ 108,  108], [ -25,  130], [-128,   52]],
+  7: [[-108,  -92], [  25, -140], [ 135,  -30], [ 135,   80], [  22,  142], [-108,   92], [-140,    0]],
+  8: [[-100, -100], [   0, -145], [ 110,  -85], [ 145,   20], [ 100,  120], [   0,  152], [-112,  112], [-145,   10]],
+};
+
 function getAllianceStatus(opps) {
   const open = opps.filter(o => o.status !== 'completado');
   if (!open.length) return 'closed';
@@ -608,14 +629,15 @@ function AllianceCompactCard({ alliance, onOpen }) {
 }
 
 // ---------------------------------------------------------------------------
-// ALLIANCE ICON ITEM — single circular icon + label (Apple Watch home screen)
+// ALLIANCE ICON ITEM — circular logo with Instagram Stories status ring
 // ---------------------------------------------------------------------------
 function AllianceIconItem({ alliance, onOpen, size = 64 }) {
-  const g        = LOGO_GRADIENTS[alliance.colorKey] || LOGO_GRADIENTS.slate;
-  const cfg      = ALLIANCE_STATUS[alliance.status]  || ALLIANCE_STATUS.planning;
-  const isUrgent = alliance.status === 'urgent';
-  const pInfo    = PARTNER_INIT_MAP[alliance.name];
-  const logoSrc  = pInfo?.logoSrc || null;
+  const g       = LOGO_GRADIENTS[alliance.colorKey] || LOGO_GRADIENTS.slate;
+  const ring    = STATUS_RING[alliance.status]       || STATUS_RING.planning;
+  const pInfo   = PARTNER_INIT_MAP[alliance.name];
+  const logoSrc = pInfo?.logoSrc || null;
+  // Outer wrapper includes ring gap (3px) + ring (2.5px) on each side
+  const outer   = size + 11;
 
   return (
     <motion.button
@@ -624,65 +646,59 @@ function AllianceIconItem({ alliance, onOpen, size = 64 }) {
       transition={{ type: 'spring', damping: 20, stiffness: 400 }}
       className="flex flex-col items-center gap-1.5 cursor-pointer focus:outline-none"
     >
-      {/* Circular logo with status dot */}
-      <div className="relative">
-        {/* Urgent glow */}
-        {isUrgent && (
-          <motion.div
-            animate={{ opacity: [0.3, 0.75, 0.3] }}
-            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute -inset-2 rounded-full"
-            style={{ background: `radial-gradient(circle, ${g.shadow} 0%, transparent 70%)` }}
-          />
-        )}
+      {/* Ring wrapper */}
+      <div className="relative" style={{ width: outer, height: outer }}>
+        {/* Status ring — breathing glow for active/urgent */}
+        <motion.div
+          className="absolute inset-0 rounded-full"
+          style={{
+            border: `2px solid ${ring.color}`,
+            boxShadow: `0 0 0 1px ${ring.glow}, 0 0 10px ${ring.glow}`,
+          }}
+          animate={ring.pulse ? {
+            boxShadow: [
+              `0 0 0 1px ${ring.glow}, 0 0 7px  ${ring.glow}`,
+              `0 0 0 2px ${ring.glow}, 0 0 18px ${ring.glow}`,
+              `0 0 0 1px ${ring.glow}, 0 0 7px  ${ring.glow}`,
+            ],
+          } : undefined}
+          transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+        />
 
-        {/* Main icon circle */}
-        {logoSrc ? (
-          <div
-            className="relative overflow-hidden"
-            style={{
-              width: size, height: size, borderRadius: '50%',
-              boxShadow: `0 6px 20px ${g.shadow}, 0 2px 6px rgba(0,0,0,0.18), inset 0 1px 1px rgba(255,255,255,0.22)`,
-            }}
-          >
-            <img src={logoSrc} alt={alliance.name}
-              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+        {/* Icon centered inside ring (4px gap) */}
+        <div className="absolute" style={{ inset: 5, borderRadius: '50%', overflow: 'hidden' }}>
+          {logoSrc ? (
+            <img
+              src={logoSrc} alt={alliance.name}
+              style={{
+                width: '100%', height: '100%', objectFit: 'cover', display: 'block',
+                boxShadow: `0 4px 14px ${g.shadow}, 0 2px 6px rgba(0,0,0,0.18)`,
+              }}
             />
-          </div>
-        ) : (
-          <div
-            className="relative flex items-center justify-center"
-            style={{
-              width: size, height: size, borderRadius: '50%',
-              background: `linear-gradient(145deg, ${g.a} 0%, ${g.b} 100%)`,
-              boxShadow: `0 6px 20px ${g.shadow}, 0 2px 6px rgba(0,0,0,0.18), inset 0 1px 1px rgba(255,255,255,0.25)`,
-            }}
-          >
-            <span className="font-['Space_Grotesk'] font-bold text-white select-none"
-              style={{ fontSize: size * 0.28, letterSpacing: '-0.01em' }}>
-              {alliance.initials}
-            </span>
-          </div>
-        )}
-
-        {/* Status dot — top right */}
-        <div className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center">
-          {cfg.pulse && (
-            <motion.span
-              style={{ backgroundColor: cfg.dot }}
-              animate={{ scale: [1, 2.4, 1], opacity: [0.7, 0, 0.7] }}
-              transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute inline-flex h-3 w-3 rounded-full"
-            />
+          ) : (
+            <div
+              className="flex h-full w-full items-center justify-center"
+              style={{
+                background: `linear-gradient(145deg, ${g.a} 0%, ${g.b} 100%)`,
+                boxShadow: `0 4px 14px ${g.shadow}, inset 0 1px 1px rgba(255,255,255,0.25)`,
+              }}
+            >
+              <span
+                className="font-['Space_Grotesk'] font-bold text-white select-none"
+                style={{ fontSize: size * 0.27 }}
+              >
+                {alliance.initials}
+              </span>
+            </div>
           )}
-          <span className="relative h-3 w-3 rounded-full ring-2 ring-white"
-            style={{ backgroundColor: cfg.dot }} />
         </div>
       </div>
 
       {/* Name label */}
-      <p className="text-center font-medium text-[#1A1A1A] leading-tight"
-        style={{ fontSize: 10, maxWidth: size + 12, lineHeight: '1.3' }}>
+      <p
+        className="text-center font-medium text-[#1A1A1A] leading-tight"
+        style={{ fontSize: 10, maxWidth: outer + 8, lineHeight: '1.3' }}
+      >
         {alliance.name}
       </p>
     </motion.button>
@@ -690,17 +706,25 @@ function AllianceIconItem({ alliance, onOpen, size = 64 }) {
 }
 
 // ---------------------------------------------------------------------------
-// ALLIANCE ECOSYSTEM — orbital layout: my brand center, partners in ring
+// ALLIANCE ECOSYSTEM — organic constellation layout
 // ---------------------------------------------------------------------------
 const MY_BRAND = { name: 'Top White', initials: 'TW', colorKey: 'slate' };
 
+// Micro-action buttons placed along spokes (toIdx = index of partner)
+const MICRO_ACTIONS = [
+  { toIdx: 0, Icon: MessageSquare, color: '#8B5CF6', label: 'Chat'      },
+  { toIdx: 2, Icon: TrendingUp,    color: '#10B981', label: 'Analytics' },
+  { toIdx: 4, Icon: Zap,           color: '#F59E0B', label: 'IA'        },
+];
+
 function AllianceEcosystem({ allianceGroups, onOpen }) {
-  // Responsive container: use 300px on small screens, up to 340px
-  const CONTAINER = 320;
-  const CENTER    = CONTAINER / 2;
-  const RADIUS    = 118;          // distance from center to partner icon
-  const HUB_SIZE  = 80;           // my brand logo diameter
-  const ICON_SIZE = 60;           // partner icon diameter
+  const W        = 340;
+  const H        = 430;
+  const CX       = W / 2;
+  const CY       = 205;
+  const HUB_SIZE = 76;
+  const ICON_SIZE = 58;
+  const ICON_OUTER = ICON_SIZE + 11; // matches ring wrapper size in AllianceIconItem
 
   if (allianceGroups.length === 0) {
     return (
@@ -712,33 +736,78 @@ function AllianceEcosystem({ allianceGroups, onOpen }) {
     );
   }
 
-  const N = allianceGroups.length;
+  const N       = allianceGroups.length;
+  const offsets = ORGANIC_OFFSETS[Math.min(N, 8)] || ORGANIC_OFFSETS[6];
+
+  // Absolute center coords of each partner icon
+  const partnerCenters = offsets.slice(0, N).map(([dx, dy]) => ({
+    x: CX + dx,
+    y: CY + dy,
+  }));
 
   return (
     <div className="flex flex-col items-center pb-28 pt-4">
-      {/* Orbital container */}
-      <div className="relative" style={{ width: CONTAINER, height: CONTAINER }}>
+      <div className="relative" style={{ width: W, height: H }}>
 
-        {/* Subtle orbit ring — dashed circle */}
+        {/* ── SVG layer: connection lines ── */}
         <svg
           className="absolute inset-0 pointer-events-none"
-          width={CONTAINER} height={CONTAINER}
-          style={{ opacity: 0.12 }}
+          width={W} height={H}
         >
-          <circle
-            cx={CENTER} cy={CENTER} r={RADIUS}
-            fill="none" stroke="#141E30" strokeWidth={1.5}
-            strokeDasharray="5 6"
-          />
+          {/* Spoke lines — center to each partner (gentle bezier curve) */}
+          {partnerCenters.map((pt, i) => {
+            const mx  = (CX + pt.x) / 2;
+            const my  = (CY + pt.y) / 2;
+            const dx  = pt.x - CX;
+            const dy  = pt.y - CY;
+            const len = Math.sqrt(dx * dx + dy * dy) || 1;
+            // Perpendicular nudge for the soft curve
+            const cpx = mx - (dy / len) * 18;
+            const cpy = my + (dx / len) * 18;
+            return (
+              <path
+                key={`spoke-${i}`}
+                d={`M ${CX} ${CY} Q ${cpx} ${cpy} ${pt.x} ${pt.y}`}
+                fill="none"
+                stroke="#141E30"
+                strokeWidth={1}
+                strokeOpacity={0.07}
+                strokeDasharray="3 6"
+              />
+            );
+          })}
+
+          {/* Cross-connections between adjacent partners — lends "network" feel */}
+          {partnerCenters.length >= 3 && (
+            [[0, 1], [1, 2], [Math.max(N - 1, 0), 0]].map(([a, b], i) => {
+              const pa = partnerCenters[a];
+              const pb = partnerCenters[b];
+              if (!pa || !pb || a === b) return null;
+              // Arc curving gently toward center
+              const cpx = (pa.x + pb.x) / 2 + (CX - (pa.x + pb.x) / 2) * 0.25;
+              const cpy = (pa.y + pb.y) / 2 + (CY - (pa.y + pb.y) / 2) * 0.25;
+              return (
+                <path
+                  key={`cross-${i}`}
+                  d={`M ${pa.x} ${pa.y} Q ${cpx} ${cpy} ${pb.x} ${pb.y}`}
+                  fill="none"
+                  stroke="#1871D8"
+                  strokeWidth={1}
+                  strokeOpacity={0.065}
+                  strokeDasharray="2 7"
+                />
+              );
+            })
+          )}
         </svg>
 
-        {/* My brand — center hub */}
-        <div
+        {/* ── Hub — my brand (center) ── */}
+        <motion.div
           className="absolute flex flex-col items-center gap-1.5"
-          style={{
-            left: CENTER - HUB_SIZE / 2,
-            top:  CENTER - HUB_SIZE / 2 - 8, // offset up slightly for label
-          }}
+          style={{ left: CX - HUB_SIZE / 2, top: CY - HUB_SIZE / 2 - 8 }}
+          initial={{ scale: 0.55, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: 'spring', damping: 18, stiffness: 280, delay: 0.04 }}
         >
           <div
             className="flex items-center justify-center font-['Space_Grotesk'] font-bold text-white select-none"
@@ -754,32 +823,80 @@ function AllianceEcosystem({ allianceGroups, onOpen }) {
           <p className="text-center font-semibold text-[#141E30]" style={{ fontSize: 10, letterSpacing: '0.04em' }}>
             Top White
           </p>
-        </div>
+        </motion.div>
 
-        {/* Partner icons — arranged in circle */}
+        {/* ── Partner nodes ── */}
         {allianceGroups.map((alliance, i) => {
-          const angle = (2 * Math.PI / N) * i - Math.PI / 2; // start from top
-          const x     = CENTER + RADIUS * Math.cos(angle);
-          const y     = CENTER + RADIUS * Math.sin(angle);
+          const pt = partnerCenters[i];
+          if (!pt) return null;
           return (
             <motion.div
               key={alliance.name}
               className="absolute"
-              style={{ left: x - ICON_SIZE / 2, top: y - ICON_SIZE / 2 }}
-              initial={{ opacity: 0, scale: 0.5 }}
+              // Center the icon wrapper (ICON_OUTER wide) + shift up ~14px to leave room for label
+              style={{ left: pt.x - ICON_OUTER / 2, top: pt.y - ICON_OUTER / 2 - 14 }}
+              initial={{ opacity: 0, scale: 0.4 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: i * 0.07, type: 'spring', damping: 16, stiffness: 300 }}
+              transition={{ delay: 0.09 + i * 0.07, type: 'spring', damping: 16, stiffness: 280 }}
             >
               <AllianceIconItem alliance={alliance} onOpen={onOpen} size={ICON_SIZE} />
             </motion.div>
           );
         })}
+
+        {/* ── Micro-action buttons (glassmorphism, on select spokes) ── */}
+        {MICRO_ACTIONS.map(({ toIdx, Icon, color }) => {
+          const pt = partnerCenters[toIdx];
+          if (!pt) return null;
+          // Position at ~42% of the way from center to partner
+          const bx = CX + (pt.x - CX) * 0.42;
+          const by = CY + (pt.y - CY) * 0.42;
+          return (
+            <motion.button
+              key={`micro-${toIdx}`}
+              type="button"
+              className="absolute flex items-center justify-center rounded-full"
+              style={{
+                left: bx - 12, top: by - 12,
+                width: 24, height: 24,
+                background: 'rgba(255,255,255,0.82)',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
+                border: `1px solid ${color}28`,
+                boxShadow: `0 2px 8px rgba(0,0,0,0.09), 0 0 0 1px ${color}18`,
+              }}
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.5 + toIdx * 0.08, type: 'spring', damping: 18, stiffness: 340 }}
+              whileHover={{ scale: 1.22, boxShadow: `0 4px 14px rgba(0,0,0,0.12), 0 0 0 2px ${color}40` }}
+              whileTap={{ scale: 0.88 }}
+            >
+              <Icon style={{ width: 11, height: 11, color }} strokeWidth={2.2} />
+            </motion.button>
+          );
+        })}
       </div>
 
-      {/* Legend: total count */}
-      <p className="mt-2 text-[11px] text-slate-400 font-medium">
-        {N} alianza{N !== 1 ? 's' : ''} activa{N !== 1 ? 's' : ''}
+      {/* ── Footer: count + status legend ── */}
+      <p className="mt-1 text-[11px] font-medium text-slate-400">
+        {N} alianza{N !== 1 ? 's' : ''} · sistema vivo
       </p>
+
+      <div className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-1.5 px-8">
+        {(['active', 'review', 'planning', 'urgent'] ).map((key) => {
+          const r = STATUS_RING[key];
+          const label = ALLIANCE_STATUS[key]?.label || key;
+          return (
+            <div key={key} className="flex items-center gap-1.5">
+              <div
+                className="h-2 w-2 rounded-full"
+                style={{ background: r.color, boxShadow: `0 0 5px ${r.glow}` }}
+              />
+              <span className="text-[10px] text-slate-400">{label}</span>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
