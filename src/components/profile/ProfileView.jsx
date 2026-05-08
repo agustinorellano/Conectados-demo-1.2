@@ -3,11 +3,10 @@ import {
   Camera,
   Check,
   Crown,
-  ExternalLink,
   Globe,
   MapPin,
   Pencil,
-  Save,
+  Plus,
   Settings,
   X,
   Zap
@@ -15,7 +14,6 @@ import {
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import BranchManager from './BranchManager';
-import MetricCard from './MetricCard';
 import TagSelector from './TagSelector';
 import instagramLogo from '../../assets/instagram-logo.svg';
 import tiktokLogo from '../../assets/tiktok-logo.svg';
@@ -23,11 +21,12 @@ import linkedinLogo from '../../assets/linkedin-logo.svg';
 import { ALLIANCE_TAG_OPTIONS, INDUSTRY_OPTIONS } from '../../utils/companyProfile';
 import { InstagramFeedProfile } from '../shared/InstagramFeedPreview';
 
-/* ── Social platforms ── */
+/* ── Social platforms — website last, uses Globe icon ── */
 const socialPlatforms = [
-  { key: 'instagram', label: 'Instagram', icon: instagramLogo },
-  { key: 'tiktok',    label: 'TikTok',    icon: tiktokLogo    },
-  { key: 'linkedin',  label: 'LinkedIn',  icon: linkedinLogo  },
+  { key: 'instagram', label: 'Instagram', isAsset: true,  icon: instagramLogo },
+  { key: 'tiktok',    label: 'TikTok',    isAsset: true,  icon: tiktokLogo    },
+  { key: 'linkedin',  label: 'LinkedIn',  isAsset: true,  icon: linkedinLogo  },
+  { key: 'website',   label: 'Sitio web', isAsset: false, icon: null          },
 ];
 
 /* ── Image upload guide specs ── */
@@ -80,9 +79,9 @@ function readFileAsDataUrl(file) {
 function SummaryChips({ items, tone = 'blue' }) {
   if (!items.length) return <p className="text-sm text-slate-500">Sin definir todavía.</p>;
   const tones = {
-    blue:   'border-[#1871D8]/14 bg-[#1871D8]/8 text-[#1567C5]',
-    emerald:'border-[#141E30]/10 bg-emerald-50 text-[#141E30]',
-    amber:  'border-amber-200 bg-amber-50 text-amber-700',
+    blue:    'border-[#1871D8]/14 bg-[#1871D8]/8 text-[#1567C5]',
+    emerald: 'border-[#141E30]/10 bg-emerald-50 text-[#141E30]',
+    amber:   'border-amber-200 bg-amber-50 text-amber-700',
   };
   return (
     <div className="flex flex-wrap gap-2">
@@ -99,29 +98,30 @@ function SummaryChips({ items, tone = 'blue' }) {
    FIELD — single labeled input (dark glass, inside hero)
 ───────────────────────────────────────────────────────── */
 function DarkField({ label, value, onChange, multiline, placeholder }) {
-  const cls = 'w-full rounded-[14px] px-4 py-3 text-sm text-white/90 outline-none transition placeholder:text-white/30 focus:ring-2 focus:ring-[#1871D8]/40';
-  const style = {
+  const baseClass = 'w-full rounded-[14px] px-4 py-3 text-sm outline-none transition placeholder:text-white/30 focus:ring-2 focus:ring-[#1871D8]/40';
+  const fieldStyle = {
     background: 'rgba(255,255,255,0.07)',
     border: '1px solid rgba(255,255,255,0.10)',
+    color: 'white',
   };
   return (
     <div className="space-y-1.5">
       <label className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/40">{label}</label>
       {multiline ? (
         <textarea
-          className={`${cls} resize-none`}
+          className={`${baseClass} resize-none`}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           rows={3}
-          style={style}
+          style={fieldStyle}
           value={value}
         />
       ) : (
         <input
-          className={cls}
+          className={baseClass}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          style={style}
+          style={fieldStyle}
           value={value}
         />
       )}
@@ -197,9 +197,9 @@ function ImageGuideModal({ type, onClose, onUpload }) {
 
           <div className="px-6 pb-6">
             {/* Header */}
-            <div className="flex items-start justify-between mb-5">
+            <div className="mb-5 flex items-start justify-between">
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/35 mb-1">
+                <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/35">
                   Guía de carga
                 </p>
                 <h3 className="font-['Space_Grotesk'] text-xl font-bold text-white">{spec.title}</h3>
@@ -215,7 +215,7 @@ function ImageGuideModal({ type, onClose, onUpload }) {
             </div>
 
             {/* Preview frame */}
-            <div className="flex justify-center mb-5">
+            <div className="mb-5 flex justify-center">
               {spec.shape === 'circle' ? (
                 <div
                   className="flex h-24 w-24 items-center justify-center rounded-full border-2 border-dashed"
@@ -234,7 +234,7 @@ function ImageGuideModal({ type, onClose, onUpload }) {
             </div>
 
             {/* Spec cards — 2 col grid */}
-            <div className="grid grid-cols-2 gap-2 mb-5">
+            <div className="mb-5 grid grid-cols-2 gap-2">
               {spec.specs.map((s) => (
                 <div
                   key={s.label}
@@ -244,7 +244,7 @@ function ImageGuideModal({ type, onClose, onUpload }) {
                     border: '1px solid rgba(255,255,255,0.08)',
                   }}
                 >
-                  <p className="text-[10px] text-white/35 mb-0.5">{s.label}</p>
+                  <p className="mb-0.5 text-[10px] text-white/35">{s.label}</p>
                   <p className="text-[13px] font-semibold text-white/85">{s.value}</p>
                 </div>
               ))}
@@ -276,7 +276,7 @@ function ImageGuideModal({ type, onClose, onUpload }) {
 function AllianceSection({ label, tone, items, isEditing, onEdit, onSave, onCancel, options, selectedItems, onChange }) {
   return (
     <div className="px-5 py-5">
-      <div className="flex items-center justify-between mb-3">
+      <div className="mb-3 flex items-center justify-between">
         <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">{label}</p>
         {!isEditing && (
           <button className="text-[11px] font-semibold text-[#1871D8]" onClick={onEdit} type="button">
@@ -313,15 +313,16 @@ function AllianceSection({ label, tone, items, isEditing, onEdit, onSave, onCanc
    MAIN COMPONENT
 ══════════════════════════════════════════════════════ */
 function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
-  const [draft, setDraft]                     = useState(company);
-  const [savedMessage, setSavedMessage]       = useState('');
-  const [editingSections, setEditingSections] = useState({});
+  const [draft, setDraft]                       = useState(company);
+  const [savedMessage, setSavedMessage]         = useState('');
+  const [editingSections, setEditingSections]   = useState({});
   const [sectionSnapshots, setSectionSnapshots] = useState({});
   const [isEditingGeneral, setIsEditingGeneral] = useState(false);
-  const [generalSnapshot, setGeneralSnapshot]  = useState(null);
-  const [imageGuide, setImageGuide]            = useState(null); // 'logo' | 'cover'
+  const [generalSnapshot, setGeneralSnapshot]   = useState(null);
+  const [imageGuide, setImageGuide]             = useState(null); // 'logo' | 'cover'
 
   const logoInputRef    = useRef(null);
+  const coverInputRef   = useRef(null);
   const galleryInputRef = useRef(null);
 
   useEffect(() => {
@@ -336,17 +337,19 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
       draft.name        !== company.name        ||
       draft.description !== company.description ||
       draft.logoImage   !== company.logoImage   ||
-      JSON.stringify(draft.industries)  !== JSON.stringify(company.industries)  ||
-      JSON.stringify(draft.location)    !== JSON.stringify(company.location)    ||
-      JSON.stringify(draft.branches)    !== JSON.stringify(company.branches)    ||
-      JSON.stringify(draft.socialLinks) !== JSON.stringify(company.socialLinks)
+      (draft.coverImage ?? null) !== (company.coverImage ?? null) ||
+      JSON.stringify(draft.gallery ?? [])        !== JSON.stringify(company.gallery ?? [])      ||
+      JSON.stringify(draft.industries)           !== JSON.stringify(company.industries)           ||
+      JSON.stringify(draft.location)             !== JSON.stringify(company.location)             ||
+      JSON.stringify(draft.branches)             !== JSON.stringify(company.branches)             ||
+      JSON.stringify(draft.socialLinks)          !== JSON.stringify(company.socialLinks)
     );
   }, [draft, company]);
 
   /* ── Updaters ── */
-  const updateDraft        = (key, value) => setDraft((c) => ({ ...c, [key]: value }));
-  const updateLocation     = (key, value) => setDraft((c) => ({ ...c, location: { ...c.location, [key]: value } }));
-  const updateSocialLink   = (key, value) => setDraft((c) => ({ ...c, socialLinks: { ...c.socialLinks, [key]: value } }));
+  const updateDraft           = (key, value) => setDraft((c) => ({ ...c, [key]: value }));
+  const updateLocation        = (key, value) => setDraft((c) => ({ ...c, location: { ...c.location, [key]: value } }));
+  const updateSocialLink      = (key, value) => setDraft((c) => ({ ...c, socialLinks: { ...c.socialLinks, [key]: value } }));
   const updateAllianceProfile = (key, value) => setDraft((c) => ({ ...c, allianceProfile: { ...c.allianceProfile, [key]: value } }));
 
   /* ── Branch handlers ── */
@@ -363,11 +366,34 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
     setImageGuide(null);
   };
 
+  /* ── Cover upload ── */
+  const handleCoverSelected = async (e) => {
+    const [file] = Array.from(e.target.files || []);
+    if (!file) return;
+    const img = await readFileAsDataUrl(file);
+    updateDraft('coverImage', img);
+    setImageGuide(null);
+  };
+
+  /* ── Gallery upload ── */
+  const handleGallerySelected = async (e) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    const imgs = await Promise.all(files.map(readFileAsDataUrl));
+    updateDraft('gallery', [...(draft.gallery ?? []), ...imgs]);
+    e.target.value = '';
+  };
+
+  const removeGalleryImage = (i) => {
+    updateDraft('gallery', (draft.gallery ?? []).filter((_, idx) => idx !== i));
+  };
+
   /* ── General (hero) section ── */
   const openGeneral = () => {
     setGeneralSnapshot(cloneValue({
       name: draft.name, description: draft.description, industries: draft.industries,
-      location: draft.location, branches: draft.branches, socialLinks: draft.socialLinks, logoImage: draft.logoImage,
+      location: draft.location, branches: draft.branches, socialLinks: draft.socialLinks,
+      logoImage: draft.logoImage, coverImage: draft.coverImage ?? null,
     }));
     setIsEditingGeneral(true);
   };
@@ -426,24 +452,40 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
       {/* ──────────────── HERO CARD ──────────────── */}
       <div className="mx-4 mt-4 overflow-hidden rounded-[28px] bg-[#141E30]">
 
-        {/* Cover strip — no image display, just subtle gradient + button */}
-        <div className="relative h-[100px] bg-gradient-to-br from-[#1A2C45] via-[#162038] to-[#141E30]">
-          {/* Decorative orbs */}
-          <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-[#1871D8]/10 blur-2xl" />
-          <div className="absolute -left-4 bottom-0 h-20 w-20 rounded-full bg-white/5 blur-xl" />
+        {/* Cover strip — shows uploaded image or gradient fallback */}
+        <div
+          className="relative h-[100px] overflow-hidden"
+          style={draft.coverImage ? undefined : { background: 'linear-gradient(135deg, #1A2C45 0%, #162038 60%, #141E30 100%)' }}
+        >
+          {draft.coverImage ? (
+            <>
+              <img
+                alt="Portada"
+                className="absolute inset-0 h-full w-full object-cover"
+                src={draft.coverImage}
+              />
+              <div className="absolute inset-0 bg-black/25" />
+            </>
+          ) : (
+            <>
+              <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-[#1871D8]/10 blur-2xl" />
+              <div className="absolute -left-4 bottom-0 h-20 w-20 rounded-full bg-white/5 blur-xl" />
+            </>
+          )}
+          {/* Portada button — always visible */}
           <button
-            className="absolute bottom-3 right-4 flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-semibold text-white/40 transition hover:bg-white/10 hover:text-white/60"
+            className="absolute bottom-3 right-4 flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-semibold text-white/50 backdrop-blur-sm transition hover:bg-white/15 hover:text-white/80"
             onClick={() => setImageGuide('cover')}
-            style={{ border: '1px solid rgba(255,255,255,0.10)' }}
+            style={{ border: '1px solid rgba(255,255,255,0.14)' }}
             type="button"
           >
             <Camera className="h-3 w-3" />
-            Portada
+            {draft.coverImage ? 'Cambiar' : 'Portada'}
           </button>
         </div>
 
         {/* Logo + action row */}
-        <div className="flex items-start justify-between px-5 -mt-8">
+        <div className="-mt-8 flex items-start justify-between px-5">
           {/* Logo */}
           <button
             className="relative h-[68px] w-[68px] shrink-0 overflow-hidden rounded-full ring-[3px] ring-[#141E30] transition focus:outline-none"
@@ -463,14 +505,16 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
               <Camera className="h-4 w-4 text-white" />
             </div>
           </button>
-          {/* hidden real input */}
+
+          {/* Hidden file inputs */}
           <input accept="image/*" className="hidden" onChange={handleLogoSelected} ref={logoInputRef} type="file" />
+          <input accept="image/*" className="hidden" onChange={handleCoverSelected} ref={coverInputRef} type="file" />
 
           {/* Right actions */}
           <div className="flex items-center gap-2 pt-10">
-            {/* Social icons (view mode only) */}
+            {/* Social icon buttons — only platforms with a URL (exclude website from icons) */}
             {!isEditingGeneral && socialPlatforms
-              .filter((p) => draft.socialLinks?.[p.key])
+              .filter((p) => p.isAsset && draft.socialLinks?.[p.key])
               .map((p) => (
                 <a
                   className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 transition hover:bg-white/20"
@@ -483,6 +527,8 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
                   <img alt={p.label} className="h-4 w-4 rounded-sm object-cover" src={p.icon} />
                 </a>
               ))}
+
+            {/* Settings gear */}
             <button
               className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white/60 transition hover:bg-white/20 hover:text-white/90"
               onClick={onOpenSettings}
@@ -491,15 +537,17 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
             >
               <Settings className="h-3.5 w-3.5" />
             </button>
+
+            {/* Edit — icon-only circle, no text */}
             {!isEditingGeneral && (
               <button
-                className="flex items-center gap-1.5 rounded-full px-4 py-2 text-[12px] font-semibold text-white/80 transition hover:bg-white/15 hover:text-white"
+                className="flex h-8 w-8 items-center justify-center rounded-full text-white/70 transition hover:bg-white/15 hover:text-white"
                 onClick={openGeneral}
-                style={{ border: '1px solid rgba(255,255,255,0.15)' }}
+                style={{ border: '1px solid rgba(255,255,255,0.18)' }}
+                title="Editar perfil"
                 type="button"
               >
-                <Pencil className="h-3 w-3" />
-                Editar
+                <Pencil className="h-3.5 w-3.5" />
               </button>
             )}
           </div>
@@ -526,6 +574,7 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
               </span>
               {draft.industries[0] && <span>{draft.industries[0]}</span>}
             </div>
+            {/* Website text link — only when URL exists */}
             {draft.socialLinks?.website && (
               <a
                 className="mt-3 flex items-center gap-1.5 text-[12px] text-[#4A9FFF]/80 transition hover:text-[#4A9FFF]"
@@ -545,10 +594,10 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
           {isEditingGeneral && (
             <motion.div
               animate={{ opacity: 1, height: 'auto' }}
+              className="overflow-hidden"
               exit={{ opacity: 0, height: 0 }}
               initial={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.22 }}
-              className="overflow-hidden"
             >
               <div className="space-y-4 px-5 pb-6 pt-3">
                 {/* Name + description */}
@@ -577,27 +626,30 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
                   <DarkField label="País"   value={draft.location.country} onChange={(v) => updateLocation('country', v)} placeholder="País" />
                 </div>
 
-                {/* Website */}
-                <DarkField
-                  label="Sitio web"
-                  value={draft.socialLinks?.website || ''}
-                  onChange={(v) => updateSocialLink('website', v)}
-                  placeholder="https://tusitio.com"
-                />
-
-                {/* Social links */}
+                {/* Redes sociales — all 4 platforms in one loop (includes website) */}
                 <div className="space-y-3">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/40">Redes sociales</p>
                   {socialPlatforms.map((p) => (
                     <div className="flex items-center gap-3" key={p.key}>
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px]" style={{ background: 'rgba(255,255,255,0.08)' }}>
-                        <img alt={p.label} className="h-4 w-4 rounded-sm" src={p.icon} />
+                      <div
+                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px]"
+                        style={{ background: 'rgba(255,255,255,0.08)' }}
+                      >
+                        {p.isAsset ? (
+                          <img alt={p.label} className="h-4 w-4 rounded-sm" src={p.icon} />
+                        ) : (
+                          <Globe className="h-4 w-4 text-white/55" />
+                        )}
                       </div>
                       <input
-                        className="flex-1 rounded-[12px] px-3.5 py-2.5 text-[13px] text-white/80 outline-none transition placeholder:text-white/25 focus:ring-2 focus:ring-[#1871D8]/40"
+                        className="flex-1 rounded-[12px] px-3.5 py-2.5 text-[13px] outline-none transition placeholder:text-white/25 focus:ring-2 focus:ring-[#1871D8]/40"
                         onChange={(e) => updateSocialLink(p.key, e.target.value)}
-                        placeholder={`URL de ${p.label}`}
-                        style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.10)' }}
+                        placeholder={p.key === 'website' ? 'https://tusitio.com' : `URL de ${p.label}`}
+                        style={{
+                          background: 'rgba(255,255,255,0.07)',
+                          border: '1px solid rgba(255,255,255,0.10)',
+                          color: 'white',
+                        }}
                         value={draft.socialLinks?.[p.key] || ''}
                       />
                     </div>
@@ -702,6 +754,71 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
         )}
       </div>
 
+      {/* ──────────────── MI GALERÍA ──────────────── */}
+      <div className="mx-4 mt-3 overflow-hidden rounded-[24px] bg-white shadow-[0_2px_16px_rgba(0,0,0,0.06)]">
+
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 pb-3 pt-5">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">Mi galería</p>
+            <p className="mt-0.5 text-[11px] text-slate-400">Imágenes propias de tu marca</p>
+          </div>
+          <button
+            className="flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-[11px] font-semibold text-slate-600 transition hover:bg-slate-200 active:scale-95"
+            onClick={() => galleryInputRef.current?.click()}
+            type="button"
+          >
+            <Plus className="h-3 w-3" />
+            Agregar
+          </button>
+        </div>
+
+        {/* Grid or empty state */}
+        {(draft.gallery?.length ?? 0) > 0 ? (
+          <div className="grid grid-cols-3 gap-2 px-5 pb-5">
+            {(draft.gallery ?? []).map((img, i) => (
+              <div className="group relative aspect-square overflow-hidden rounded-[12px] bg-slate-100" key={i}>
+                <img alt="" className="h-full w-full object-cover transition group-hover:scale-105" src={img} />
+                <div className="absolute inset-0 bg-black/0 transition group-hover:bg-black/20" />
+                <button
+                  className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-black/55 opacity-0 transition hover:bg-black/80 group-hover:opacity-100"
+                  onClick={() => removeGalleryImage(i)}
+                  type="button"
+                >
+                  <X className="h-3 w-3 text-white" />
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="px-5 pb-5">
+            <button
+              className="flex w-full flex-col items-center gap-3 rounded-[16px] border-2 border-dashed border-slate-200 py-8 transition hover:border-[#1871D8]/35 hover:bg-blue-50/30 active:scale-[0.99]"
+              onClick={() => galleryInputRef.current?.click()}
+              type="button"
+            >
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-slate-100">
+                <Camera className="h-5 w-5 text-slate-400" />
+              </div>
+              <div className="text-center">
+                <p className="text-[13px] font-semibold text-slate-500">Subí imágenes de tu marca</p>
+                <p className="mt-0.5 text-[11px] text-slate-400">Se mostrarán en tu perfil y en los matches</p>
+              </div>
+            </button>
+          </div>
+        )}
+
+        {/* Hidden multi-file input */}
+        <input
+          accept="image/*"
+          className="hidden"
+          multiple
+          onChange={handleGallerySelected}
+          ref={galleryInputRef}
+          type="file"
+        />
+      </div>
+
       {/* ──────────────── MI PLAN ──────────────── */}
       <div
         className="mx-4 mt-4 overflow-hidden rounded-[24px]"
@@ -744,7 +861,8 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
           onClose={() => setImageGuide(null)}
           onUpload={() => {
             setImageGuide(null);
-            if (imageGuide === 'logo') logoInputRef.current?.click();
+            if (imageGuide === 'logo')  logoInputRef.current?.click();
+            if (imageGuide === 'cover') coverInputRef.current?.click();
           }}
         />
       )}
