@@ -4,6 +4,7 @@ import {
   Search, Plus, X, Calendar, MessageSquare, TrendingUp, ArrowRight,
   Video, Target, DollarSign, CheckCircle2, Circle, Edit2, List,
   LayoutDashboard, Check, Activity, Zap, AlertTriangle, Globe,
+  SlidersHorizontal,
 } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
@@ -1024,40 +1025,50 @@ function AllianceDetailSheet({ alliance, onClose, onOpenOpp }) {
 }
 
 // ---------------------------------------------------------------------------
-// EXPANDABLE FAB
+// EXPANDABLE FAB — Lucide icons, no emoji, no "Nueva alianza"
 // ---------------------------------------------------------------------------
 const FAB_OPTIONS = [
-  { icon: '🤝', label: 'Nueva alianza',     action: 'alliance'     },
-  { icon: '🎯', label: 'Nueva oportunidad', action: 'opportunity'  },
-  { icon: '📅', label: 'Nuevo meeting',     action: 'meeting'      },
-  { icon: '✅', label: 'Nueva tarea',       action: 'task'         },
+  { Icon: Target,       label: 'Nueva oportunidad', action: 'opportunity', accent: '#141E30' },
+  { Icon: Calendar,     label: 'Agendar reunión',   action: 'meeting',     accent: '#1871D8' },
+  { Icon: CheckCircle2, label: 'Nueva tarea',       action: 'task',        accent: '#059669' },
 ];
 
 function ExpandableFAB({ onAction }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="fixed bottom-[90px] right-5 z-30 flex flex-col items-end gap-2">
+    <div className="fixed bottom-[90px] right-5 z-30 flex flex-col items-end gap-2.5">
       <AnimatePresence>
         {open && FAB_OPTIONS.map((opt, i) => (
           <motion.button
             key={opt.label}
-            initial={{ opacity: 0, y: 16, scale: 0.85 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 8, scale: 0.85 }}
-            transition={{ delay: (FAB_OPTIONS.length - 1 - i) * 0.055, duration: 0.18, ease: 'easeOut' }}
+            initial={{ opacity: 0, x: 12, scale: 0.88 }}
+            animate={{ opacity: 1, x: 0,  scale: 1    }}
+            exit={{ opacity: 0, x: 8, scale: 0.88 }}
+            transition={{ delay: (FAB_OPTIONS.length - 1 - i) * 0.05, type: 'spring', damping: 22, stiffness: 380 }}
             onClick={() => { onAction(opt.action); setOpen(false); }}
             type="button"
-            className="flex items-center gap-2.5 rounded-full bg-white px-4 py-2.5 text-[13px] font-semibold text-[#1A1A1A] whitespace-nowrap"
-            style={{ boxShadow: '0 4px 20px rgba(20,30,48,0.15), 0 1px 4px rgba(20,30,48,0.08)' }}
+            className="flex items-center gap-3 whitespace-nowrap rounded-[18px] px-4 py-2.5 text-[13px] font-semibold text-[#141E30]"
+            style={{
+              background: 'rgba(255,255,255,0.96)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              boxShadow: '0 6px 24px rgba(20,30,48,0.14), 0 1px 4px rgba(20,30,48,0.08)',
+              border: '1px solid rgba(20,30,48,0.07)',
+            }}
           >
-            <span className="text-base">{opt.icon}</span>
+            <div
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full"
+              style={{ background: `${opt.accent}14` }}
+            >
+              <opt.Icon className="h-3.5 w-3.5" style={{ color: opt.accent }} strokeWidth={2} />
+            </div>
             {opt.label}
           </motion.button>
         ))}
       </AnimatePresence>
 
-      {/* Backdrop when open */}
+      {/* Backdrop */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -1068,13 +1079,15 @@ function ExpandableFAB({ onAction }) {
         )}
       </AnimatePresence>
 
+      {/* Main FAB button */}
       <motion.button
         type="button"
         onClick={() => setOpen(v => !v)}
         animate={{ rotate: open ? 45 : 0 }}
-        transition={{ duration: 0.2 }}
-        className="flex h-14 w-14 items-center justify-center rounded-full bg-[#141E30] text-white transition active:scale-95"
-        style={{ boxShadow: '0 8px 32px rgba(20,30,48,0.35), 0 2px 8px rgba(20,30,48,0.2)' }}
+        transition={{ type: 'spring', damping: 18, stiffness: 320 }}
+        whileTap={{ scale: 0.92 }}
+        className="flex h-14 w-14 items-center justify-center rounded-full bg-[#141E30] text-white"
+        style={{ boxShadow: '0 8px 32px rgba(20,30,48,0.38), 0 2px 8px rgba(20,30,48,0.22), inset 0 1px 0 rgba(255,255,255,0.08)' }}
       >
         <Plus className="h-6 w-6" />
       </motion.button>
@@ -1083,71 +1096,142 @@ function ExpandableFAB({ onAction }) {
 }
 
 // ---------------------------------------------------------------------------
-// GLASSMORPHISM QUICK FILTER BAR
+// FILTER DROPDOWN — glass button + slide-down panel (replaces QuickFilterBar + StatusTabs)
 // ---------------------------------------------------------------------------
-const QUICK_FILTERS = [
-  { id: 'high_value',    Icon: Zap,           label: 'Alto valor'    },
-  { id: 'high_priority', Icon: AlertTriangle,  label: 'Urgente'       },
-  { id: 'from_meeting',  Icon: Video,          label: 'Alliance Room' },
+const QUICK_FILTER_OPTIONS = [
+  { id: 'high_value',    Icon: Zap,          label: 'Alto valor'    },
+  { id: 'high_priority', Icon: AlertTriangle, label: 'Urgente'       },
+  { id: 'from_meeting',  Icon: Video,         label: 'Alliance Room' },
 ];
 
-function QuickFilterBar({ quickFilter, setQuickFilter }) {
-  return (
-    <div className="flex gap-2 overflow-x-auto [scrollbar-width:none] shrink-0">
-      {QUICK_FILTERS.map(({ id, Icon, label }) => {
-        const isActive = quickFilter === id;
-        return (
-          <button
-            key={id} type="button"
-            onClick={() => setQuickFilter(isActive ? null : id)}
-            className="shrink-0 flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-[12px] font-semibold transition-all"
-            style={{
-              backdropFilter: 'blur(8px)',
-              background: isActive ? 'rgba(20,30,48,0.92)' : 'rgba(255,255,255,0.88)',
-              borderColor: isActive ? 'transparent' : 'rgba(20,30,48,0.09)',
-              color: isActive ? 'white' : '#374151',
-              boxShadow: isActive
-                ? '0 4px 16px rgba(20,30,48,0.22)'
-                : '0 2px 8px rgba(20,30,48,0.06)',
-            }}
-          >
-            <Icon className="h-3.5 w-3.5" />
-            {label}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// STATUS TABS
-// ---------------------------------------------------------------------------
-const STATUS_TABS = [
-  { key: 'all',     label: 'Todos'         },
-  { key: 'active',  label: 'En ejecución'  },
-  { key: 'review',  label: 'En revisión'   },
-  { key: 'closed',  label: 'Cerrado'       },
+const STATUS_FILTER_OPTIONS = [
+  { key: 'all',    label: 'Todos'        },
+  { key: 'active', label: 'En ejecución' },
+  { key: 'review', label: 'En revisión'  },
+  { key: 'closed', label: 'Cerrado'      },
 ];
 
-function StatusTabs({ statusFilter, setStatusFilter }) {
+function FilterDropdown({ quickFilter, setQuickFilter, statusFilter, setStatusFilter }) {
+  const [open, setOpen] = useState(false);
+
+  const activeCount = (quickFilter !== null ? 1 : 0) + (statusFilter !== 'all' ? 1 : 0);
+  const clearAll    = () => { setQuickFilter(null); setStatusFilter('all'); };
+
   return (
-    <div className="flex gap-1.5 overflow-x-auto [scrollbar-width:none] shrink-0">
-      {STATUS_TABS.map(({ key, label }) => {
-        const isActive = statusFilter === key;
-        return (
-          <button key={key} type="button"
-            onClick={() => setStatusFilter(key)}
-            className={`shrink-0 rounded-full px-3.5 py-1.5 text-[12px] font-semibold transition-all ${
-              isActive
-                ? 'bg-[#141E30] text-white shadow-sm'
-                : 'bg-white/80 text-slate-500 ring-1 ring-slate-200 hover:bg-white'
-            }`}
-          >
-            {label}
-          </button>
-        );
-      })}
+    <div className="relative shrink-0">
+      {/* Trigger button */}
+      <motion.button
+        type="button"
+        onClick={() => setOpen(v => !v)}
+        whileTap={{ scale: 0.94 }}
+        className="relative flex h-11 w-11 items-center justify-center rounded-[16px] transition-all"
+        style={{
+          background: open ? 'rgba(20,30,48,0.90)' : 'rgba(255,255,255,0.92)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
+          border: `1px solid ${open ? 'transparent' : 'rgba(20,30,48,0.09)'}`,
+          boxShadow: open
+            ? '0 4px 20px rgba(20,30,48,0.25)'
+            : '0 2px 8px rgba(20,30,48,0.07)',
+          color: open ? 'white' : '#374151',
+        }}
+      >
+        <SlidersHorizontal className="h-4 w-4" />
+        {activeCount > 0 && (
+          <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#1871D8] text-[9px] font-bold text-white shadow-sm">
+            {activeCount}
+          </span>
+        )}
+      </motion.button>
+
+      <AnimatePresence>
+        {open && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              className="fixed inset-0 z-[39]"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setOpen(false)}
+            />
+            {/* Dropdown panel */}
+            <motion.div
+              className="absolute right-0 z-40 mt-2 overflow-hidden rounded-[20px] bg-white"
+              initial={{ opacity: 0, y: -6, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0,  scale: 1    }}
+              exit={{ opacity: 0, y: -6, scale: 0.96    }}
+              transition={{ type: 'spring', damping: 24, stiffness: 400 }}
+              style={{
+                width: 216,
+                border: '1px solid rgba(20,30,48,0.08)',
+                boxShadow: '0 20px 60px rgba(20,30,48,0.14), 0 4px 16px rgba(20,30,48,0.08)',
+              }}
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Quick filter section */}
+              <div className="px-4 pb-3 pt-4">
+                <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.20em] text-slate-400">Tipo</p>
+                <div className="space-y-0.5">
+                  {QUICK_FILTER_OPTIONS.map(({ id, Icon, label }) => {
+                    const isActive = quickFilter === id;
+                    return (
+                      <button key={id} type="button"
+                        onClick={() => setQuickFilter(isActive ? null : id)}
+                        className="flex w-full items-center gap-3 rounded-[12px] px-3 py-2.5 text-[13px] font-medium transition-all"
+                        style={{
+                          background: isActive ? 'rgba(20,30,48,0.06)' : 'transparent',
+                          color: isActive ? '#141E30' : '#64748B',
+                        }}
+                      >
+                        <Icon className="h-3.5 w-3.5 shrink-0" />
+                        <span className="flex-1 text-left">{label}</span>
+                        {isActive && <Check className="h-3 w-3 text-[#1871D8]" strokeWidth={2.8} />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="mx-4 border-t border-slate-100" />
+
+              {/* Status section */}
+              <div className="px-4 pb-3 pt-3">
+                <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.20em] text-slate-400">Estado</p>
+                <div className="space-y-0.5">
+                  {STATUS_FILTER_OPTIONS.map(({ key, label }) => {
+                    const isActive = statusFilter === key;
+                    return (
+                      <button key={key} type="button"
+                        onClick={() => { setStatusFilter(key); }}
+                        className="flex w-full items-center gap-3 rounded-[12px] px-3 py-2.5 text-[13px] font-medium transition-all"
+                        style={{
+                          background: isActive ? 'rgba(20,30,48,0.06)' : 'transparent',
+                          color: isActive ? '#141E30' : '#64748B',
+                        }}
+                      >
+                        <span className="flex-1 text-left">{label}</span>
+                        {isActive && <Check className="h-3 w-3 text-[#1871D8]" strokeWidth={2.8} />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {activeCount > 0 && (
+                <>
+                  <div className="mx-4 border-t border-slate-100" />
+                  <div className="px-4 pb-3 pt-2">
+                    <button type="button" onClick={clearAll}
+                      className="flex w-full items-center justify-center gap-1.5 rounded-[12px] py-2 text-[12px] font-semibold text-slate-400 transition hover:bg-slate-50 hover:text-slate-600"
+                    >
+                      <X className="h-3 w-3" /> Limpiar filtros
+                    </button>
+                  </div>
+                </>
+              )}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -1198,8 +1282,16 @@ function OpportunityCard({ opp, onOpen }) {
         <Avatar initials={opp.partner.initials} colorKey={opp.partner.colorKey} size="sm" />
         <span className={`text-xs font-semibold truncate ${pc.text}`}>{opp.partner.name}</span>
         <div className="ml-auto flex items-center gap-1.5 shrink-0">
-          {opp.isHighValue && <span className="rounded-full bg-emerald-50 text-emerald-700 px-2 py-0.5 text-[10px] font-semibold">⚡ Alto valor</span>}
-          {opp.fromMeeting  && <span className="rounded-full bg-violet-50 text-violet-700 px-2 py-0.5 text-[10px] font-semibold">🎥</span>}
+          {opp.isHighValue && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
+              <Zap className="h-2.5 w-2.5" /> Alto valor
+            </span>
+          )}
+          {opp.fromMeeting && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-violet-50 px-2 py-0.5 text-[10px] font-semibold text-violet-700">
+              <Video className="h-2.5 w-2.5" /> Room
+            </span>
+          )}
         </div>
       </div>
       <h3 className="text-[14px] font-semibold text-slate-800 leading-snug mb-1">{opp.title}</h3>
@@ -1342,11 +1434,10 @@ function FilterPills({ partnerFilter, setPartnerFilter, quickFilter, setQuickFil
           </button>
         );
       })}
-      <div className="h-5 w-px shrink-0 bg-slate-200" />
-      {[
-        { id: 'high_value',    label: '⚡ Alto valor'  },
-        { id: 'high_priority', label: '🔴 Urgente'      },
-        { id: 'from_meeting',  label: '🎥 Alliance'     },
+      {false && [
+        { id: 'high_value',    label: 'Alto valor'  },
+        { id: 'high_priority', label: 'Urgente'      },
+        { id: 'from_meeting',  label: 'Alliance'     },
       ].map(({ id, label }) => (
         <button key={id} type="button"
           onClick={() => setQuickFilter(quickFilter === id ? null : id)}
@@ -1496,7 +1587,7 @@ function ListView({ filtered, onOpen }) {
                 className="border-b border-slate-50 hover:bg-slate-50 cursor-pointer transition">
                 <td className="px-4 py-3 font-medium text-slate-800 max-w-[220px]">
                   <p className="truncate">{opp.title}</p>
-                  {opp.fromMeeting && <span className="text-[10px] text-violet-600 font-medium">🎥 Alliance Room</span>}
+                  {opp.fromMeeting && <span className="inline-flex items-center gap-1 text-[10px] font-medium text-violet-600"><Video className="h-2.5 w-2.5" /> Alliance Room</span>}
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-1.5">
@@ -1530,9 +1621,9 @@ function ListView({ filtered, onOpen }) {
 // RIGHT PANEL (desktop)
 // ---------------------------------------------------------------------------
 const ALERTS = [
-  { id: 'al1', icon: '⚠', label: 'Campaña Luna Beauty sin actividad 7 días', oppId: 'op3', severity: 'warning' },
-  { id: 'al2', icon: '🔴', label: 'Cotización Sushi Nakama vence mañana',       oppId: 'op2', severity: 'danger'  },
-  { id: 'al3', icon: '💡', label: '3 oportunidades listas para cerrar',         oppId: null,  severity: 'info'    },
+  { id: 'al1', Icon: AlertTriangle, label: 'Campaña Luna Beauty sin actividad 7 días', oppId: 'op3', severity: 'warning' },
+  { id: 'al2', Icon: Zap,           label: 'Cotización Sushi Nakama vence mañana',     oppId: 'op2', severity: 'danger'  },
+  { id: 'al3', Icon: TrendingUp,    label: '3 oportunidades listas para cerrar',       oppId: null,  severity: 'info'    },
 ];
 const PARTNER_METRICS = [
   { name: 'Bloom Florería', initials: 'BF', colorKey: 'pink',   opps: 3, revenue: 120000 },
@@ -1575,7 +1666,10 @@ function RightPanel({ opportunities, onFilterMetric, onOpenAlert }) {
                 alert.severity === 'danger'  ? 'bg-red-50 ring-1 ring-red-100' :
                 alert.severity === 'warning' ? 'bg-amber-50 ring-1 ring-amber-100' : 'bg-blue-50 ring-1 ring-blue-100'
               }`}>
-                <span className="mt-0.5 text-sm">{alert.icon}</span>
+                <alert.Icon className={`mt-0.5 h-4 w-4 shrink-0 ${
+                  alert.severity === 'danger'  ? 'text-red-500' :
+                  alert.severity === 'warning' ? 'text-amber-500' : 'text-blue-500'
+                }`} />
                 <p className="flex-1 text-xs leading-snug text-slate-600">{alert.label}</p>
                 {alert.oppId && (
                   <button type="button" onClick={() => onOpenAlert(alert.oppId)}
@@ -1969,27 +2063,34 @@ function WorkplaceView({ currentArea = 'general', onTaskMove, tasks = [] }) {
   return (
     <div className="flex flex-col gap-3" style={{ height: 'calc(100vh - 160px)', overflow: 'hidden' }}>
 
-      {/* ── Row 1: Search + View toggle ── */}
+      {/* ── Row 1: Search + Filter dropdown + View toggle ── */}
       <div className="flex shrink-0 items-center gap-2">
+        {/* Search — glass style */}
         <div className="relative flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <input
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            placeholder="Buscar empresas, oportunidades, rubros…"
-            className="h-11 w-full rounded-[16px] border border-slate-200 bg-white pl-10 pr-4 text-[13px] text-slate-700 shadow-sm outline-none transition focus:border-[#141E30]/20 focus:ring-2 focus:ring-[#141E30]/8"
+            placeholder="Buscar alianzas, oportunidades…"
+            className="h-11 w-full rounded-[16px] pl-10 pr-4 text-[13px] text-slate-700 outline-none transition"
+            style={{
+              background: 'rgba(255,255,255,0.88)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              border: '1px solid rgba(20,30,48,0.09)',
+              boxShadow: '0 2px 8px rgba(20,30,48,0.06)',
+            }}
           />
         </div>
+        {/* Filter dropdown — encapsulates quickFilter + statusFilter */}
+        <FilterDropdown
+          quickFilter={quickFilter}   setQuickFilter={setQuickFilter}
+          statusFilter={statusFilter} setStatusFilter={setStatusFilter}
+        />
         <ViewToggle view={view} setView={setView} />
       </div>
 
-      {/* ── Row 2: Quick filters (glassmorphism) ── */}
-      <QuickFilterBar quickFilter={quickFilter} setQuickFilter={setQuickFilter} />
-
-      {/* ── Row 3: Status tabs ── */}
-      <StatusTabs statusFilter={statusFilter} setStatusFilter={setStatusFilter} />
-
-      {/* ── Row 4: Partner pills (kanban/compact only) ── */}
+      {/* ── Row 2: Partner pills (kanban/compact only) ── */}
       {view !== 'ecosystem' && (
         <FilterPills
           partnerFilter={partnerFilter} setPartnerFilter={setPartnerFilter}
