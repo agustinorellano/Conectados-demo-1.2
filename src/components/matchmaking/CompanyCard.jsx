@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { MapPin } from 'lucide-react';
+import { InstagramFeedCompact } from '../shared/InstagramFeedPreview';
 
 const industryBg = {
   Indumentaria: 'radial-gradient(ellipse at 60% 0%, #9B8EC4 0%, #7B6BA8 40%, #C4A882 100%)',
@@ -100,6 +101,7 @@ function CompanyCard({ company }) {
             ))}
           </div>
         )}
+        <InstagramFeedCompact data={company.instagramData} />
       </div>
     </motion.article>
   );

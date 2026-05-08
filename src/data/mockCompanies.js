@@ -744,7 +744,11 @@ export const currentCompany = {
       context: diagnostic.main_insight,
       problems: diagnostic.problems[0]?.description || diagnostic.problems[0]?.impact || '',
       status: areaStatus(diagnostic.score)
-    }))
+    })),
+  instagramData: {
+    ...instagramProfiles['top-white'],
+    followers: currentCompanyEntity.objectives.current_followers,
+  },
 };
 
 const allCompanies = [...companies, ...demoCompanies];
@@ -759,6 +763,150 @@ const companyImages = {
   'cafe-patio': 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&q=80&fit=crop',
   'fit-studio': 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80&fit=crop',
   'tech-hub': 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80&fit=crop',
+};
+
+/* ── Instagram profile data per company ── */
+const instagramProfiles = {
+  'top-white': {
+    handle: 'topwhiteoficial',
+    url: 'https://www.instagram.com/topwhiteoficial/',
+    postsCount: 847,
+    engagementRate: 3.8,
+    feed: [
+      'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?w=400&q=85&fit=crop',
+    ],
+  },
+  'luna-beauty': {
+    handle: 'lunabeauty.ar',
+    url: 'https://www.instagram.com/lunabeauty.ar/',
+    postsCount: 634,
+    engagementRate: 4.2,
+    feed: [
+      'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1512207736890-6ffed8a84e8d?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1583241475880-083f84372725?w=400&q=85&fit=crop',
+    ],
+  },
+  'bloom-floreria': {
+    handle: 'bloomfloreria',
+    url: 'https://www.instagram.com/bloomfloreria/',
+    postsCount: 512,
+    engagementRate: 5.1,
+    feed: [
+      'https://images.unsplash.com/photo-1490750967868-88df5691cc0a?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1487530811015-780903fdb59e?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1455659817273-f96807779a8a?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1462275646964-a0e3386b89fa?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1508610048659-a06b669e3321?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=400&q=85&fit=crop',
+    ],
+  },
+  'sushi-nakama': {
+    handle: 'sushinakama.mza',
+    url: 'https://www.instagram.com/sushinakama.mza/',
+    postsCount: 891,
+    engagementRate: 4.7,
+    feed: [
+      'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1580822184713-fc5400e7fe10?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1559410545-0bdcd187e0a6?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1611143669185-af224c5e3252?w=400&q=85&fit=crop',
+    ],
+  },
+  'cafe-patio': {
+    handle: 'cafepatiobsas',
+    url: 'https://www.instagram.com/cafepatiobsas/',
+    postsCount: 423,
+    engagementRate: 3.9,
+    feed: [
+      'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=400&q=85&fit=crop',
+    ],
+  },
+  'core-wellness': {
+    handle: 'corewellness.ar',
+    url: 'https://www.instagram.com/corewellness.ar/',
+    postsCount: 718,
+    engagementRate: 5.3,
+    feed: [
+      'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1545389336-cf090694435e?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1593164842264-854604db2260?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?w=400&q=85&fit=crop',
+    ],
+  },
+  'moda-sustentable': {
+    handle: 'modasustentable.ba',
+    url: 'https://www.instagram.com/modasustentable.ba/',
+    postsCount: 356,
+    engagementRate: 4.4,
+    feed: [
+      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1536243159516-7e31c9de8bbd?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1523381140794-a1eef18a37c7?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?w=400&q=85&fit=crop',
+    ],
+  },
+  'fit-studio': {
+    handle: 'fitstudio.arg',
+    url: 'https://www.instagram.com/fitstudio.arg/',
+    postsCount: 582,
+    engagementRate: 4.9,
+    feed: [
+      'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1549576490-b0b4831ef60a?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1558017487-06bf9f82613a?w=400&q=85&fit=crop',
+    ],
+  },
+  'digital-craft': {
+    handle: 'digitalcraft.studio',
+    url: 'https://www.instagram.com/digitalcraft.studio/',
+    postsCount: 294,
+    engagementRate: 3.2,
+    feed: [
+      'https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1542744094-24638eff58bb?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=400&q=85&fit=crop',
+    ],
+  },
+  'tech-hub': {
+    handle: 'techhub.rosario',
+    url: 'https://www.instagram.com/techhub.rosario/',
+    postsCount: 178,
+    engagementRate: 2.8,
+    feed: [
+      'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&q=85&fit=crop',
+      'https://images.unsplash.com/photo-1563770660941-20978e870e26?w=400&q=85&fit=crop',
+    ],
+  },
 };
 
 export const recommendedCompanies = alliances
@@ -803,6 +951,12 @@ export const recommendedCompanies = alliances
       offersArr: company.alliance_profile.offers,
       needsArr: company.alliance_profile.needs,
       description: alliance.justification,
+      instagramData: instagramProfiles[company.id]
+        ? {
+            ...instagramProfiles[company.id],
+            followers: company.objectives.current_followers,
+          }
+        : null,
     };
   });
 

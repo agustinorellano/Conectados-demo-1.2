@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Heart, MapPin, X } from 'lucide-react';
+import { InstagramFeedModal } from '../shared/InstagramFeedPreview';
 
 const industryBg = {
   Indumentaria: 'radial-gradient(ellipse at 60% 0%, #9B8EC4 0%, #7B6BA8 40%, #C4A882 100%)',
@@ -89,6 +90,11 @@ function CompanyDetailModal({ company, onClose, onLike }) {
 
           {/* CONTENT */}
           <div className="max-h-[60vh] space-y-5 overflow-y-auto p-5">
+            {/* Instagram Feed */}
+            {company.instagramData && (
+              <InstagramFeedModal data={company.instagramData} />
+            )}
+
             {/* Perfil de Empresa */}
             <section>
               <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-400">

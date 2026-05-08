@@ -25,6 +25,7 @@ import instagramLogo from '../../assets/instagram-logo.svg';
 import tiktokLogo from '../../assets/tiktok-logo.svg';
 import linkedinLogo from '../../assets/linkedin-logo.svg';
 import { ALLIANCE_TAG_OPTIONS, INDUSTRY_OPTIONS } from '../../utils/companyProfile';
+import { InstagramFeedProfile } from '../shared/InstagramFeedPreview';
 
 const metricCards = [
   {
@@ -827,6 +828,16 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
             ))}
           </div>
         </div>
+
+        {/* INSTAGRAM FEED */}
+        {company.instagramData && (
+          <>
+            <div className="mx-5 border-t border-slate-100" />
+            <div className="py-5">
+              <InstagramFeedProfile data={company.instagramData} />
+            </div>
+          </>
+        )}
       </div>
 
       {/* MI PLAN — compact widget */}
