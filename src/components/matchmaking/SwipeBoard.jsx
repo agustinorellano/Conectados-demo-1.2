@@ -12,13 +12,6 @@ import { calculateMatchScore, shouldRevealCompany, willCreateMatch } from '../..
 
 const SWIPE_THRESHOLD_X = 110;
 
-const actionButtons = [
-  { key: 'skip', icon: X, tone: 'bg-rose-50 text-rose-500 ring-rose-100', size: 'h-14 w-14' },
-  { key: 'save', icon: Bookmark, tone: 'bg-amber-50 text-amber-500 ring-amber-100', size: 'h-12 w-12' },
-  { key: 'like', icon: Heart, tone: 'bg-emerald-50 text-emerald-500 ring-emerald-100', size: 'h-14 w-14' },
-  { key: 'profile', icon: Search, tone: 'bg-blue-50 text-[#1871D8] ring-blue-100', size: 'h-12 w-12' }
-];
-
 function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPlan }) {
   const deck = useMemo(
     () =>
@@ -92,16 +85,6 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
     setViewingCompany(activeCompany);
   };
 
-  const handleAction = (actionKey) => {
-    switch (actionKey) {
-      case 'skip': handleSkip(); break;
-      case 'save': handleSave(); break;
-      case 'like': handleLike(); break;
-      case 'profile': handleViewProfile(); break;
-      default: break;
-    }
-  };
-
   const handleDragEnd = (_, info) => {
     if (info.offset.x < -SWIPE_THRESHOLD_X) {
       handleSkip();
@@ -117,122 +100,188 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
 
   return (
     <>
-      <div className="space-y-6">
-        <section className="rounded-[20px] bg-gradient-to-b from-slate-50 to-white p-6 shadow-sm ring-1 ring-inset ring-slate-200">
-          <div className="relative mx-auto min-h-[600px] max-w-md">
-            {nextCompany ? (
+      {/* ── Dark navy full-height match container ── */}
+      <div
+        className="flex h-[calc(100svh-158px)] flex-col overflow-hidden rounded-[24px]"
+        style={{ background: 'linear-gradient(160deg, #0A0F1E 0%, #141E30 100%)' }}
+      >
+        {/* Card area — fills all remaining height */}
+        <div className="relative mx-auto w-full max-w-md flex-1 px-4 pt-4">
+          {/* Next card (background) */}
+          {nextCompany ? (
+            <motion.div
+              className="absolute inset-x-8 top-8 z-10"
+              style={{ scale: nextScale, opacity: 0.4 }}
+            >
+              <CompanyCard company={nextCompany} />
+            </motion.div>
+          ) : null}
+
+          <AnimatePresence initial={false} mode="wait">
+            {activeCompany ? (
               <motion.div
-                className="absolute inset-x-4 top-4 z-10 opacity-50"
-                style={{ scale: nextScale }}
+                animate={{ opacity: 1, x: 0, y: 0, rotate: 0, scale: 1 }}
+                className="absolute inset-0 z-20 cursor-grab active:cursor-grabbing"
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.7}
+                exit={{ opacity: 0, x: exitState.x, y: exitState.y, transition: { duration: 0.2 } }}
+                initial={{ opacity: 0, y: 16, scale: 0.98 }}
+                key={activeCompany.id}
+                onDragEnd={handleDragEnd}
+                style={{ x, y, rotate }}
+                transition={{ duration: 0.2 }}
               >
-                <CompanyCard company={nextCompany} />
-              </motion.div>
-            ) : null}
-
-            <AnimatePresence initial={false} mode="wait">
-              {activeCompany ? (
+                {/* LIKE stamp */}
                 <motion.div
-                  animate={{ opacity: 1, x: 0, y: 0, rotate: 0, scale: 1 }}
-                  className="absolute inset-0 z-20 cursor-grab active:cursor-grabbing"
-                  drag="x"
-                  dragConstraints={{ left: 0, right: 0 }}
-                  dragElastic={0.7}
-                  exit={{ opacity: 0, x: exitState.x, y: exitState.y, transition: { duration: 0.2 } }}
-                  initial={{ opacity: 0, y: 16, scale: 0.98 }}
-                  key={activeCompany.id}
-                  onDragEnd={handleDragEnd}
-                  style={{ x, y, rotate }}
-                  transition={{ duration: 0.2 }}
+                  className="pointer-events-none absolute left-5 top-5 z-30 rotate-[-16deg]"
+                  style={{ opacity: likeOpacity }}
                 >
-                  {/* LIKE overlay */}
-                  <motion.div
-                    className="pointer-events-none absolute left-5 top-5 z-30 rotate-[-16deg]"
-                    style={{ opacity: likeOpacity }}
-                  >
-                    <div className="rounded-xl border-[3px] border-[#22c55e] bg-[#22c55e]/10 px-4 py-1.5 backdrop-blur-sm">
-                      <span className="font-['Space_Grotesk'] text-2xl font-black tracking-wider text-[#22c55e]">
-                        LIKE
-                      </span>
-                    </div>
-                  </motion.div>
-
-                  {/* NOPE overlay */}
-                  <motion.div
-                    className="pointer-events-none absolute right-5 top-5 z-30 rotate-[16deg]"
-                    style={{ opacity: nopeOpacity }}
-                  >
-                    <div className="rounded-xl border-[3px] border-rose-500 bg-rose-500/10 px-4 py-1.5 backdrop-blur-sm">
-                      <span className="font-['Space_Grotesk'] text-2xl font-black tracking-wider text-rose-500">
-                        NOPE
-                      </span>
-                    </div>
-                  </motion.div>
-
-                  <CompanyCard company={activeCompany} />
-                </motion.div>
-              ) : (
-                <motion.div
-                  animate={{ opacity: 1 }}
-                  className="absolute inset-0 flex items-center justify-center rounded-[20px] bg-white p-10 text-center shadow-sm ring-1 ring-inset ring-slate-200"
-                  initial={{ opacity: 0 }}
-                  key="empty"
-                >
-                  <div>
-                    <p className="text-xs font-medium uppercase tracking-[0.24em] text-[#1871D8]">
-                      Deck completo
-                    </p>
-                    <h3 className="mt-3 font-['Space_Grotesk'] text-2xl font-bold tracking-tight text-[#1A1A1A]">
-                      No hay mas empresas por evaluar
-                    </h3>
+                  <div className="rounded-xl border-[3px] border-[#22c55e] bg-[#22c55e]/10 px-4 py-1.5 backdrop-blur-sm">
+                    <span className="font-['Space_Grotesk'] text-2xl font-black tracking-wider text-[#22c55e]">
+                      LIKE
+                    </span>
                   </div>
                 </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </section>
 
-        {/* Action buttons */}
-        <div className="flex items-center justify-center gap-5">
-          {actionButtons.map((button) => {
-            const Icon = button.icon;
-            return (
-              <motion.button
-                className={`inline-flex items-center justify-center rounded-full shadow-sm ring-1 ring-inset transition-shadow hover:shadow-md ${button.tone} ${button.size}`}
-                key={button.key}
-                onClick={() => handleAction(button.key)}
-                type="button"
-                whileHover={{ scale: 1.12 }}
-                whileTap={{ scale: 0.92 }}
+                {/* NOPE stamp */}
+                <motion.div
+                  className="pointer-events-none absolute right-5 top-5 z-30 rotate-[16deg]"
+                  style={{ opacity: nopeOpacity }}
+                >
+                  <div className="rounded-xl border-[3px] border-rose-500 bg-rose-500/10 px-4 py-1.5 backdrop-blur-sm">
+                    <span className="font-['Space_Grotesk'] text-2xl font-black tracking-wider text-rose-500">
+                      NOPE
+                    </span>
+                  </div>
+                </motion.div>
+
+                <CompanyCard company={activeCompany} />
+              </motion.div>
+            ) : (
+              /* Empty deck state */
+              <motion.div
+                animate={{ opacity: 1 }}
+                className="absolute inset-0 flex items-center justify-center rounded-[24px] p-10 text-center"
+                initial={{ opacity: 0 }}
+                key="empty"
+                style={{
+                  background: 'rgba(255,255,255,0.03)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255,255,255,0.08)'
+                }}
               >
-                <Icon className="h-5 w-5" />
-              </motion.button>
-            );
-          })}
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-[0.24em] text-[#4A9FFF]">
+                    Deck completo
+                  </p>
+                  <h3 className="mt-3 font-['Space_Grotesk'] text-2xl font-bold tracking-tight text-white/90">
+                    No hay mas empresas por evaluar
+                  </h3>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
-        {flashMessage ? (
-          <motion.div
-            animate={{ opacity: 1, y: 0 }}
-            className="mx-auto max-w-sm rounded-[18px] bg-slate-900 px-4 py-3 text-center text-sm font-medium text-white shadow-sm"
-            exit={{ opacity: 0 }}
-            initial={{ opacity: 0, y: 8 }}
-          >
-            {flashMessage}
-          </motion.div>
-        ) : null}
+        {/* Flash toast */}
+        <AnimatePresence>
+          {flashMessage && (
+            <motion.div
+              animate={{ opacity: 1, y: 0 }}
+              className="mx-auto mb-1 rounded-[18px] px-5 py-2.5 text-center text-sm font-medium text-white/90"
+              exit={{ opacity: 0, y: 4 }}
+              initial={{ opacity: 0, y: 8 }}
+              style={{
+                background: 'rgba(255,255,255,0.10)',
+                backdropFilter: 'blur(16px)',
+                border: '1px solid rgba(255,255,255,0.14)'
+              }}
+            >
+              {flashMessage}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {matchLimitReached ? (
-          <div className="mx-auto max-w-md rounded-[20px] border border-amber-200 bg-amber-50 p-5 text-center text-sm leading-6 text-amber-900">
+        {/* Match limit warning */}
+        {matchLimitReached && (
+          <div className="mx-4 mb-2 rounded-[16px] border border-amber-400/20 bg-amber-400/8 p-3.5 text-center text-sm leading-6 text-amber-200">
             Llegaste al limite diario del plan Starter.
             <button
-              className="mt-3 inline-flex rounded-full bg-amber-500 px-3 py-2 text-xs font-semibold text-white"
+              className="mt-2 inline-flex rounded-full bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white"
               onClick={onOpenPricing}
               type="button"
             >
               Ver planes
             </button>
           </div>
-        ) : null}
+        )}
+
+        {/* ── Action buttons — always visible at bottom ── */}
+        <div className="shrink-0 flex items-center justify-center gap-[18px] pb-7 pt-3">
+          {/* Skip / X */}
+          <motion.button
+            className="inline-flex h-[56px] w-[56px] items-center justify-center rounded-full"
+            onClick={handleSkip}
+            style={{
+              background: 'rgba(255,255,255,0.06)',
+              border: '1.5px solid rgba(255,255,255,0.14)',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.35)'
+            }}
+            type="button"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.88 }}
+          >
+            <X className="h-5 w-5 text-white/65" />
+          </motion.button>
+
+          {/* Save / Bookmark (secondary, smaller) */}
+          <motion.button
+            className="inline-flex h-[46px] w-[46px] items-center justify-center rounded-full"
+            onClick={handleSave}
+            style={{
+              background: 'rgba(255,255,255,0.05)',
+              border: '1.5px solid rgba(255,255,255,0.11)',
+              boxShadow: '0 3px 14px rgba(0,0,0,0.28)'
+            }}
+            type="button"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.88 }}
+          >
+            <Bookmark className="h-4 w-4 text-white/55" />
+          </motion.button>
+
+          {/* View Profile — center hero, DataPlus blue */}
+          <motion.button
+            className="inline-flex h-[68px] w-[68px] items-center justify-center rounded-full"
+            onClick={handleViewProfile}
+            style={{
+              background: 'linear-gradient(135deg, #1E7FF0 0%, #1459B0 100%)',
+              boxShadow: '0 0 28px rgba(24,113,216,0.6), 0 6px 24px rgba(0,0,0,0.45)'
+            }}
+            type="button"
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.92 }}
+          >
+            <Search className="h-6 w-6 text-white" />
+          </motion.button>
+
+          {/* Like / Heart */}
+          <motion.button
+            className="inline-flex h-[56px] w-[56px] items-center justify-center rounded-full"
+            onClick={handleLike}
+            style={{
+              background: 'rgba(34,197,94,0.11)',
+              border: '1.5px solid rgba(34,197,94,0.3)',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.35)'
+            }}
+            type="button"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.88 }}
+          >
+            <Heart className="h-5 w-5 text-emerald-400" />
+          </motion.button>
+        </div>
       </div>
 
       {viewingCompany && (

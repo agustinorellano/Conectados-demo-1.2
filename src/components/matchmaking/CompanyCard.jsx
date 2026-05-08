@@ -34,9 +34,8 @@ function CompanyCard({ company }) {
 
   return (
     <motion.article
-      className="relative w-full overflow-hidden rounded-[30px] shadow-[0_24px_60px_rgba(0,0,0,0.22)]"
+      className="relative h-full w-full overflow-hidden rounded-[30px] shadow-[0_24px_70px_rgba(0,0,0,0.38)]"
       initial={{ opacity: 0, scale: 0.98, y: 16 }}
-      style={{ minHeight: '560px' }}
       transition={{ duration: 0.24 }}
       whileInView={{ opacity: 1, scale: 1, y: 0 }}
     >
@@ -71,29 +70,30 @@ function CompanyCard({ company }) {
         </span>
       </div>
 
-      {/* Glassmorphism bottom panel */}
+      {/* Premium dark glassmorphism bottom panel */}
       <div
         className="absolute bottom-0 left-0 right-0 z-10 rounded-b-[30px] px-5 pb-6 pt-5"
         style={{
-          background: 'rgba(255,255,255,0.82)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          borderTop: '1px solid rgba(255,255,255,0.6)'
+          background: 'rgba(8,14,30,0.82)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
+          borderTop: '1px solid rgba(255,255,255,0.09)'
         }}
       >
-        <p className="mb-2 inline-flex items-center gap-1 text-[11px] font-medium text-slate-400">
+        <p className="mb-2 inline-flex items-center gap-1 text-[11px] font-medium text-white/45">
           <MapPin className="h-3 w-3" />
           {company.location}
         </p>
-        <h3 className="font-['Space_Grotesk'] text-xl font-bold leading-tight tracking-tight text-[#1A1A1A]">
+        <h3 className="font-['Space_Grotesk'] text-xl font-bold leading-tight tracking-tight text-white">
           {company.name}
         </h3>
         {company.segments?.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-1.5">
             {company.segments.slice(0, 3).map((seg) => (
               <span
-                className="rounded-full bg-black/6 px-2.5 py-1 text-[11px] font-medium capitalize text-[#333]"
+                className="rounded-full px-2.5 py-1 text-[11px] font-medium capitalize text-white/75"
                 key={seg}
+                style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.1)' }}
               >
                 {seg}
               </span>
