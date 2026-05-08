@@ -30,6 +30,7 @@ function ChatView({
   recommendedCompanies = [],
   userPlan = 'starter',
   onOpenAllianceRoom,
+  onOpenAssistant,
 }) {
   /* State — null means "show list", an id means "show that conversation" */
   const [activeConversationId, setActiveConversationId] = useState(null);
@@ -147,6 +148,7 @@ function ChatView({
               activeId={activeConversationId}
               conversations={enrichedThreads}
               onCreateOutbound={handleCreateOutbound}
+              onOpenAssistant={onOpenAssistant}
               onSelect={handleSelect}
             />
           </motion.div>

@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Edit3, Search, X } from 'lucide-react';
+import { Bot, Edit3, Search, X } from 'lucide-react';
 import ChatItem from './ChatItem';
 
 /* Todos | Activos | Pendientes — no "Cerrados" per spec */
@@ -32,7 +32,7 @@ function matchesSearch(conv, query) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════ */
-function ChatList({ conversations, activeId, onSelect, allowDirectMessage, onCreateOutbound }) {
+function ChatList({ conversations, activeId, onSelect, allowDirectMessage, onCreateOutbound, onOpenAssistant }) {
   const [query,         setQuery]         = useState('');
   const [debouncedQuery,setDebouncedQuery]= useState('');
   const [activeFilter,  setActiveFilter]  = useState('Todos');
@@ -126,6 +126,47 @@ function ChatList({ conversations, activeId, onSelect, allowDirectMessage, onCre
             </button>
           );
         })}
+      </div>
+
+      {/* ── Pinned: Asistente Virtual ── */}
+      <div className="px-3 pb-2">
+        <button
+          className="flex w-full items-center gap-3 rounded-[18px] px-3 py-3 text-left transition active:scale-[0.98]"
+          onClick={onOpenAssistant}
+          style={{
+            background: 'linear-gradient(135deg, rgba(12,18,38,0.90) 0%, rgba(18,26,54,0.85) 100%)',
+            border: '1px solid rgba(24,113,216,0.25)',
+            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 16px rgba(24,113,216,0.12)',
+          }}
+          type="button"
+        >
+          {/* AI avatar */}
+          <div
+            className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px]"
+            style={{
+              background: 'linear-gradient(135deg, #1459B0, #1871D8)',
+              boxShadow: '0 0 16px rgba(24,113,216,0.4)',
+            }}
+          >
+            <Bot className="h-5 w-5 text-white" />
+            {/* pulse dot */}
+            <span className="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full border-2 bg-emerald-400"
+              style={{ borderColor: 'rgba(12,18,38,0.9)' }} />
+          </div>
+          {/* Info */}
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-bold text-white">Asistente Virtual</p>
+              <span className="rounded-full bg-[#1871D8]/20 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-[#4A9FFF]">
+                IA
+              </span>
+              <span className="ml-auto text-[10px] text-white/30">📌</span>
+            </div>
+            <p className="mt-0.5 truncate text-[12px] text-white/45">
+              Propuestas, tips y optimización de perfil
+            </p>
+          </div>
+        </button>
       </div>
 
       {/* ── Conversation list ── */}

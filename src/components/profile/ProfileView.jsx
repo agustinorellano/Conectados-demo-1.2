@@ -3,15 +3,18 @@
   ArrowRight,
   Building2,
   Camera,
+  Crown,
   ExternalLink,
   ImagePlus,
   Layers3,
   Link2,
   MapPin,
   Save,
+  Settings,
   Sparkles,
   Tags,
-  Trash2
+  Trash2,
+  Zap
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import BranchManager from './BranchManager';
@@ -121,7 +124,7 @@ function SocialLinkButton({ icon, label, href }) {
   );
 }
 
-function CompanyProfile({ company, onAreaSelect, onSave }) {
+function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
   const [draft, setDraft] = useState(company);
   const [savedMessage, setSavedMessage] = useState('');
   const [editingSections, setEditingSections] = useState({});
@@ -384,6 +387,14 @@ function CompanyProfile({ company, onAreaSelect, onSave }) {
                   <img alt={platform.label} className="h-5 w-5 rounded-md object-cover" src={platform.icon} />
                 </a>
               ))}
+            <button
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur transition hover:bg-white/25"
+              onClick={onOpenSettings}
+              title="Ajustes"
+              type="button"
+            >
+              <Settings className="h-4 w-4" />
+            </button>
             <button
               className="flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-xs font-bold text-[#141E30] shadow transition hover:shadow-md"
               onClick={() => {
@@ -815,6 +826,47 @@ function CompanyProfile({ company, onAreaSelect, onSave }) {
               />
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* MI PLAN — compact widget */}
+      <div className="mx-4 mt-4 overflow-hidden rounded-[24px]"
+        style={{
+          background: 'linear-gradient(135deg, rgba(10,15,32,0.92) 0%, rgba(8,20,46,0.88) 100%)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05), 0 8px 28px rgba(0,0,0,0.20)',
+        }}
+      >
+        <div className="flex items-center justify-between px-5 py-4">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#4A9FFF]">Tu plan</p>
+            <p className="mt-1 font-['Space_Grotesk'] text-lg font-bold capitalize text-white">
+              {company.plan || 'Starter'}
+            </p>
+            <p className="mt-0.5 text-[11px] text-white/45">
+              {company.plan === 'scale'
+                ? 'Acceso completo a todas las funciones'
+                : company.plan === 'growth'
+                  ? 'Matches ilimitados · 1 Boost mensual'
+                  : 'Actualizá para desbloquear más funciones'}
+            </p>
+          </div>
+          <button
+            className="flex items-center gap-1.5 rounded-[14px] px-4 py-2.5 text-xs font-bold text-white transition hover:-translate-y-0.5"
+            onClick={onOpenSettings}
+            style={{
+              background: 'linear-gradient(135deg, #1871D8, #1459B0)',
+              boxShadow: '0 4px 16px rgba(24,113,216,0.35)',
+            }}
+            type="button"
+          >
+            {company.plan === 'scale' ? (
+              <Crown className="h-3.5 w-3.5" />
+            ) : (
+              <Zap className="h-3.5 w-3.5" />
+            )}
+            {company.plan === 'scale' ? 'Premium' : 'Mejorar plan'}
+          </button>
         </div>
       </div>
 

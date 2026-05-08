@@ -13,6 +13,7 @@ import WorkplaceView from './components/workplace/WorkplaceView';
 import AssistantView from './components/assistant/AssistantView';
 import HelpCenterView from './components/manual/HelpCenterView';
 import PricingView from './components/pricing/PricingView';
+import SettingsView from './components/settings/SettingsView';
 import AllianceRoomView from './components/alliance-room/AllianceRoomView';
 import {
   actionItems,
@@ -102,6 +103,14 @@ function App() {
 
   const view = useMemo(() => {
     switch (activeView) {
+      case 'settings':
+        return (
+          <SettingsView
+            currentPlan={userPlan}
+            onCheckoutSuccess={(plan) => setUserPlan(plan)}
+            onNavigateToChat={() => setActiveView('assistant')}
+          />
+        );
       case 'profile':
         return (
           <ProfileView
@@ -117,6 +126,7 @@ function App() {
               setWorkplaceArea(area);
               setActiveView('workplace');
             }}
+            onOpenSettings={() => setActiveView('settings')}
             onSave={setCompanyProfile}
           />
         );
@@ -127,6 +137,7 @@ function App() {
             matches={matches}
             onScheduleMeeting={handleScheduleMeeting}
             onOpenAllianceRoom={() => setShowAllianceRoom(true)}
+            onOpenAssistant={() => setActiveView('assistant')}
             recommendedCompanies={personalizedCompanies}
             userPlan={userPlan}
           />

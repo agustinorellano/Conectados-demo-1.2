@@ -1,10 +1,4 @@
-import { BookOpen, Bot, CreditCard } from 'lucide-react';
-
-const utilityItems = [
-  { id: 'assistant', label: 'Asesor IA',   icon: Bot },
-  { id: 'help',      label: 'Help Center',  icon: BookOpen },
-  { id: 'pricing',   label: 'Pricing',      icon: CreditCard },
-];
+import { Settings } from 'lucide-react';
 
 const titles = {
   profile:    'Mi Empresa',
@@ -12,6 +6,7 @@ const titles = {
   alliances:  'Matchmaking',
   chats:      'Chats',
   workplace:  'Workplace',
+  settings:   'Ajustes',
   assistant:  'Asesor IA',
   help:       'Help Center',
   pricing:    'Pricing',
@@ -39,30 +34,27 @@ function AppHeader({ activeView, onNavigate, userPlan }) {
           </h1>
         </div>
 
-        {/* Right: utility icons (sm+) + DP avatar */}
+        {/* Right: settings gear + plan badge + DP avatar */}
         <div className="ml-3 flex shrink-0 items-center gap-2">
 
-          {/* Utility icons — only on sm+ screens */}
-          {utilityItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = activeView === item.id;
-            return (
-              <button
-                key={item.id}
-                className="hidden h-8 w-8 items-center justify-center rounded-[11px] transition-all duration-200 sm:inline-flex"
-                style={{
-                  background: isActive ? 'rgba(126,184,212,0.18)' : 'rgba(255,255,255,0.07)',
-                  border: isActive ? '1px solid rgba(126,184,212,0.3)' : '1px solid rgba(255,255,255,0.08)',
-                  color: isActive ? '#7EB8D4' : 'rgba(255,255,255,0.55)',
-                }}
-                onClick={() => onNavigate(item.id)}
-                title={item.label}
-                type="button"
-              >
-                <Icon className="h-3.5 w-3.5" />
-              </button>
-            );
-          })}
+          {/* Settings gear — visible on all screens */}
+          <button
+            className="flex h-8 w-8 items-center justify-center rounded-[11px] transition-all duration-200"
+            style={{
+              background: activeView === 'settings'
+                ? 'rgba(126,184,212,0.18)'
+                : 'rgba(255,255,255,0.07)',
+              border: activeView === 'settings'
+                ? '1px solid rgba(126,184,212,0.3)'
+                : '1px solid rgba(255,255,255,0.08)',
+              color: activeView === 'settings' ? '#7EB8D4' : 'rgba(255,255,255,0.55)',
+            }}
+            onClick={() => onNavigate('settings')}
+            title="Ajustes"
+            type="button"
+          >
+            <Settings className="h-3.5 w-3.5" />
+          </button>
 
           {/* Plan badge — hidden on xs, shown on sm+ */}
           <span
