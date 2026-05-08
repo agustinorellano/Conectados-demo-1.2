@@ -36,15 +36,16 @@ const COLUMNS = [
   { key: 'completado',  label: 'Cerrado ✓',    color: 'bg-emerald-50 border-emerald-200' },
 ];
 
-const PARTNERS_LIST       = ['Bloom Florería', 'Sushi Nakama', 'Luna Beauty', 'Core Wellness', 'Digital Craft'];
-const PARTNER_COLOR_KEYS  = { 'Bloom Florería': 'pink', 'Sushi Nakama': 'blue', 'Luna Beauty': 'violet', 'Core Wellness': 'amber', 'Digital Craft': 'cyan' };
-const PARTNER_INITIALS_MAP = { 'Bloom Florería': 'BF', 'Sushi Nakama': 'SN', 'Luna Beauty': 'LB', 'Core Wellness': 'CW', 'Digital Craft': 'DC' };
+const PARTNERS_LIST       = ['Bloom Florería', 'Sushi Nakama', 'Luna Beauty', 'Core Wellness', 'Digital Craft', 'Café Patio'];
+const PARTNER_COLOR_KEYS  = { 'Bloom Florería': 'pink', 'Sushi Nakama': 'brown', 'Luna Beauty': 'rose', 'Core Wellness': 'amber', 'Digital Craft': 'bronze', 'Café Patio': 'coffee' };
+const PARTNER_INITIALS_MAP = { 'Bloom Florería': 'BF', 'Sushi Nakama': 'SN', 'Luna Beauty': 'LB', 'Core Wellness': 'CW', 'Digital Craft': 'DC', 'Café Patio': 'CP' };
 const PARTNER_INIT_MAP = {
-  'Bloom Florería': { initials: 'BF', colorKey: 'pink' },
-  'Sushi Nakama':   { initials: 'SN', colorKey: 'blue' },
-  'Luna Beauty':    { initials: 'LB', colorKey: 'violet' },
-  'Core Wellness':  { initials: 'CW', colorKey: 'amber' },
-  'Digital Craft':  { initials: 'DC', colorKey: 'cyan' },
+  'Bloom Florería': { initials: 'BF', colorKey: 'pink',   logoSrc: null },
+  'Sushi Nakama':   { initials: 'SN', colorKey: 'brown',  logoSrc: '/logos/sushi-nakama.svg'  },
+  'Luna Beauty':    { initials: 'LB', colorKey: 'rose',   logoSrc: '/logos/luna-beauty.svg'   },
+  'Core Wellness':  { initials: 'CW', colorKey: 'amber',  logoSrc: null },
+  'Digital Craft':  { initials: 'DC', colorKey: 'bronze', logoSrc: '/logos/digital-craft.svg' },
+  'Café Patio':     { initials: 'CP', colorKey: 'coffee', logoSrc: '/logos/cafe-patio.svg'    },
 };
 const PARTNER_OPTIONS = PARTNERS_LIST;
 
@@ -52,13 +53,21 @@ const PARTNER_OPTIONS = PARTNERS_LIST;
 // NEW — gradient map (Apple Watch icon aesthetic)
 // ---------------------------------------------------------------------------
 const LOGO_GRADIENTS = {
-  pink:    { a: '#FF2D78', b: '#FF6B9D', shadow: 'rgba(255,45,120,0.35)' },
-  blue:    { a: '#1C3D8C', b: '#4C6EF5', shadow: 'rgba(76,110,245,0.35)' },
-  violet:  { a: '#7B2FBE', b: '#C45FE8', shadow: 'rgba(196,95,232,0.35)' },
-  amber:   { a: '#E8680A', b: '#FF9F0A', shadow: 'rgba(255,159,10,0.35)' },
-  cyan:    { a: '#0A7EA4', b: '#00C2E0', shadow: 'rgba(0,194,224,0.35)'  },
-  emerald: { a: '#059669', b: '#34D399', shadow: 'rgba(52,211,153,0.3)'  },
-  slate:   { a: '#475569', b: '#94A3B8', shadow: 'rgba(148,163,184,0.3)' },
+  // brand colors
+  pink:    { a: '#FF2D78', b: '#FF6B9D', shadow: 'rgba(255,45,120,0.35)'  },
+  // Sushi Nakama — deep red/crimson (enso circle brand)
+  brown:   { a: '#7B1E1E', b: '#C0392B', shadow: 'rgba(192,57,43,0.38)'   },
+  // Luna Beauty — rose gold
+  rose:    { a: '#A0522D', b: '#C9956B', shadow: 'rgba(201,149,107,0.38)' },
+  // Digital Craft — copper/bronze
+  bronze:  { a: '#6D3A1F', b: '#B87333', shadow: 'rgba(184,115,51,0.38)'  },
+  // Café Patio — warm coffee brown
+  coffee:  { a: '#3D2008', b: '#7B4F2E', shadow: 'rgba(123,79,46,0.38)'   },
+  // others
+  amber:   { a: '#E8680A', b: '#FF9F0A', shadow: 'rgba(255,159,10,0.35)'  },
+  cyan:    { a: '#0A7EA4', b: '#00C2E0', shadow: 'rgba(0,194,224,0.35)'   },
+  emerald: { a: '#059669', b: '#34D399', shadow: 'rgba(52,211,153,0.3)'   },
+  slate:   { a: '#475569', b: '#94A3B8', shadow: 'rgba(148,163,184,0.3)'  },
 };
 
 // Alliance operational status
@@ -300,6 +309,37 @@ const MOCK_OPPORTUNITIES = [
     activity: [{ id: 'a12-1', user: 'VC', action: 'creó la oportunidad', time: 'Hace 4d' }],
     comments: [], results: { leads: 0, conversions: 0, revenue: 0 }, area: 'operaciones', companyName: 'Core Wellness',
   },
+  {
+    id: 'op13', title: 'Café del mes — edición especial co-branded con menu degustación',
+    partner: { name: 'Café Patio', initials: 'CP', colorKey: 'coffee' },
+    type: 'colaboración', status: 'en_progreso', commercialStatus: 'activo',
+    priority: 'alta', estimatedValue: 55000, valueScale: 3,
+    assignees: [{ name: 'Agustín O.', initials: 'AO', colorKey: 'emerald' }],
+    dueDate: '18 May', isHighValue: false, fromMeeting: null,
+    description: 'Café edición especial con packaging co-branded. Menú degustación con maridaje para eventos.',
+    subtasks: [
+      { id: 's13-1', text: 'Definir granos y blend especial', done: true },
+      { id: 's13-2', text: 'Diseño de packaging co-branded', done: false },
+      { id: 's13-3', text: 'Plan de distribución en puntos de venta', done: false },
+    ],
+    activity: [{ id: 'a13-1', user: 'AO', action: 'inició colaboración con Café Patio', time: 'Hace 3d' }],
+    comments: [], results: { leads: 12, conversions: 4, revenue: 0 }, area: 'marketing', companyName: 'Café Patio',
+  },
+  {
+    id: 'op14', title: 'Espacio de trabajo en Café Patio — coworking × cafetería',
+    partner: { name: 'Café Patio', initials: 'CP', colorKey: 'coffee' },
+    type: 'evento', status: 'backlog', commercialStatus: 'negociación',
+    priority: 'media', estimatedValue: 38000, valueScale: 2,
+    assignees: [{ name: 'Valentina Cruz', initials: 'VC', colorKey: 'violet' }],
+    dueDate: '1 Jun', isHighValue: false, fromMeeting: null,
+    description: 'Días de trabajo desde Café Patio con tarifa especial para clientes Top White. Incluye consumición.',
+    subtasks: [
+      { id: 's14-1', text: 'Negociar tarifa por día', done: false },
+      { id: 's14-2', text: 'Comunicar beneficio a base de clientes', done: false },
+    ],
+    activity: [{ id: 'a14-1', user: 'VC', action: 'creó la oportunidad', time: 'Hace 1d' }],
+    comments: [], results: { leads: 0, conversions: 0, revenue: 0 }, area: 'operaciones', companyName: 'Café Patio',
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -351,7 +391,7 @@ function PriorityBadge({ priority, onClick }) {
 // ---------------------------------------------------------------------------
 // PARTNER LOGO — Apple Watch icon aesthetic (circular, gradient, shadow)
 // ---------------------------------------------------------------------------
-function PartnerLogo({ initials, colorKey, size = 'md' }) {
+function PartnerLogo({ initials, colorKey, size = 'md', logoSrc }) {
   const g = LOGO_GRADIENTS[colorKey] || LOGO_GRADIENTS.slate;
   const sizeMap = {
     xl: { box: 64, text: 20, radius: 32 },
@@ -361,15 +401,22 @@ function PartnerLogo({ initials, colorKey, size = 'md' }) {
     xs: { box: 32, text: 11, radius: 16 },
   };
   const s = sizeMap[size] || sizeMap.md;
+  const baseStyle = {
+    width: s.box, height: s.box, borderRadius: s.radius,
+    boxShadow: `0 4px 14px ${g.shadow}, 0 1px 3px rgba(0,0,0,0.18), inset 0 1px 1px rgba(255,255,255,0.22)`,
+    overflow: 'hidden',
+  };
+  if (logoSrc) {
+    return (
+      <div className="shrink-0 select-none" style={baseStyle}>
+        <img src={logoSrc} alt={initials} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+      </div>
+    );
+  }
   return (
     <div
       className="shrink-0 flex items-center justify-center font-['Space_Grotesk'] font-bold text-white select-none"
-      style={{
-        width: s.box, height: s.box, borderRadius: s.radius,
-        fontSize: s.text,
-        background: `linear-gradient(145deg, ${g.a} 0%, ${g.b} 100%)`,
-        boxShadow: `0 4px 14px ${g.shadow}, 0 1px 3px rgba(0,0,0,0.18), inset 0 1px 1px rgba(255,255,255,0.22)`,
-      }}
+      style={{ ...baseStyle, background: `linear-gradient(145deg, ${g.a} 0%, ${g.b} 100%)`, fontSize: s.text }}
     >
       {initials}
     </div>
@@ -563,46 +610,60 @@ function AllianceCompactCard({ alliance, onOpen }) {
 // ---------------------------------------------------------------------------
 // ALLIANCE ICON ITEM — single circular icon + label (Apple Watch home screen)
 // ---------------------------------------------------------------------------
-function AllianceIconItem({ alliance, onOpen }) {
-  const g       = LOGO_GRADIENTS[alliance.colorKey] || LOGO_GRADIENTS.slate;
-  const cfg     = ALLIANCE_STATUS[alliance.status]  || ALLIANCE_STATUS.planning;
+function AllianceIconItem({ alliance, onOpen, size = 64 }) {
+  const g        = LOGO_GRADIENTS[alliance.colorKey] || LOGO_GRADIENTS.slate;
+  const cfg      = ALLIANCE_STATUS[alliance.status]  || ALLIANCE_STATUS.planning;
   const isUrgent = alliance.status === 'urgent';
+  const pInfo    = PARTNER_INIT_MAP[alliance.name];
+  const logoSrc  = pInfo?.logoSrc || null;
 
   return (
     <motion.button
       onClick={() => onOpen(alliance)}
-      whileTap={{ scale: 0.9 }}
+      whileTap={{ scale: 0.88 }}
       transition={{ type: 'spring', damping: 20, stiffness: 400 }}
-      className="flex flex-col items-center gap-2 cursor-pointer focus:outline-none"
+      className="flex flex-col items-center gap-1.5 cursor-pointer focus:outline-none"
     >
       {/* Circular logo with status dot */}
       <div className="relative">
-        {/* Outer glow ring for urgent */}
+        {/* Urgent glow */}
         {isUrgent && (
           <motion.div
-            animate={{ opacity: [0.4, 0.8, 0.4] }}
+            animate={{ opacity: [0.3, 0.75, 0.3] }}
             transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute -inset-1.5 rounded-full"
+            className="absolute -inset-2 rounded-full"
             style={{ background: `radial-gradient(circle, ${g.shadow} 0%, transparent 70%)` }}
           />
         )}
 
         {/* Main icon circle */}
-        <div
-          className="relative flex items-center justify-center"
-          style={{
-            width: 72, height: 72, borderRadius: '50%',
-            background: `linear-gradient(145deg, ${g.a} 0%, ${g.b} 100%)`,
-            boxShadow: `0 6px 20px ${g.shadow}, 0 2px 6px rgba(0,0,0,0.18), inset 0 1px 1px rgba(255,255,255,0.25)`,
-          }}
-        >
-          <span
-            className="font-['Space_Grotesk'] font-bold text-white select-none"
-            style={{ fontSize: 20, letterSpacing: '-0.01em' }}
+        {logoSrc ? (
+          <div
+            className="relative overflow-hidden"
+            style={{
+              width: size, height: size, borderRadius: '50%',
+              boxShadow: `0 6px 20px ${g.shadow}, 0 2px 6px rgba(0,0,0,0.18), inset 0 1px 1px rgba(255,255,255,0.22)`,
+            }}
           >
-            {alliance.initials}
-          </span>
-        </div>
+            <img src={logoSrc} alt={alliance.name}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            />
+          </div>
+        ) : (
+          <div
+            className="relative flex items-center justify-center"
+            style={{
+              width: size, height: size, borderRadius: '50%',
+              background: `linear-gradient(145deg, ${g.a} 0%, ${g.b} 100%)`,
+              boxShadow: `0 6px 20px ${g.shadow}, 0 2px 6px rgba(0,0,0,0.18), inset 0 1px 1px rgba(255,255,255,0.25)`,
+            }}
+          >
+            <span className="font-['Space_Grotesk'] font-bold text-white select-none"
+              style={{ fontSize: size * 0.28, letterSpacing: '-0.01em' }}>
+              {alliance.initials}
+            </span>
+          </div>
+        )}
 
         {/* Status dot — top right */}
         <div className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center">
@@ -614,18 +675,14 @@ function AllianceIconItem({ alliance, onOpen }) {
               className="absolute inline-flex h-3 w-3 rounded-full"
             />
           )}
-          <span
-            className="relative h-3 w-3 rounded-full ring-2 ring-white"
-            style={{ backgroundColor: cfg.dot }}
-          />
+          <span className="relative h-3 w-3 rounded-full ring-2 ring-white"
+            style={{ backgroundColor: cfg.dot }} />
         </div>
       </div>
 
       {/* Name label */}
-      <p
-        className="text-center font-medium text-[#1A1A1A] leading-tight"
-        style={{ fontSize: 11, maxWidth: 76, lineHeight: '1.3' }}
-      >
+      <p className="text-center font-medium text-[#1A1A1A] leading-tight"
+        style={{ fontSize: 10, maxWidth: size + 12, lineHeight: '1.3' }}>
         {alliance.name}
       </p>
     </motion.button>
@@ -633,9 +690,18 @@ function AllianceIconItem({ alliance, onOpen }) {
 }
 
 // ---------------------------------------------------------------------------
-// ALLIANCE ECOSYSTEM — main view (icon grid, Apple Watch home screen style)
+// ALLIANCE ECOSYSTEM — orbital layout: my brand center, partners in ring
 // ---------------------------------------------------------------------------
+const MY_BRAND = { name: 'Top White', initials: 'TW', colorKey: 'slate' };
+
 function AllianceEcosystem({ allianceGroups, onOpen }) {
+  // Responsive container: use 300px on small screens, up to 340px
+  const CONTAINER = 320;
+  const CENTER    = CONTAINER / 2;
+  const RADIUS    = 118;          // distance from center to partner icon
+  const HUB_SIZE  = 80;           // my brand logo diameter
+  const ICON_SIZE = 60;           // partner icon diameter
+
   if (allianceGroups.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center gap-3 py-20 text-center">
@@ -646,21 +712,74 @@ function AllianceEcosystem({ allianceGroups, onOpen }) {
     );
   }
 
+  const N = allianceGroups.length;
+
   return (
-    <div className="pb-28">
-      <div className="grid grid-cols-3 gap-x-4 gap-y-7 px-2 pt-4">
-        {allianceGroups.map((a, i) => (
-          <motion.div
-            key={a.name}
-            initial={{ opacity: 0, scale: 0.7 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: i * 0.06, type: 'spring', damping: 18, stiffness: 320 }}
-            className="flex justify-center"
+    <div className="flex flex-col items-center pb-28 pt-4">
+      {/* Orbital container */}
+      <div className="relative" style={{ width: CONTAINER, height: CONTAINER }}>
+
+        {/* Subtle orbit ring — dashed circle */}
+        <svg
+          className="absolute inset-0 pointer-events-none"
+          width={CONTAINER} height={CONTAINER}
+          style={{ opacity: 0.12 }}
+        >
+          <circle
+            cx={CENTER} cy={CENTER} r={RADIUS}
+            fill="none" stroke="#141E30" strokeWidth={1.5}
+            strokeDasharray="5 6"
+          />
+        </svg>
+
+        {/* My brand — center hub */}
+        <div
+          className="absolute flex flex-col items-center gap-1.5"
+          style={{
+            left: CENTER - HUB_SIZE / 2,
+            top:  CENTER - HUB_SIZE / 2 - 8, // offset up slightly for label
+          }}
+        >
+          <div
+            className="flex items-center justify-center font-['Space_Grotesk'] font-bold text-white select-none"
+            style={{
+              width: HUB_SIZE, height: HUB_SIZE, borderRadius: '50%',
+              background: 'linear-gradient(145deg, #141E30 0%, #35577D 100%)',
+              boxShadow: '0 8px 28px rgba(20,30,48,0.45), 0 2px 8px rgba(20,30,48,0.25), inset 0 1px 1px rgba(255,255,255,0.18)',
+              fontSize: 22,
+            }}
           >
-            <AllianceIconItem alliance={a} onOpen={onOpen} />
-          </motion.div>
-        ))}
+            TW
+          </div>
+          <p className="text-center font-semibold text-[#141E30]" style={{ fontSize: 10, letterSpacing: '0.04em' }}>
+            Top White
+          </p>
+        </div>
+
+        {/* Partner icons — arranged in circle */}
+        {allianceGroups.map((alliance, i) => {
+          const angle = (2 * Math.PI / N) * i - Math.PI / 2; // start from top
+          const x     = CENTER + RADIUS * Math.cos(angle);
+          const y     = CENTER + RADIUS * Math.sin(angle);
+          return (
+            <motion.div
+              key={alliance.name}
+              className="absolute"
+              style={{ left: x - ICON_SIZE / 2, top: y - ICON_SIZE / 2 }}
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: i * 0.07, type: 'spring', damping: 16, stiffness: 300 }}
+            >
+              <AllianceIconItem alliance={alliance} onOpen={onOpen} size={ICON_SIZE} />
+            </motion.div>
+          );
+        })}
       </div>
+
+      {/* Legend: total count */}
+      <p className="mt-2 text-[11px] text-slate-400 font-medium">
+        {N} alianza{N !== 1 ? 's' : ''} activa{N !== 1 ? 's' : ''}
+      </p>
     </div>
   );
 }
@@ -1675,7 +1794,11 @@ function WorkplaceView({ currentArea = 'general', onTaskMove, tasks = [] }) {
     });
 
     return Object.values(groups)
+      .filter(g => g.name !== 'Top White') // Top White is our own brand — not a partner
       .map(g => {
+        // Enrich with canonical colorKey/logoSrc from PARTNER_INIT_MAP if available
+        const canonical = PARTNER_INIT_MAP[g.name];
+        if (canonical) { g.colorKey = canonical.colorKey; g.initials = canonical.initials; }
         const totalValue   = g.opps.reduce((s, o) => s + o.estimatedValue, 0);
         const totalRevenue = g.opps.reduce((s, o) => s + o.results.revenue, 0);
         const activeCount  = g.opps.filter(o => o.status === 'en_progreso').length;

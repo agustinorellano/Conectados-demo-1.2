@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#F5F0EA"/>
+      <stop offset="100%" stop-color="#EDE5D8"/>
+    </radialGradient>
+    <linearGradient id="brown" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5C3D2E"/>
+      <stop offset="100%" stop-color="#3D2008"/>
+    </linearGradient>
+    <linearGradient id="brownMid" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7B5030"/>
+      <stop offset="100%" stop-color="#5C3D2E"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <circle cx="100" cy="100" r="100" fill="url(#bg)"/>
+  <!-- Lotus outer petals (large) -->
+  <ellipse cx="100" cy="108" rx="14" ry="38" fill="url(#brownMid)" opacity="0.85" transform="rotate(-36 100 108)"/>
+  <ellipse cx="100" cy="108" rx="14" ry="38" fill="url(#brown)" opacity="0.9" transform="rotate(0 100 108)"/>
+  <ellipse cx="100" cy="108" rx="14" ry="38" fill="url(#brownMid)" opacity="0.85" transform="rotate(36 100 108)"/>
+  <ellipse cx="100" cy="108" rx="13" ry="35" fill="url(#brown)" opacity="0.75" transform="rotate(-72 100 108)"/>
+  <ellipse cx="100" cy="108" rx="13" ry="35" fill="url(#brownMid)" opacity="0.75" transform="rotate(72 100 108)"/>
+  <!-- Inner petals -->
+  <ellipse cx="100" cy="108" rx="10" ry="28" fill="url(#brownMid)" opacity="0.95" transform="rotate(-18 100 108)"/>
+  <ellipse cx="100" cy="108" rx="10" ry="28" fill="url(#brown)" opacity="0.95" transform="rotate(18 100 108)"/>
+  <ellipse cx="100" cy="108" rx="10" ry="28" fill="url(#brownMid)" opacity="0.9" transform="rotate(-54 100 108)"/>
+  <ellipse cx="100" cy="108" rx="10" ry="28" fill="url(#brown)" opacity="0.9" transform="rotate(54 100 108)"/>
+  <!-- Center circle with coffee bean -->
+  <circle cx="100" cy="96" r="20" fill="url(#brown)"/>
+  <!-- Coffee bean shape -->
+  <ellipse cx="100" cy="96" rx="10" ry="14" fill="#2A5C2E"/>
+  <line x1="100" y1="82" x2="100" y2="110" stroke="#1A3D1C" stroke-width="2" stroke-linecap="round"/>
+  <!-- Steam wisps -->
+  <path d="M94 74 Q92 68 94 62 Q96 56 94 50" fill="none" stroke="url(#brown)" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+  <path d="M100 72 Q98 64 100 58 Q102 52 100 46" fill="none" stroke="url(#brown)" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+  <path d="M106 74 Q108 68 106 62 Q104 56 106 50" fill="none" stroke="url(#brown)" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+</svg>

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#F5E6D3"/>
+      <stop offset="100%" stop-color="#EDD9C0"/>
+    </radialGradient>
+    <linearGradient id="red" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8B1A1A"/>
+      <stop offset="100%" stop-color="#C0392B"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <circle cx="100" cy="100" r="100" fill="url(#bg)"/>
+  <!-- Enso circle (brush stroke style) -->
+  <path d="M100 30 C138 30, 168 58, 168 100 C168 142, 138 170, 100 170 C62 170, 32 142, 32 100 C32 70, 48 46, 72 36"
+    fill="none" stroke="url(#red)" stroke-width="12" stroke-linecap="round"/>
+  <!-- Cherry blossom branch suggestion -->
+  <line x1="100" y1="30" x2="130" y2="18" stroke="#8B1A1A" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="134" cy="15" r="5" fill="#E8A0B0" opacity="0.9"/>
+  <circle cx="142" cy="22" r="4" fill="#E8A0B0" opacity="0.8"/>
+  <circle cx="125" cy="12" r="3.5" fill="#E8A0B0" opacity="0.7"/>
+  <!-- Sushi piece (simplified nigiri) -->
+  <ellipse cx="100" cy="118" rx="26" ry="14" fill="#F5E6D3" stroke="#D4B896" stroke-width="1.5"/>
+  <ellipse cx="100" cy="110" rx="22" ry="10" fill="#E8956D"/>
+  <ellipse cx="100" cy="108" rx="20" ry="8" fill="#F4845F"/>
+  <!-- Wasabi dot -->
+  <circle cx="118" cy="120" r="4" fill="#5D8A5E"/>
+  <!-- Text -->
+  <text x="100" y="158" font-family="Georgia, serif" font-size="13" font-weight="bold" fill="#7B1E1E" text-anchor="middle" letter-spacing="1">NAKAMA</text>
+</svg>

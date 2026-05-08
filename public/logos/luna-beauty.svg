@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#FAFAFA"/>
+      <stop offset="100%" stop-color="#F0EDE8"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C9956B"/>
+      <stop offset="50%" stop-color="#B87A50"/>
+      <stop offset="100%" stop-color="#8B5E3C"/>
+    </linearGradient>
+    <linearGradient id="goldLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#DEB896"/>
+      <stop offset="100%" stop-color="#C9956B"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <circle cx="100" cy="100" r="100" fill="url(#bg)"/>
+  <!-- Outer ornamental ring -->
+  <circle cx="100" cy="100" r="82" fill="none" stroke="url(#gold)" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.5"/>
+  <circle cx="100" cy="100" r="76" fill="none" stroke="url(#goldLight)" stroke-width="2.5" opacity="0.3"/>
+  <!-- Celtic/ornamental pattern hints -->
+  <circle cx="100" cy="18" r="3" fill="url(#gold)" opacity="0.6"/>
+  <circle cx="100" cy="182" r="3" fill="url(#gold)" opacity="0.6"/>
+  <circle cx="18" cy="100" r="3" fill="url(#gold)" opacity="0.6"/>
+  <circle cx="182" cy="100" r="3" fill="url(#gold)" opacity="0.6"/>
+  <!-- Crescent moon -->
+  <path d="M88 58 C72 66, 66 84, 72 100 C66 84, 80 70, 100 70 C86 70, 78 80, 80 94 C74 78, 78 64, 88 58Z"
+    fill="url(#gold)" opacity="0.9"/>
+  <path d="M100 62 C118 62, 130 76, 128 92 C130 76, 122 60, 104 58 C106 58, 100 62, 100 62Z"
+    fill="url(#goldLight)" opacity="0.5"/>
+  <!-- Lotus petals -->
+  <ellipse cx="100" cy="128" rx="8" ry="20" fill="url(#goldLight)" opacity="0.9" transform="rotate(-20 100 128)"/>
+  <ellipse cx="100" cy="128" rx="8" ry="20" fill="url(#gold)" opacity="0.8" transform="rotate(0 100 128)"/>
+  <ellipse cx="100" cy="128" rx="8" ry="20" fill="url(#goldLight)" opacity="0.9" transform="rotate(20 100 128)"/>
+  <ellipse cx="100" cy="128" rx="7" ry="18" fill="url(#gold)" opacity="0.7" transform="rotate(-40 100 128)"/>
+  <ellipse cx="100" cy="128" rx="7" ry="18" fill="url(#goldLight)" opacity="0.7" transform="rotate(40 100 128)"/>
+  <!-- Lotus center -->
+  <circle cx="100" cy="116" r="10" fill="url(#gold)"/>
+  <circle cx="100" cy="116" r="6" fill="url(#goldLight)"/>
+  <!-- Glow points -->
+  <circle cx="72" cy="72" r="3" fill="#DEB896" opacity="0.8"/>
+  <circle cx="128" cy="72" r="3" fill="#DEB896" opacity="0.8"/>
+</svg>
