@@ -561,7 +561,79 @@ function AllianceCompactCard({ alliance, onOpen }) {
 }
 
 // ---------------------------------------------------------------------------
-// ALLIANCE ECOSYSTEM — main view
+// ALLIANCE ICON ITEM — single circular icon + label (Apple Watch home screen)
+// ---------------------------------------------------------------------------
+function AllianceIconItem({ alliance, onOpen }) {
+  const g       = LOGO_GRADIENTS[alliance.colorKey] || LOGO_GRADIENTS.slate;
+  const cfg     = ALLIANCE_STATUS[alliance.status]  || ALLIANCE_STATUS.planning;
+  const isUrgent = alliance.status === 'urgent';
+
+  return (
+    <motion.button
+      onClick={() => onOpen(alliance)}
+      whileTap={{ scale: 0.9 }}
+      transition={{ type: 'spring', damping: 20, stiffness: 400 }}
+      className="flex flex-col items-center gap-2 cursor-pointer focus:outline-none"
+    >
+      {/* Circular logo with status dot */}
+      <div className="relative">
+        {/* Outer glow ring for urgent */}
+        {isUrgent && (
+          <motion.div
+            animate={{ opacity: [0.4, 0.8, 0.4] }}
+            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute -inset-1.5 rounded-full"
+            style={{ background: `radial-gradient(circle, ${g.shadow} 0%, transparent 70%)` }}
+          />
+        )}
+
+        {/* Main icon circle */}
+        <div
+          className="relative flex items-center justify-center"
+          style={{
+            width: 72, height: 72, borderRadius: '50%',
+            background: `linear-gradient(145deg, ${g.a} 0%, ${g.b} 100%)`,
+            boxShadow: `0 6px 20px ${g.shadow}, 0 2px 6px rgba(0,0,0,0.18), inset 0 1px 1px rgba(255,255,255,0.25)`,
+          }}
+        >
+          <span
+            className="font-['Space_Grotesk'] font-bold text-white select-none"
+            style={{ fontSize: 20, letterSpacing: '-0.01em' }}
+          >
+            {alliance.initials}
+          </span>
+        </div>
+
+        {/* Status dot — top right */}
+        <div className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center">
+          {cfg.pulse && (
+            <motion.span
+              style={{ backgroundColor: cfg.dot }}
+              animate={{ scale: [1, 2.4, 1], opacity: [0.7, 0, 0.7] }}
+              transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute inline-flex h-3 w-3 rounded-full"
+            />
+          )}
+          <span
+            className="relative h-3 w-3 rounded-full ring-2 ring-white"
+            style={{ backgroundColor: cfg.dot }}
+          />
+        </div>
+      </div>
+
+      {/* Name label */}
+      <p
+        className="text-center font-medium text-[#1A1A1A] leading-tight"
+        style={{ fontSize: 11, maxWidth: 76, lineHeight: '1.3' }}
+      >
+        {alliance.name}
+      </p>
+    </motion.button>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// ALLIANCE ECOSYSTEM — main view (icon grid, Apple Watch home screen style)
 // ---------------------------------------------------------------------------
 function AllianceEcosystem({ allianceGroups, onOpen }) {
   if (allianceGroups.length === 0) {
@@ -574,19 +646,21 @@ function AllianceEcosystem({ allianceGroups, onOpen }) {
     );
   }
 
-  // Top alliance = featured (full width); rest = 2-col grid
-  const [featured, ...rest] = allianceGroups;
-
   return (
-    <div className="space-y-3 pb-28">
-      <AllianceFeaturedCard alliance={featured} onOpen={onOpen} />
-      {rest.length > 0 && (
-        <div className="grid grid-cols-2 gap-3">
-          {rest.map(a => (
-            <AllianceCompactCard key={a.name} alliance={a} onOpen={onOpen} />
-          ))}
-        </div>
-      )}
+    <div className="pb-28">
+      <div className="grid grid-cols-3 gap-x-4 gap-y-7 px-2 pt-4">
+        {allianceGroups.map((a, i) => (
+          <motion.div
+            key={a.name}
+            initial={{ opacity: 0, scale: 0.7 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: i * 0.06, type: 'spring', damping: 18, stiffness: 320 }}
+            className="flex justify-center"
+          >
+            <AllianceIconItem alliance={a} onOpen={onOpen} />
+          </motion.div>
+        ))}
+      </div>
     </div>
   );
 }
