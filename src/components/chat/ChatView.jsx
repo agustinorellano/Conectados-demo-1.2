@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import ChatList from './ChatList';
 import ChatWindow from './ChatWindow';
 
@@ -6,13 +7,22 @@ const PROPOSAL_TEMPLATE =
   'Tengo una propuesta para colaborar entre nuestras empresas que puede generar valor en conjunto. Me gustaria comentarte la idea y explorar como podemos trabajar juntos.';
 
 const CONV_DEFAULTS = {
-  'luna-beauty':        { tags: ['Cross-selling', 'Belleza'],        score: 91, contact: 'Valentina Cruz',     businessState: 'activo'   },
-  'cafe-patio':         { tags: ['Evento', 'Tráfico local'],          score: 74, contact: 'Marcos Pino',         businessState: 'pendiente' },
-  'internal-marketing': { tags: ['Coordinación'],                     score: null, contact: 'Equipo Mkt',        businessState: 'activo'   },
-  'bloom-floreria':     { tags: ['Bundle', 'Primavera'],              score: 88, contact: 'Florencia Del Valle', businessState: 'activo'   },
-  'sushi-nakama':       { tags: ['Distribución', 'Gastronomía'],      score: 67, contact: 'Naomi Tanaka',        businessState: 'pendiente' },
+  'luna-beauty':        { tags: ['Cross-selling', 'Belleza'],       score: 91,   contact: 'Valentina Cruz',     businessState: 'activo'    },
+  'cafe-patio':         { tags: ['Evento', 'Tráfico local'],         score: 74,   contact: 'Marcos Pino',         businessState: 'pendiente' },
+  'internal-marketing': { tags: ['Coordinación'],                    score: null, contact: 'Equipo Mkt',          businessState: 'activo'    },
+  'bloom-floreria':     { tags: ['Bundle', 'Primavera'],             score: 88,   contact: 'Florencia Del Valle', businessState: 'activo'    },
+  'sushi-nakama':       { tags: ['Distribución', 'Gastronomía'],     score: 67,   contact: 'Naomi Tanaka',        businessState: 'pendiente' },
 };
 
+/* ── Slide variants — dir 1 = forward (list→chat), dir -1 = back ── */
+const slideVariants = {
+  enter: (dir) => ({ x: dir > 0 ? 32 : -32, opacity: 0 }),
+  center: { x: 0, opacity: 1 },
+  exit:  (dir) => ({ x: dir > 0 ? -32 : 32, opacity: 0 }),
+};
+const spring = { type: 'spring', damping: 30, stiffness: 340 };
+
+/* ═══════════════════════════════════════════════════════════════════ */
 function ChatView({
   chatConversations,
   matches,
@@ -21,17 +31,14 @@ function ChatView({
   userPlan = 'starter',
   onOpenAllianceRoom,
 }) {
-  const [activeConversationId, setActiveConversationId] = useState(
-    chatConversations[0]?.id || null
-  );
+  /* State — null means "show list", an id means "show that conversation" */
+  const [activeConversationId, setActiveConversationId] = useState(null);
   const [threads, setThreads] = useState(chatConversations);
   const [proposalDraft, setProposalDraft] = useState('');
-  const [workplaceTasks, setWorkplaceTasks] = useState([]);
-  // Mobile-only: controls whether chat view or list view is showing
-  const [mobileShowChat, setMobileShowChat] = useState(false);
-  const lastConversationRef = useRef(activeConversationId);
+  const directionRef = useRef(1);
+  const lastIdRef    = useRef(null);
 
-  // Enrich conversations with defaults
+  /* Enrich threads with defaults */
   const enrichedThreads = useMemo(
     () =>
       threads.map(conv => ({
@@ -45,40 +52,32 @@ function ChatView({
   );
 
   const activeConversation = useMemo(
-    () => enrichedThreads.find(c => c.id === activeConversationId) || enrichedThreads[0],
+    () => enrichedThreads.find(c => c.id === activeConversationId) ?? null,
     [activeConversationId, enrichedThreads]
   );
 
+  /* Reset draft when conversation changes */
   useEffect(() => {
-    if (lastConversationRef.current !== activeConversationId) {
-      setProposalDraft('');
-      lastConversationRef.current = activeConversationId;
+    if (lastIdRef.current !== activeConversationId) {
+      if (activeConversationId !== null) setProposalDraft('');
+      lastIdRef.current = activeConversationId;
     }
   }, [activeConversationId]);
 
-  const updateActiveConversation = updater => {
-    setThreads(current =>
-      current.map(conv =>
-        conv.id === activeConversation.id ? updater(conv) : conv
-      )
-    );
-  };
+  /* ── Helpers ── */
+  const updateActive = updater =>
+    setThreads(cur => cur.map(c => (c.id === activeConversation?.id ? updater(c) : c)));
 
   const handleSend = () => {
-    const trimmedMessage = proposalDraft.trim();
-    if (!trimmedMessage || !activeConversation) return;
-    updateActiveConversation(conv => ({
+    const msg = proposalDraft.trim();
+    if (!msg || !activeConversation) return;
+    updateActive(conv => ({
       ...conv,
       lastInteraction: 'Ahora',
-      lastMessage: trimmedMessage,
+      lastMessage: msg,
       messages: [
         ...conv.messages,
-        {
-          id: `${conv.id}-${conv.messages.length + 1}`,
-          sender: 'me',
-          text: trimmedMessage,
-          time: 'Ahora',
-        },
+        { id: `${conv.id}-${conv.messages.length + 1}`, sender: 'me', text: msg, time: 'Ahora' },
       ],
     }));
     setProposalDraft('');
@@ -105,78 +104,85 @@ function ChatView({
       unread: 0,
       messages: [{ id: `${candidate.id}-outbound-1`, sender: 'me', text: PROPOSAL_TEMPLATE, time: 'Ahora' }],
     };
-    setThreads(current => [outbound, ...current]);
+    setThreads(cur => [outbound, ...cur]);
+    directionRef.current = 1;
     setActiveConversationId(outbound.id);
-    setMobileShowChat(true);
   };
 
-  const handleCreateTask = task => {
-    setWorkplaceTasks(prev => [
-      ...prev,
-      { ...task, id: Date.now(), conversationId: activeConversationId },
-    ]);
-  };
-
-  // When user taps a chat item on mobile → switch to chat view
-  const handleSelectConversation = id => {
+  /* Navigation */
+  const handleSelect = (id) => {
+    directionRef.current = 1;
     setActiveConversationId(id);
-    setMobileShowChat(true);
   };
 
-  // Back button in ChatWindow header → return to list on mobile
-  const handleBack = () => setMobileShowChat(false);
+  const handleBack = () => {
+    directionRef.current = -1;
+    setActiveConversationId(null);
+  };
 
+  const showChat = activeConversationId !== null && activeConversation !== null;
+
+  /* ── Render ── */
   return (
     <div
-      className="overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-sm"
-      style={{ height: 'calc(100vh - 168px)', minHeight: '560px' }}
+      className="relative overflow-hidden rounded-[24px] bg-white shadow-sm"
+      style={{ height: 'calc(100vh - 160px)', minHeight: '560px' }}
     >
-      <div className="flex h-full overflow-hidden">
+      <AnimatePresence mode="wait" custom={directionRef.current} initial={false}>
 
-        {/* ── ChatList panel ──
-              Mobile: full width, hidden when chat is open
-              Desktop: 300px sidebar, always visible               */}
-        <div
-          className={`${
-            mobileShowChat ? 'hidden md:flex' : 'flex'
-          } h-full w-full flex-col border-r border-slate-100 md:w-[300px] md:shrink-0`}
-        >
-          <ChatList
-            allowDirectMessage={userPlan === 'scale'}
-            activeId={activeConversation?.id}
-            conversations={enrichedThreads}
-            onCreateOutbound={handleCreateOutbound}
-            onSelect={handleSelectConversation}
-          />
-        </div>
+        {/* ── LIST PANEL ── */}
+        {!showChat && (
+          <motion.div
+            key="list"
+            custom={directionRef.current}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={spring}
+            className="absolute inset-0 overflow-hidden"
+          >
+            <ChatList
+              allowDirectMessage={userPlan === 'scale'}
+              activeId={activeConversationId}
+              conversations={enrichedThreads}
+              onCreateOutbound={handleCreateOutbound}
+              onSelect={handleSelect}
+            />
+          </motion.div>
+        )}
 
-        {/* ── ChatWindow panel ──
-              Mobile: full width, shown when chat is open
-              Desktop: flex-1, always visible                       */}
-        {activeConversation && (
-          <div
-            className={`${
-              mobileShowChat ? 'flex' : 'hidden md:flex'
-            } min-w-0 flex-1 overflow-hidden`}
+        {/* ── CONVERSATION PANEL ── */}
+        {showChat && (
+          <motion.div
+            key={activeConversationId}
+            custom={directionRef.current}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={spring}
+            className="absolute inset-0 overflow-hidden"
           >
             <ChatWindow
               conversation={activeConversation}
               onBack={handleBack}
               onChangeDraft={setProposalDraft}
-              onConvertToOpportunity={() => {
-                updateActiveConversation(conv => ({ ...conv, status: 'Alianza activa' }));
-              }}
+              onConvertToOpportunity={() =>
+                updateActive(conv => ({ ...conv, status: 'Alianza activa' }))
+              }
               onProposalPreset={handleProposalPreset}
               onQuickAction={setProposalDraft}
               onScheduleMeeting={onScheduleMeeting}
               onSend={handleSend}
               proposalDraft={proposalDraft}
-              onCreateTask={handleCreateTask}
+              onCreateTask={() => {}}
               onOpenAllianceRoom={onOpenAllianceRoom}
             />
-          </div>
+          </motion.div>
         )}
-      </div>
+
+      </AnimatePresence>
     </div>
   );
 }
