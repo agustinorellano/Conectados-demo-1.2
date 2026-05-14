@@ -42,6 +42,7 @@ function App() {
   const [workplaceArea, setWorkplaceArea] = useState('general');
   const [companyProfile, setCompanyProfile] = useState(() => createInitialProfile(currentCompany));
   const [meetings, setMeetings] = useState(demoMeetings);
+  const [pendingAiOpportunity, setPendingAiOpportunity] = useState(null);
 
   const handleToggleMeeting = (id) =>
     setMeetings((prev) =>
@@ -151,6 +152,13 @@ function App() {
             matches={matches}
             recommendedCompanies={personalizedCompanies}
             recommendations={recommendationColumns}
+            opportunities={taskState}
+            onCreateOpportunity={(opp) => {
+              setPendingAiOpportunity(opp);
+              // Auto-navigate to workplace after 1.2s so user sees the confirmation first
+              window.setTimeout(() => setActiveView('workplace'), 1200);
+            }}
+            onNavigateToWorkplace={() => setActiveView('workplace')}
           />
         );
       case 'help':
@@ -165,6 +173,8 @@ function App() {
             currentArea={workplaceArea}
             onTaskMove={handleTaskMove}
             tasks={taskState}
+            pendingOpportunity={pendingAiOpportunity}
+            onOpportunityAdded={() => setPendingAiOpportunity(null)}
           />
         );
       case 'alliances':
@@ -204,6 +214,7 @@ function App() {
     companyView,
     dailyMatchCount,
     matches,
+    pendingAiOpportunity,
     personalizedCompanies,
     personalizedDashboardData,
     taskState,

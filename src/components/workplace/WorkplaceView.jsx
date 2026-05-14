@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search, Plus, X, Calendar, MessageSquare, TrendingUp, ArrowRight,
@@ -1960,11 +1960,22 @@ function CardDetailModal({ opp, onClose }) {
 // ---------------------------------------------------------------------------
 // WORKPLACE VIEW — MAIN
 // ---------------------------------------------------------------------------
-function WorkplaceView({ currentArea = 'general', onTaskMove, tasks = [] }) {
+function WorkplaceView({ currentArea = 'general', onTaskMove, tasks = [], pendingOpportunity = null, onOpportunityAdded }) {
   const [opportunities, setOpportunities] = useState(() => [
     ...MOCK_OPPORTUNITIES,
     ...tasks.map(adaptTask),
   ]);
+
+  // Accept opportunities pushed from AssistantView via App.jsx
+  useEffect(() => {
+    if (!pendingOpportunity) return;
+    setOpportunities(prev => {
+      // Avoid duplicates
+      if (prev.some(o => o.id === pendingOpportunity.id)) return prev;
+      return [pendingOpportunity, ...prev];
+    });
+    if (onOpportunityAdded) onOpportunityAdded();
+  }, [pendingOpportunity, onOpportunityAdded]);
   const [view,             setView]             = useState('ecosystem');
   const [selectedCard,     setSelectedCard]     = useState(null);
   const [selectedAlliance, setSelectedAlliance] = useState(null);
