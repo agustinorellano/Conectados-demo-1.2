@@ -342,14 +342,17 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
         </div>
       </div>
 
-      {/* ── Detail modal ── */}
-      {viewingCompany && (
-        <CompanyDetailModal
-          company={viewingCompany}
-          onClose={() => setViewingCompany(null)}
-          onLike={handleLike}
-        />
-      )}
+      {/* ── Detail modal — AnimatePresence here enables exit animation ── */}
+      <AnimatePresence>
+        {viewingCompany && (
+          <CompanyDetailModal
+            key={viewingCompany.id}
+            company={viewingCompany}
+            onClose={() => setViewingCompany(null)}
+            onLike={handleLike}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 }
