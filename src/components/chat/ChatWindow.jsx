@@ -1,8 +1,8 @@
 import {
-  Calendar, ChevronLeft, Info, Send, Share2, TrendingUp, X,
+  Bot, Calendar, ChevronLeft, Send, Share2, TrendingUp, Video, X,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import MessageBubble from './MessageBubble';
 import ProposalInput from './ProposalInput';
 
@@ -24,6 +24,17 @@ function twoWeeksFromNow() {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
+/* ── IA suggestion copy ──────────────────────────────────────────── */
+function getIaSuggestion(conv) {
+  const score = conv.score ?? 75;
+  const state = conv.businessState;
+  if (state === 'activo')
+    return `${conv.company} tiene ${score}% de compatibilidad. Es buen momento para proponer una reunión y avanzar en los detalles de la alianza.`;
+  if (state === 'pendiente')
+    return `Esta alianza está en pausa. Un mensaje de seguimiento puede reactivarla — llevás ${conv.lastInteraction?.toLowerCase() || 'días'} sin respuesta.`;
+  return `${conv.company} alcanza ${score}/100 en match. Proponé una acción concreta para dar el próximo paso.`;
+}
+
 /* ── Meeting Modal ───────────────────────────────────────────────── */
 function MeetingModal({ conversation, onClose, onConfirm }) {
   const initials = getInitials(conversation.logo, conversation.company);
@@ -34,8 +45,8 @@ function MeetingModal({ conversation, onClose, onConfirm }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     onConfirm({
-      title:          `Reunión ${conversation.company}`,
-      company:        conversation.company,
+      title:           `Reunión ${conversation.company}`,
+      company:         conversation.company,
       companyInitials: initials,
       date, time, endTime,
       type: 'video',
@@ -130,12 +141,12 @@ function MeetingModal({ conversation, onClose, onConfirm }) {
 /* ── Task Modal ──────────────────────────────────────────────────── */
 function TaskModal({ conversation, onClose, onConfirm }) {
   const company = conversation?.company || '';
-  const [title,    setTitle]    = useState(`Seguimiento propuesta con ${company}`);
+  const [title,       setTitle]       = useState(`Seguimiento propuesta con ${company}`);
   const [description, setDescription] = useState('');
-  const [priority, setPriority] = useState('alta');
-  const [dueDate,  setDueDate]  = useState(twoWeeksFromNow());
-  const [assignee, setAssignee] = useState('Agustín Rosales');
-  const [alianza,  setAlianza]  = useState(company);
+  const [priority,    setPriority]    = useState('alta');
+  const [dueDate,     setDueDate]     = useState(twoWeeksFromNow());
+  const [assignee,    setAssignee]    = useState('Agustín Rosales');
+  const [alianza,     setAlianza]     = useState(company);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -144,9 +155,9 @@ function TaskModal({ conversation, onClose, onConfirm }) {
   };
 
   const priorityOptions = [
-    { value: 'alta',  label: 'Alta',  active: 'bg-red-100 text-red-700 border-red-200',       inactive: 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50' },
-    { value: 'media', label: 'Media', active: 'bg-amber-100 text-amber-700 border-amber-200',  inactive: 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50' },
-    { value: 'baja',  label: 'Baja',  active: 'bg-slate-100 text-slate-600 border-slate-200',  inactive: 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50' },
+    { value: 'alta',  label: 'Alta',  active: 'bg-red-100 text-red-700 border-red-200',      inactive: 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50' },
+    { value: 'media', label: 'Media', active: 'bg-amber-100 text-amber-700 border-amber-200', inactive: 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50' },
+    { value: 'baja',  label: 'Baja',  active: 'bg-slate-100 text-slate-600 border-slate-200', inactive: 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50' },
   ];
 
   return (
@@ -255,7 +266,7 @@ function scoreLabel(score) {
   return                  { text: 'Potencial medio', cls: 'text-slate-500'   };
 }
 
-/* ── Context Panel content (bottom sheet body) ───────────────────── */
+/* ── Context Panel content ───────────────────────────────────────── */
 const BUSINESS_STATES = ['activo', 'pendiente', 'cerrado'];
 
 function ContextPanelContent({ conversation, onCreateTask, onOpenAllianceRoom, onConvertToOpportunity }) {
@@ -296,14 +307,12 @@ function ContextPanelContent({ conversation, onCreateTask, onOpenAllianceRoom, o
 
   return (
     <div className="flex flex-col">
-
-      {/* Section header */}
       <div className="border-b border-slate-100 px-5 py-4">
         <p className="font-['Space_Grotesk'] text-[15px] font-bold text-[#1A1A1A]">Contexto del negocio</p>
       </div>
 
       {/* Match info */}
-      <div className="border-b border-slate-100 p-5 space-y-3">
+      <div className="space-y-3 border-b border-slate-100 p-5">
         <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">Info del Match</p>
         <div className="flex items-center justify-between">
           <div className="min-w-0 flex-1">
@@ -322,7 +331,7 @@ function ContextPanelContent({ conversation, onCreateTask, onOpenAllianceRoom, o
           </p>
         )}
         {!conversation?.isTeam && (
-          <div className="rounded-[12px] border border-slate-100 bg-white p-3 space-y-1.5">
+          <div className="space-y-1.5 rounded-[12px] border border-slate-100 bg-white p-3">
             <div className="flex items-center justify-between text-[12px]">
               <span className="text-slate-400">Tipo</span>
               <span className="font-semibold text-[#1A1A1A]">Alianza comercial</span>
@@ -341,21 +350,24 @@ function ContextPanelContent({ conversation, onCreateTask, onOpenAllianceRoom, o
 
       {/* Score de Oportunidad */}
       {!conversation?.isTeam && (
-        <div className="border-b border-slate-100 p-5 space-y-2">
+        <div className="space-y-2 border-b border-slate-100 p-5">
           <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">Score de Oportunidad</p>
           <div className="flex items-center justify-between">
             <span className="text-[14px] font-bold text-[#1A1A1A]">{score} / 100</span>
             <span className={`text-[12px] font-semibold ${sl.cls}`}>{sl.text}</span>
           </div>
           <div className="h-1.5 w-full rounded-full bg-slate-100">
-            <div className="h-1.5 rounded-full bg-emerald-400 transition-all duration-500" style={{ width: `${score}%` }} />
+            <div
+              className="h-1.5 rounded-full bg-emerald-400 transition-all duration-500"
+              style={{ width: `${score}%` }}
+            />
           </div>
         </div>
       )}
 
       {/* Business State */}
       {!conversation?.isTeam && (
-        <div className="border-b border-slate-100 p-5 space-y-2">
+        <div className="space-y-2 border-b border-slate-100 p-5">
           <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">Estado del negocio</p>
           <div className="flex gap-1.5">
             {BUSINESS_STATES.map(state => (
@@ -375,7 +387,7 @@ function ContextPanelContent({ conversation, onCreateTask, onOpenAllianceRoom, o
       )}
 
       {/* Tags */}
-      <div className="border-b border-slate-100 p-5 space-y-2">
+      <div className="space-y-2 border-b border-slate-100 p-5">
         <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">Tags</p>
         <div className="flex flex-wrap gap-1.5">
           {tags.map(tag => (
@@ -409,7 +421,7 @@ function ContextPanelContent({ conversation, onCreateTask, onOpenAllianceRoom, o
       </div>
 
       {/* Acciones rápidas */}
-      <div className="p-5 space-y-2">
+      <div className="space-y-2 p-5">
         <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">Acciones rápidas</p>
         <div className="space-y-2">
           {!conversation?.isTeam && (
@@ -450,7 +462,7 @@ function ContextPanelContent({ conversation, onCreateTask, onOpenAllianceRoom, o
               onClick={onOpenAllianceRoom} type="button"
               className="flex w-full items-center gap-2.5 rounded-[12px] border border-violet-200 bg-violet-50 px-4 py-3 text-left text-[13px] font-semibold text-violet-700 transition-all hover:bg-violet-100"
             >
-              <span className="text-base">🎥</span>
+              <Video className="h-4 w-4 shrink-0" />
               Alliance Room
             </button>
           )}
@@ -489,8 +501,10 @@ function ContextPanelContent({ conversation, onCreateTask, onOpenAllianceRoom, o
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   ChatWindow — single-column, bottom sheet for context
-   No desktop right panel. No md: breakpoints on core layout.
+   ChatWindow
+   — Clicking avatar/name opens context panel
+   — Alliance Room uses Video icon (no emoji)
+   — IA suggestion block at top of messages (dismissible)
 ══════════════════════════════════════════════════════════════════════ */
 function ChatWindow({
   conversation,
@@ -508,6 +522,14 @@ function ChatWindow({
   const [showMeetingModal, setShowMeetingModal] = useState(false);
   const [meetingScheduled, setMeetingScheduled] = useState(false);
   const [contextOpen,      setContextOpen]      = useState(false);
+  const [showIaBlock,      setShowIaBlock]      = useState(true);
+  const messagesEndRef = useRef(null);
+
+  /* Reset IA block when conversation changes */
+  useEffect(() => {
+    setShowIaBlock(true);
+    setMeetingScheduled(false);
+  }, [conversation.id]);
 
   const handleMeetingConfirm = meeting => {
     onScheduleMeeting?.(meeting);
@@ -518,6 +540,9 @@ function ChatWindow({
   const initials = getInitials(conversation.logo, conversation.company);
   const contact  = conversation.contact || conversation.sector || '';
 
+  const showIaSuggestion =
+    showIaBlock && !conversation.isTeam && conversation.score != null;
+
   /* Quick action pills */
   const quickPills = [
     { key: 'meeting',  icon: Calendar, label: 'Reunión',   onClick: () => setShowMeetingModal(true) },
@@ -526,48 +551,53 @@ function ChatWindow({
   ];
 
   return (
-    /* Outer wrapper — relative so the bottom sheet positions inside it */
     <div className="relative flex h-full min-w-0 flex-col overflow-hidden">
 
-      {/* ── HEADER — 60px ── */}
-      <header className="flex h-[60px] shrink-0 items-center gap-3 border-b border-slate-100 px-4">
+      {/* ══ HEADER ══════════════════════════════════════════════════ */}
+      <header className="flex h-[60px] shrink-0 items-center gap-2 border-b border-slate-100 px-3">
 
-        {/* Back button — always visible */}
+        {/* Back */}
         <button
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 active:scale-95"
-          onClick={onBack}
           type="button"
+          onClick={onBack}
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 active:scale-95"
         >
           <ChevronLeft className="h-5 w-5" />
         </button>
 
-        {/* Avatar — 40px */}
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#141E30] to-[#35577D] font-['Space_Grotesk'] text-[12px] font-bold text-white shadow-sm">
-          {initials}
-        </div>
-
-        {/* Name + subtitle */}
-        <div className="min-w-0 flex-1">
-          <h2 className="truncate font-['Space_Grotesk'] text-[15px] font-bold tracking-tight text-[#1A1A1A]">
-            {conversation.company}
-          </h2>
-          <p className="truncate text-[12px] leading-none text-slate-400">
-            {[contact, conversation.location].filter(Boolean).join(' · ')}
-          </p>
-        </div>
-
-        {/* ⓘ Info button — always visible, opens bottom sheet */}
+        {/* Avatar + name — clicking opens context panel */}
         <button
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition hover:bg-slate-50 active:scale-95"
-          onClick={() => setContextOpen(true)}
           type="button"
-          aria-label="Ver contexto"
+          onClick={() => setContextOpen(true)}
+          className="flex min-w-0 flex-1 items-center gap-2.5 rounded-xl px-1 py-1 text-left transition hover:bg-slate-50 active:scale-[0.99]"
         >
-          <Info className="h-4 w-4" />
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#141E30] to-[#35577D] font-['Space_Grotesk'] text-[11px] font-bold text-white shadow-sm">
+            {initials}
+          </div>
+          <div className="min-w-0">
+            <h2 className="truncate font-['Space_Grotesk'] text-[15px] font-bold leading-tight tracking-tight text-[#1A1A1A]">
+              {conversation.company}
+            </h2>
+            <p className="truncate text-[11px] leading-none text-slate-400">
+              {[contact, conversation.location].filter(Boolean).join(' · ')}
+            </p>
+          </div>
         </button>
+
+        {/* Alliance Room icon button (header) */}
+        {onOpenAllianceRoom && !conversation.isTeam && (
+          <button
+            type="button"
+            onClick={onOpenAllianceRoom}
+            title="Alliance Room"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-violet-200 bg-violet-50 text-violet-700 transition hover:bg-violet-100 active:scale-95"
+          >
+            <Video className="h-4 w-4" />
+          </button>
+        )}
       </header>
 
-      {/* ── QUICK ACTION PILLS ── */}
+      {/* ══ QUICK ACTION PILLS ══════════════════════════════════════ */}
       <div className="flex shrink-0 gap-2 overflow-x-auto border-b border-slate-100 px-4 py-2.5 [scrollbar-width:none]">
         {quickPills.map(pill => {
           const Icon = pill.icon;
@@ -583,40 +613,74 @@ function ChatWindow({
             </button>
           );
         })}
-        {onOpenAllianceRoom && !conversation.isTeam && (
-          <button
-            onClick={onOpenAllianceRoom} type="button"
-            className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-violet-200 bg-violet-50 px-3.5 text-[12px] font-semibold text-violet-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-violet-100 hover:shadow-md"
-          >
-            🎥 Alliance Room
-          </button>
-        )}
       </div>
 
-      {/* ── FLASH CONFIRMS ── */}
+      {/* ══ FLASH — meeting scheduled ═══════════════════════════════ */}
       <AnimatePresence>
         {meetingScheduled && (
           <motion.div
+            key="meeting-confirm"
             animate={{ opacity: 1, y: 0 }}
-            className="shrink-0 border-b border-blue-100 bg-blue-50 px-5 py-2.5 text-sm font-semibold text-blue-700"
             exit={{ opacity: 0, y: -8 }}
             initial={{ opacity: 0, y: -8 }}
-            key="meeting-confirm"
             transition={{ duration: 0.2 }}
+            className="shrink-0 border-b border-blue-100 bg-blue-50 px-5 py-2.5 text-sm font-semibold text-blue-700"
           >
             Reunión agendada. Aparece en el Calendario del Dashboard.
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* ── MESSAGES ── */}
-      <div className="flex-1 space-y-4 overflow-y-auto bg-[linear-gradient(180deg,rgba(248,249,250,0.35),rgba(255,255,255,0.65))] px-5 py-5 scroll-smooth">
+      {/* ══ MESSAGES ════════════════════════════════════════════════ */}
+      <div
+        className="flex-1 space-y-4 overflow-y-auto bg-[linear-gradient(180deg,rgba(248,249,250,0.35),rgba(255,255,255,0.65))] px-5 py-5 scroll-smooth"
+        style={{ overscrollBehavior: 'contain' }}
+      >
+        {/* IA suggestion block */}
+        <AnimatePresence>
+          {showIaSuggestion && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+              className="rounded-[14px] border border-blue-100 px-4 py-3"
+              style={{
+                background: 'linear-gradient(135deg, rgba(239,246,255,0.9) 0%, rgba(238,242,255,0.8) 100%)',
+              }}
+            >
+              <div className="flex items-start gap-2.5">
+                <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#1871D8]">
+                  <Bot className="h-3.5 w-3.5 text-white" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="mb-0.5 text-[10px] font-bold uppercase tracking-wider text-[#1871D8]">
+                    Sugerencia IA
+                  </p>
+                  <p className="text-[13px] leading-relaxed text-slate-600">
+                    {getIaSuggestion(conversation)}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowIaBlock(false)}
+                  className="shrink-0 text-slate-300 transition hover:text-slate-500"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Message list */}
         {conversation.messages.map(message => (
           <MessageBubble key={message.id} message={message} />
         ))}
+        <div ref={messagesEndRef} />
       </div>
 
-      {/* ── INPUT ── */}
+      {/* ══ INPUT ═══════════════════════════════════════════════════ */}
       <ProposalInput
         onChange={onChangeDraft}
         onQuickAction={onQuickAction}
@@ -625,11 +689,10 @@ function ChatWindow({
         value={proposalDraft}
       />
 
-      {/* ── CONTEXT BOTTOM SHEET — universal (all screen sizes) ── */}
+      {/* ══ CONTEXT BOTTOM SHEET ════════════════════════════════════ */}
       <AnimatePresence>
         {contextOpen && (
           <>
-            {/* Backdrop */}
             <motion.div
               animate={{ opacity: 1 }}
               className="absolute inset-0 z-20 bg-black/25"
@@ -637,7 +700,6 @@ function ChatWindow({
               initial={{ opacity: 0 }}
               onClick={() => setContextOpen(false)}
             />
-            {/* Sheet */}
             <motion.div
               animate={{ y: 0 }}
               className="absolute inset-x-0 bottom-0 z-30 flex max-h-[88%] flex-col overflow-hidden rounded-t-[24px] bg-white shadow-2xl"
@@ -646,17 +708,16 @@ function ChatWindow({
               transition={{ type: 'spring', damping: 28, stiffness: 320 }}
             >
               {/* Drag handle + close */}
-              <div className="relative flex shrink-0 items-center justify-center pt-3 pb-2">
+              <div className="relative flex shrink-0 items-center justify-center pb-2 pt-3">
                 <div className="h-1 w-10 rounded-full bg-slate-300" />
                 <button
-                  className="absolute right-4 flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-slate-200"
-                  onClick={() => setContextOpen(false)}
                   type="button"
+                  onClick={() => setContextOpen(false)}
+                  className="absolute right-4 flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-slate-200"
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
               </div>
-              {/* Scrollable content */}
               <div className="overflow-y-auto">
                 <ContextPanelContent
                   conversation={conversation}
@@ -670,7 +731,7 @@ function ChatWindow({
         )}
       </AnimatePresence>
 
-      {/* ── MEETING MODAL ── */}
+      {/* ══ MEETING MODAL ════════════════════════════════════════════ */}
       {showMeetingModal && (
         <MeetingModal
           conversation={conversation}

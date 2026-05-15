@@ -1,22 +1,19 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Bot, Edit3, Search, X } from 'lucide-react';
+import { Bot, Edit3, Search, Video, X } from 'lucide-react';
 import ChatItem from './ChatItem';
 
-/* Todos | Activos | Pendientes — no "Cerrados" per spec */
-const FILTERS = ['Todos', 'Activos', 'Pendientes'];
+/* ── Filter definitions ─────────────────────────────────────────── */
+const FILTERS = ['Activos', 'Pendientes', 'Favoritos', 'Archivados'];
 
-function getFilterCount(conversations, filter) {
-  if (filter === 'Todos')     return conversations.length;
-  if (filter === 'Activos')   return conversations.filter(c => c.businessState === 'activo'    || c.activity === 'Activa').length;
-  if (filter === 'Pendientes')return conversations.filter(c => c.businessState === 'pendiente' || c.activity === 'Seguimiento').length;
-  return 0;
-}
+function matchesFilter(conv, filter, favorites, archived) {
+  const isArchived = archived.has(conv.id);
+  if (filter === 'Archivados') return isArchived;
+  if (isArchived) return false; // hide archived in all other tabs
 
-function matchesFilter(conv, filter) {
-  if (filter === 'Todos')     return true;
-  if (filter === 'Activos')   return conv.businessState === 'activo'    || conv.activity === 'Activa';
+  if (filter === 'Activos')   return conv.businessState === 'activo'    || conv.activity === 'Activa' || conv.isTeam;
   if (filter === 'Pendientes')return conv.businessState === 'pendiente' || conv.activity === 'Seguimiento';
+  if (filter === 'Favoritos') return favorites.has(conv.id);
   return true;
 }
 
@@ -31,11 +28,28 @@ function matchesSearch(conv, query) {
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════════ */
-function ChatList({ conversations, activeId, onSelect, allowDirectMessage, onCreateOutbound, onOpenAssistant }) {
-  const [query,         setQuery]         = useState('');
-  const [debouncedQuery,setDebouncedQuery]= useState('');
-  const [activeFilter,  setActiveFilter]  = useState('Todos');
+/* ═══════════════════════════════════════════════════════════════════
+   ChatList — 4 tabs · search · Alliance Room · rich items
+══════════════════════════════════════════════════════════════════════ */
+function ChatList({
+  conversations,
+  activeId,
+  onSelect,
+  allowDirectMessage,
+  onCreateOutbound,
+  onOpenAssistant,
+  onOpenAllianceRoom,
+  /* Set-based state passed from parent */
+  favorites,
+  archived,
+  pinned,
+  onArchive,
+  onFavorite,
+  onPin,
+}) {
+  const [query,          setQuery]          = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+  const [activeFilter,   setActiveFilter]   = useState('Activos');
   const debounceTimer = useRef(null);
 
   const handleSearchChange = useCallback((e) => {
@@ -51,10 +65,25 @@ function ChatList({ conversations, activeId, onSelect, allowDirectMessage, onCre
     clearTimeout(debounceTimer.current);
   }, []);
 
-  const filtered = useMemo(
-    () => conversations.filter(c => matchesSearch(c, debouncedQuery) && matchesFilter(c, activeFilter)),
-    [conversations, debouncedQuery, activeFilter]
-  );
+  /* Filtered + sorted (pinned first) */
+  const filtered = useMemo(() => {
+    return conversations
+      .filter(c => matchesSearch(c, debouncedQuery) && matchesFilter(c, activeFilter, favorites, archived))
+      .sort((a, b) => {
+        const ap = pinned.has(a.id) ? 0 : 1;
+        const bp = pinned.has(b.id) ? 0 : 1;
+        return ap - bp;
+      });
+  }, [conversations, debouncedQuery, activeFilter, favorites, archived, pinned]);
+
+  /* Tab counts */
+  const counts = useMemo(() => {
+    const res = {};
+    for (const f of FILTERS) {
+      res[f] = conversations.filter(c => matchesFilter(c, f, favorites, archived)).length;
+    }
+    return res;
+  }, [conversations, favorites, archived]);
 
   const matchConversations = filtered.filter(c => !c.isTeam);
   const teamConversations  = filtered.filter(c =>  c.isTeam);
@@ -64,36 +93,48 @@ function ChatList({ conversations, activeId, onSelect, allowDirectMessage, onCre
     <div className="flex h-full flex-col">
 
       {/* ── Header ── */}
-      <div className="flex items-center justify-between px-5 pt-5 pb-4">
+      <div className="flex items-center justify-between px-5 pt-5 pb-3">
         <h2 className="font-['Space_Grotesk'] text-[22px] font-bold tracking-tight text-[#1A1A1A]">
           Chats
         </h2>
-        <button
-          className="flex h-9 w-9 items-center justify-center rounded-full bg-[#141E30] text-white shadow-sm transition active:scale-95"
-          onClick={allowDirectMessage ? onCreateOutbound : undefined}
-          title={allowDirectMessage ? 'Nueva conversación' : 'Disponible en Plan Scale'}
-          type="button"
-        >
-          <Edit3 className="h-4 w-4" />
-        </button>
+        <div className="flex items-center gap-2">
+          {onOpenAllianceRoom && (
+            <button
+              type="button"
+              onClick={onOpenAllianceRoom}
+              title="Alliance Room"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-violet-200 bg-violet-50 text-violet-700 transition hover:bg-violet-100 active:scale-95"
+            >
+              <Video className="h-4 w-4" />
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={allowDirectMessage ? onCreateOutbound : undefined}
+            title={allowDirectMessage ? 'Nueva conversación' : 'Disponible en Plan Scale'}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-[#141E30] text-white shadow-sm transition active:scale-95"
+          >
+            <Edit3 className="h-4 w-4" />
+          </button>
+        </div>
       </div>
 
-      {/* ── Search bar — 48px ── */}
+      {/* ── Search bar ── */}
       <div className="px-5 pb-3">
-        <div className="flex h-12 items-center gap-2.5 rounded-2xl border border-slate-200 bg-slate-50 px-4 transition focus-within:border-[#1871D8]/30 focus-within:bg-white focus-within:ring-2 focus-within:ring-[#1871D8]/10">
+        <div className="flex h-11 items-center gap-2.5 rounded-2xl border border-slate-200 bg-slate-50 px-4 transition focus-within:border-[#1871D8]/30 focus-within:bg-white focus-within:ring-2 focus-within:ring-[#1871D8]/10">
           <Search className="h-4 w-4 shrink-0 text-slate-400" />
           <input
             className="flex-1 bg-transparent text-[14px] text-[#1A1A1A] outline-none placeholder:text-slate-400"
             onChange={handleSearchChange}
-            placeholder="Buscar empresa o contacto…"
+            placeholder="Empresa, sector, tag…"
             value={query}
           />
           <AnimatePresence>
             {query && (
               <motion.button
+                initial={{ opacity: 0, scale: 0.7 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.7 }}
-                initial={{ opacity: 0, scale: 0.7 }}
                 onClick={handleClearSearch}
                 type="button"
                 className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-300 text-slate-600 transition hover:bg-slate-400"
@@ -106,23 +147,27 @@ function ChatList({ conversations, activeId, onSelect, allowDirectMessage, onCre
       </div>
 
       {/* ── Filter tabs ── */}
-      <div className="flex gap-2 overflow-x-auto px-5 pb-3 [scrollbar-width:none]">
+      <div className="flex gap-1.5 overflow-x-auto px-5 pb-3 [scrollbar-width:none]">
         {FILTERS.map(filter => {
           const isActive = activeFilter === filter;
-          const count    = getFilterCount(conversations, filter);
+          const count    = counts[filter];
           return (
             <button
               key={filter}
               onClick={() => setActiveFilter(filter)}
               type="button"
-              className={`shrink-0 rounded-full px-4 py-1.5 text-[13px] font-semibold transition-all ${
+              className={`shrink-0 rounded-full px-3.5 py-1.5 text-[12px] font-semibold transition-all ${
                 isActive
                   ? 'bg-[#141E30] text-white shadow-sm'
                   : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
               }`}
             >
               {filter}
-              {!isActive && count > 0 ? ` (${count})` : ''}
+              {count > 0 && (
+                <span className={`ml-1 ${isActive ? 'text-white/55' : 'text-slate-400'}`}>
+                  ({count})
+                </span>
+              )}
             </button>
           );
         })}
@@ -131,16 +176,15 @@ function ChatList({ conversations, activeId, onSelect, allowDirectMessage, onCre
       {/* ── Pinned: Asistente Virtual ── */}
       <div className="px-3 pb-2">
         <button
-          className="flex w-full items-center gap-3 rounded-[18px] px-3 py-3 text-left transition active:scale-[0.98]"
+          type="button"
           onClick={onOpenAssistant}
+          className="flex w-full items-center gap-3 rounded-[18px] px-3 py-3 text-left transition active:scale-[0.98]"
           style={{
             background: 'linear-gradient(135deg, rgba(12,18,38,0.90) 0%, rgba(18,26,54,0.85) 100%)',
             border: '1px solid rgba(24,113,216,0.25)',
             boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 16px rgba(24,113,216,0.12)',
           }}
-          type="button"
         >
-          {/* AI avatar */}
           <div
             className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px]"
             style={{
@@ -149,11 +193,11 @@ function ChatList({ conversations, activeId, onSelect, allowDirectMessage, onCre
             }}
           >
             <Bot className="h-5 w-5 text-white" />
-            {/* pulse dot */}
-            <span className="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full border-2 bg-emerald-400"
-              style={{ borderColor: 'rgba(12,18,38,0.9)' }} />
+            <span
+              className="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full border-2 bg-emerald-400"
+              style={{ borderColor: 'rgba(12,18,38,0.9)' }}
+            />
           </div>
-          {/* Info */}
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <p className="text-sm font-bold text-white">Asistente Virtual</p>
@@ -178,19 +222,29 @@ function ChatList({ conversations, activeId, onSelect, allowDirectMessage, onCre
             </div>
             <div>
               <p className="text-[14px] font-semibold text-slate-600">
-                {debouncedQuery ? 'Sin resultados' : 'No hay conversaciones'}
+                {debouncedQuery
+                  ? 'Sin resultados'
+                  : activeFilter === 'Favoritos'
+                  ? 'Sin favoritos todavía'
+                  : activeFilter === 'Archivados'
+                  ? 'Sin conversaciones archivadas'
+                  : 'No hay conversaciones aquí'}
               </p>
               <p className="mt-1 text-[12px] text-slate-400">
-                {debouncedQuery ? `Para "${debouncedQuery}"` : 'Iniciá una nueva para comenzar'}
+                {debouncedQuery
+                  ? `Para "${debouncedQuery}"`
+                  : 'Cambiá el filtro o iniciá una nueva'}
               </p>
             </div>
-            <button
-              onClick={debouncedQuery ? handleClearSearch : (allowDirectMessage ? onCreateOutbound : undefined)}
-              type="button"
-              className="rounded-full bg-[#141E30] px-5 py-2.5 text-[13px] font-semibold text-white transition hover:bg-[#1A2C45]"
-            >
-              {debouncedQuery ? 'Limpiar búsqueda' : 'Nueva conversación'}
-            </button>
+            {debouncedQuery && (
+              <button
+                onClick={handleClearSearch}
+                type="button"
+                className="rounded-full bg-[#141E30] px-5 py-2.5 text-[13px] font-semibold text-white transition hover:bg-[#1A2C45]"
+              >
+                Limpiar búsqueda
+              </button>
+            )}
           </div>
         ) : (
           <div className="space-y-px">
@@ -210,13 +264,18 @@ function ChatList({ conversations, activeId, onSelect, allowDirectMessage, onCre
                       layout
                       initial={{ opacity: 0, y: 4 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
                       transition={{ duration: 0.14 }}
                     >
                       <ChatItem
                         conversation={conv}
                         isActive={conv.id === activeId}
                         onSelect={onSelect}
+                        onArchive={onArchive}
+                        onPin={onPin}
+                        onFavorite={onFavorite}
+                        isFavorite={favorites.has(conv.id)}
+                        isPinned={pinned.has(conv.id)}
                       />
                     </motion.div>
                   ))}
@@ -224,7 +283,7 @@ function ChatList({ conversations, activeId, onSelect, allowDirectMessage, onCre
               </>
             )}
 
-            {/* Teams */}
+            {/* Team / Internal */}
             {teamConversations.length > 0 && (
               <div className={matchConversations.length > 0 ? 'mt-4' : ''}>
                 <p className="px-2 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
@@ -237,13 +296,18 @@ function ChatList({ conversations, activeId, onSelect, allowDirectMessage, onCre
                       layout
                       initial={{ opacity: 0, y: 4 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
                       transition={{ duration: 0.14 }}
                     >
                       <ChatItem
                         conversation={conv}
                         isActive={conv.id === activeId}
                         onSelect={onSelect}
+                        onArchive={onArchive}
+                        onPin={onPin}
+                        onFavorite={onFavorite}
+                        isFavorite={favorites.has(conv.id)}
+                        isPinned={pinned.has(conv.id)}
                       />
                     </motion.div>
                   ))}
