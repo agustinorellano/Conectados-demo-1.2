@@ -630,7 +630,7 @@ function SettingsView({ currentPlan = 'starter', onCheckoutSuccess = () => {}, o
 
   return (
     <div
-      className="min-h-[calc(100vh-64px)] w-full"
+      className="min-h-screen w-full"
       style={{ background: 'linear-gradient(160deg, #0A0F1E 0%, #141E30 100%)' }}
     >
       {/* Page header */}

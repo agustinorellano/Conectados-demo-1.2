@@ -498,7 +498,7 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
         className="flex flex-col overflow-hidden rounded-[24px]"
         style={{
           background: 'linear-gradient(160deg, #070C18 0%, #0F1828 55%, #141E30 100%)',
-          height: 'calc(100dvh - 158px)',
+          height: 'calc(100dvh - 94px)',
         }}
       >
         {/* ══ HEADER: settings · tabs · zap ══════════════ */}

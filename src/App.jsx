@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import AppHeader from './components/layout/AppHeader';
 import BottomNav from './components/layout/BottomNav';
 import SplashScreen from './components/splash/SplashScreen';
 import AuthScreen from './components/auth/AuthScreen';
@@ -262,9 +261,11 @@ function App() {
       {showAllianceRoom && (
         <AllianceRoomView onExit={() => setShowAllianceRoom(false)} />
       )}
-      <div className="min-h-screen pb-[78px]">
-        <AppHeader activeView={activeView} onNavigate={setActiveView} userPlan={userPlan} />
-        <main className="mx-auto min-w-0 max-w-6xl px-5 py-6 sm:px-6 sm:py-8">
+      <div
+        className="min-h-screen pb-[78px]"
+        style={{ paddingTop: 'env(safe-area-inset-top)' }}
+      >
+        <main className="mx-auto min-w-0 max-w-6xl px-5 py-5 sm:px-6 sm:py-6">
           {view}
         </main>
         <BottomNav activeView={activeView} onNavigate={setActiveView} />

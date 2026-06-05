@@ -180,7 +180,7 @@ function ChatView({
   return (
     <div
       className="relative overflow-hidden rounded-[24px] bg-white shadow-sm"
-      style={{ height: 'calc(100vh - 160px)', minHeight: '560px' }}
+      style={{ height: 'calc(100vh - 96px)', minHeight: '560px' }}
     >
       <AnimatePresence mode="wait" custom={directionRef.current} initial={false}>
 
