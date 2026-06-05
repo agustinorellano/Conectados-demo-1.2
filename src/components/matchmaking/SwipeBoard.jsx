@@ -574,10 +574,8 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
             {/* Third card (farthest back) */}
             {thirdCompany && (
               <motion.div
-                className={`absolute inset-y-0 top-0 z-[10] ${cardW}`}
+                className={`absolute inset-x-0 inset-y-0 mx-auto z-[10] ${cardW}`}
                 style={{
-                  left: '50%',
-                  transform: 'translateX(-50%)',
                   scale: thirdScale,
                   opacity: thirdOpacity,
                   translateY: 22,
@@ -590,10 +588,8 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
             {/* Next card (middle layer) */}
             {nextCompany && (
               <motion.div
-                className={`absolute inset-y-0 top-0 z-[20] ${cardW}`}
+                className={`absolute inset-x-0 inset-y-0 mx-auto z-[20] ${cardW}`}
                 style={{
-                  left: '50%',
-                  transform: 'translateX(-50%)',
                   scale: nextScale,
                   opacity: nextOpacity,
                   translateY: nextTranslateY,
@@ -608,10 +604,8 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
               {activeCompany ? (
                 <motion.div
                   key={activeCompany.id}
-                  className={`absolute inset-y-0 top-0 z-[30] ${cardW} cursor-grab active:cursor-grabbing`}
+                  className={`absolute inset-x-0 inset-y-0 mx-auto z-[30] ${cardW} cursor-grab active:cursor-grabbing`}
                   style={{
-                    left: '50%',
-                    transform: 'translateX(-50%)',
                     x,
                     y,
                     rotate,
@@ -677,10 +671,8 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
                   key="empty"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className={`absolute inset-y-0 top-0 z-30 flex ${cardW} items-center justify-center rounded-[28px] p-10 text-center`}
+                  className={`absolute inset-x-0 inset-y-0 mx-auto z-30 flex ${cardW} items-center justify-center rounded-[28px] p-10 text-center`}
                   style={{
-                    left: '50%',
-                    transform: 'translateX(-50%)',
                     background: 'rgba(255,255,255,0.04)',
                     backdropFilter: 'blur(20px)',
                     border: '1px solid rgba(255,255,255,0.09)',
