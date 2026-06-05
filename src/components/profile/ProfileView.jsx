@@ -447,7 +447,7 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
   const slug = draft.name.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '');
 
   return (
-    <div className="min-h-full bg-[#0A0F1E] pb-[160px] overflow-y-auto">
+    <div className="min-h-full bg-[#0A0F1E] pb-24 overflow-y-auto [scrollbar-width:none]">
 
       {/* ──────────────── HERO CARD — flush edges ──────────────── */}
       <div className="overflow-hidden rounded-b-[28px] bg-[#141E30]">

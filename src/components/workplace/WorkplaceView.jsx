@@ -2076,7 +2076,7 @@ function WorkplaceView({ currentArea = 'general', onTaskMove, tasks = [], pendin
   };
 
   return (
-    <div className="flex flex-col gap-3" style={{ height: 'calc(100vh - 96px)', overflow: 'hidden', background: '#0A0F1E' }}>
+    <div className="flex flex-col gap-3" style={{ height: '100%', overflow: 'hidden', background: '#0A0F1E' }}>
 
       {/* ── Row 1: Search + Filter dropdown + View toggle ── */}
       <div className="flex shrink-0 items-center gap-2">

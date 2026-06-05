@@ -888,7 +888,7 @@ function AssistantView({
   const showEmpty = messages.length <= 1;
 
   return (
-    <div className="flex h-full gap-3 overflow-hidden" style={{ height: 'calc(100vh - 96px)' }}>
+    <div className="flex h-full gap-3 overflow-hidden">
 
       {/* ── Sidebar (desktop always, mobile overlay) ── */}
       <div className="hidden md:flex">

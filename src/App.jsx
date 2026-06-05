@@ -257,22 +257,24 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen overflow-x-hidden">
+    <div className="h-screen overflow-hidden" style={{ background: '#070C18' }}>
       {showAllianceRoom && (
         <AllianceRoomView onExit={() => setShowAllianceRoom(false)} />
       )}
       <div
-        className="min-h-screen pb-[78px]"
+        className="flex h-full flex-col pb-[78px]"
         style={{ paddingTop: 'env(safe-area-inset-top)' }}
       >
-        {/* ── Full-bleed views: no padding, fill exact remaining height ── */}
+        {/* ── Full-bleed views ── */}
         {['alliances', 'profile', 'dashboard', 'chats', 'workplace'].includes(activeView) ? (
-          <div style={{ height: 'calc(100dvh - env(safe-area-inset-top, 0px) - 78px)' }}>
+          <div className="flex-1 overflow-hidden">
             {view}
           </div>
         ) : (
-          <main className="mx-auto min-w-0 max-w-6xl px-5 py-5 sm:px-6 sm:py-6">
-            {view}
+          <main className="flex-1 overflow-y-auto">
+            <div className="mx-auto min-w-0 max-w-6xl px-5 py-5 sm:px-6 sm:py-6">
+              {view}
+            </div>
           </main>
         )}
         <BottomNav activeView={activeView} onNavigate={setActiveView} />
