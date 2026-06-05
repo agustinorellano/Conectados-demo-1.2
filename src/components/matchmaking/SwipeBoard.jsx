@@ -1,4 +1,6 @@
-import { Bookmark, Heart, Search, X } from 'lucide-react';
+import {
+  ArrowUp, Heart, RotateCcw, SlidersHorizontal, Star, X, Zap,
+} from 'lucide-react';
 import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion';
 import { useMemo, useState } from 'react';
 import CompanyCard from './CompanyCard';
@@ -7,9 +9,365 @@ import { calculateMatchScore, shouldRevealCompany, willCreateMatch } from '../..
 
 const SWIPE_THRESHOLD_X = 100;
 
-/* ─────────────────────────────────────────────────────────
-   SWIPE BOARD
-───────────────────────────────────────────────────────── */
+/* ──────────────────────────────────────────────────────────────────
+   FILTERS PANEL — Bottom sheet with all search settings
+────────────────────────────────────────────────────────────────── */
+const SEGMENT_OPTIONS = [
+  'Mujeres 25-40', 'Hombres 30-50', 'Parejas', 'Familias', 'Jóvenes 18-30', 'Profesionales',
+];
+const OFFERING_OPTIONS = [
+  'Visibilidad', 'Descuentos', 'Co-marketing', 'Eventos', 'Distribución', 'Contenido digital',
+];
+const SEEKING_OPTIONS = [
+  'Nuevos clientes', 'Tráfico local', 'Alcance online', 'Branding', 'Ventas directas', 'Comunidad',
+];
+const FOLLOWERS_OPTIONS = [
+  { value: 0,     label: 'Cualquiera' },
+  { value: 1000,  label: '+1K' },
+  { value: 5000,  label: '+5K' },
+  { value: 10000, label: '+10K' },
+  { value: 50000, label: '+50K' },
+];
+const LOCALES_OPTIONS = [
+  { value: 1,  label: '1+' },
+  { value: 2,  label: '2+' },
+  { value: 5,  label: '5+' },
+  { value: 10, label: '10+' },
+];
+
+const DEFAULT_FILTERS = {
+  location:     '',
+  maxDistance:  50,
+  segments:     [],
+  offering:     [],
+  seeking:      [],
+  minFollowers: 0,
+  hasWebsite:   false,
+  minLocales:   1,
+};
+
+function ChipGroup({ label, options, value, onChange }) {
+  const toggle = (opt) =>
+    onChange(value.includes(opt) ? value.filter(v => v !== opt) : [...value, opt]);
+  return (
+    <div>
+      <p className="mb-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+        {label}
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {options.map(opt => (
+          <button
+            key={opt}
+            type="button"
+            onClick={() => toggle(opt)}
+            className={`rounded-full px-3.5 py-2 text-[13px] font-medium transition-all ${
+              value.includes(opt)
+                ? 'bg-[#141E30] text-white shadow-sm'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            {opt}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function FiltersPanel({ filters, onApply, onClose }) {
+  const [local, setLocal] = useState(filters);
+  const upd = (key, val) => setLocal(prev => ({ ...prev, [key]: val }));
+
+  return (
+    <>
+      {/* Backdrop */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-[60]"
+        style={{ background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(4px)' }}
+        onClick={onClose}
+      />
+
+      {/* Sheet */}
+      <motion.div
+        initial={{ y: '100%' }}
+        animate={{ y: 0 }}
+        exit={{ y: '100%' }}
+        transition={{ type: 'spring', damping: 30, stiffness: 340, mass: 0.85 }}
+        className="fixed inset-x-0 bottom-0 z-[70] flex flex-col bg-white"
+        style={{
+          maxHeight: '90dvh',
+          borderRadius: '24px 24px 0 0',
+          paddingBottom: 'env(safe-area-inset-bottom)',
+        }}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Handle */}
+        <div className="flex shrink-0 items-center justify-center pt-3 pb-1">
+          <div className="h-1 w-10 rounded-full bg-slate-300" />
+        </div>
+
+        {/* Header */}
+        <div className="flex shrink-0 items-center justify-between border-b border-slate-100 px-5 pb-4 pt-2">
+          <h2 className="font-['Space_Grotesk'] text-[18px] font-bold text-[#141E30]">
+            Configurar búsqueda
+          </h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-slate-200"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        {/* Scrollable form */}
+        <div className="flex-1 overflow-y-auto [scrollbar-width:none]">
+          <div className="space-y-7 px-5 py-5">
+
+            {/* Ubicación */}
+            <div>
+              <p className="mb-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                Ubicación
+              </p>
+              <input
+                type="text"
+                value={local.location}
+                onChange={e => upd('location', e.target.value)}
+                placeholder="Ej: Buenos Aires, Córdoba…"
+                className="w-full rounded-[14px] border border-slate-200 bg-slate-50 px-4 py-3 text-[14px] text-[#1A1A1A] outline-none transition focus:border-[#1871D8]/40 focus:ring-2 focus:ring-[#1871D8]/10"
+              />
+            </div>
+
+            {/* Distancia máxima */}
+            <div>
+              <div className="mb-2.5 flex items-center justify-between">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                  Distancia máxima
+                </p>
+                <span className="text-[13px] font-bold text-[#1871D8]">{local.maxDistance} km</span>
+              </div>
+              <input
+                type="range"
+                min={1} max={200} step={1}
+                value={local.maxDistance}
+                onChange={e => upd('maxDistance', Number(e.target.value))}
+                className="w-full accent-[#141E30]"
+              />
+              <div className="mt-1 flex justify-between text-[11px] text-slate-400">
+                <span>1 km</span>
+                <span>200 km</span>
+              </div>
+            </div>
+
+            {/* Segmentos clave */}
+            <ChipGroup
+              label="Segmentos clave"
+              options={SEGMENT_OPTIONS}
+              value={local.segments}
+              onChange={v => upd('segments', v)}
+            />
+
+            {/* Qué ofrezco */}
+            <ChipGroup
+              label="Qué ofrezco"
+              options={OFFERING_OPTIONS}
+              value={local.offering}
+              onChange={v => upd('offering', v)}
+            />
+
+            {/* Qué busco */}
+            <ChipGroup
+              label="Qué busco"
+              options={SEEKING_OPTIONS}
+              value={local.seeking}
+              onChange={v => upd('seeking', v)}
+            />
+
+            {/* Seguidores en Instagram */}
+            <div>
+              <p className="mb-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                Seguidores mínimos en Instagram
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {FOLLOWERS_OPTIONS.map(opt => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => upd('minFollowers', opt.value)}
+                    className={`rounded-full px-3.5 py-2 text-[13px] font-medium transition-all ${
+                      local.minFollowers === opt.value
+                        ? 'bg-[#141E30] text-white shadow-sm'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Tiene página web */}
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-[14px] font-semibold text-[#1A1A1A]">Tiene página web</p>
+                <p className="text-[12px] text-slate-400">Solo mostrar comercios con web propia</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => upd('hasWebsite', !local.hasWebsite)}
+                className={`relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200 ${
+                  local.hasWebsite ? 'bg-[#141E30]' : 'bg-slate-200'
+                }`}
+              >
+                <span
+                  className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 ${
+                    local.hasWebsite ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Cantidad de locales */}
+            <div>
+              <p className="mb-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                Cantidad de locales
+              </p>
+              <div className="flex gap-2">
+                {LOCALES_OPTIONS.map(opt => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => upd('minLocales', opt.value)}
+                    className={`flex-1 rounded-[12px] py-2.5 text-[13px] font-semibold transition-all ${
+                      local.minLocales === opt.value
+                        ? 'bg-[#141E30] text-white shadow-sm'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="h-2" />
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div
+          className="shrink-0 flex gap-3 border-t border-slate-100 bg-white px-5 py-4"
+        >
+          <button
+            type="button"
+            onClick={() => { setLocal(DEFAULT_FILTERS); onApply(DEFAULT_FILTERS); onClose(); }}
+            className="rounded-[16px] border border-slate-200 px-5 py-3.5 text-[14px] font-semibold text-slate-600 transition hover:bg-slate-50"
+          >
+            Resetear
+          </button>
+          <button
+            type="button"
+            onClick={() => { onApply(local); onClose(); }}
+            className="flex-1 rounded-[16px] bg-[#141E30] py-3.5 text-[14px] font-bold text-white shadow-sm transition hover:bg-[#1A2C45]"
+          >
+            Aplicar filtros
+          </button>
+        </div>
+      </motion.div>
+    </>
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   SAVED COMPANIES GRID (Guardados tab)
+────────────────────────────────────────────────────────────────── */
+const sectorBg = {
+  Indumentaria:       'linear-gradient(135deg, #9B8EC4, #C4A882)',
+  Belleza:            'linear-gradient(135deg, #D4909A, #E8C5D0)',
+  Cafeteria:          'linear-gradient(135deg, #6B4228, #A07850)',
+  Gastronomia:        'linear-gradient(135deg, #2D5522, #4A7A3C)',
+  Gimnasio:           'linear-gradient(135deg, #1A2644, #2C3E6B)',
+  Tecnologia:         'linear-gradient(135deg, #1A0F42, #2D1B69)',
+  Floreria:           'linear-gradient(135deg, #5A8A44, #8FB87A)',
+  Moda:               'linear-gradient(135deg, #806040, #B09070)',
+  Bienestar:          'linear-gradient(135deg, #4A7890, #78A8C0)',
+  'Marketing Digital':'linear-gradient(135deg, #2C1050, #4A2080)',
+};
+
+function SavedGrid({ companies, onView }) {
+  if (companies.length === 0) {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center gap-3 px-8 text-center">
+        <div
+          className="flex h-14 w-14 items-center justify-center rounded-full"
+          style={{ background: 'rgba(255,255,255,0.08)' }}
+        >
+          <Star className="h-6 w-6 text-white/30" />
+        </div>
+        <div>
+          <p className="text-[14px] font-semibold text-white/60">Sin guardados todavía</p>
+          <p className="mt-1 text-[12px] text-white/35">
+            Usá ★ para guardar comercios interesantes
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex-1 overflow-y-auto px-4 py-3 [scrollbar-width:none]">
+      <div className="grid grid-cols-2 gap-3">
+        {companies.map(company => (
+          <motion.button
+            key={company.id}
+            type="button"
+            onClick={() => onView(company)}
+            whileTap={{ scale: 0.96 }}
+            className="relative overflow-hidden rounded-[20px] text-left"
+            style={{ aspectRatio: '3/4', boxShadow: '0 8px 24px rgba(0,0,0,0.45)' }}
+          >
+            {company.gallery?.[0] ? (
+              <img
+                src={company.gallery[0]}
+                alt={company.name}
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            ) : (
+              <div
+                className="absolute inset-0"
+                style={{ background: sectorBg[company.sector] || 'linear-gradient(135deg, #141E30, #35577D)' }}
+              >
+                <span
+                  className="absolute inset-0 flex items-center justify-center font-['Space_Grotesk'] font-black text-white"
+                  style={{ fontSize: 48, opacity: 0.07 }}
+                >
+                  {company.logo}
+                </span>
+              </div>
+            )}
+            {/* Gradient */}
+            <div
+              className="absolute inset-0"
+              style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.80) 0%, transparent 55%)' }}
+            />
+            {/* Info */}
+            <div className="absolute bottom-0 left-0 right-0 p-3">
+              <p className="text-[12px] font-bold leading-tight text-white">{company.name}</p>
+              <p className="mt-0.5 text-[10px] text-white/55">{company.sector}</p>
+            </div>
+          </motion.button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   SWIPE BOARD — main component
+────────────────────────────────────────────────────────────────── */
 function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPlan }) {
   const deck = useMemo(
     () =>
@@ -19,45 +377,55 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
     [companies]
   );
 
+  /* ── Deck navigation ── */
   const [activeIndex,    setActiveIndex]    = useState(0);
   const [history,        setHistory]        = useState([]);
   const [flashMessage,   setFlashMessage]   = useState(null);
   const [exitState,      setExitState]      = useState({ x: 0, y: 0 });
   const [viewingCompany, setViewingCompany] = useState(null);
 
-  /* ── Shared drag motion values ── */
-  const x       = useMotionValue(0);
-  const y       = useMotionValue(0);
+  /* ── UI state ── */
+  const [activeTab,    setActiveTab]    = useState('paraTi');
+  const [showFilters,  setShowFilters]  = useState(false);
+  const [filters,      setFilters]      = useState(DEFAULT_FILTERS);
+  const [savedIds,     setSavedIds]     = useState(() => new Set());
 
-  /* ── Active card transforms ── */
-  const rotate  = useTransform(x, [-240, 240], [-12, 12]);
+  /* ── Drag motion values ── */
+  const x      = useMotionValue(0);
+  const y      = useMotionValue(0);
+  const rotate = useTransform(x, [-240, 240], [-12, 12]);
 
-  /* ── LIKE / NOPE overlay opacity ── */
-  const likeOpacity = useTransform(x, [20, SWIPE_THRESHOLD_X],        [0, 1]);
-  const nopeOpacity = useTransform(x, [-20, -SWIPE_THRESHOLD_X],      [0, 1]);
+  /* ── LIKE / NOPE stamp opacity ── */
+  const likeOpacity = useTransform(x, [20,  SWIPE_THRESHOLD_X],  [0, 1]);
+  const nopeOpacity = useTransform(x, [-20, -SWIPE_THRESHOLD_X], [0, 1]);
 
-  /* ── Next card: reacts dynamically to drag ──
-     At x=0 → scale=0.95, opacity=0.75, translateY=10
-     At |x|=200 → scale=1, opacity=1, translateY=0          */
-  const nextScale     = useTransform(x, [-200, 0, 200], [1,    0.95, 1]);
-  const nextOpacity   = useTransform(x, [-200, 0, 200], [1,    0.72, 1]);
-  const nextTranslateY= useTransform(x, [-200, 0, 200], [0,    12,   0]);
+  /* ── Next card: scale + opacity + translateY driven by drag ── */
+  const nextScale      = useTransform(x, [-200, 0, 200], [1,     0.95, 1]);
+  const nextOpacity    = useTransform(x, [-200, 0, 200], [1,     0.72, 1]);
+  const nextTranslateY = useTransform(x, [-200, 0, 200], [0,     14,   0]);
 
   /* ── Third card (barely peeking) ── */
-  const thirdScale    = useTransform(x, [-200, 0, 200], [0.915, 0.90, 0.915]);
-  const thirdOpacity  = useTransform(x, [-200, 0, 200], [0.45,  0.30, 0.45]);
+  const thirdScale   = useTransform(x, [-200, 0, 200], [0.915, 0.90, 0.915]);
+  const thirdOpacity = useTransform(x, [-200, 0, 200], [0.45,  0.30, 0.45]);
 
   const activeCompany    = deck[activeIndex];
   const nextCompany      = deck[activeIndex + 1];
   const thirdCompany     = deck[activeIndex + 2];
   const matchLimitReached = userPlan === 'starter' && dailyMatchCount >= 10;
 
+  const savedCompanies = useMemo(
+    () => deck.filter(c => savedIds.has(c.id)),
+    [deck, savedIds]
+  );
+
+  /* ── Flash toast ── */
   const showFlash = (message) => {
     setFlashMessage(message);
     window.clearTimeout(showFlash._t);
     showFlash._t = window.setTimeout(() => setFlashMessage(null), 1300);
   };
 
+  /* ── Move to next card ── */
   const queueNextCompany = (state) => {
     if (!activeCompany) return;
     setHistory((curr) => [...curr, { index: activeIndex }]);
@@ -67,6 +435,17 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
       y.set(0);
       setActiveIndex((curr) => curr + 1);
     }, 160);
+  };
+
+  /* ── Actions ── */
+  const handleUndo = () => {
+    if (history.length === 0) return;
+    const prev = history[history.length - 1];
+    setHistory(h => h.slice(0, -1));
+    x.set(0);
+    y.set(0);
+    setActiveIndex(prev.index);
+    showFlash('Deshecho');
   };
 
   const handleSkip = () => {
@@ -88,7 +467,8 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
 
   const handleSave = () => {
     if (!activeCompany) return;
-    showFlash(`${activeCompany.name} guardada`);
+    setSavedIds(prev => new Set([...prev, activeCompany.id]));
+    showFlash(`${activeCompany.name} guardada ★`);
   };
 
   const handleViewProfile = () => {
@@ -103,12 +483,14 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
     y.set(0);
   };
 
-  /* ── Card width — 94vw capped at 500px ── */
+  /* ── Card width ── */
   const cardW = 'w-[94vw] max-w-[500px]';
 
   return (
     <>
-      {/* ── Dark navy full-height match container ── */}
+      {/* ═══════════════════════════════════════════════════
+          MAIN CONTAINER — dark navy
+      ═══════════════════════════════════════════════════ */}
       <div
         className="flex flex-col overflow-hidden rounded-[24px]"
         style={{
@@ -116,129 +498,219 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
           height: 'calc(100dvh - 158px)',
         }}
       >
-        {/* ── Card stack area ── */}
-        <div className="relative flex flex-1 items-start justify-center overflow-hidden pt-5">
+        {/* ══ HEADER: settings · tabs · zap ══════════════ */}
+        <div className="shrink-0 flex items-center justify-between px-4 pb-2 pt-3">
 
-          {/* ── Third card (farthest back) ── */}
-          {thirdCompany && (
-            <motion.div
-              className={`absolute top-8 z-[10] ${cardW}`}
-              style={{
-                scale: thirdScale,
-                opacity: thirdOpacity,
-                translateY: 22,
-              }}
-            >
-              <CompanyCard company={thirdCompany} />
-            </motion.div>
-          )}
+          {/* Settings / Filters */}
+          <motion.button
+            type="button"
+            onClick={() => setShowFilters(true)}
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.90 }}
+            className="flex h-10 w-10 items-center justify-center rounded-full"
+            style={{
+              background: 'rgba(255,255,255,0.08)',
+              border: '1.5px solid rgba(255,255,255,0.14)',
+            }}
+          >
+            <SlidersHorizontal className="h-[18px] w-[18px] text-white/70" />
+          </motion.button>
 
-          {/* ── Next card (middle layer) — reacts to drag ── */}
-          {nextCompany && (
-            <motion.div
-              className={`absolute top-4 z-[20] ${cardW}`}
-              style={{
-                scale: nextScale,
-                opacity: nextOpacity,
-                translateY: nextTranslateY,
-              }}
-            >
-              <CompanyCard company={nextCompany} />
-            </motion.div>
-          )}
-
-          {/* ── Active card ── */}
-          <AnimatePresence initial={false} mode="wait">
-            {activeCompany ? (
-              <motion.div
-                key={activeCompany.id}
-                className={`absolute top-0 z-[30] ${cardW} cursor-grab active:cursor-grabbing`}
-                drag="x"
-                dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={0.65}
-                initial={{ opacity: 0, y: 20, scale: 0.97 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{
-                  opacity: 0,
-                  x: exitState.x,
-                  y: exitState.y,
-                  rotate: exitState.x > 0 ? 12 : -12,
-                  transition: { duration: 0.22, ease: [0.32, 0, 0.67, 0] },
-                }}
-                transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-                style={{ x, y, rotate }}
-                onDragEnd={handleDragEnd}
+          {/* Para ti / Guardados tabs */}
+          <div
+            className="flex items-center rounded-full p-1"
+            style={{
+              background: 'rgba(255,255,255,0.07)',
+              border: '1px solid rgba(255,255,255,0.09)',
+            }}
+          >
+            {[
+              { id: 'paraTi',    label: 'Para ti' },
+              { id: 'guardados', label: 'Guardados' },
+            ].map(tab => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                className={`rounded-full px-4 py-1.5 text-[13px] font-semibold transition-all ${
+                  activeTab === tab.id
+                    ? 'bg-white text-[#141E30] shadow-sm'
+                    : 'text-white/50 hover:text-white/75'
+                }`}
               >
-                {/* LIKE stamp */}
-                <motion.div
-                  className="pointer-events-none absolute left-5 top-14 z-40 rotate-[-18deg]"
-                  style={{ opacity: likeOpacity }}
-                >
-                  <div
-                    className="rounded-2xl px-5 py-2"
-                    style={{
-                      border: '3px solid #22C55E',
-                      background: 'rgba(34,197,94,0.12)',
-                      backdropFilter: 'blur(8px)',
-                    }}
-                  >
-                    <span className="font-['Space_Grotesk'] text-[28px] font-black tracking-[0.12em] text-[#22C55E] drop-shadow-[0_2px_8px_rgba(34,197,94,0.7)]">
-                      LIKE
-                    </span>
-                  </div>
-                </motion.div>
+                {tab.label}
+                {tab.id === 'guardados' && savedIds.size > 0 && (
+                  <span className={`ml-1 text-[11px] ${activeTab === tab.id ? 'text-[#141E30]/60' : 'text-white/35'}`}>
+                    ({savedIds.size})
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
 
-                {/* NOPE stamp */}
-                <motion.div
-                  className="pointer-events-none absolute right-5 top-14 z-40 rotate-[18deg]"
-                  style={{ opacity: nopeOpacity }}
-                >
-                  <div
-                    className="rounded-2xl px-5 py-2"
-                    style={{
-                      border: '3px solid #F43F5E',
-                      background: 'rgba(244,63,94,0.12)',
-                      backdropFilter: 'blur(8px)',
-                    }}
-                  >
-                    <span className="font-['Space_Grotesk'] text-[28px] font-black tracking-[0.12em] text-[#F43F5E] drop-shadow-[0_2px_8px_rgba(244,63,94,0.7)]">
-                      NOPE
-                    </span>
-                  </div>
-                </motion.div>
-
-                <CompanyCard company={activeCompany} />
-              </motion.div>
-            ) : (
-              /* ── Empty deck ── */
-              <motion.div
-                key="empty"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className={`absolute top-0 z-30 flex ${cardW} h-[70%] items-center justify-center rounded-[28px] p-10 text-center`}
-                style={{
-                  background: 'rgba(255,255,255,0.04)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(255,255,255,0.09)',
-                }}
-              >
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-[#4A9FFF]">
-                    Deck completo
-                  </p>
-                  <h3 className="mt-3 font-['Space_Grotesk'] text-[22px] font-bold tracking-tight text-white/90">
-                    No hay más empresas por evaluar
-                  </h3>
-                  <p className="mt-2 text-[13px] text-white/40">
-                    Volvé más tarde o ajustá tus filtros
-                  </p>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* Zap / Destacados */}
+          <motion.button
+            type="button"
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.90 }}
+            className="flex h-10 w-10 items-center justify-center rounded-full"
+            style={{
+              background: 'rgba(255,255,255,0.08)',
+              border: '1.5px solid rgba(255,255,255,0.14)',
+            }}
+          >
+            <Zap className="h-[18px] w-[18px] text-[#4A9FFF]" />
+          </motion.button>
         </div>
 
-        {/* ── Flash toast ── */}
+        {/* ══ CONTENT AREA ════════════════════════════════ */}
+        {activeTab === 'guardados' ? (
+          /* ── Saved companies grid ── */
+          <SavedGrid companies={savedCompanies} onView={c => setViewingCompany(c)} />
+        ) : (
+          /* ── Swipe card stack ── */
+          <div className="relative flex-1 overflow-hidden">
+
+            {/* Third card (farthest back) */}
+            {thirdCompany && (
+              <motion.div
+                className={`absolute inset-y-0 top-0 z-[10] ${cardW}`}
+                style={{
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  scale: thirdScale,
+                  opacity: thirdOpacity,
+                  translateY: 22,
+                }}
+              >
+                <CompanyCard company={thirdCompany} />
+              </motion.div>
+            )}
+
+            {/* Next card (middle layer) */}
+            {nextCompany && (
+              <motion.div
+                className={`absolute inset-y-0 top-0 z-[20] ${cardW}`}
+                style={{
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  scale: nextScale,
+                  opacity: nextOpacity,
+                  translateY: nextTranslateY,
+                }}
+              >
+                <CompanyCard company={nextCompany} />
+              </motion.div>
+            )}
+
+            {/* Active card */}
+            <AnimatePresence initial={false} mode="wait">
+              {activeCompany ? (
+                <motion.div
+                  key={activeCompany.id}
+                  className={`absolute inset-y-0 top-0 z-[30] ${cardW} cursor-grab active:cursor-grabbing`}
+                  style={{
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    x,
+                    y,
+                    rotate,
+                  }}
+                  drag="x"
+                  dragConstraints={{ left: 0, right: 0 }}
+                  dragElastic={0.65}
+                  initial={{ opacity: 0, scale: 0.97 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{
+                    opacity: 0,
+                    x: exitState.x,
+                    y: exitState.y,
+                    rotate: exitState.x > 0 ? 12 : -12,
+                    transition: { duration: 0.22, ease: [0.32, 0, 0.67, 0] },
+                  }}
+                  transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                  onDragEnd={handleDragEnd}
+                >
+                  {/* LIKE stamp */}
+                  <motion.div
+                    className="pointer-events-none absolute left-5 top-14 z-40 rotate-[-18deg]"
+                    style={{ opacity: likeOpacity }}
+                  >
+                    <div
+                      className="rounded-2xl px-5 py-2"
+                      style={{
+                        border: '3px solid #22C55E',
+                        background: 'rgba(34,197,94,0.12)',
+                        backdropFilter: 'blur(8px)',
+                      }}
+                    >
+                      <span className="font-['Space_Grotesk'] text-[28px] font-black tracking-[0.12em] text-[#22C55E] drop-shadow-[0_2px_8px_rgba(34,197,94,0.7)]">
+                        LIKE
+                      </span>
+                    </div>
+                  </motion.div>
+
+                  {/* NOPE stamp */}
+                  <motion.div
+                    className="pointer-events-none absolute right-5 top-14 z-40 rotate-[18deg]"
+                    style={{ opacity: nopeOpacity }}
+                  >
+                    <div
+                      className="rounded-2xl px-5 py-2"
+                      style={{
+                        border: '3px solid #F43F5E',
+                        background: 'rgba(244,63,94,0.12)',
+                        backdropFilter: 'blur(8px)',
+                      }}
+                    >
+                      <span className="font-['Space_Grotesk'] text-[28px] font-black tracking-[0.12em] text-[#F43F5E] drop-shadow-[0_2px_8px_rgba(244,63,94,0.7)]">
+                        NOPE
+                      </span>
+                    </div>
+                  </motion.div>
+
+                  <CompanyCard company={activeCompany} onViewProfile={handleViewProfile} />
+                </motion.div>
+              ) : (
+                /* ── Empty deck ── */
+                <motion.div
+                  key="empty"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className={`absolute inset-y-0 top-0 z-30 flex ${cardW} items-center justify-center rounded-[28px] p-10 text-center`}
+                  style={{
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    background: 'rgba(255,255,255,0.04)',
+                    backdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(255,255,255,0.09)',
+                  }}
+                >
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-[#4A9FFF]">
+                      Deck completo
+                    </p>
+                    <h3 className="mt-3 font-['Space_Grotesk'] text-[22px] font-bold tracking-tight text-white/90">
+                      No hay más empresas por evaluar
+                    </h3>
+                    <p className="mt-2 text-[13px] text-white/40">
+                      Volvé más tarde o ajustá tus filtros
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setShowFilters(true)}
+                      className="mt-5 rounded-full bg-white/10 px-5 py-2.5 text-[13px] font-semibold text-white/70 transition hover:bg-white/15"
+                    >
+                      Ajustar filtros
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
+
+        {/* ══ FLASH TOAST ═════════════════════════════════ */}
         <AnimatePresence>
           {flashMessage && (
             <motion.div
@@ -246,7 +718,7 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -4, scale: 0.96 }}
               transition={{ duration: 0.18 }}
-              className="mx-auto mb-2 shrink-0 rounded-[18px] px-5 py-2.5 text-center text-[13px] font-semibold text-white/90"
+              className="mx-auto shrink-0 rounded-[18px] px-5 py-2.5 text-center text-[13px] font-semibold text-white/90"
               style={{
                 background: 'rgba(255,255,255,0.11)',
                 backdropFilter: 'blur(16px)',
@@ -258,9 +730,9 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
           )}
         </AnimatePresence>
 
-        {/* ── Match limit warning ── */}
+        {/* ══ MATCH LIMIT WARNING ═════════════════════════ */}
         {matchLimitReached && (
-          <div className="mx-4 mb-2 shrink-0 rounded-[16px] border border-amber-400/20 bg-amber-400/8 p-3.5 text-center text-[13px] leading-6 text-amber-200">
+          <div className="mx-4 shrink-0 rounded-[16px] border border-amber-400/20 bg-amber-400/8 p-3.5 text-center text-[13px] leading-6 text-amber-200">
             Llegaste al límite diario del plan Starter.
             <button
               type="button"
@@ -272,56 +744,57 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
           </div>
         )}
 
-        {/* ── Action buttons ── */}
+        {/* ══ ACTION BUTTONS — Tinder-style 5-button row ═ */}
         <div
-          className="shrink-0 flex items-center justify-center gap-[20px] pt-3"
-          style={{ paddingBottom: 'max(28px, env(safe-area-inset-bottom))' }}
+          className="shrink-0 flex items-center justify-center gap-4 pt-2"
+          style={{ paddingBottom: 'max(22px, env(safe-area-inset-bottom))' }}
         >
-          {/* Skip */}
+          {/* Undo */}
+          <motion.button
+            type="button"
+            onClick={handleUndo}
+            whileHover={{ scale: 1.10 }}
+            whileTap={{ scale: 0.86 }}
+            className="flex h-12 w-12 items-center justify-center rounded-full"
+            style={{
+              background: 'rgba(255,255,255,0.07)',
+              border: '1.5px solid rgba(255,255,255,0.14)',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.35)',
+            }}
+          >
+            <RotateCcw className="h-5 w-5 text-amber-400" strokeWidth={2} />
+          </motion.button>
+
+          {/* Skip / Nope */}
           <motion.button
             type="button"
             onClick={handleSkip}
             whileHover={{ scale: 1.10 }}
             whileTap={{ scale: 0.86 }}
-            className="flex h-[58px] w-[58px] items-center justify-center rounded-full"
+            className="flex h-[60px] w-[60px] items-center justify-center rounded-full"
             style={{
-              background: 'rgba(255,255,255,0.07)',
-              border: '1.5px solid rgba(255,255,255,0.14)',
+              background: 'rgba(244,63,94,0.12)',
+              border: '1.5px solid rgba(244,63,94,0.35)',
               boxShadow: '0 4px 20px rgba(0,0,0,0.40)',
             }}
           >
-            <X className="h-[22px] w-[22px] text-white/70" strokeWidth={2.2} />
+            <X className="h-6 w-6 text-[#F43F5E]" strokeWidth={2.5} />
           </motion.button>
 
-          {/* Bookmark */}
+          {/* Save / Star */}
           <motion.button
             type="button"
             onClick={handleSave}
             whileHover={{ scale: 1.10 }}
             whileTap={{ scale: 0.86 }}
-            className="flex h-[48px] w-[48px] items-center justify-center rounded-full"
+            className="flex h-12 w-12 items-center justify-center rounded-full"
             style={{
-              background: 'rgba(255,255,255,0.06)',
-              border: '1.5px solid rgba(255,255,255,0.11)',
-              boxShadow: '0 3px 14px rgba(0,0,0,0.30)',
+              background: 'rgba(251,191,36,0.12)',
+              border: '1.5px solid rgba(251,191,36,0.32)',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.35)',
             }}
           >
-            <Bookmark className="h-[18px] w-[18px] text-white/55" strokeWidth={2} />
-          </motion.button>
-
-          {/* View Profile — hero CTA */}
-          <motion.button
-            type="button"
-            onClick={handleViewProfile}
-            whileHover={{ scale: 1.08 }}
-            whileTap={{ scale: 0.90 }}
-            className="flex h-[72px] w-[72px] items-center justify-center rounded-full"
-            style={{
-              background: 'linear-gradient(135deg, #1E7FF0 0%, #1459B0 100%)',
-              boxShadow: '0 0 32px rgba(24,113,216,0.65), 0 8px 28px rgba(0,0,0,0.50)',
-            }}
-          >
-            <Search className="h-[26px] w-[26px] text-white" strokeWidth={2} />
+            <Star className="h-5 w-5 text-amber-400" strokeWidth={2} />
           </motion.button>
 
           {/* Like */}
@@ -330,7 +803,7 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
             onClick={handleLike}
             whileHover={{ scale: 1.10 }}
             whileTap={{ scale: 0.86 }}
-            className="flex h-[58px] w-[58px] items-center justify-center rounded-full"
+            className="flex h-[60px] w-[60px] items-center justify-center rounded-full"
             style={{
               background: 'rgba(34,197,94,0.12)',
               border: '1.5px solid rgba(34,197,94,0.32)',
@@ -339,10 +812,26 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
           >
             <Heart className="h-[22px] w-[22px] text-emerald-400" strokeWidth={2} />
           </motion.button>
+
+          {/* View full profile */}
+          <motion.button
+            type="button"
+            onClick={handleViewProfile}
+            whileHover={{ scale: 1.10 }}
+            whileTap={{ scale: 0.86 }}
+            className="flex h-12 w-12 items-center justify-center rounded-full"
+            style={{
+              background: 'rgba(74,159,255,0.12)',
+              border: '1.5px solid rgba(74,159,255,0.28)',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.35)',
+            }}
+          >
+            <ArrowUp className="h-5 w-5 text-[#4A9FFF]" strokeWidth={2} />
+          </motion.button>
         </div>
       </div>
 
-      {/* ── Detail modal — AnimatePresence here enables exit animation ── */}
+      {/* ── Detail modal ── */}
       <AnimatePresence>
         {viewingCompany && (
           <CompanyDetailModal
@@ -350,6 +839,17 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
             company={viewingCompany}
             onClose={() => setViewingCompany(null)}
             onLike={handleLike}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* ── Filters bottom sheet ── */}
+      <AnimatePresence>
+        {showFilters && (
+          <FiltersPanel
+            filters={filters}
+            onApply={setFilters}
+            onClose={() => setShowFilters(false)}
           />
         )}
       </AnimatePresence>
