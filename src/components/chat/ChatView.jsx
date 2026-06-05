@@ -179,8 +179,8 @@ function ChatView({
 
   return (
     <div
-      className="relative overflow-hidden rounded-[24px] bg-white shadow-sm"
-      style={{ height: 'calc(100vh - 96px)', minHeight: '560px' }}
+      className="relative overflow-hidden rounded-[0px]"
+      style={{ background: '#0A0F1E', height: 'calc(100vh - 96px)' }}
     >
       <AnimatePresence mode="wait" custom={directionRef.current} initial={false}>
 

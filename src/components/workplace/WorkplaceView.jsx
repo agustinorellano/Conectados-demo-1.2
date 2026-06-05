@@ -31,10 +31,10 @@ const PRIORITIES = ['urgente', 'alta', 'media', 'baja'];
 const COMMERCIAL_STATUSES = ['negociación', 'activo', 'cerrado'];
 
 const COLUMNS = [
-  { key: 'backlog',     label: 'Backlog',      color: 'bg-slate-50  border-slate-200'    },
-  { key: 'en_progreso', label: 'En Ejecución', color: 'bg-blue-50   border-blue-200'     },
-  { key: 'revision',    label: 'En Revisión',  color: 'bg-amber-50  border-amber-200'    },
-  { key: 'completado',  label: 'Cerrado ✓',    color: 'bg-emerald-50 border-emerald-200' },
+  { key: 'backlog',     label: 'Backlog',      color: 'border-white/10'    },
+  { key: 'en_progreso', label: 'En Ejecución', color: 'border-blue-400/20' },
+  { key: 'revision',    label: 'En Revisión',  color: 'border-amber-400/20'},
+  { key: 'completado',  label: 'Cerrado ✓',    color: 'border-emerald-400/20' },
 ];
 
 const PARTNERS_LIST       = ['Bloom Florería', 'Sushi Nakama', 'Luna Beauty', 'Core Wellness', 'Digital Craft', 'Café Patio'];
@@ -479,8 +479,10 @@ function AllianceFeaturedCard({ alliance, onOpen }) {
       whileHover={{ y: -3 }}
       whileTap={{ scale: 0.985 }}
       transition={{ duration: 0.18 }}
-      className="relative overflow-hidden rounded-[24px] bg-white cursor-pointer"
+      className="relative overflow-hidden rounded-[24px] cursor-pointer"
       style={{
+        background: 'rgba(20,30,48,0.95)',
+        border: '1px solid rgba(255,255,255,0.07)',
         boxShadow: isUrgent
           ? `0 0 0 1.5px rgba(239,68,68,0.25), 0 8px 32px rgba(20,30,48,0.1), 0 2px 8px rgba(20,30,48,0.06)`
           : `0 6px 28px rgba(20,30,48,0.09), 0 2px 6px rgba(20,30,48,0.05)`,
@@ -1526,14 +1528,16 @@ function KanbanBoard({ filtered, onDrop, onOpen, onAddCard }) {
             onDragLeave={() => setDragOver(null)}
             onDrop={e => handleDrop(e, key)}
             className={`flex flex-col rounded-[20px] border ${color} min-w-[260px] w-[260px] shrink-0 transition-all ${isOver ? 'ring-2 ring-blue-400 ring-offset-2' : ''}`}
+            style={{ background: 'rgba(14,20,40,0.90)' }}
           >
-            <div className={`flex items-center justify-between rounded-t-[20px] border-b px-4 py-3 ${color}`}>
+            <div className={`flex items-center justify-between rounded-t-[20px] border-b px-4 py-3 ${color}`}
+              style={{ background: 'rgba(20,30,48,0.95)' }}>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-slate-700">{label}</span>
-                <span className="rounded-full bg-white/80 px-2 py-0.5 text-[11px] font-bold text-slate-500">{cards.length}</span>
+                <span className="text-sm font-semibold text-white/80">{label}</span>
+                <span className="rounded-full bg-white/10 px-2 py-0.5 text-[11px] font-bold text-white/50">{cards.length}</span>
               </div>
               <button type="button" onClick={() => setAddingTo(addingTo === key ? null : key)}
-                className="p-1 rounded-lg hover:bg-white/60 transition text-slate-400 hover:text-slate-600">
+                className="p-1 rounded-lg hover:bg-white/10 transition text-white/40 hover:text-white/70">
                 <Plus className="w-4 h-4" />
               </button>
             </div>
@@ -2072,7 +2076,7 @@ function WorkplaceView({ currentArea = 'general', onTaskMove, tasks = [], pendin
   };
 
   return (
-    <div className="flex flex-col gap-3" style={{ height: 'calc(100vh - 96px)', overflow: 'hidden' }}>
+    <div className="flex flex-col gap-3" style={{ height: 'calc(100vh - 96px)', overflow: 'hidden', background: '#0A0F1E' }}>
 
       {/* ── Row 1: Search + Filter dropdown + View toggle ── */}
       <div className="flex shrink-0 items-center gap-2">

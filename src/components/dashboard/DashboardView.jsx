@@ -158,7 +158,8 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
   const resolveAll = () => setReminders((prev) => prev.map((r) => ({ ...r, done: true })));
 
   return (
-    <div className="space-y-5">
+    <div className="h-full overflow-y-auto bg-[#0A0F1E] px-4 py-4 [scrollbar-width:none]">
+    <div className="space-y-4 pb-4">
       {/* 4 METRIC CARDS */}
       <section className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         {metricCards.map((card, index) => (
@@ -211,14 +212,14 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
       {/* MIDDLE ROW: Bar chart + Recordatorio */}
       <div className="grid gap-5 xl:grid-cols-[1.5fr_1fr]">
         {/* Actividad Semanal — bar chart */}
-        <section className="rounded-[20px] bg-white p-5 shadow-sm ring-1 ring-inset ring-slate-200">
+        <section className="rounded-[20px] p-5" style={{ background: 'rgba(20,30,48,0.95)', border: '1px solid rgba(255,255,255,0.07)' }}>
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#1871D8]">
             Analítica
           </p>
-          <h2 className="mt-2 font-['Space_Grotesk'] text-2xl font-bold tracking-tight text-[#1A1A1A]">
+          <h2 className="mt-2 font-['Space_Grotesk'] text-2xl font-bold tracking-tight text-white">
             Actividad Semanal
           </h2>
-          <p className="mt-1 text-sm text-slate-500">Matches e interacciones de los últimos 7 dias</p>
+          <p className="mt-1 text-sm text-white/55">Matches e interacciones de los últimos 7 dias</p>
 
           <div className="mt-6 flex h-[100px] items-end gap-2.5">
             {weeklyActivity.map((bar, i) => (
@@ -229,7 +230,7 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
                     bar.best
                       ? 'bg-[#22c55e]'
                       : i >= 5
-                      ? 'bg-slate-200'
+                      ? 'bg-white/20'
                       : 'bg-[#141E30]'
                   }`}
                   initial={{ height: 0 }}
@@ -237,7 +238,7 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
                 />
                 <span
                   className={`text-[11px] font-semibold ${
-                    bar.best ? 'text-[#22c55e]' : 'text-slate-400'
+                    bar.best ? 'text-[#22c55e]' : 'text-white/45'
                   }`}
                 >
                   {bar.day}
@@ -246,31 +247,31 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
             ))}
           </div>
 
-          <div className="mt-5 flex flex-wrap gap-4 border-t border-slate-100 pt-4">
+          <div className="mt-5 flex flex-wrap gap-4 border-t border-white/10 pt-4">
             <div className="flex items-center gap-1.5">
               <div className="h-2.5 w-2.5 rounded-full bg-[#141E30]" />
-              <span className="text-xs text-slate-500">Actividad</span>
+              <span className="text-xs text-white/55">Actividad</span>
             </div>
             <div className="flex items-center gap-1.5">
               <div className="h-2.5 w-2.5 rounded-full bg-[#22c55e]" />
-              <span className="text-xs text-slate-500">Mejor dia</span>
+              <span className="text-xs text-white/55">Mejor dia</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <div className="h-2.5 w-2.5 rounded-full bg-slate-200" />
-              <span className="text-xs text-slate-500">Fin de semana</span>
+              <div className="h-2.5 w-2.5 rounded-full bg-white/20" />
+              <span className="text-xs text-white/55">Fin de semana</span>
             </div>
           </div>
         </section>
 
         {/* Recordatorio destacado + lista */}
-        <section className="flex flex-col rounded-[20px] bg-white p-5 shadow-sm ring-1 ring-inset ring-slate-200">
+        <section className="flex flex-col rounded-[20px] p-5" style={{ background: 'rgba(20,30,48,0.95)', border: '1px solid rgba(255,255,255,0.07)' }}>
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-amber-500">
             Prioridad
           </p>
-          <h2 className="mt-2 font-['Space_Grotesk'] text-2xl font-bold tracking-tight text-[#1A1A1A]">
+          <h2 className="mt-2 font-['Space_Grotesk'] text-2xl font-bold tracking-tight text-white">
             {featuredReminder.company}
           </h2>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-white/55">
             {featuredReminder.label} — {featuredReminder.time}
           </p>
 
@@ -285,7 +286,7 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
           <div className="mt-5 flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <Bell className="h-3.5 w-3.5 text-amber-400" />
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-[0.2em]">
+              <span className="text-xs font-semibold text-white/45 uppercase tracking-[0.2em]">
                 Recordatorios
               </span>
               {pendingCount > 0 && (
@@ -296,7 +297,7 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
             </div>
             {pendingCount > 0 && (
               <button
-                className="text-xs font-semibold text-[#141E30] transition hover:opacity-70"
+                className="text-xs font-semibold text-white/60 transition hover:opacity-70"
                 onClick={resolveAll}
                 type="button"
               >
@@ -310,7 +311,7 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
               {reminders.map((reminder) => (
                 <motion.div
                   animate={{ opacity: reminder.done ? 0.4 : 1 }}
-                  className="flex items-center gap-3 rounded-[16px] bg-slate-50 px-3 py-3 ring-1 ring-inset ring-slate-200"
+                  className="flex items-center gap-3 rounded-[16px] bg-white/5 px-3 py-3 ring-1 ring-inset ring-white/8"
                   initial={{ opacity: 1 }}
                   key={reminder.id}
                   layout
@@ -320,7 +321,7 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
                     className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200 ${
                       reminder.done
                         ? 'border-emerald-400 bg-emerald-400 text-white'
-                        : 'border-slate-300 bg-white text-transparent hover:border-emerald-400'
+                        : 'border-white/20 bg-white/5 text-transparent hover:border-emerald-400'
                     }`}
                     onClick={() => toggleReminder(reminder.id)}
                     type="button"
@@ -330,12 +331,12 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
                   <div className="min-w-0 flex-1">
                     <p
                       className={`text-xs font-semibold leading-snug transition-all ${
-                        reminder.done ? 'text-slate-400 line-through' : 'text-[#1A1A1A]'
+                        reminder.done ? 'text-white/45 line-through' : 'text-white'
                       }`}
                     >
                       {reminder.text}
                     </p>
-                    <p className="mt-0.5 text-[10px] text-slate-400">{reminder.sub}</p>
+                    <p className="mt-0.5 text-[10px] text-white/45">{reminder.sub}</p>
                   </div>
                 </motion.div>
               ))}
@@ -488,18 +489,18 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
       </section>
 
       {/* Equipos Conectados — Team Collaboration (standalone full-width) */}
-      <section className="rounded-[24px] bg-white p-5 shadow-sm ring-1 ring-inset ring-slate-200">
+      <section className="rounded-[24px] p-5" style={{ background: 'rgba(20,30,48,0.95)', border: '1px solid rgba(255,255,255,0.07)' }}>
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#4A9FFF]">
               Match Activos
             </p>
-            <h2 className="mt-2 font-['Space_Grotesk'] text-2xl font-bold tracking-tight text-[#1A1A1A]">
+            <h2 className="mt-2 font-['Space_Grotesk'] text-2xl font-bold tracking-tight text-white">
               Equipos Conectados
             </h2>
           </div>
           <button
-            className="inline-flex items-center gap-1.5 rounded-[14px] bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-600 transition hover:bg-slate-200"
+            className="inline-flex items-center gap-1.5 rounded-[14px] bg-white/10 px-3 py-2 text-xs font-semibold text-white/70 transition hover:bg-white/15"
             onClick={onNavigateToChats}
             type="button"
           >
@@ -542,6 +543,7 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
           ))}
         </div>
       </section>
+    </div>
     </div>
   );
 }

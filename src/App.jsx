@@ -266,7 +266,7 @@ function App() {
         style={{ paddingTop: 'env(safe-area-inset-top)' }}
       >
         {/* ── Full-bleed views: no padding, fill exact remaining height ── */}
-        {['alliances', 'profile'].includes(activeView) ? (
+        {['alliances', 'profile', 'dashboard', 'chats', 'workplace'].includes(activeView) ? (
           <div style={{ height: 'calc(100dvh - env(safe-area-inset-top, 0px) - 78px)' }}>
             {view}
           </div>
