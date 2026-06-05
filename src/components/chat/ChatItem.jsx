@@ -2,12 +2,12 @@ import { animate, motion, useMotionValue, useTransform } from 'framer-motion';
 import { Archive, Bookmark, Star, VolumeX } from 'lucide-react';
 import { useRef, useState } from 'react';
 
-/* ── Business state config ─────────────────────────────────────── */
+/* ── Business state config — dark mode ─────────────────────────── */
 const STATE_CFG = {
-  activo:    { dot: 'bg-emerald-400', badge: 'bg-emerald-50 text-emerald-700',  label: 'Activo'    },
-  pendiente: { dot: 'bg-amber-400',   badge: 'bg-amber-50   text-amber-700',    label: 'Pendiente' },
-  cerrado:   { dot: 'bg-slate-300',   badge: 'bg-slate-100  text-slate-500',    label: 'Cerrado'   },
-  inactivo:  { dot: 'bg-slate-200',   badge: 'bg-slate-50   text-slate-400',    label: 'Inactivo'  },
+  activo:    { dot: 'bg-emerald-400', badge: 'bg-emerald-400/15 text-emerald-300', label: 'Activo'    },
+  pendiente: { dot: 'bg-amber-400',   badge: 'bg-amber-400/15   text-amber-300',   label: 'Pendiente' },
+  cerrado:   { dot: 'bg-slate-500',   badge: 'bg-white/8         text-white/40',   label: 'Cerrado'   },
+  inactivo:  { dot: 'bg-slate-600',   badge: 'bg-white/5         text-white/30',   label: 'Inactivo'  },
 };
 
 /* ── Message-type prefix ────────────────────────────────────────── */
@@ -125,8 +125,8 @@ function ChatItem({
         onPointerUp={cancelPress}
         onPointerLeave={cancelPress}
         className={`relative w-full cursor-pointer select-none rounded-2xl px-3 py-3.5 transition-colors duration-150 ${
-          isActive ? 'bg-[#EEF5FF] ring-1 ring-inset ring-[#1871D8]/15' : 'bg-white hover:bg-slate-50'
-        }${isPinned ? ' border-l-2 border-[#1871D8]/30' : ''}`}
+          isActive ? 'bg-[#1871D8]/12 ring-1 ring-inset ring-[#1871D8]/25' : 'hover:bg-white/5'
+        }${isPinned ? ' border-l-2 border-[#1871D8]/40' : ''}`}
       >
         <div className="flex items-start gap-3">
 
@@ -164,7 +164,7 @@ function ChatItem({
             {/* Row 1: name + score + time */}
             <div className="flex items-center justify-between gap-2">
               <p className={`truncate text-[14px] leading-tight ${
-                isActive ? 'text-[#1871D8]' : 'text-[#1A1A1A]'
+                isActive ? 'text-[#4A9FFF]' : 'text-white'
               } ${unread > 0 ? 'font-bold' : 'font-semibold'}`}>
                 {company}
                 {isFavorite && <span className="ml-1 text-amber-400 text-[12px]">★</span>}
@@ -176,13 +176,13 @@ function ChatItem({
                     {score}
                   </span>
                 )}
-                <p className="whitespace-nowrap text-[11px] text-slate-400">{lastInteraction}</p>
+                <p className="whitespace-nowrap text-[11px] text-white/40">{lastInteraction}</p>
               </div>
             </div>
 
             {/* Row 2: last message preview */}
             <p className={`mt-0.5 line-clamp-1 text-[13px] leading-snug ${
-              unread > 0 ? 'font-medium text-slate-600' : 'text-slate-400'
+              unread > 0 ? 'font-medium text-white/70' : 'text-white/40'
             }`}>
               {prefix}{msgText}
             </p>
