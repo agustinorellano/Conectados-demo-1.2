@@ -77,11 +77,11 @@ function readFileAsDataUrl(file) {
    CHIPS for alliance sections
 ───────────────────────────────────────────────────────── */
 function SummaryChips({ items, tone = 'blue' }) {
-  if (!items.length) return <p className="text-sm text-slate-500">Sin definir todavía.</p>;
+  if (!items.length) return <p className="text-sm text-white/35">Sin definir todavía.</p>;
   const tones = {
-    blue:    'border-[#1871D8]/14 bg-[#1871D8]/8 text-[#1567C5]',
-    emerald: 'border-[#141E30]/10 bg-emerald-50 text-[#141E30]',
-    amber:   'border-amber-200 bg-amber-50 text-amber-700',
+    blue:    'border-[#1871D8]/35 bg-[#1871D8]/18 text-[#4A9FFF]',
+    emerald: 'border-emerald-400/30 bg-emerald-400/12 text-emerald-300',
+    amber:   'border-amber-400/30 bg-amber-400/12 text-amber-300',
   };
   return (
     <div className="flex flex-wrap gap-2">
@@ -277,9 +277,9 @@ function AllianceSection({ label, tone, items, isEditing, onEdit, onSave, onCanc
   return (
     <div className="px-5 py-5">
       <div className="mb-3 flex items-center justify-between">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">{label}</p>
+        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/45">{label}</p>
         {!isEditing && (
-          <button className="text-[11px] font-semibold text-[#1871D8]" onClick={onEdit} type="button">
+          <button className="text-[11px] font-semibold text-[#4A9FFF]" onClick={onEdit} type="button">
             Editar
           </button>
         )}
@@ -294,10 +294,10 @@ function AllianceSection({ label, tone, items, isEditing, onEdit, onSave, onCanc
             selected={selectedItems}
           />
           <div className="flex gap-3">
-            <button className="rounded-full bg-[#141E30] px-4 py-2 text-[12px] font-semibold text-white" onClick={onSave} type="button">
+            <button className="rounded-full bg-[#1871D8] px-4 py-2 text-[12px] font-semibold text-white" onClick={onSave} type="button">
               Guardar
             </button>
-            <button className="rounded-full border border-slate-200 px-4 py-2 text-[12px] font-semibold text-slate-600" onClick={onCancel} type="button">
+            <button className="rounded-full border border-white/15 px-4 py-2 text-[12px] font-semibold text-white/55" onClick={onCancel} type="button">
               Cancelar
             </button>
           </div>
@@ -447,10 +447,10 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
   const slug = draft.name.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '');
 
   return (
-    <div className="min-h-screen bg-[#F4F6F9] pb-[160px]">
+    <div className="min-h-full bg-[#0A0F1E] pb-[160px] overflow-y-auto">
 
-      {/* ──────────────── HERO CARD ──────────────── */}
-      <div className="mx-4 mt-4 overflow-hidden rounded-[28px] bg-[#141E30]">
+      {/* ──────────────── HERO CARD — flush edges ──────────────── */}
+      <div className="overflow-hidden rounded-b-[28px] bg-[#141E30]">
 
         {/* Cover strip — shows uploaded image or gradient fallback */}
         <div
@@ -695,7 +695,7 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
       </div>
 
       {/* ──────────────── ALLIANCE CARD ──────────────── */}
-      <div className="mx-4 mt-3 overflow-hidden rounded-[24px] bg-white shadow-[0_2px_16px_rgba(0,0,0,0.06)]">
+      <div className="mx-4 mt-3 overflow-hidden rounded-[24px]" style={{ background: 'rgba(20,30,48,0.95)', border: '1px solid rgba(255,255,255,0.07)' }}>
 
         {/* Que ofrezco */}
         <AllianceSection
@@ -711,7 +711,7 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
           onChange={(v) => updateAllianceProfile('offers', v)}
         />
 
-        <div className="mx-5 border-t border-slate-100" />
+        <div className="mx-5 border-t border-white/8" />
 
         {/* Que busco */}
         <AllianceSection
@@ -727,7 +727,7 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
           onChange={(v) => updateAllianceProfile('needs', v)}
         />
 
-        <div className="mx-5 border-t border-slate-100" />
+        <div className="mx-5 border-t border-white/8" />
 
         {/* Segmentos clave */}
         <AllianceSection
@@ -746,7 +746,7 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
         {/* Instagram Feed */}
         {company.instagramData && (
           <>
-            <div className="mx-5 border-t border-slate-100" />
+            <div className="mx-5 border-t border-white/8" />
             <div className="py-5">
               <InstagramFeedProfile data={company.instagramData} />
             </div>
@@ -755,16 +755,16 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
       </div>
 
       {/* ──────────────── MI GALERÍA ──────────────── */}
-      <div className="mx-4 mt-3 overflow-hidden rounded-[24px] bg-white shadow-[0_2px_16px_rgba(0,0,0,0.06)]">
+      <div className="mx-4 mt-3 overflow-hidden rounded-[24px]" style={{ background: 'rgba(20,30,48,0.95)', border: '1px solid rgba(255,255,255,0.07)' }}>
 
         {/* Header */}
         <div className="flex items-center justify-between px-5 pb-3 pt-5">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">Mi galería</p>
-            <p className="mt-0.5 text-[11px] text-slate-400">Imágenes propias de tu marca</p>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/45">Mi galería</p>
+            <p className="mt-0.5 text-[11px] text-white/30">Imágenes propias de tu marca</p>
           </div>
           <button
-            className="flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-[11px] font-semibold text-slate-600 transition hover:bg-slate-200 active:scale-95"
+            className="flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-[11px] font-semibold text-white/70 transition hover:bg-white/15 active:scale-95"
             onClick={() => galleryInputRef.current?.click()}
             type="button"
           >
@@ -777,7 +777,7 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
         {(draft.gallery?.length ?? 0) > 0 ? (
           <div className="grid grid-cols-3 gap-2 px-5 pb-5">
             {(draft.gallery ?? []).map((img, i) => (
-              <div className="group relative aspect-square overflow-hidden rounded-[12px] bg-slate-100" key={i}>
+              <div className="group relative aspect-square overflow-hidden rounded-[12px] bg-white/8" key={i}>
                 <img alt="" className="h-full w-full object-cover transition group-hover:scale-105" src={img} />
                 <div className="absolute inset-0 bg-black/0 transition group-hover:bg-black/20" />
                 <button
@@ -793,16 +793,16 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
         ) : (
           <div className="px-5 pb-5">
             <button
-              className="flex w-full flex-col items-center gap-3 rounded-[16px] border-2 border-dashed border-slate-200 py-8 transition hover:border-[#1871D8]/35 hover:bg-blue-50/30 active:scale-[0.99]"
+              className="flex w-full flex-col items-center gap-3 rounded-[16px] border-2 border-dashed border-white/12 py-8 transition hover:border-[#1871D8]/45 hover:bg-[#1871D8]/8 active:scale-[0.99]"
               onClick={() => galleryInputRef.current?.click()}
               type="button"
             >
-              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-slate-100">
-                <Camera className="h-5 w-5 text-slate-400" />
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10">
+                <Camera className="h-5 w-5 text-white/45" />
               </div>
               <div className="text-center">
-                <p className="text-[13px] font-semibold text-slate-500">Subí imágenes de tu marca</p>
-                <p className="mt-0.5 text-[11px] text-slate-400">Se mostrarán en tu perfil y en los matches</p>
+                <p className="text-[13px] font-semibold text-white/60">Subí imágenes de tu marca</p>
+                <p className="mt-0.5 text-[11px] text-white/35">Se mostrarán en tu perfil y en los matches</p>
               </div>
             </button>
           </div>
