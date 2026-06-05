@@ -12,8 +12,11 @@ const SWIPE_THRESHOLD_X = 100;
 /* ──────────────────────────────────────────────────────────────────
    FILTERS PANEL — Bottom sheet with all search settings
 ────────────────────────────────────────────────────────────────── */
+/* Rubros que usa la fórmula de match (preferred_segments en los datos) */
 const SEGMENT_OPTIONS = [
-  'Mujeres 25-40', 'Hombres 30-50', 'Parejas', 'Familias', 'Jóvenes 18-30', 'Profesionales',
+  'Indumentaria', 'Belleza', 'Cafetería', 'Gastronomía', 'Bienestar',
+  'Tecnología', 'Retail', 'Accesorios', 'Decoración', 'Salud',
+  'Perfumería', 'Bebidas',
 ];
 const OFFERING_OPTIONS = [
   'Visibilidad', 'Descuentos', 'Co-marketing', 'Eventos', 'Distribución', 'Contenido digital',
