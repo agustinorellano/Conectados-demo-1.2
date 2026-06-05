@@ -265,9 +265,16 @@ function App() {
         className="min-h-screen pb-[78px]"
         style={{ paddingTop: 'env(safe-area-inset-top)' }}
       >
-        <main className="mx-auto min-w-0 max-w-6xl px-5 py-5 sm:px-6 sm:py-6">
-          {view}
-        </main>
+        {/* ── Full-bleed views: no padding, fill exact remaining height ── */}
+        {['alliances', 'profile'].includes(activeView) ? (
+          <div style={{ height: 'calc(100dvh - env(safe-area-inset-top, 0px) - 78px)' }}>
+            {view}
+          </div>
+        ) : (
+          <main className="mx-auto min-w-0 max-w-6xl px-5 py-5 sm:px-6 sm:py-6">
+            {view}
+          </main>
+        )}
         <BottomNav activeView={activeView} onNavigate={setActiveView} />
       </div>
     </div>

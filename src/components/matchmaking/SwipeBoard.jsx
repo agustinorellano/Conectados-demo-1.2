@@ -487,18 +487,18 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
   };
 
   /* ── Card width ── */
-  const cardW = 'w-[94vw] max-w-[500px]';
+  /* Cards fill full width — no horizontal constraint */
+  const cardW = 'w-full';
 
   return (
     <>
       {/* ═══════════════════════════════════════════════════
-          MAIN CONTAINER — dark navy
+          MAIN CONTAINER — dark navy, full-bleed
       ═══════════════════════════════════════════════════ */}
       <div
-        className="flex flex-col overflow-hidden rounded-[24px]"
+        className="flex h-full flex-col overflow-hidden"
         style={{
           background: 'linear-gradient(160deg, #070C18 0%, #0F1828 55%, #141E30 100%)',
-          height: 'calc(100dvh - 94px)',
         }}
       >
         {/* ══ HEADER: settings · tabs · zap ══════════════ */}
@@ -577,7 +577,7 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
             {/* Third card (farthest back) */}
             {thirdCompany && (
               <motion.div
-                className={`absolute inset-x-0 inset-y-0 mx-auto z-[10] ${cardW}`}
+                className={`absolute inset-0 z-[10] ${cardW}`}
                 style={{
                   scale: thirdScale,
                   opacity: thirdOpacity,
@@ -591,7 +591,7 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
             {/* Next card (middle layer) */}
             {nextCompany && (
               <motion.div
-                className={`absolute inset-x-0 inset-y-0 mx-auto z-[20] ${cardW}`}
+                className={`absolute inset-0 z-[20] ${cardW}`}
                 style={{
                   scale: nextScale,
                   opacity: nextOpacity,
@@ -607,7 +607,7 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
               {activeCompany ? (
                 <motion.div
                   key={activeCompany.id}
-                  className={`absolute inset-x-0 inset-y-0 mx-auto z-[30] ${cardW} cursor-grab active:cursor-grabbing`}
+                  className={`absolute inset-0 z-[30] ${cardW} cursor-grab active:cursor-grabbing`}
                   style={{
                     x,
                     y,
@@ -674,7 +674,7 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
                   key="empty"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className={`absolute inset-x-0 inset-y-0 mx-auto z-30 flex ${cardW} items-center justify-center rounded-[28px] p-10 text-center`}
+                  className={`absolute inset-0 z-30 flex ${cardW} items-center justify-center rounded-[28px] p-10 text-center`}
                   style={{
                     background: 'rgba(255,255,255,0.04)',
                     backdropFilter: 'blur(20px)',
