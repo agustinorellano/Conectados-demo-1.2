@@ -622,6 +622,7 @@ function ChatList({
   onArchive,
   onFavorite,
   onPin,
+  onCreateTeam,   // (teamData) → crea conversación y navega al chat del equipo
 }) {
   /* ── Search ── */
   const [query,          setQuery]          = useState('');
@@ -764,11 +765,9 @@ function ChatList({
         })}
       </div>
 
-      {/* ── Team section ── */}
-      {!debouncedQuery && (
-        hasRealTeam
-          ? <TeamCompletionBar members={teamMembers} onManage={() => setShowManage(true)} />
-          : <EmptyTeamCard onInvite={() => setShowInvite(true)} />
+      {/* ── Team section — solo barra de progreso cuando hay miembros ── */}
+      {!debouncedQuery && hasRealTeam && (
+        <TeamCompletionBar members={teamMembers} onManage={() => setShowManage(true)} />
       )}
 
       {/* ── Pinned: AI Assistant ── */}
@@ -877,7 +876,7 @@ function ChatList({
             onClose={() => setShowCreateTeam(false)}
             onCreate={(team) => {
               setTeamMembers([{ id: 1, name: 'Agustín Orellano', initials: 'AO', role: 'Administrador', status: 'activo' }]);
-              setShowManage(true);
+              onCreateTeam?.(team);   // crea el hilo y navega al chat
             }}
           />
         )}
@@ -900,3 +899,4 @@ function ChatList({
 }
 
 export default ChatList;
+export { InviteModal };

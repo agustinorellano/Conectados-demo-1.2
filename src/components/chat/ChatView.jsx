@@ -147,6 +147,30 @@ function ChatView({
 
   const handleProposalPreset = () => setProposalDraft(PROPOSAL_TEMPLATE);
 
+  /* ── Create team chat ── */
+  const handleCreateTeam = ({ name, description, area }) => {
+    const id = `team-${Date.now()}`;
+    const initials = name.split(' ').slice(0, 2).map(w => w[0]).toUpperCase().join('');
+    const newThread = {
+      id,
+      company: name,
+      logo: initials,
+      sector: area || 'Equipo interno',
+      location: '',
+      status: 'Interno',
+      lastInteraction: 'Ahora',
+      activity: 'Coordinacion',
+      lastMessage: '',
+      unread: 0,
+      isTeam: true,
+      isEmpty: true,          // flag para mostrar estado vacío en ChatWindow
+      messages: [],
+    };
+    setThreads(cur => [newThread, ...cur]);
+    directionRef.current = 1;
+    setActiveConversationId(id);
+  };
+
   const handleCreateOutbound = () => {
     if (userPlan !== 'scale') return;
     const candidate = recommendedCompanies.find(
@@ -210,6 +234,7 @@ function ChatView({
               onFavorite={handleFavorite}
               onArchive={handleArchived}
               onPin={handlePinned}
+              onCreateTeam={handleCreateTeam}
             />
           </motion.div>
         )}
@@ -240,6 +265,10 @@ function ChatView({
               proposalDraft={proposalDraft}
               onCreateTask={() => {}}
               onOpenAllianceRoom={onOpenAllianceRoom}
+              onTeamInvite={() =>
+                /* marca el hilo como no-vacío cuando el usuario invita */
+                updateActive(conv => ({ ...conv, isEmpty: false }))
+              }
             />
           </motion.div>
         )}

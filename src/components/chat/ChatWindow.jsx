@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import MessageBubble from './MessageBubble';
 import ProposalInput from './ProposalInput';
+import { InviteModal } from './ChatList';
 
 /* ── Helpers ─────────────────────────────────────────────────────── */
 function getInitials(logo, company) {
@@ -518,11 +519,13 @@ function ChatWindow({
   proposalDraft,
   onCreateTask,
   onOpenAllianceRoom,
+  onTeamInvite,
 }) {
   const [showMeetingModal, setShowMeetingModal] = useState(false);
   const [meetingScheduled, setMeetingScheduled] = useState(false);
   const [contextOpen,      setContextOpen]      = useState(false);
   const [showIaBlock,      setShowIaBlock]      = useState(true);
+  const [showInviteModal,  setShowInviteModal]  = useState(false);
   const messagesEndRef = useRef(null);
 
   /* Reset IA block when conversation changes */
@@ -636,6 +639,43 @@ function ChatWindow({
         className="flex-1 space-y-4 overflow-y-auto bg-[linear-gradient(180deg,rgba(248,249,250,0.35),rgba(255,255,255,0.65))] px-5 py-5 scroll-smooth"
         style={{ overscrollBehavior: 'contain' }}
       >
+        {/* ── Empty team state — shown inside the group chat ── */}
+        {conversation.isTeam && conversation.isEmpty && (
+          <div
+            className="rounded-[20px] p-5"
+            style={{
+              background: 'linear-gradient(135deg, rgba(24,113,216,0.10) 0%, rgba(20,30,48,0.95) 100%)',
+              border: '1px solid rgba(24,113,216,0.18)',
+            }}
+          >
+            <div className="mb-3 flex items-center gap-3">
+              <div
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px]"
+                style={{ background: 'rgba(24,113,216,0.15)' }}
+              >
+                <span className="text-[18px]">👥</span>
+              </div>
+              <div>
+                <p className="text-[14px] font-bold text-white">Tu equipo está vacío</p>
+                <p className="text-[12px] text-white/45">Invitá a colaboradores</p>
+              </div>
+            </div>
+            <p className="mb-4 text-[12px] leading-relaxed text-white/40">
+              Incorporá a los miembros de tu empresa para gestionar alianzas,
+              coordinar tareas y trabajar juntos desde Data Plus.
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowInviteModal(true)}
+              className="flex w-full items-center justify-center gap-2 rounded-[14px] py-3 text-[14px] font-semibold text-white transition hover:brightness-110"
+              style={{ background: 'linear-gradient(135deg, #1871D8, #1459B0)', boxShadow: '0 4px 14px rgba(24,113,216,0.30)' }}
+            >
+              <span className="text-[16px]">+</span>
+              Invitar Integrantes
+            </button>
+          </div>
+        )}
+
         {/* IA suggestion block */}
         <AnimatePresence>
           {showIaSuggestion && (
@@ -739,6 +779,20 @@ function ChatWindow({
           onConfirm={handleMeetingConfirm}
         />
       )}
+
+      {/* ══ INVITE TEAM MODAL (from empty team state) ════════════════ */}
+      <AnimatePresence>
+        {showInviteModal && (
+          <InviteModal
+            key="invite-from-window"
+            onClose={() => setShowInviteModal(false)}
+            onInvited={() => {
+              setShowInviteModal(false);
+              onTeamInvite?.();   // marca el equipo como no-vacío en ChatView
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
