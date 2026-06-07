@@ -493,86 +493,49 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
   return (
     <>
       {/* ═══════════════════════════════════════════════════
-          MAIN CONTAINER — dark navy, full-bleed
+          MAIN CONTAINER — full-bleed, relative for absolute children
       ═══════════════════════════════════════════════════ */}
       <div
-        className="flex h-full flex-col overflow-hidden"
+        className="relative h-full overflow-hidden"
         style={{
           background: 'linear-gradient(160deg, #070C18 0%, #0F1828 55%, #141E30 100%)',
         }}
       >
-        {/* ══ HEADER: settings · tabs · zap ══════════════ */}
-        <div className="shrink-0 flex items-center justify-between px-4 pb-2 pt-3">
-
-          {/* Settings / Filters */}
-          <motion.button
-            type="button"
-            onClick={() => setShowFilters(true)}
-            whileHover={{ scale: 1.08 }}
-            whileTap={{ scale: 0.90 }}
-            className="flex h-10 w-10 items-center justify-center rounded-full"
-            style={{
-              background: 'rgba(255,255,255,0.08)',
-              border: '1.5px solid rgba(255,255,255,0.14)',
-            }}
-          >
-            <SlidersHorizontal className="h-[18px] w-[18px] text-white/70" />
-          </motion.button>
-
-          {/* Para ti / Guardados tabs */}
-          <div
-            className="flex items-center rounded-full p-1"
-            style={{
-              background: 'rgba(255,255,255,0.07)',
-              border: '1px solid rgba(255,255,255,0.09)',
-            }}
-          >
-            {[
-              { id: 'paraTi',    label: 'Para ti' },
-              { id: 'guardados', label: 'Guardados' },
-            ].map(tab => (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setActiveTab(tab.id)}
-                className={`rounded-full px-4 py-1.5 text-[13px] font-semibold transition-all ${
-                  activeTab === tab.id
-                    ? 'bg-white text-[#141E30] shadow-sm'
-                    : 'text-white/50 hover:text-white/75'
-                }`}
-              >
-                {tab.label}
-                {tab.id === 'guardados' && savedIds.size > 0 && (
-                  <span className={`ml-1 text-[11px] ${activeTab === tab.id ? 'text-[#141E30]/60' : 'text-white/35'}`}>
-                    ({savedIds.size})
-                  </span>
-                )}
-              </button>
-            ))}
+        {/* ══ GUARDADOS TAB — keeps its own flex layout ═══ */}
+        {activeTab === 'guardados' && (
+          <div className="flex h-full flex-col">
+            <div className="shrink-0 flex items-center justify-between px-4 pb-2 pt-3">
+              <motion.button type="button" onClick={() => setShowFilters(true)} whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.90 }}
+                className="flex h-10 w-10 items-center justify-center rounded-full"
+                style={{ background: 'rgba(255,255,255,0.08)', border: '1.5px solid rgba(255,255,255,0.14)' }}>
+                <SlidersHorizontal className="h-[18px] w-[18px] text-white/70" />
+              </motion.button>
+              <div className="flex items-center rounded-full p-1" style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.09)' }}>
+                {[{ id: 'paraTi', label: 'Para ti' }, { id: 'guardados', label: 'Guardados' }].map(tab => (
+                  <button key={tab.id} type="button" onClick={() => setActiveTab(tab.id)}
+                    className={`rounded-full px-4 py-1.5 text-[13px] font-semibold transition-all ${activeTab === tab.id ? 'bg-white text-[#141E30] shadow-sm' : 'text-white/50 hover:text-white/75'}`}>
+                    {tab.label}
+                    {tab.id === 'guardados' && savedIds.size > 0 && (
+                      <span className={`ml-1 text-[11px] ${activeTab === tab.id ? 'text-[#141E30]/60' : 'text-white/35'}`}>({savedIds.size})</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+              <motion.button type="button" whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.90 }}
+                className="flex h-10 w-10 items-center justify-center rounded-full"
+                style={{ background: 'rgba(255,255,255,0.08)', border: '1.5px solid rgba(255,255,255,0.14)' }}>
+                <Zap className="h-[18px] w-[18px] text-[#4A9FFF]" />
+              </motion.button>
+            </div>
+            <SavedGrid companies={savedCompanies} onView={c => setViewingCompany(c)} />
           </div>
+        )}
 
-          {/* Zap / Destacados */}
-          <motion.button
-            type="button"
-            whileHover={{ scale: 1.08 }}
-            whileTap={{ scale: 0.90 }}
-            className="flex h-10 w-10 items-center justify-center rounded-full"
-            style={{
-              background: 'rgba(255,255,255,0.08)',
-              border: '1.5px solid rgba(255,255,255,0.14)',
-            }}
-          >
-            <Zap className="h-[18px] w-[18px] text-[#4A9FFF]" />
-          </motion.button>
-        </div>
-
-        {/* ══ CONTENT AREA ════════════════════════════════ */}
-        {activeTab === 'guardados' ? (
-          /* ── Saved companies grid ── */
-          <SavedGrid companies={savedCompanies} onView={c => setViewingCompany(c)} />
-        ) : (
-          /* ── Swipe card stack ── */
-          <div className="relative flex-1 overflow-hidden">
+        {/* ══ PARA TI TAB — full-bleed card + floating UI ═ */}
+        {activeTab !== 'guardados' && (
+          <>
+          {/* ── Card stack: fills entire container ── */}
+          <div className="absolute inset-0">
 
             {/* Third card (farthest back) */}
             {thirdCompany && (
@@ -702,128 +665,116 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
                 </motion.div>
               )}
             </AnimatePresence>
-          </div>
-        )}
 
-        {/* ══ FLASH TOAST ═════════════════════════════════ */}
-        <AnimatePresence>
-          {flashMessage && (
-            <motion.div
-              initial={{ opacity: 0, y: 8, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -4, scale: 0.96 }}
-              transition={{ duration: 0.18 }}
-              className="mx-auto shrink-0 rounded-[18px] px-5 py-2.5 text-center text-[13px] font-semibold text-white/90"
-              style={{
-                background: 'rgba(255,255,255,0.11)',
-                backdropFilter: 'blur(16px)',
-                border: '1px solid rgba(255,255,255,0.15)',
-              }}
+          </div>{/* ── END card stack ── */}
+
+          {/* ── Floating header — overlays the card ── */}
+          <div
+            className="pointer-events-none absolute inset-x-0 top-0 z-20"
+            style={{ height: '88px', background: 'linear-gradient(to bottom, rgba(7,12,24,0.75) 0%, transparent 100%)' }}
+          />
+          <div className="absolute inset-x-0 top-0 z-30 flex items-center justify-between px-4 pt-3 pb-2">
+            <motion.button type="button" onClick={() => setShowFilters(true)} whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.90 }}
+              className="flex h-10 w-10 items-center justify-center rounded-full"
+              style={{ background: 'rgba(255,255,255,0.10)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '1.5px solid rgba(255,255,255,0.18)' }}>
+              <SlidersHorizontal className="h-[18px] w-[18px] text-white/85" />
+            </motion.button>
+            <div className="flex items-center rounded-full p-1"
+              style={{ background: 'rgba(0,0,0,0.28)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.14)' }}>
+              {[{ id: 'paraTi', label: 'Para ti' }, { id: 'guardados', label: 'Guardados' }].map(tab => (
+                <button key={tab.id} type="button" onClick={() => setActiveTab(tab.id)}
+                  className={`rounded-full px-4 py-1.5 text-[13px] font-semibold transition-all ${activeTab === tab.id ? 'bg-white text-[#141E30] shadow-sm' : 'text-white/60 hover:text-white/85'}`}>
+                  {tab.label}
+                  {tab.id === 'guardados' && savedIds.size > 0 && (
+                    <span className={`ml-1 text-[11px] ${activeTab === tab.id ? 'text-[#141E30]/60' : 'text-white/40'}`}>({savedIds.size})</span>
+                  )}
+                </button>
+              ))}
+            </div>
+            <motion.button type="button" whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.90 }}
+              className="flex h-10 w-10 items-center justify-center rounded-full"
+              style={{ background: 'rgba(255,255,255,0.10)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '1.5px solid rgba(255,255,255,0.18)' }}>
+              <Zap className="h-[18px] w-[18px] text-[#4A9FFF]" />
+            </motion.button>
+          </div>
+
+          {/* ── Bottom gradient — dark fade for buttons ── */}
+          <div
+            className="pointer-events-none absolute inset-x-0 bottom-0 z-40"
+            style={{
+              height: '34%',
+              background: 'linear-gradient(to top, rgba(4,8,16,0.96) 0%, rgba(4,8,16,0.60) 45%, transparent 100%)',
+            }}
+          />
+
+          {/* ── Flash toast ── */}
+          <AnimatePresence>
+            {flashMessage && (
+              <motion.div
+                initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -4, scale: 0.96 }}
+                transition={{ duration: 0.18 }}
+                className="absolute inset-x-6 z-50 rounded-[18px] px-5 py-2.5 text-center text-[13px] font-semibold text-white/90"
+                style={{
+                  bottom: 'calc(max(22px, env(safe-area-inset-bottom)) + 76px)',
+                  background: 'rgba(255,255,255,0.11)',
+                  backdropFilter: 'blur(16px)',
+                  border: '1px solid rgba(255,255,255,0.15)',
+                }}
+              >
+                {flashMessage}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* ── Match limit warning ── */}
+          {matchLimitReached && (
+            <div
+              className="absolute inset-x-4 z-50 rounded-[16px] border border-amber-400/20 bg-amber-400/8 p-3.5 text-center text-[13px] leading-6 text-amber-200"
+              style={{ bottom: 'calc(max(22px, env(safe-area-inset-bottom)) + 80px)' }}
             >
-              {flashMessage}
-            </motion.div>
+              Llegaste al límite diario del plan Starter.
+              <button type="button" onClick={onOpenPricing} className="mt-2 inline-flex rounded-full bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white">
+                Ver planes
+              </button>
+            </div>
           )}
-        </AnimatePresence>
 
-        {/* ══ MATCH LIMIT WARNING ═════════════════════════ */}
-        {matchLimitReached && (
-          <div className="mx-4 shrink-0 rounded-[16px] border border-amber-400/20 bg-amber-400/8 p-3.5 text-center text-[13px] leading-6 text-amber-200">
-            Llegaste al límite diario del plan Starter.
-            <button
-              type="button"
-              onClick={onOpenPricing}
-              className="mt-2 inline-flex rounded-full bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white"
-            >
-              Ver planes
-            </button>
+          {/* ── Action buttons — Tinder-style, float over card ── */}
+          <div
+            className="absolute inset-x-0 bottom-0 z-50 flex items-center justify-center gap-4"
+            style={{ paddingBottom: 'max(18px, env(safe-area-inset-bottom))', paddingTop: '10px' }}
+          >
+            <motion.button type="button" onClick={handleUndo} whileHover={{ scale: 1.10 }} whileTap={{ scale: 0.86 }}
+              className="flex h-[52px] w-[52px] items-center justify-center rounded-full"
+              style={{ background: 'rgba(255,255,255,0.09)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '1.5px solid rgba(255,255,255,0.18)', boxShadow: '0 4px 20px rgba(0,0,0,0.45)' }}>
+              <RotateCcw className="h-5 w-5 text-amber-400" strokeWidth={2} />
+            </motion.button>
+            <motion.button type="button" onClick={handleSkip} whileHover={{ scale: 1.10 }} whileTap={{ scale: 0.86 }}
+              className="flex h-[64px] w-[64px] items-center justify-center rounded-full"
+              style={{ background: 'rgba(244,63,94,0.15)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '1.5px solid rgba(244,63,94,0.45)', boxShadow: '0 4px 24px rgba(244,63,94,0.25)' }}>
+              <X className="h-[26px] w-[26px] text-[#F43F5E]" strokeWidth={2.5} />
+            </motion.button>
+            <motion.button type="button" onClick={handleSave} whileHover={{ scale: 1.10 }} whileTap={{ scale: 0.86 }}
+              className="flex h-[52px] w-[52px] items-center justify-center rounded-full"
+              style={{ background: 'rgba(251,191,36,0.12)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '1.5px solid rgba(251,191,36,0.35)', boxShadow: '0 4px 20px rgba(0,0,0,0.45)' }}>
+              <Star className="h-5 w-5 text-amber-400" strokeWidth={2} />
+            </motion.button>
+            <motion.button type="button" onClick={handleLike} whileHover={{ scale: 1.10 }} whileTap={{ scale: 0.86 }}
+              className="flex h-[64px] w-[64px] items-center justify-center rounded-full"
+              style={{ background: 'rgba(34,197,94,0.15)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '1.5px solid rgba(34,197,94,0.42)', boxShadow: '0 4px 24px rgba(34,197,94,0.22)' }}>
+              <Heart className="h-[24px] w-[24px] text-emerald-400" strokeWidth={2} />
+            </motion.button>
+            <motion.button type="button" onClick={handleViewProfile} whileHover={{ scale: 1.10 }} whileTap={{ scale: 0.86 }}
+              className="flex h-[52px] w-[52px] items-center justify-center rounded-full"
+              style={{ background: 'rgba(74,159,255,0.12)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '1.5px solid rgba(74,159,255,0.32)', boxShadow: '0 4px 20px rgba(0,0,0,0.45)' }}>
+              <ArrowUp className="h-5 w-5 text-[#4A9FFF]" strokeWidth={2} />
+            </motion.button>
           </div>
+
+          </>
         )}
-
-        {/* ══ ACTION BUTTONS — Tinder-style 5-button row ═ */}
-        <div
-          className="shrink-0 flex items-center justify-center gap-4 pt-2"
-          style={{ paddingBottom: 'max(22px, env(safe-area-inset-bottom))' }}
-        >
-          {/* Undo */}
-          <motion.button
-            type="button"
-            onClick={handleUndo}
-            whileHover={{ scale: 1.10 }}
-            whileTap={{ scale: 0.86 }}
-            className="flex h-12 w-12 items-center justify-center rounded-full"
-            style={{
-              background: 'rgba(255,255,255,0.07)',
-              border: '1.5px solid rgba(255,255,255,0.14)',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.35)',
-            }}
-          >
-            <RotateCcw className="h-5 w-5 text-amber-400" strokeWidth={2} />
-          </motion.button>
-
-          {/* Skip / Nope */}
-          <motion.button
-            type="button"
-            onClick={handleSkip}
-            whileHover={{ scale: 1.10 }}
-            whileTap={{ scale: 0.86 }}
-            className="flex h-[60px] w-[60px] items-center justify-center rounded-full"
-            style={{
-              background: 'rgba(244,63,94,0.12)',
-              border: '1.5px solid rgba(244,63,94,0.35)',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.40)',
-            }}
-          >
-            <X className="h-6 w-6 text-[#F43F5E]" strokeWidth={2.5} />
-          </motion.button>
-
-          {/* Save / Star */}
-          <motion.button
-            type="button"
-            onClick={handleSave}
-            whileHover={{ scale: 1.10 }}
-            whileTap={{ scale: 0.86 }}
-            className="flex h-12 w-12 items-center justify-center rounded-full"
-            style={{
-              background: 'rgba(251,191,36,0.12)',
-              border: '1.5px solid rgba(251,191,36,0.32)',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.35)',
-            }}
-          >
-            <Star className="h-5 w-5 text-amber-400" strokeWidth={2} />
-          </motion.button>
-
-          {/* Like */}
-          <motion.button
-            type="button"
-            onClick={handleLike}
-            whileHover={{ scale: 1.10 }}
-            whileTap={{ scale: 0.86 }}
-            className="flex h-[60px] w-[60px] items-center justify-center rounded-full"
-            style={{
-              background: 'rgba(34,197,94,0.12)',
-              border: '1.5px solid rgba(34,197,94,0.32)',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.40)',
-            }}
-          >
-            <Heart className="h-[22px] w-[22px] text-emerald-400" strokeWidth={2} />
-          </motion.button>
-
-          {/* View full profile */}
-          <motion.button
-            type="button"
-            onClick={handleViewProfile}
-            whileHover={{ scale: 1.10 }}
-            whileTap={{ scale: 0.86 }}
-            className="flex h-12 w-12 items-center justify-center rounded-full"
-            style={{
-              background: 'rgba(74,159,255,0.12)',
-              border: '1.5px solid rgba(74,159,255,0.28)',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.35)',
-            }}
-          >
-            <ArrowUp className="h-5 w-5 text-[#4A9FFF]" strokeWidth={2} />
-          </motion.button>
-        </div>
       </div>
 
       {/* ── Detail modal ── */}

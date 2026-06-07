@@ -39,7 +39,7 @@ function CompanyCard({ company, onViewProfile }) {
 
   return (
     <article
-      className="relative h-full w-full overflow-hidden rounded-[28px]"
+      className="relative h-full w-full overflow-hidden"
       style={{
         boxShadow:
           '0 28px 80px rgba(0,0,0,0.55), 0 8px 24px rgba(0,0,0,0.35), 0 2px 6px rgba(0,0,0,0.20)',
