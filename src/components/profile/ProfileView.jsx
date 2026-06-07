@@ -11,6 +11,7 @@ import tiktokLogo from '../../assets/tiktok-logo.svg';
 import linkedinLogo from '../../assets/linkedin-logo.svg';
 import { INDUSTRY_OPTIONS } from '../../utils/companyProfile';
 import { InstagramFeedProfile } from '../shared/InstagramFeedPreview';
+import { InviteModal } from '../chat/ChatList';
 
 /* ── Social platforms — website last, uses Globe icon ── */
 const socialPlatforms = [
@@ -277,54 +278,71 @@ function SectionCard({ children }) {
 
 /* ── Team Section ──────────────────────────────────────── */
 function TeamSection({ members }) {
+  const [showInvite, setShowInvite] = useState(false);
   const COLORS = [
     ['#8B5CF6','#6D28D9'], ['#3B82F6','#1D4ED8'], ['#10B981','#047857'],
     ['#F59E0B','#D97706'], ['#EF4444','#B91C1C'], ['#EC4899','#BE185D'],
   ];
   return (
-    <SectionCard>
-      <div className="px-5 pt-5 pb-5">
-        <div className="mb-4 flex items-center justify-between">
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/40">Equipo</p>
-            <p className="mt-1 font-['Space_Grotesk'] text-[16px] font-bold text-white">
-              Equipo Comercial
-            </p>
+    <>
+      <SectionCard>
+        <div className="px-5 pt-5 pb-5">
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/40">Equipo</p>
+              <p className="mt-1 font-['Space_Grotesk'] text-[16px] font-bold text-white">
+                Equipo Comercial
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowInvite(true)}
+              className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold text-[#4A9FFF] transition hover:bg-[#1871D8]/12"
+            >
+              <Plus className="h-3 w-3" />
+              Invitar
+            </button>
           </div>
-          <span className="rounded-full bg-white/8 px-3 py-1 text-[12px] font-semibold text-white/50">
-            {members.length} integrantes
-          </span>
-        </div>
-        <div className="space-y-3">
-          {members.map((m, i) => {
-            const [a, b] = COLORS[i % COLORS.length];
-            const initials = m.initials || m.name.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase();
-            return (
-              <div key={m.id} className="flex items-center gap-3">
-                <div
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-['Space_Grotesk'] text-[12px] font-bold text-white"
-                  style={{ background: `linear-gradient(135deg, ${a}, ${b})` }}
-                >
-                  {initials}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <p className="text-[14px] font-semibold text-white">{m.name}</p>
-                    {m.isLead && (
-                      <span className="rounded-full bg-[#1871D8]/20 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-[#4A9FFF]">
-                        Lead
-                      </span>
-                    )}
+          <div className="space-y-3">
+            {members.map((m, i) => {
+              const [a, b] = COLORS[i % COLORS.length];
+              const initials = m.initials || m.name.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase();
+              return (
+                <div key={m.id} className="flex items-center gap-3">
+                  <div
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-['Space_Grotesk'] text-[12px] font-bold text-white"
+                    style={{ background: `linear-gradient(135deg, ${a}, ${b})` }}
+                  >
+                    {initials}
                   </div>
-                  <p className="text-[12px] text-white/45">{m.role}{m.area ? ` · ${m.area}` : ''}</p>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="text-[14px] font-semibold text-white">{m.name}</p>
+                      {m.isLead && (
+                        <span className="rounded-full bg-[#1871D8]/20 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-[#4A9FFF]">
+                          Lead
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[12px] text-white/45">{m.role}{m.area ? ` · ${m.area}` : ''}</p>
+                  </div>
+                  <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-400" />
                 </div>
-                <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-400" />
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-      </div>
-    </SectionCard>
+      </SectionCard>
+      <AnimatePresence>
+        {showInvite && (
+          <InviteModal
+            key="team-invite"
+            onClose={() => setShowInvite(false)}
+            onInvited={() => setShowInvite(false)}
+          />
+        )}
+      </AnimatePresence>
+    </>
   );
 }
 
@@ -337,28 +355,12 @@ function WorkStyleSection({ workStyle, onChange }) {
   const save   = () => { onChange(local); setEditing(false); };
   const cancel = () => { setLocal(workStyle); setEditing(false); };
 
-  const PillRow = ({ label, options, field }) => (
-    <div>
-      <p className="mb-2 text-[11px] font-semibold text-white/40">{label}</p>
-      <div className="flex flex-wrap gap-1.5">
-        {options.map(opt => {
-          const active = (editing ? local[field] : workStyle[field]) === opt;
-          return (
-            <button key={opt} type="button"
-              onClick={() => editing && upd(field, opt)}
-              className={`rounded-full px-3 py-1.5 text-[12px] font-medium transition-all ${
-                active ? 'bg-[#1871D8] text-white shadow-sm'
-                       : editing ? 'bg-white/8 text-white/50 hover:bg-white/12'
-                                 : 'bg-white/6 text-white/40'
-              }`}
-            >
-              {opt}
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
+  const FIELDS = [
+    { label: 'Estructura',                field: 'structure',    options: STRUCTURE_OPTS  },
+    { label: 'Área que aprueba alianzas', field: 'approvalArea', options: APPROVAL_OPTS   },
+    { label: 'Tiempo de respuesta',       field: 'responseTime', options: RESPONSE_OPTS   },
+    { label: 'Modalidad',                 field: 'modality',     options: MODALITY_OPTS   },
+  ];
 
   return (
     <SectionCard>
@@ -373,12 +375,99 @@ function WorkStyleSection({ workStyle, onChange }) {
               className="text-[11px] font-semibold text-[#4A9FFF]">Editar</button>
           )}
         </div>
-        <div className="space-y-4">
-          <PillRow label="Estructura"                options={STRUCTURE_OPTS}  field="structure"     />
-          <PillRow label="Área que aprueba alianzas" options={APPROVAL_OPTS}   field="approvalArea"  />
-          <PillRow label="Tiempo de respuesta"       options={RESPONSE_OPTS}   field="responseTime"  />
-          <PillRow label="Modalidad"                 options={MODALITY_OPTS}   field="modality"      />
+
+        {editing ? (
+          <div className="space-y-4">
+            {FIELDS.map(({ label, field, options }) => (
+              <div key={field}>
+                <p className="mb-2 text-[11px] font-semibold text-white/40">{label}</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {options.map(opt => (
+                    <button key={opt} type="button" onClick={() => upd(field, opt)}
+                      className={`rounded-full px-3 py-1.5 text-[12px] font-medium transition-all ${
+                        local[field] === opt
+                          ? 'bg-[#1871D8] text-white shadow-sm'
+                          : 'bg-white/8 text-white/50 hover:bg-white/12'
+                      }`}>
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+            <div className="mt-2 flex gap-3">
+              <button type="button" onClick={save}
+                className="flex-1 rounded-[12px] py-2.5 text-[13px] font-semibold text-white"
+                style={{ background: 'linear-gradient(135deg, #1871D8, #1459B0)' }}>
+                Guardar
+              </button>
+              <button type="button" onClick={cancel}
+                className="rounded-[12px] border border-white/15 px-5 py-2.5 text-[13px] font-semibold text-white/50">
+                Cancelar
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-3">
+            {FIELDS.map(({ label, field }) => (
+              <div key={field} className="rounded-[14px] p-3" style={{ background: 'rgba(255,255,255,0.05)' }}>
+                <p className="text-[10px] text-white/30 mb-0.5">{label}</p>
+                <p className="text-[13px] font-semibold text-white">{workStyle[field] || '—'}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </SectionCard>
+  );
+}
+
+/* ── Capabilities Section ───────────────────────────────── */
+function CapabilitiesSection({ capabilities, onChange }) {
+  const [editing, setEditing] = useState(false);
+  const [local, setLocal]     = useState(capabilities);
+
+  const toggle = (id) =>
+    setLocal(prev => prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]);
+
+  const save   = () => { onChange(local); setEditing(false); };
+  const cancel = () => { setLocal(capabilities); setEditing(false); };
+
+  const selected = editing ? local : capabilities;
+
+  return (
+    <SectionCard>
+      <div className="px-5 pt-5 pb-5">
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/40">Capacidades de Activación</p>
+            <p className="mt-1 font-['Space_Grotesk'] text-[16px] font-bold text-white">Canales disponibles</p>
+          </div>
+          {!editing && (
+            <button type="button" onClick={() => setEditing(true)}
+              className="text-[11px] font-semibold text-[#4A9FFF]">Editar</button>
+          )}
         </div>
+
+        <div className="flex flex-wrap gap-2">
+          {(editing ? CAPABILITY_OPTIONS : CAPABILITY_OPTIONS.filter(c => capabilities.includes(c.id))).map(cap => {
+            const active = selected.includes(cap.id);
+            return (
+              <button key={cap.id} type="button"
+                onClick={() => editing && toggle(cap.id)}
+                className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-medium transition-all ${
+                  active ? 'text-white shadow-sm'
+                         : editing ? 'bg-white/8 text-white/40 hover:bg-white/12' : 'bg-white/6 text-white/30'
+                }`}
+                style={active ? { background: 'linear-gradient(135deg, #1871D8, #1459B0)', boxShadow: '0 2px 8px rgba(24,113,216,0.28)' } : {}}
+              >
+                <span>{cap.icon}</span>
+                {cap.label}
+              </button>
+            );
+          })}
+        </div>
+
         {editing && (
           <div className="mt-4 flex gap-3">
             <button type="button" onClick={save}
@@ -392,42 +481,6 @@ function WorkStyleSection({ workStyle, onChange }) {
             </button>
           </div>
         )}
-      </div>
-    </SectionCard>
-  );
-}
-
-/* ── Capabilities Section ───────────────────────────────── */
-function CapabilitiesSection({ capabilities, onChange }) {
-  const toggle = (id) =>
-    onChange(capabilities.includes(id)
-      ? capabilities.filter(c => c !== id)
-      : [...capabilities, id]);
-
-  return (
-    <SectionCard>
-      <div className="px-5 pt-5 pb-5">
-        <div className="mb-4">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/40">Capacidades de Activación</p>
-          <p className="mt-1 font-['Space_Grotesk'] text-[16px] font-bold text-white">Canales disponibles</p>
-          <p className="mt-0.5 text-[12px] text-white/35">Tocá para activar o desactivar</p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {CAPABILITY_OPTIONS.map(cap => {
-            const active = capabilities.includes(cap.id);
-            return (
-              <button key={cap.id} type="button" onClick={() => toggle(cap.id)}
-                className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-medium transition-all ${
-                  active ? 'text-white shadow-sm' : 'bg-white/6 text-white/30'
-                }`}
-                style={active ? { background: 'linear-gradient(135deg, #1871D8, #1459B0)', boxShadow: '0 2px 8px rgba(24,113,216,0.28)' } : {}}
-              >
-                <span>{cap.icon}</span>
-                {cap.label}
-              </button>
-            );
-          })}
-        </div>
       </div>
     </SectionCard>
   );
