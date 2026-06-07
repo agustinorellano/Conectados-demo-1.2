@@ -696,10 +696,10 @@ function ChatList({
   const hasRealTeam = teamMembers.length > 1;
 
   return (
-    <div className="flex h-full flex-col bg-[#0A0F1E]">
+    <div className="h-full overflow-y-auto bg-[#0A0F1E] [scrollbar-width:none] [-webkit-overflow-scrolling:touch]">
 
       {/* ── Header ── */}
-      <div className="flex shrink-0 items-center justify-between px-5 pt-5 pb-3">
+      <div className="flex items-center justify-between px-5 pt-5 pb-3">
         <h2 className="font-['Space_Grotesk'] text-[24px] font-bold text-white">Chats</h2>
         <div className="flex items-center gap-2">
           {onOpenAllianceRoom && (
@@ -802,7 +802,7 @@ function ChatList({
       )}
 
       {/* ── Conversation list ── */}
-      <div className="flex-1 overflow-y-auto px-3 pb-4 [scrollbar-width:none]">
+      <div className="px-3 pb-4">
         {isEmpty ? (
           <div className="flex flex-col items-center justify-center gap-3 py-14 text-center">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/8">
