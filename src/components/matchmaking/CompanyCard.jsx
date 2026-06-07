@@ -90,9 +90,9 @@ function CompanyCard({ company, onViewProfile }) {
         }}
       />
 
-      {/* ── Sector badge — top left ── */}
+      {/* ── Sector badge — below floating header ── */}
       <div
-        className="absolute left-4 top-4 z-10 rounded-full px-3.5 py-1.5"
+        className="absolute left-4 top-[68px] z-10 rounded-full px-3.5 py-1.5"
         style={{
           background: 'rgba(0,0,0,0.30)',
           backdropFilter: 'blur(14px)',

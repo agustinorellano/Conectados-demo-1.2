@@ -593,7 +593,7 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
                 >
                   {/* LIKE stamp */}
                   <motion.div
-                    className="pointer-events-none absolute left-5 top-14 z-40 rotate-[-18deg]"
+                    className="pointer-events-none absolute left-5 top-24 z-40 rotate-[-18deg]"
                     style={{ opacity: likeOpacity }}
                   >
                     <div
@@ -612,7 +612,7 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
 
                   {/* NOPE stamp */}
                   <motion.div
-                    className="pointer-events-none absolute right-5 top-14 z-40 rotate-[18deg]"
+                    className="pointer-events-none absolute right-5 top-24 z-40 rotate-[18deg]"
                     style={{ opacity: nopeOpacity }}
                   >
                     <div
