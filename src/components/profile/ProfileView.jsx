@@ -633,7 +633,6 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
 
   useEffect(() => {
     setDraft(company);
-    setEditingSections({});
     setIsEditingGeneral(false);
   }, [company]);
 
