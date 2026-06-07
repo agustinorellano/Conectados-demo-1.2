@@ -374,11 +374,11 @@ function OnboardingScreen({ onFinish, onProfileChange }) {
   };
 
   return (
-    <section className="min-h-screen bg-[linear-gradient(180deg,#F8F9FB_0%,#F3F5F7_100%)] px-4 py-8 sm:px-6">
-      <div className="mx-auto max-w-2xl">
+    <section className="flex h-screen flex-col bg-[linear-gradient(180deg,#F8F9FB_0%,#F3F5F7_100%)]">
 
-        {/* Progress header */}
-        <div className="mb-6 flex items-center justify-between gap-4">
+      {/* ── Fixed header ── */}
+      <div className="shrink-0 px-4 pt-8 pb-4 sm:px-6">
+        <div className="mx-auto flex max-w-2xl items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#141E30] text-sm font-bold text-white">
               DP
@@ -392,58 +392,58 @@ function OnboardingScreen({ onFinish, onProfileChange }) {
               </p>
             </div>
           </div>
-          {/* Step dots */}
           <div className="flex items-center gap-1.5">
             {STEP_META.map((_, i) => (
               <div
                 className={`h-1.5 rounded-full transition-all duration-300 ${
-                  i < step
-                    ? 'w-3 bg-[#141E30]'
-                    : i === step
-                    ? 'w-6 bg-[#141E30]'
-                    : 'w-3 bg-slate-200'
+                  i < step ? 'w-3 bg-[#141E30]' : i === step ? 'w-6 bg-[#141E30]' : 'w-3 bg-slate-200'
                 }`}
                 key={i}
               />
             ))}
           </div>
         </div>
+      </div>
 
-        {/* Card */}
-        <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm">
-          {/* Top progress bar */}
-          <div className="h-1 bg-slate-100">
-            <motion.div
-              animate={{ width: `${progress}%` }}
-              className="h-full bg-[#141E30]"
-              initial={false}
-              transition={{ duration: 0.35, ease: 'easeOut' }}
-            />
-          </div>
+      {/* ── Scrollable card area ── */}
+      <div className="flex-1 overflow-y-auto px-4 pb-4 sm:px-6 [scrollbar-width:none]">
+        <div className="mx-auto max-w-2xl">
+          <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm">
 
-          <div className="px-6 py-7 sm:px-8">
-            {/* Step title — animates per step */}
-            <AnimatePresence custom={direction} mode="wait">
+            {/* Progress bar */}
+            <div className="h-1 bg-slate-100">
               <motion.div
-                animate="center"
-                custom={direction}
-                exit="exit"
-                initial="enter"
-                key={`title-${step}`}
-                transition={{ duration: 0.18, ease: 'easeOut' }}
-                variants={variants}
-              >
-                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#1871D8]">
-                  {meta.subtitle}
-                </p>
-                <h2 className="mt-1.5 font-['Space_Grotesk'] text-2xl font-bold tracking-tight text-[#1A1A1A]">
-                  {meta.title}
-                </h2>
-              </motion.div>
-            </AnimatePresence>
+                animate={{ width: `${progress}%` }}
+                className="h-full bg-[#141E30]"
+                initial={false}
+                transition={{ duration: 0.35, ease: 'easeOut' }}
+              />
+            </div>
+
+            {/* Step title */}
+            <div className="px-6 pt-7 sm:px-8">
+              <AnimatePresence custom={direction} mode="wait">
+                <motion.div
+                  animate="center"
+                  custom={direction}
+                  exit="exit"
+                  initial="enter"
+                  key={`title-${step}`}
+                  transition={{ duration: 0.18, ease: 'easeOut' }}
+                  variants={variants}
+                >
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#1871D8]">
+                    {meta.subtitle}
+                  </p>
+                  <h2 className="mt-1.5 font-['Space_Grotesk'] text-2xl font-bold tracking-tight text-[#1A1A1A]">
+                    {meta.title}
+                  </h2>
+                </motion.div>
+              </AnimatePresence>
+            </div>
 
             {/* Step content */}
-            <div className="mt-6">
+            <div className="px-6 pt-6 pb-7 sm:px-8">
               <AnimatePresence custom={direction} mode="wait">
                 <motion.div
                   animate="center"
@@ -454,78 +454,47 @@ function OnboardingScreen({ onFinish, onProfileChange }) {
                   transition={{ duration: 0.18, ease: 'easeOut' }}
                   variants={variants}
                 >
-                  {step === 0 && (
-                    <StepEmpresa
-                      data={formData.empresa}
-                      setData={(v) => updateSection('empresa', v)}
-                    />
-                  )}
-                  {step === 1 && (
-                    <StepObjetivos
-                      data={formData.objetivos}
-                      setData={(v) => updateSection('objetivos', v)}
-                    />
-                  )}
-                  {step === 2 && (
-                    <StepMarketing
-                      data={formData.marketing}
-                      setData={(v) => updateSection('marketing', v)}
-                    />
-                  )}
-                  {step === 3 && (
-                    <StepVentas
-                      data={formData.ventas}
-                      setData={(v) => updateSection('ventas', v)}
-                    />
-                  )}
-                  {step === 4 && (
-                    <StepDigital
-                      data={formData.digital}
-                      setData={(v) => updateSection('digital', v)}
-                    />
-                  )}
-                  {step === 5 && (
-                    <StepColaboraciones
-                      data={formData.colaboraciones}
-                      setData={(v) => updateSection('colaboraciones', v)}
-                    />
-                  )}
-                  {step === 6 && (
-                    <StepActivacion formData={formData} onFinish={handleFinish} />
-                  )}
+                  {step === 0 && <StepEmpresa data={formData.empresa} setData={(v) => updateSection('empresa', v)} />}
+                  {step === 1 && <StepObjetivos data={formData.objetivos} setData={(v) => updateSection('objetivos', v)} />}
+                  {step === 2 && <StepMarketing data={formData.marketing} setData={(v) => updateSection('marketing', v)} />}
+                  {step === 3 && <StepVentas data={formData.ventas} setData={(v) => updateSection('ventas', v)} />}
+                  {step === 4 && <StepDigital data={formData.digital} setData={(v) => updateSection('digital', v)} />}
+                  {step === 5 && <StepColaboraciones data={formData.colaboraciones} setData={(v) => updateSection('colaboraciones', v)} />}
+                  {step === 6 && <StepActivacion formData={formData} onFinish={handleFinish} />}
                 </motion.div>
               </AnimatePresence>
             </div>
+
           </div>
-
-          {/* Navigation footer */}
-          {!isLast && (
-            <div className="flex items-center justify-between border-t border-slate-100 px-6 py-4 sm:px-8">
-              <button
-                className={`inline-flex items-center gap-2 rounded-[14px] px-4 py-2.5 text-sm font-medium transition ${
-                  step === 0
-                    ? 'pointer-events-none opacity-0'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                }`}
-                onClick={goBack}
-                type="button"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Anterior
-              </button>
-              <button
-                className="inline-flex items-center gap-2 rounded-[14px] bg-[#141E30] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-                onClick={goNext}
-                type="button"
-              >
-                Siguiente
-                <ArrowRight className="h-4 w-4" />
-              </button>
-            </div>
-          )}
         </div>
-
       </div>
+
+      {/* ── Fixed navigation footer ── */}
+      {!isLast && (
+        <div className="shrink-0 border-t border-slate-200/60 bg-white/80 px-4 py-4 backdrop-blur-sm sm:px-6">
+          <div className="mx-auto flex max-w-2xl items-center justify-between">
+            <button
+              className={`inline-flex items-center gap-2 rounded-[14px] px-4 py-2.5 text-sm font-medium transition ${
+                step === 0 ? 'pointer-events-none opacity-0' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
+              onClick={goBack}
+              type="button"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Anterior
+            </button>
+            <button
+              className="inline-flex items-center gap-2 rounded-[14px] bg-[#141E30] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+              onClick={goNext}
+              type="button"
+            >
+              Siguiente
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
     </section>
   );
 }

@@ -1,15 +1,6 @@
 import {
-  Building2,
-  Camera,
-  Check,
-  Crown,
-  Globe,
-  MapPin,
-  Pencil,
-  Plus,
-  Settings,
-  X,
-  Zap
+  Activity, Briefcase, Building2, Camera, Check, Clock, Crown,
+  Globe, MapPin, Pencil, Plus, Settings, Users, X, Zap
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -18,7 +9,7 @@ import TagSelector from './TagSelector';
 import instagramLogo from '../../assets/instagram-logo.svg';
 import tiktokLogo from '../../assets/tiktok-logo.svg';
 import linkedinLogo from '../../assets/linkedin-logo.svg';
-import { ALLIANCE_TAG_OPTIONS, INDUSTRY_OPTIONS } from '../../utils/companyProfile';
+import { INDUSTRY_OPTIONS } from '../../utils/companyProfile';
 import { InstagramFeedProfile } from '../shared/InstagramFeedPreview';
 
 /* ── Social platforms — website last, uses Globe icon ── */
@@ -71,27 +62,6 @@ function readFileAsDataUrl(file) {
     reader.onerror = () => reject(new Error('No se pudo leer el archivo seleccionado.'));
     reader.readAsDataURL(file);
   });
-}
-
-/* ─────────────────────────────────────────────────────────
-   CHIPS for alliance sections
-───────────────────────────────────────────────────────── */
-function SummaryChips({ items, tone = 'blue' }) {
-  if (!items.length) return <p className="text-sm text-white/35">Sin definir todavía.</p>;
-  const tones = {
-    blue:    'border-[#1871D8]/35 bg-[#1871D8]/18 text-[#4A9FFF]',
-    emerald: 'border-emerald-400/30 bg-emerald-400/12 text-emerald-300',
-    amber:   'border-amber-400/30 bg-amber-400/12 text-amber-300',
-  };
-  return (
-    <div className="flex flex-wrap gap-2">
-      {items.map((item) => (
-        <span className={`rounded-full border px-3 py-1.5 text-sm font-medium ${tones[tone]}`} key={item}>
-          {item}
-        </span>
-      ))}
-    </div>
-  );
 }
 
 /* ─────────────────────────────────────────────────────────
@@ -270,42 +240,347 @@ function ImageGuideModal({ type, onClose, onUpload }) {
   );
 }
 
-/* ─────────────────────────────────────────────────────────
-   ALLIANCE SECTION (reusable for offers / needs / segments)
-───────────────────────────────────────────────────────── */
-function AllianceSection({ label, tone, items, isEditing, onEdit, onSave, onCancel, options, selectedItems, onChange }) {
+/* ── New section constants ─────────────────────────────── */
+const CARD_DARK = { background: 'rgba(20,30,48,0.95)', border: '1px solid rgba(255,255,255,0.07)' };
+
+const CAPABILITY_OPTIONS = [
+  { id: 'redes',        label: 'Redes Sociales',          icon: '📱' },
+  { id: 'email',        label: 'Email Marketing',          icon: '✉️' },
+  { id: 'app',          label: 'App Propia',               icon: '📲' },
+  { id: 'push',         label: 'Push Notifications',       icon: '🔔' },
+  { id: 'whatsapp',     label: 'WhatsApp',                 icon: '💬' },
+  { id: 'web',          label: 'Sitio Web',                icon: '🌐' },
+  { id: 'carteleria',   label: 'Cartelería en Sucursales', icon: '🪧' },
+  { id: 'pantallas',    label: 'Pantallas Digitales',      icon: '📺' },
+  { id: 'eventos',      label: 'Eventos',                  icon: '🎪' },
+  { id: 'sampling',     label: 'Sampling',                 icon: '🎁' },
+  { id: 'fidelizacion', label: 'Fidelización',             icon: '⭐' },
+  { id: 'beneficios',   label: 'Beneficios Corp.',         icon: '🏆' },
+];
+
+const STRUCTURE_OPTS  = ['Centralizada', 'Descentralizada', 'Mixta'];
+const APPROVAL_OPTS   = ['Marketing', 'Comercial', 'Dirección', 'Franquicias'];
+const RESPONSE_OPTS   = ['< 24 horas', '24-48 horas', '2-5 días', '+1 semana'];
+const MODALITY_OPTS   = ['Equipo', 'Representante único'];
+const AGE_OPTS        = ['18-24', '18-35', '25-40', '35-50', '45-65', 'Todas las edades'];
+const COVERAGE_OPTS   = ['CABA', 'CABA y GBA', 'Resto de Argentina', 'Todo el país', 'Latinoamérica'];
+const SEG_OPTS        = ['Jóvenes 18-30', 'Profesionales', 'Familias', 'Parejas', 'Seniors', 'Emprendedores'];
+
+/* ── Shared card wrapper ───────────────────────────────── */
+function SectionCard({ children }) {
   return (
-    <div className="px-5 py-5">
-      <div className="mb-3 flex items-center justify-between">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/45">{label}</p>
-        {!isEditing && (
-          <button className="text-[11px] font-semibold text-[#4A9FFF]" onClick={onEdit} type="button">
-            Editar
-          </button>
-        )}
+    <div className="mx-4 mt-3 overflow-hidden rounded-[24px]" style={CARD_DARK}>
+      {children}
+    </div>
+  );
+}
+
+/* ── Team Section ──────────────────────────────────────── */
+function TeamSection({ members }) {
+  const COLORS = [
+    ['#8B5CF6','#6D28D9'], ['#3B82F6','#1D4ED8'], ['#10B981','#047857'],
+    ['#F59E0B','#D97706'], ['#EF4444','#B91C1C'], ['#EC4899','#BE185D'],
+  ];
+  return (
+    <SectionCard>
+      <div className="px-5 pt-5 pb-5">
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/40">Equipo</p>
+            <p className="mt-1 font-['Space_Grotesk'] text-[16px] font-bold text-white">
+              Equipo Comercial
+            </p>
+          </div>
+          <span className="rounded-full bg-white/8 px-3 py-1 text-[12px] font-semibold text-white/50">
+            {members.length} integrantes
+          </span>
+        </div>
+        <div className="space-y-3">
+          {members.map((m, i) => {
+            const [a, b] = COLORS[i % COLORS.length];
+            const initials = m.initials || m.name.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase();
+            return (
+              <div key={m.id} className="flex items-center gap-3">
+                <div
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-['Space_Grotesk'] text-[12px] font-bold text-white"
+                  style={{ background: `linear-gradient(135deg, ${a}, ${b})` }}
+                >
+                  {initials}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="text-[14px] font-semibold text-white">{m.name}</p>
+                    {m.isLead && (
+                      <span className="rounded-full bg-[#1871D8]/20 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-[#4A9FFF]">
+                        Lead
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-[12px] text-white/45">{m.role}{m.area ? ` · ${m.area}` : ''}</p>
+                </div>
+                <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-400" />
+              </div>
+            );
+          })}
+        </div>
       </div>
-      {isEditing ? (
+    </SectionCard>
+  );
+}
+
+/* ── Work Style Section ─────────────────────────────────── */
+function WorkStyleSection({ workStyle, onChange }) {
+  const [editing, setEditing] = useState(false);
+  const [local, setLocal]     = useState(workStyle);
+  const upd = (k, v) => setLocal(p => ({ ...p, [k]: v }));
+
+  const save   = () => { onChange(local); setEditing(false); };
+  const cancel = () => { setLocal(workStyle); setEditing(false); };
+
+  const PillRow = ({ label, options, field }) => (
+    <div>
+      <p className="mb-2 text-[11px] font-semibold text-white/40">{label}</p>
+      <div className="flex flex-wrap gap-1.5">
+        {options.map(opt => {
+          const active = (editing ? local[field] : workStyle[field]) === opt;
+          return (
+            <button key={opt} type="button"
+              onClick={() => editing && upd(field, opt)}
+              className={`rounded-full px-3 py-1.5 text-[12px] font-medium transition-all ${
+                active ? 'bg-[#1871D8] text-white shadow-sm'
+                       : editing ? 'bg-white/8 text-white/50 hover:bg-white/12'
+                                 : 'bg-white/6 text-white/40'
+              }`}
+            >
+              {opt}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  return (
+    <SectionCard>
+      <div className="px-5 pt-5 pb-5">
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/40">Forma de Trabajo</p>
+            <p className="mt-1 font-['Space_Grotesk'] text-[16px] font-bold text-white">Gestión de alianzas</p>
+          </div>
+          {!editing && (
+            <button type="button" onClick={() => setEditing(true)}
+              className="text-[11px] font-semibold text-[#4A9FFF]">Editar</button>
+          )}
+        </div>
         <div className="space-y-4">
-          <TagSelector
-            label={label}
-            onChange={onChange}
-            options={options}
-            placeholder="Agregar opción personalizada"
-            selected={selectedItems}
-          />
-          <div className="flex gap-3">
-            <button className="rounded-full bg-[#1871D8] px-4 py-2 text-[12px] font-semibold text-white" onClick={onSave} type="button">
+          <PillRow label="Estructura"                options={STRUCTURE_OPTS}  field="structure"     />
+          <PillRow label="Área que aprueba alianzas" options={APPROVAL_OPTS}   field="approvalArea"  />
+          <PillRow label="Tiempo de respuesta"       options={RESPONSE_OPTS}   field="responseTime"  />
+          <PillRow label="Modalidad"                 options={MODALITY_OPTS}   field="modality"      />
+        </div>
+        {editing && (
+          <div className="mt-4 flex gap-3">
+            <button type="button" onClick={save}
+              className="flex-1 rounded-[12px] py-2.5 text-[13px] font-semibold text-white"
+              style={{ background: 'linear-gradient(135deg, #1871D8, #1459B0)' }}>
               Guardar
             </button>
-            <button className="rounded-full border border-white/15 px-4 py-2 text-[12px] font-semibold text-white/55" onClick={onCancel} type="button">
+            <button type="button" onClick={cancel}
+              className="rounded-[12px] border border-white/15 px-5 py-2.5 text-[13px] font-semibold text-white/50">
               Cancelar
             </button>
           </div>
+        )}
+      </div>
+    </SectionCard>
+  );
+}
+
+/* ── Capabilities Section ───────────────────────────────── */
+function CapabilitiesSection({ capabilities, onChange }) {
+  const toggle = (id) =>
+    onChange(capabilities.includes(id)
+      ? capabilities.filter(c => c !== id)
+      : [...capabilities, id]);
+
+  return (
+    <SectionCard>
+      <div className="px-5 pt-5 pb-5">
+        <div className="mb-4">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/40">Capacidades de Activación</p>
+          <p className="mt-1 font-['Space_Grotesk'] text-[16px] font-bold text-white">Canales disponibles</p>
+          <p className="mt-0.5 text-[12px] text-white/35">Tocá para activar o desactivar</p>
         </div>
-      ) : (
-        <SummaryChips items={items} tone={tone} />
-      )}
-    </div>
+        <div className="flex flex-wrap gap-2">
+          {CAPABILITY_OPTIONS.map(cap => {
+            const active = capabilities.includes(cap.id);
+            return (
+              <button key={cap.id} type="button" onClick={() => toggle(cap.id)}
+                className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-medium transition-all ${
+                  active ? 'text-white shadow-sm' : 'bg-white/6 text-white/30'
+                }`}
+                style={active ? { background: 'linear-gradient(135deg, #1871D8, #1459B0)', boxShadow: '0 2px 8px rgba(24,113,216,0.28)' } : {}}
+              >
+                <span>{cap.icon}</span>
+                {cap.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </SectionCard>
+  );
+}
+
+/* ── Audience Section ──────────────────────────────────── */
+function AudienceSection({ audience, onChange }) {
+  const [editing, setEditing] = useState(false);
+  const [local, setLocal]     = useState(audience);
+  const upd = (k, v) => setLocal(p => ({ ...p, [k]: v }));
+
+  const save   = () => { onChange(local); setEditing(false); };
+  const cancel = () => { setLocal(audience); setEditing(false); };
+
+  const toggleSeg = (seg) => {
+    const s = local.segments || [];
+    upd('segments', s.includes(seg) ? s.filter(x => x !== seg) : [...s, seg]);
+  };
+
+  const fStyle = { background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.10)', color: 'white' };
+
+  return (
+    <SectionCard>
+      <div className="px-5 pt-5 pb-5">
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/40">Audiencia</p>
+            <p className="mt-1 font-['Space_Grotesk'] text-[16px] font-bold text-white">Público de la marca</p>
+          </div>
+          {!editing && (
+            <button type="button" onClick={() => setEditing(true)}
+              className="text-[11px] font-semibold text-[#4A9FFF]">Editar</button>
+          )}
+        </div>
+        {editing ? (
+          <div className="space-y-4">
+            <div>
+              <p className="mb-1.5 text-[11px] font-semibold text-white/40">Público principal</p>
+              <input value={local.primary || ''} onChange={e => upd('primary', e.target.value)}
+                placeholder="Jóvenes 25-35 interesados en moda…"
+                className="w-full rounded-[12px] px-3.5 py-2.5 text-[13px] outline-none placeholder:text-white/20"
+                style={fStyle} />
+            </div>
+            <div>
+              <p className="mb-2 text-[11px] font-semibold text-white/40">Rango etario</p>
+              <div className="flex flex-wrap gap-1.5">
+                {AGE_OPTS.map(o => (
+                  <button key={o} type="button" onClick={() => upd('ageRange', o)}
+                    className={`rounded-full px-3 py-1.5 text-[12px] font-medium transition-all ${local.ageRange === o ? 'bg-[#1871D8] text-white' : 'bg-white/8 text-white/45 hover:bg-white/12'}`}>
+                    {o}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="mb-2 text-[11px] font-semibold text-white/40">Cobertura geográfica</p>
+              <div className="flex flex-wrap gap-1.5">
+                {COVERAGE_OPTS.map(o => (
+                  <button key={o} type="button" onClick={() => upd('coverage', o)}
+                    className={`rounded-full px-3 py-1.5 text-[12px] font-medium transition-all ${local.coverage === o ? 'bg-[#1871D8] text-white' : 'bg-white/8 text-white/45 hover:bg-white/12'}`}>
+                    {o}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="mb-2 text-[11px] font-semibold text-white/40">Segmentos destacados</p>
+              <div className="flex flex-wrap gap-1.5">
+                {SEG_OPTS.map(seg => {
+                  const on = (local.segments || []).includes(seg);
+                  return (
+                    <button key={seg} type="button" onClick={() => toggleSeg(seg)}
+                      className={`rounded-full px-3 py-1.5 text-[12px] font-medium transition-all ${on ? 'bg-[#1871D8] text-white' : 'bg-white/8 text-white/45 hover:bg-white/12'}`}>
+                      {seg}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="flex gap-3 pt-1">
+              <button type="button" onClick={save}
+                className="flex-1 rounded-[12px] py-2.5 text-[13px] font-semibold text-white"
+                style={{ background: 'linear-gradient(135deg, #1871D8, #1459B0)' }}>
+                Guardar
+              </button>
+              <button type="button" onClick={cancel}
+                className="rounded-[12px] border border-white/15 px-5 py-2.5 text-[13px] font-semibold text-white/50">
+                Cancelar
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {audience.primary && (
+              <p className="text-[13px] leading-relaxed text-white/70">{audience.primary}</p>
+            )}
+            <div className="grid grid-cols-2 gap-3">
+              {audience.ageRange && (
+                <div className="rounded-[14px] p-3" style={{ background: 'rgba(255,255,255,0.05)' }}>
+                  <p className="text-[10px] text-white/30 mb-0.5">Rango etario</p>
+                  <p className="text-[13px] font-semibold text-white">{audience.ageRange}</p>
+                </div>
+              )}
+              {audience.coverage && (
+                <div className="rounded-[14px] p-3" style={{ background: 'rgba(255,255,255,0.05)' }}>
+                  <p className="text-[10px] text-white/30 mb-0.5">Cobertura</p>
+                  <p className="text-[13px] font-semibold text-white">{audience.coverage}</p>
+                </div>
+              )}
+            </div>
+            {(audience.segments || []).length > 0 && (
+              <div className="flex flex-wrap gap-1.5">
+                {audience.segments.map(seg => (
+                  <span key={seg} className="rounded-full px-3 py-1 text-[12px] font-medium text-white/65"
+                    style={{ background: 'rgba(24,113,216,0.14)', border: '1px solid rgba(24,113,216,0.18)' }}>
+                    {seg}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </SectionCard>
+  );
+}
+
+/* ── Activity Section ──────────────────────────────────── */
+function ActivitySection({ activity }) {
+  const metrics = [
+    { label: 'Alianzas concretadas',   value: activity.alliancesCompleted,  color: '#10B981' },
+    { label: 'Conversaciones activas', value: activity.activeConversations, color: '#3B82F6' },
+    { label: 'T. respuesta prom.',     value: activity.avgResponseTime,     color: '#8B5CF6' },
+    { label: 'Nivel de actividad',     value: activity.activityLevel,       color: '#F59E0B' },
+  ];
+  return (
+    <SectionCard>
+      <div className="px-5 pt-5 pb-5">
+        <div className="mb-4">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/40">Actividad</p>
+          <p className="mt-1 font-['Space_Grotesk'] text-[16px] font-bold text-white">Participación en la plataforma</p>
+          <p className="mt-0.5 text-[12px] text-white/35">Miembro desde {activity.joinDate}</p>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          {metrics.map(m => (
+            <div key={m.label} className="rounded-[16px] p-3.5" style={{ background: 'rgba(255,255,255,0.05)' }}>
+              <p className="text-[10px] text-white/30 mb-1">{m.label}</p>
+              <p className="font-['Space_Grotesk'] text-[20px] font-bold" style={{ color: m.color }}>{m.value}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </SectionCard>
   );
 }
 
@@ -315,11 +590,42 @@ function AllianceSection({ label, tone, items, isEditing, onEdit, onSave, onCanc
 function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
   const [draft, setDraft]                       = useState(company);
   const [savedMessage, setSavedMessage]         = useState('');
-  const [editingSections, setEditingSections]   = useState({});
-  const [sectionSnapshots, setSectionSnapshots] = useState({});
   const [isEditingGeneral, setIsEditingGeneral] = useState(false);
   const [generalSnapshot, setGeneralSnapshot]   = useState(null);
   const [imageGuide, setImageGuide]             = useState(null); // 'logo' | 'cover'
+
+  /* ── New section state ── */
+  const [workStyle, setWorkStyle] = useState({
+    structure:    'Centralizada',
+    approvalArea: 'Marketing',
+    responseTime: '24-48 horas',
+    modality:     'Equipo',
+  });
+
+  const [capabilities, setCapabilities] = useState([
+    'redes', 'email', 'web', 'whatsapp',
+  ]);
+
+  const [audience, setAudience] = useState({
+    primary:  'Jóvenes y profesionales interesados en moda e indumentaria',
+    ageRange: '18-35',
+    coverage: 'CABA y GBA',
+    segments: ['Jóvenes 18-30', 'Profesionales'],
+  });
+
+  const TEAM_MEMBERS = [
+    { id: 1, name: 'Agustín Orellano', role: 'Partnerships & Marketing', area: 'Comercial', isLead: true },
+    { id: 2, name: 'María Gómez',      role: 'Brand Manager',            area: 'Marketing', isLead: false },
+    { id: 3, name: 'Juan Pérez',       role: 'Trade Marketing',          area: 'Comercial', isLead: false },
+  ];
+
+  const activity = {
+    joinDate:            'Enero 2025',
+    alliancesCompleted:  3,
+    activeConversations: 5,
+    avgResponseTime:     '2 hs',
+    activityLevel:       'Alta',
+  };
 
   const logoInputRef    = useRef(null);
   const coverInputRef   = useRef(null);
@@ -350,8 +656,6 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
   const updateDraft           = (key, value) => setDraft((c) => ({ ...c, [key]: value }));
   const updateLocation        = (key, value) => setDraft((c) => ({ ...c, location: { ...c.location, [key]: value } }));
   const updateSocialLink      = (key, value) => setDraft((c) => ({ ...c, socialLinks: { ...c.socialLinks, [key]: value } }));
-  const updateAllianceProfile = (key, value) => setDraft((c) => ({ ...c, allianceProfile: { ...c.allianceProfile, [key]: value } }));
-
   /* ── Branch handlers ── */
   const handleAddBranch    = () => updateDraft('branches', [...draft.branches, { address: '', city: draft.location.city, country: draft.location.country }]);
   const handleChangeBranch = (i, k, v) => updateDraft('branches', draft.branches.map((b, idx) => idx === i ? { ...b, [k]: v } : b));
@@ -403,37 +707,6 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
       setDraft((c) => ({ ...c, ...generalSnapshot }));
     }
     setIsEditingGeneral(false);
-  };
-
-  /* ── Alliance section helpers ── */
-  const openSection = (key) => {
-    setSectionSnapshots((s) => ({ ...s, [key]: cloneValue(
-      key === 'offers'   ? draft.allianceProfile.offers :
-      key === 'needs'    ? draft.allianceProfile.needs :
-      draft.allianceProfile.keySegments
-    )}));
-    setEditingSections((s) => ({ ...s, [key]: true }));
-  };
-
-  const cancelSection = (key) => {
-    const snap = sectionSnapshots[key];
-    if (snap) {
-      const field = key === 'segments' ? 'keySegments' : key;
-      updateAllianceProfile(field, snap);
-    }
-    setEditingSections((s) => ({ ...s, [key]: false }));
-  };
-
-  const saveSection = (key) => {
-    onSave(draft);
-    setSectionSnapshots((s) => ({ ...s, [key]: cloneValue(
-      key === 'offers' ? draft.allianceProfile.offers :
-      key === 'needs'  ? draft.allianceProfile.needs :
-      draft.allianceProfile.keySegments
-    )}));
-    setEditingSections((s) => ({ ...s, [key]: false }));
-    setSavedMessage('Guardado.');
-    window.setTimeout(() => setSavedMessage(''), 1800);
   };
 
   /* ── Global save ── */
@@ -694,65 +967,26 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
         </AnimatePresence>
       </div>
 
-      {/* ──────────────── ALLIANCE CARD ──────────────── */}
-      <div className="mx-4 mt-3 overflow-hidden rounded-[24px]" style={{ background: 'rgba(20,30,48,0.95)', border: '1px solid rgba(255,255,255,0.07)' }}>
+      {/* ── Instagram Feed (si existe) ── */}
+      {company.instagramData && (
+        <div className="mx-4 mt-3 overflow-hidden rounded-[24px]" style={CARD_DARK}>
+          <div className="py-5">
+            <InstagramFeedProfile data={company.instagramData} />
+          </div>
+        </div>
+      )}
 
-        {/* Que ofrezco */}
-        <AllianceSection
-          label="Que ofrezco"
-          tone="emerald"
-          items={draft.allianceProfile.offers}
-          isEditing={editingSections.offers}
-          onEdit={() => openSection('offers')}
-          onSave={() => saveSection('offers')}
-          onCancel={() => cancelSection('offers')}
-          options={ALLIANCE_TAG_OPTIONS}
-          selectedItems={draft.allianceProfile.offers}
-          onChange={(v) => updateAllianceProfile('offers', v)}
-        />
+      {/* ── Equipo ── */}
+      <TeamSection members={TEAM_MEMBERS} />
 
-        <div className="mx-5 border-t border-white/8" />
+      {/* ── Forma de Trabajo ── */}
+      <WorkStyleSection workStyle={workStyle} onChange={setWorkStyle} />
 
-        {/* Que busco */}
-        <AllianceSection
-          label="Que busco"
-          tone="amber"
-          items={draft.allianceProfile.needs}
-          isEditing={editingSections.needs}
-          onEdit={() => openSection('needs')}
-          onSave={() => saveSection('needs')}
-          onCancel={() => cancelSection('needs')}
-          options={ALLIANCE_TAG_OPTIONS}
-          selectedItems={draft.allianceProfile.needs}
-          onChange={(v) => updateAllianceProfile('needs', v)}
-        />
+      {/* ── Capacidades de Activación ── */}
+      <CapabilitiesSection capabilities={capabilities} onChange={setCapabilities} />
 
-        <div className="mx-5 border-t border-white/8" />
-
-        {/* Segmentos clave */}
-        <AllianceSection
-          label="Segmentos clave"
-          tone="blue"
-          items={draft.allianceProfile.keySegments}
-          isEditing={editingSections.segments}
-          onEdit={() => openSection('segments')}
-          onSave={() => saveSection('segments')}
-          onCancel={() => cancelSection('segments')}
-          options={INDUSTRY_OPTIONS}
-          selectedItems={draft.allianceProfile.keySegments}
-          onChange={(v) => updateAllianceProfile('keySegments', v)}
-        />
-
-        {/* Instagram Feed */}
-        {company.instagramData && (
-          <>
-            <div className="mx-5 border-t border-white/8" />
-            <div className="py-5">
-              <InstagramFeedProfile data={company.instagramData} />
-            </div>
-          </>
-        )}
-      </div>
+      {/* ── Audiencia ── */}
+      <AudienceSection audience={audience} onChange={setAudience} />
 
       {/* ──────────────── MI GALERÍA ──────────────── */}
       <div className="mx-4 mt-3 overflow-hidden rounded-[24px]" style={{ background: 'rgba(20,30,48,0.95)', border: '1px solid rgba(255,255,255,0.07)' }}>
@@ -818,6 +1052,9 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
           type="file"
         />
       </div>
+
+      {/* ── Actividad ── */}
+      <ActivitySection activity={activity} />
 
       {/* ──────────────── MI PLAN ──────────────── */}
       <div

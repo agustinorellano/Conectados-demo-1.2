@@ -47,7 +47,7 @@ function ActivationScreen({ onFinish, profile, onProfileChange }) {
   };
 
   return (
-    <section className="min-h-screen bg-[linear-gradient(180deg,#F8F9FB_0%,#F3F5F7_100%)] px-4 py-8 sm:px-6">
+    <section className="h-screen overflow-y-auto bg-[linear-gradient(180deg,#F8F9FB_0%,#F3F5F7_100%)] px-4 py-8 sm:px-6 [scrollbar-width:none] [-webkit-overflow-scrolling:touch]">
       <div className="mx-auto max-w-6xl space-y-6">
 
         {/* Header */}
