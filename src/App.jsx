@@ -271,13 +271,16 @@ function App() {
           {['alliances', 'profile', 'dashboard', 'chats', 'workplace'].includes(activeView) ? (
             <motion.div
               key={activeView}
-              className="flex-1 overflow-hidden"
+              className="flex-1"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
+              style={{ minHeight: 0 }}
             >
-              {view}
+              <div className="h-full overflow-hidden">
+                {view}
+              </div>
             </motion.div>
           ) : (
             <motion.main
