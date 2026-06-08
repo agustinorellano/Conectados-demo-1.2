@@ -55,7 +55,7 @@ input {
 
 /* ── Chat search bar — fuerza fondo azul oscuro ── */
 .chat-search {
-  background-color: #0E2A6E !important;
+  background-color: #0D2655 !important;
 }
 .chat-search input {
   background-color: transparent !important;
@@ -65,7 +65,7 @@ input {
 .chat-search input:-webkit-autofill,
 .chat-search input:-webkit-autofill:hover,
 .chat-search input:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 1000px #0E2A6E inset !important;
+  -webkit-box-shadow: 0 0 0 1000px #0D2655 inset !important;
   -webkit-text-fill-color: white !important;
 }
 
