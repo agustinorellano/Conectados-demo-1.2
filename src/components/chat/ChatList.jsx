@@ -714,17 +714,21 @@ function ChatList({
         </div>
       </div>
 
-      {/* ── Search — reference style ── */}
+      {/* ── Search — all-blue minimalist ── */}
       <div className="px-5 pb-3">
         <div
-          className="flex h-[42px] items-center gap-2.5 rounded-2xl px-4 transition focus-within:ring-1 focus-within:ring-white/20"
-          style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.07)' }}
+          className="flex h-[46px] items-center gap-2.5 rounded-2xl px-4 transition-all focus-within:ring-1 focus-within:ring-[#3B82F6]/50"
+          style={{
+            background: 'linear-gradient(135deg, rgba(24,71,180,0.55) 0%, rgba(18,52,140,0.60) 100%)',
+            border: '1px solid rgba(74,159,255,0.18)',
+            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06)',
+          }}
         >
-          <Search className="h-4 w-4 shrink-0 text-white/30" />
+          <Search className="h-4 w-4 shrink-0" style={{ color: 'rgba(96,165,250,0.75)' }} />
           <input
-            className="flex-1 bg-transparent text-[14px] text-white outline-none placeholder:text-white/28"
+            className="flex-1 bg-transparent text-[14px] text-white outline-none placeholder:text-[#60A5FA]/55"
             onChange={handleSearchChange}
-            placeholder="Buscar…"
+            placeholder="Buscar..."
             value={query}
           />
           <AnimatePresence>
@@ -732,7 +736,8 @@ function ChatList({
               <motion.button
                 initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.7 }}
                 onClick={handleClearSearch} type="button"
-                className="flex h-5 w-5 items-center justify-center rounded-full bg-white/20 text-white/70"
+                className="flex h-5 w-5 items-center justify-center rounded-full text-[#60A5FA]/70"
+                style={{ background: 'rgba(74,159,255,0.15)' }}
               >
                 <X className="h-3 w-3" />
               </motion.button>
