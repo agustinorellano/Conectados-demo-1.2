@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import BottomNav from './components/layout/BottomNav';
 import SplashScreen from './components/splash/SplashScreen';
 import AuthScreen from './components/auth/AuthScreen';
@@ -266,17 +267,33 @@ function App() {
         style={{ paddingTop: 'env(safe-area-inset-top)' }}
       >
         {/* ── Full-bleed views ── */}
-        {['alliances', 'profile', 'dashboard', 'chats', 'workplace'].includes(activeView) ? (
-          <div className="flex-1 overflow-hidden">
-            {view}
-          </div>
-        ) : (
-          <main className="flex-1 overflow-y-auto">
-            <div className="mx-auto min-w-0 max-w-6xl px-5 py-5 sm:px-6 sm:py-6">
+        <AnimatePresence mode="wait">
+          {['alliances', 'profile', 'dashboard', 'chats', 'workplace'].includes(activeView) ? (
+            <motion.div
+              key={activeView}
+              className="flex-1 overflow-hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+            >
               {view}
-            </div>
-          </main>
-        )}
+            </motion.div>
+          ) : (
+            <motion.main
+              key={activeView}
+              className="flex-1 overflow-y-auto"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+            >
+              <div className="mx-auto min-w-0 max-w-6xl px-5 py-5 sm:px-6 sm:py-6">
+                {view}
+              </div>
+            </motion.main>
+          )}
+        </AnimatePresence>
         <BottomNav activeView={activeView} onNavigate={setActiveView} />
       </div>
     </div>

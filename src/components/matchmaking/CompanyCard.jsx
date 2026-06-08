@@ -112,20 +112,12 @@ function CompanyCard({ company, onViewProfile }) {
         <div className="flex items-end justify-between gap-3">
           <div className="min-w-0 flex-1">
 
-            {/* Company name inline with match score (like "Nombre  Edad" in Tinder) */}
-            <div className="flex flex-wrap items-baseline gap-2.5">
-              <h3
-                className="font-['Space_Grotesk'] text-[26px] font-bold leading-tight tracking-tight text-white"
-                style={{ textShadow: '0 2px 16px rgba(0,0,0,0.6)' }}
-              >
-                {company.name}
-              </h3>
-              {company.score != null && (
-                <span className="text-[22px] font-semibold text-white/60">
-                  {Math.round(company.score)}
-                </span>
-              )}
-            </div>
+            <h3
+              className="font-['Space_Grotesk'] text-[26px] font-bold leading-tight tracking-tight text-white"
+              style={{ textShadow: '0 2px 16px rgba(0,0,0,0.6)' }}
+            >
+              {company.name}
+            </h3>
 
             {/* Location */}
             <div className="mt-1 flex items-center gap-1.5">
