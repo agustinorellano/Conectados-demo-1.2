@@ -432,11 +432,12 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
     if (!activeCompany) return;
     setHistory((curr) => [...curr, { index: activeIndex }]);
     setExitState(state);
+    // Reset motion values immediately so the next card starts centered
+    x.set(0);
+    y.set(0);
     window.setTimeout(() => {
-      x.set(0);
-      y.set(0);
       setActiveIndex((curr) => curr + 1);
-    }, 160);
+    }, 240); // Wait for exit animation (220ms) to complete before mounting next card
   };
 
   /* ── Actions ── */

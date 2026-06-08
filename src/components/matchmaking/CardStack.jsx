@@ -45,6 +45,8 @@ function CardStack({
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.65}
+            dragMomentum={false}
+            dragTransition={{ bounceStiffness: 600, bounceDamping: 40 }}
             initial={{ opacity: 0, scale: 0.97 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{
