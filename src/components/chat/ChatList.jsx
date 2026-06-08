@@ -716,16 +716,10 @@ function ChatList({
 
       {/* ── Search — all-blue minimalist ── */}
       <div className="px-5 pb-3">
-        <div
-          className="flex h-[48px] items-center gap-2.5 rounded-full px-4 transition-all focus-within:ring-2 focus-within:ring-[#3B82F6]/40"
-          style={{
-            background: '#0E2A6E',
-            border: 'none',
-          }}
-        >
+        <div className="flex h-[48px] items-center gap-2.5 rounded-full bg-[#0E2A6E] px-4 transition-all focus-within:ring-2 focus-within:ring-[#3B82F6]/40">
           <Search className="h-[18px] w-[18px] shrink-0 text-[#4A8FE8]" />
           <input
-            className="flex-1 bg-transparent text-[15px] text-white outline-none placeholder:text-[#4A8FE8]"
+            className="flex-1 bg-transparent text-[15px] text-white outline-none placeholder:text-[#4A8FE8] [-webkit-appearance:none]"
             onChange={handleSearchChange}
             placeholder="Buscar..."
             value={query}
