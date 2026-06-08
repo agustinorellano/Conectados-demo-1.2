@@ -59,6 +59,9 @@ input {
 }
 .chat-search input {
   background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
   -webkit-appearance: none;
   appearance: none;
 }

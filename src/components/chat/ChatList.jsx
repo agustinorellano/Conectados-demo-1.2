@@ -719,7 +719,7 @@ function ChatList({
         <div className="chat-search flex h-[54px] items-center gap-3 rounded-2xl px-5">
           <Search className="h-5 w-5 shrink-0 text-[#6EAAFF]" />
           <input
-            className="flex-1 bg-transparent text-[16px] text-white outline-none placeholder:text-[#6EAAFF]"
+            className="flex-1 bg-transparent text-[16px] text-white outline-none border-0 ring-0 shadow-none placeholder:text-[#6EAAFF]"
             onChange={handleSearchChange}
             placeholder="Buscar..."
             value={query}
