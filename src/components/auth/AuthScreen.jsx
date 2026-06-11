@@ -4,38 +4,8 @@ function AuthScreen({ onContinue }) {
   const [mode, setMode] = useState('login');
 
   return (
-    <section className="h-screen overflow-y-auto bg-[linear-gradient(180deg,#F8F9FB_0%,#F3F5F7_100%)] px-4 py-8 sm:px-6 sm:py-10 [scrollbar-width:none]">
-      <div className="mx-auto grid min-h-[calc(100vh-4rem)] max-w-6xl gap-5 lg:grid-cols-[1.1fr_420px]">
-        <article className="flex rounded-[28px] border border-[var(--stroke)] bg-white/90 p-8 shadow-sm sm:p-10">
-          <div className="my-auto max-w-xl">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#1871D8]">
-              SaaS premium para crecimiento compartido
-            </p>
-            <h2 className="mt-4 text-4xl font-bold leading-tight tracking-tight text-[var(--text)]">
-              Convertir compatibilidad en alianzas rentables.
-            </h2>
-            <p className="mt-4 text-base leading-8 text-[var(--muted)]">
-              Conectados combina analitica, ejecucion y merchandising inteligente
-              para conectar empresas que realmente pueden generar valor juntas.
-            </p>
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              <div className="rounded-2xl bg-[#F6F7F9] p-5">
-                <strong className="text-3xl text-[var(--text)]">+84%</strong>
-                <span className="mt-2 block text-sm text-[var(--muted)]">
-                  mejor visibilidad de oportunidades
-                </span>
-              </div>
-              <div className="rounded-2xl bg-[#F6F7F9] p-5">
-                <strong className="text-3xl text-[var(--text)]">+27%</strong>
-                <span className="mt-2 block text-sm text-[var(--muted)]">
-                  lift promedio en propuestas co-branded
-                </span>
-              </div>
-            </div>
-          </div>
-        </article>
-
-        <article className="flex rounded-[28px] border border-[var(--stroke)] bg-white p-6 shadow-sm sm:p-8">
+    <section className="flex h-screen items-center justify-center overflow-y-auto bg-[linear-gradient(180deg,#F8F9FB_0%,#F3F5F7_100%)] px-4 py-8 [scrollbar-width:none]">
+        <article className="w-full max-w-[420px] rounded-[28px] border border-[var(--stroke)] bg-white p-6 shadow-sm sm:p-8">
           <div className="my-auto w-full">
             <div className="mb-6 flex items-center gap-3">
               <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl">
@@ -102,7 +72,6 @@ function AuthScreen({ onContinue }) {
             </p>
           </div>
         </article>
-      </div>
     </section>
   );
 }
