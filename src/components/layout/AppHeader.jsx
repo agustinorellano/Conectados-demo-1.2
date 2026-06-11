@@ -27,10 +27,10 @@ function AppHeader({ activeView, onNavigate, userPlan }) {
         {/* Left: eyebrow + title */}
         <div className="min-w-0 flex-1">
           <p className="whitespace-nowrap text-[10px] font-semibold uppercase tracking-[0.18em] text-[#7EB8D4] leading-none">
-            Data Plus
+            Conectados
           </p>
           <h1 className="truncate font-['Space_Grotesk'] text-[18px] font-bold leading-tight tracking-tight text-white">
-            {titles[activeView] || 'Data Plus'}
+            {titles[activeView] || 'Conectados'}
           </h1>
         </div>
 
@@ -67,15 +67,12 @@ function AppHeader({ activeView, onNavigate, userPlan }) {
             {userPlan}
           </span>
 
-          {/* DP avatar — always visible */}
+          {/* App logo avatar */}
           <div
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[11px] text-[11px] font-bold text-white"
-            style={{
-              background: 'linear-gradient(135deg, #243B55, #35577D)',
-              boxShadow: '0 2px 10px rgba(20,30,48,0.4), 0 0 0 1px rgba(126,184,212,0.12)',
-            }}
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[11px] overflow-hidden"
+            style={{ boxShadow: '0 2px 10px rgba(20,30,48,0.4), 0 0 0 1px rgba(126,184,212,0.12)' }}
           >
-            DP
+            <img src="/logo.svg" alt="Conectados" className="h-8 w-8" />
           </div>
         </div>
       </div>

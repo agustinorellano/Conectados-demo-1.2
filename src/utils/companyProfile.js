@@ -55,9 +55,9 @@ export function createInitialProfile(company) {
         createScenePlaceholder('#141E30', '#35577D', 'Equipo y local')
       ],
     socialLinks: {
-      instagram: company.socialLinks?.instagram || 'https://instagram.com/dataplus.demo',
-      tiktok: company.socialLinks?.tiktok || 'https://tiktok.com/@dataplus.demo',
-      linkedin: company.socialLinks?.linkedin || 'https://linkedin.com/company/data-plus-demo'
+      instagram: company.socialLinks?.instagram || 'https://instagram.com/conectados.demo',
+      tiktok: company.socialLinks?.tiktok || 'https://tiktok.com/@conectados.demo',
+      linkedin: company.socialLinks?.linkedin || 'https://linkedin.com/company/conectados-demo'
     },
     allianceProfile: {
       offers: company.alliance_profile.offers.map(formatTagLabel),
@@ -119,7 +119,7 @@ function createScenePlaceholder(start, end, label) {
       <circle cx="134" cy="296" r="96" fill="rgba(255,255,255,0.1)"/>
       <rect x="58" y="278" width="228" height="18" rx="9" fill="rgba(255,255,255,0.9)"/>
       <rect x="58" y="310" width="168" height="14" rx="7" fill="rgba(255,255,255,0.62)"/>
-      <text x="58" y="100" fill="white" font-family="Inter, Arial, sans-serif" font-size="18" letter-spacing="4" opacity="0.78">DATA PLUS</text>
+      <text x="58" y="100" fill="white" font-family="Inter, Arial, sans-serif" font-size="18" letter-spacing="4" opacity="0.78">CONECTADOS</text>
       <text x="58" y="150" fill="white" font-family="Space Grotesk, Arial, sans-serif" font-size="40" font-weight="700">${label}</text>
       <defs>
         <linearGradient id="g" x1="0" y1="0" x2="640" y2="420" gradientUnits="userSpaceOnUse">

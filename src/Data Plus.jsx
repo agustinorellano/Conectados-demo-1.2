@@ -82,7 +82,7 @@ function App() {
         <header className="topbar glass-card">
           <div>
             <p className="eyebrow">Alliance Operating System</p>
-            <h1>Data Plus</h1>
+            <h1>Conectados</h1>
           </div>
           <div className="topbar-status">
             <div className="pulse-dot" />

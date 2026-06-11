@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- Background -->
+  <rect width="1024" height="1024" rx="220" fill="#0A1628"/>
+
+  <!-- Connection lines -->
+  <line x1="512" y1="512" x2="248" y2="260" stroke="#4A7EC7" stroke-width="18" stroke-linecap="round" opacity="0.7"/>
+  <line x1="512" y1="512" x2="778" y2="262" stroke="#4A7EC7" stroke-width="18" stroke-linecap="round" opacity="0.7"/>
+  <line x1="512" y1="512" x2="248" y2="758" stroke="#4A7EC7" stroke-width="18" stroke-linecap="round" opacity="0.7"/>
+  <line x1="512" y1="512" x2="774" y2="760" stroke="#4A7EC7" stroke-width="18" stroke-linecap="round" opacity="0.7"/>
+
+  <!-- Central node -->
+  <circle cx="512" cy="512" r="170">
+    <radialGradient id="cg" cx="38%" cy="38%" r="62%" gradientUnits="objectBoundingBox">
+      <stop offset="0%" stop-color="#5B8DEF"/>
+      <stop offset="100%" stop-color="#2B5CE6"/>
+    </radialGradient>
+    <animate attributeName="r" values="170" dur="1s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="512" cy="512" r="170" fill="url(#cg)"/>
+
+  <!-- Top-left node -->
+  <circle cx="248" cy="260" r="94" fill="url(#ng1)"/>
+  <radialGradient id="ng1" cx="38%" cy="35%" r="62%" gradientUnits="objectBoundingBox">
+    <stop offset="0%" stop-color="#6B9EFF"/>
+    <stop offset="100%" stop-color="#2B5CE6"/>
+  </radialGradient>
+
+  <!-- Top-right node -->
+  <circle cx="778" cy="262" r="82" fill="url(#ng2)"/>
+  <radialGradient id="ng2" cx="38%" cy="35%" r="62%" gradientUnits="objectBoundingBox">
+    <stop offset="0%" stop-color="#7AAEFD"/>
+    <stop offset="100%" stop-color="#3B6FEE"/>
+  </radialGradient>
+
+  <!-- Bottom-left node -->
+  <circle cx="248" cy="758" r="82" fill="url(#ng3)"/>
+  <radialGradient id="ng3" cx="38%" cy="35%" r="62%" gradientUnits="objectBoundingBox">
+    <stop offset="0%" stop-color="#5B9EFF"/>
+    <stop offset="100%" stop-color="#1B4CD6"/>
+  </radialGradient>
+
+  <!-- Bottom-right node -->
+  <circle cx="774" cy="760" r="74" fill="url(#ng4)"/>
+  <radialGradient id="ng4" cx="38%" cy="35%" r="62%" gradientUnits="objectBoundingBox">
+    <stop offset="0%" stop-color="#7AB8FF"/>
+    <stop offset="100%" stop-color="#3B6FEE"/>
+  </radialGradient>
+</svg>
