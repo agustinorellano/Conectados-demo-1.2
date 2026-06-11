@@ -1,47 +1,68 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
   <defs>
-    <radialGradient id="bg" cx="42%" cy="36%" r="75%">
-      <stop offset="0%" stop-color="#0D1F40"/>
-      <stop offset="100%" stop-color="#050A16"/>
+    <radialGradient id="bg" cx="50%" cy="45%" r="70%">
+      <stop offset="0%" stop-color="#0E2045"/>
+      <stop offset="60%" stop-color="#07112A"/>
+      <stop offset="100%" stop-color="#030810"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1E4FCC" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#1E4FCC" stop-opacity="0"/>
     </radialGradient>
     <linearGradient id="hub" x1="20%" y1="5%" x2="80%" y2="95%">
-      <stop offset="0%" stop-color="#60B8FF"/>
-      <stop offset="55%" stop-color="#2262E8"/>
-      <stop offset="100%" stop-color="#1A1AB0"/>
+      <stop offset="0%" stop-color="#72C2FF"/>
+      <stop offset="50%" stop-color="#2668EC"/>
+      <stop offset="100%" stop-color="#1820B4"/>
     </linearGradient>
     <linearGradient id="sat" x1="20%" y1="5%" x2="80%" y2="95%">
-      <stop offset="0%" stop-color="#70C4FF"/>
-      <stop offset="55%" stop-color="#2E70F0"/>
-      <stop offset="100%" stop-color="#2020C0"/>
+      <stop offset="0%" stop-color="#78CAFF"/>
+      <stop offset="55%" stop-color="#3274F2"/>
+      <stop offset="100%" stop-color="#2222C4"/>
     </linearGradient>
     <linearGradient id="wa" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#80AAFF" stop-opacity="0.06"/>
-      <stop offset="48%" stop-color="#80AAFF" stop-opacity="0.48"/>
-      <stop offset="100%" stop-color="#80AAFF" stop-opacity="0.06"/>
+      <stop offset="0%" stop-color="#4A88FF" stop-opacity="0.05"/>
+      <stop offset="50%" stop-color="#4A88FF" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#4A88FF" stop-opacity="0.05"/>
     </linearGradient>
     <linearGradient id="wb" x1="100%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#80AAFF" stop-opacity="0.06"/>
-      <stop offset="48%" stop-color="#80AAFF" stop-opacity="0.48"/>
-      <stop offset="100%" stop-color="#80AAFF" stop-opacity="0.06"/>
+      <stop offset="0%" stop-color="#4A88FF" stop-opacity="0.05"/>
+      <stop offset="50%" stop-color="#4A88FF" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#4A88FF" stop-opacity="0.05"/>
     </linearGradient>
+    <filter id="blur-hub" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="10"/>
+    </filter>
+    <filter id="blur-sat" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="6"/>
+    </filter>
   </defs>
 
-  <rect width="200" height="200" rx="44" fill="url(#bg)"/>
+  <!-- Background rounded square -->
+  <rect width="200" height="200" rx="46" fill="url(#bg)"/>
 
-  <!-- 4 wires -->
+  <!-- Central ambient glow -->
+  <circle cx="100" cy="100" r="52" fill="url(#glow)" filter="url(#blur-hub)"/>
+
+  <!-- Satellite glows -->
+  <circle cx="52"  cy="52"  r="18" fill="#2060DD" opacity="0.35" filter="url(#blur-sat)"/>
+  <circle cx="152" cy="56"  r="18" fill="#2060DD" opacity="0.35" filter="url(#blur-sat)"/>
+  <circle cx="48"  cy="148" r="13" fill="#2060DD" opacity="0.25" filter="url(#blur-sat)"/>
+  <circle cx="152" cy="150" r="13" fill="#2060DD" opacity="0.25" filter="url(#blur-sat)"/>
+
+  <!-- Wires -->
   <line x1="100" y1="100" x2="52"  y2="52"  stroke="url(#wa)" stroke-width="1.6" stroke-linecap="round"/>
   <line x1="100" y1="100" x2="152" y2="56"  stroke="url(#wb)" stroke-width="1.6" stroke-linecap="round"/>
   <line x1="100" y1="100" x2="48"  y2="148" stroke="url(#wa)" stroke-width="1.4" stroke-linecap="round"/>
   <line x1="100" y1="100" x2="152" y2="150" stroke="url(#wb)" stroke-width="1.4" stroke-linecap="round"/>
 
-  <!-- Hub dominante -->
+  <!-- Hub -->
   <circle cx="100" cy="100" r="32" fill="url(#hub)"/>
 
-  <!-- 2 satélites grandes arriba -->
+  <!-- Satellites top -->
   <circle cx="52"  cy="52"  r="16" fill="url(#sat)"/>
   <circle cx="152" cy="56"  r="16" fill="url(#sat)"/>
 
-  <!-- 2 satélites chicos abajo -->
+  <!-- Satellites bottom -->
   <circle cx="48"  cy="148" r="11" fill="url(#sat)"/>
   <circle cx="152" cy="150" r="11" fill="url(#sat)"/>
 </svg>
