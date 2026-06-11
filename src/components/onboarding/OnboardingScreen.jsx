@@ -406,7 +406,7 @@ function OnboardingScreen({ onFinish, onProfileChange }) {
       </div>
 
       {/* ── Scrollable card area ── */}
-      <div className="flex-1 overflow-y-auto px-4 pb-4 sm:px-6 [scrollbar-width:none]">
+      <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4 sm:px-6 [scrollbar-width:none]">
         <div className="mx-auto max-w-2xl">
           <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm">
 
