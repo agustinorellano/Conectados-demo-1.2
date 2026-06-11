@@ -4,7 +4,7 @@ function AuthScreen({ onContinue }) {
   const [mode, setMode] = useState('login');
 
   return (
-    <section className="min-h-screen bg-[linear-gradient(180deg,#F8F9FB_0%,#F3F5F7_100%)] px-4 py-8 sm:px-6 sm:py-10">
+    <section className="h-screen overflow-y-auto bg-[linear-gradient(180deg,#F8F9FB_0%,#F3F5F7_100%)] px-4 py-8 sm:px-6 sm:py-10 [scrollbar-width:none]">
       <div className="mx-auto grid min-h-[calc(100vh-4rem)] max-w-6xl gap-5 lg:grid-cols-[1.1fr_420px]">
         <article className="flex rounded-[28px] border border-[var(--stroke)] bg-white/90 p-8 shadow-sm sm:p-10">
           <div className="my-auto max-w-xl">
@@ -15,7 +15,7 @@ function AuthScreen({ onContinue }) {
               Convertir compatibilidad en alianzas rentables.
             </h2>
             <p className="mt-4 text-base leading-8 text-[var(--muted)]">
-              Data Plus combina analitica, ejecucion y merchandising inteligente
+              Conectados combina analitica, ejecucion y merchandising inteligente
               para conectar empresas que realmente pueden generar valor juntas.
             </p>
             <div className="mt-8 grid gap-4 sm:grid-cols-2">
@@ -38,11 +38,11 @@ function AuthScreen({ onContinue }) {
         <article className="flex rounded-[28px] border border-[var(--stroke)] bg-white p-6 shadow-sm sm:p-8">
           <div className="my-auto w-full">
             <div className="mb-6 flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#141E30] text-lg font-bold text-white">
-                DP
+              <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl">
+                <img src="/logo.svg" alt="Conectados" className="h-12 w-12" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-[var(--text)]">Data Plus</h3>
+                <h3 className="text-lg font-semibold text-[var(--text)]">Conectados</h3>
                 <p className="text-sm text-[var(--muted)]">Ingreso seguro a la plataforma</p>
               </div>
             </div>

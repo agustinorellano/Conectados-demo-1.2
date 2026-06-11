@@ -380,8 +380,8 @@ function OnboardingScreen({ onFinish, onProfileChange }) {
       <div className="shrink-0 px-4 pt-8 pb-4 sm:px-6">
         <div className="mx-auto flex max-w-2xl items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#141E30] text-sm font-bold text-white">
-              DP
+            <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl">
+              <img src="/logo.svg" alt="Conectados" className="h-10 w-10" />
             </div>
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#1871D8]">
