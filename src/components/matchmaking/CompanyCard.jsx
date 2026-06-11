@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowUp, MapPin } from 'lucide-react';
-import { InstagramFeedCompact } from '../shared/InstagramFeedPreview';
+import { ArrowUp, Navigation } from 'lucide-react';
 
 /* ── Per-sector gradient backgrounds ─────────────────── */
 const industryBg = {
@@ -29,13 +28,50 @@ const industryAccent = {
   'Marketing Digital':'rgba(74,32,128,0.55)',
 };
 
-/* ─────────────────────────────────────────────────────────
-   CompanyCard — Tinder-style full-height card
-───────────────────────────────────────────────────────── */
+const TAG_LABEL = {
+  espacio:     'Espacio físico',
+  audiencia:   'Audiencia',
+  producto:    'Producto',
+  logistica:   'Logística',
+  ventas:      'Ventas',
+  visibilidad: 'Visibilidad',
+  trafico:     'Tráfico',
+  canales:     'Canales',
+  branding:    'Branding',
+  engagement:  'Engagement',
+  clientes:    'Clientes',
+};
+
+function formatTags(raw = '') {
+  return raw
+    .split(',')
+    .map(t => TAG_LABEL[t.trim()] || t.trim())
+    .filter(Boolean)
+    .slice(0, 3);
+}
+
+function Pill({ children }) {
+  return (
+    <span
+      className="rounded-full px-2.5 py-1 text-[11px] font-medium text-white/80"
+      style={{
+        background: 'rgba(255,255,255,0.11)',
+        border: '1px solid rgba(255,255,255,0.13)',
+        backdropFilter: 'blur(8px)',
+      }}
+    >
+      {children}
+    </span>
+  );
+}
+
 function CompanyCard({ company, onViewProfile }) {
-  const bg       = industryBg[company.sector]     || industryBg.Tecnologia;
-  const accent   = industryAccent[company.sector] || 'rgba(24,113,216,0.55)';
+  const bg     = industryBg[company.sector]     || industryBg.Tecnologia;
+  const accent = industryAccent[company.sector] || 'rgba(24,113,216,0.55)';
   const hasImage = Boolean(company.gallery?.[0]);
+
+  const offerTags   = formatTags(company.offer);
+  const seekingTags = formatTags(company.seeking);
 
   return (
     <article
@@ -47,121 +83,83 @@ function CompanyCard({ company, onViewProfile }) {
     >
       {/* ── Background ── */}
       {hasImage ? (
-        <img
-          alt={company.name}
-          className="absolute inset-0 h-full w-full object-cover"
-          src={company.gallery[0]}
-        />
+        <img alt={company.name} className="absolute inset-0 h-full w-full object-cover" src={company.gallery[0]} />
       ) : (
         <div className="absolute inset-0" style={{ background: bg }}>
-          <div
-            className="absolute -right-16 -top-16 h-72 w-72 rounded-full blur-3xl"
-            style={{ background: accent, opacity: 0.38 }}
-          />
-          <div
-            className="absolute -bottom-20 -left-10 h-56 w-56 rounded-full blur-3xl"
-            style={{ background: accent, opacity: 0.25 }}
-          />
-          {/* Giant logo watermark */}
+          <div className="absolute -right-16 -top-16 h-72 w-72 rounded-full blur-3xl" style={{ background: accent, opacity: 0.38 }} />
+          <div className="absolute -bottom-20 -left-10 h-56 w-56 rounded-full blur-3xl" style={{ background: accent, opacity: 0.25 }} />
           <div className="absolute inset-0 flex items-center justify-center">
-            <span
-              className="select-none font-['Space_Grotesk'] font-black text-white"
-              style={{ fontSize: 'clamp(80px, 22vw, 140px)', opacity: 0.055, lineHeight: 1 }}
-            >
+            <span className="select-none font-['Space_Grotesk'] font-black text-white"
+              style={{ fontSize: 'clamp(80px, 22vw, 140px)', opacity: 0.055, lineHeight: 1 }}>
               {company.logo}
             </span>
           </div>
         </div>
       )}
 
-      {/* ── Gradient overlays ── */}
-      {/* Top vignette — makes sector badge readable */}
-      <div
-        className="pointer-events-none absolute inset-x-0 top-0 h-32"
-        style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.30) 0%, transparent 100%)' }}
-      />
-      {/* Bottom gradient — heavy for text readability (Tinder-style) */}
-      <div
-        className="pointer-events-none absolute inset-x-0 bottom-0"
+      {/* ── Gradients ── */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-32"
+        style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.30) 0%, transparent 100%)' }} />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0"
         style={{
-          height: '62%',
-          background:
-            'linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.55) 38%, rgba(0,0,0,0.08) 70%, transparent 100%)',
-        }}
-      />
+          height: '70%',
+          background: 'linear-gradient(to top, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.62) 40%, rgba(0,0,0,0.08) 68%, transparent 100%)',
+        }} />
 
-      {/* ── Sector badge — below floating header ── */}
-      <div
-        className="absolute left-4 top-[68px] z-10 rounded-full px-3.5 py-1.5"
-        style={{
-          background: 'rgba(0,0,0,0.30)',
-          backdropFilter: 'blur(14px)',
-          WebkitBackdropFilter: 'blur(14px)',
-          border: '1px solid rgba(255,255,255,0.18)',
-        }}
-      >
-        <span className="text-[10px] font-bold uppercase tracking-[0.20em] text-white/90">
-          {company.sector}
-        </span>
+      {/* ── Sector badge ── */}
+      <div className="absolute left-4 top-[68px] z-10 rounded-full px-3.5 py-1.5"
+        style={{ background: 'rgba(0,0,0,0.30)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: '1px solid rgba(255,255,255,0.18)' }}>
+        <span className="text-[10px] font-bold uppercase tracking-[0.20em] text-white/90">{company.sector}</span>
       </div>
 
-      {/* ── Bottom info overlay — Tinder-style ── */}
-      <div className="absolute bottom-0 left-0 right-0 z-10 px-5 pb-5 pt-8">
+      {/* ── Bottom info — visible without tapping ── */}
+      <div className="absolute bottom-0 left-0 right-0 z-10 px-5 pb-[92px] pt-6">
 
-        {/* Name + score + arrow button */}
+        {/* Name + arrow */}
         <div className="flex items-end justify-between gap-3">
           <div className="min-w-0 flex-1">
-
-            <h3
-              className="font-['Space_Grotesk'] text-[26px] font-bold leading-tight tracking-tight text-white"
-              style={{ textShadow: '0 2px 16px rgba(0,0,0,0.6)' }}
-            >
+            <h3 className="font-['Space_Grotesk'] text-[26px] font-bold leading-tight tracking-tight text-white"
+              style={{ textShadow: '0 2px 16px rgba(0,0,0,0.6)' }}>
               {company.name}
             </h3>
-
-            {/* Location */}
             <div className="mt-1 flex items-center gap-1.5">
-              <MapPin className="h-3.5 w-3.5 shrink-0 text-white/55" />
-              <span className="text-[13px] font-medium text-white/55">{company.location}</span>
+              <Navigation className="h-3 w-3 shrink-0 text-white/45" strokeWidth={2} />
+              <span className="text-[12px] font-medium text-white/45">{company.distance ?? '—'} km</span>
             </div>
-
-            {/* Segment pills */}
-            {company.segments?.length > 0 && (
-              <div className="mt-2.5 flex flex-wrap gap-1.5">
-                {company.segments.slice(0, 3).map((seg) => (
-                  <span
-                    key={seg}
-                    className="rounded-full px-2.5 py-1 text-[11px] font-medium capitalize text-white/80"
-                    style={{
-                      background: 'rgba(255,255,255,0.13)',
-                      border: '1px solid rgba(255,255,255,0.13)',
-                      backdropFilter: 'blur(8px)',
-                    }}
-                  >
-                    {seg}
-                  </span>
-                ))}
-              </div>
-            )}
           </div>
 
-          {/* View-profile arrow — only on the active card (prop present) */}
           {onViewProfile && (
-            <motion.button
-              type="button"
+            <motion.button type="button"
               onClick={(e) => { e.stopPropagation(); onViewProfile(); }}
-              whileHover={{ scale: 1.08 }}
-              whileTap={{ scale: 0.90 }}
+              whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.90 }}
               className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white"
-              style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.45)' }}
-            >
+              style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.45)' }}>
               <ArrowUp className="h-5 w-5 text-[#141E30]" strokeWidth={2.5} />
             </motion.button>
           )}
         </div>
 
-        {/* Instagram compact feed (if available) */}
-        <InstagramFeedCompact data={company.instagramData} />
+        <div className="my-3 h-px bg-white/[0.10]" />
+
+        {/* Ofrece */}
+        {offerTags.length > 0 && (
+          <div className="mb-2.5">
+            <p className="mb-1.5 text-[9px] font-semibold uppercase tracking-[0.20em] text-white/35">Ofrece</p>
+            <div className="flex flex-wrap gap-1.5">
+              {offerTags.map(t => <Pill key={t}>{t}</Pill>)}
+            </div>
+          </div>
+        )}
+
+        {/* Busca */}
+        {seekingTags.length > 0 && (
+          <div>
+            <p className="mb-1.5 text-[9px] font-semibold uppercase tracking-[0.20em] text-white/35">Busca</p>
+            <div className="flex flex-wrap gap-1.5">
+              {seekingTags.map(t => <Pill key={t}>{t}</Pill>)}
+            </div>
+          </div>
+        )}
       </div>
     </article>
   );

@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import CompanyDetailModal from './CompanyDetailModal';
 import SwipeHeader from './SwipeHeader';
 import CardStack from './CardStack';
@@ -427,17 +427,21 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
     showFlash._t = window.setTimeout(() => setFlashMessage(null), 1300);
   };
 
+  /* ── Reset drag position when a new card mounts ── */
+  useEffect(() => {
+    x.set(0);
+    y.set(0);
+  }, [activeIndex]); // eslint-disable-line react-hooks/exhaustive-deps
+
   /* ── Move to next card ── */
   const queueNextCompany = (state) => {
     if (!activeCompany) return;
     setHistory((curr) => [...curr, { index: activeIndex }]);
     setExitState(state);
-    // Reset motion values immediately so the next card starts centered
-    x.set(0);
-    y.set(0);
+    // Delay index change so exit animation (220ms) plays from drag position
     window.setTimeout(() => {
       setActiveIndex((curr) => curr + 1);
-    }, 240); // Wait for exit animation (220ms) to complete before mounting next card
+    }, 250);
   };
 
   /* ── Actions ── */

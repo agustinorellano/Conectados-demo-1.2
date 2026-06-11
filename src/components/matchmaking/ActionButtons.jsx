@@ -11,15 +11,15 @@ function ActionButtons({ onUndo, onSkip, onSave, onLike, onViewProfile }) {
       <div
         className="pointer-events-none absolute inset-x-0 bottom-0 z-40"
         style={{
-          height: '34%',
-          background: 'linear-gradient(to top, rgba(4,8,16,0.96) 0%, rgba(4,8,16,0.60) 45%, transparent 100%)',
+          height: '32%',
+          background: 'linear-gradient(to top, rgba(4,8,16,0.97) 0%, rgba(4,8,16,0.55) 50%, transparent 100%)',
         }}
       />
 
-      {/* Buttons row */}
+      {/* Buttons row — paddingBottom clears safe area; parent pb-[78px] clears BottomNav */}
       <div
         className="absolute inset-x-0 bottom-0 z-50 flex items-center justify-center gap-4"
-        style={{ paddingBottom: 'max(18px, env(safe-area-inset-bottom))', paddingTop: '10px' }}
+        style={{ paddingBottom: 'max(28px, env(safe-area-inset-bottom))', paddingTop: '10px' }}
       >
         <motion.button type="button" onClick={onUndo} whileHover={{ scale: 1.10 }} whileTap={{ scale: 0.86 }}
           className={BTN_SM}
