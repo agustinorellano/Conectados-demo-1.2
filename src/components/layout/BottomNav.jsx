@@ -50,8 +50,8 @@ function BottomNav({ activeView, onNavigate }) {
                   layoutId="nav-active"
                   className="absolute inset-0 rounded-[22px]"
                   style={{
-                    background: 'rgba(255,255,255,0.11)',
-                    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -1px 0 rgba(0,0,0,0.10)',
+                    background: 'linear-gradient(135deg, #243B55 0%, #35577D 100%)',
+                    boxShadow: '0 4px 16px rgba(59,130,246,0.30), 0 0 0 1px rgba(126,184,212,0.18)',
                   }}
                   transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 />
@@ -66,7 +66,7 @@ function BottomNav({ activeView, onNavigate }) {
               />
               <span
                 className={`relative z-10 text-[10px] font-semibold leading-none tracking-tight transition-colors duration-200 ${
-                  isActive ? 'text-white' : 'text-white/35'
+                  isActive ? 'text-[#7EB8D4]' : 'text-white/35'
                 }`}
               >
                 {item.label}
