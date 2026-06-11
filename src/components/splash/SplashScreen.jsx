@@ -140,15 +140,6 @@ function SplashScreen({ onComplete }) {
         ))}
       </motion.svg>
 
-      {/* "Conectados" — fades in after animation settles */}
-      <motion.h1
-        className="mt-10 font-['Space_Grotesk'] text-[44px] font-bold tracking-tight text-white"
-        initial={{ opacity: 0, y: 18 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 2.3, duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-      >
-        Conectados
-      </motion.h1>
     </section>
   );
 }
