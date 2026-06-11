@@ -1,48 +1,47 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
-  <!-- Background -->
-  <rect width="1024" height="1024" rx="220" fill="#0A1628"/>
-
-  <!-- Connection lines -->
-  <line x1="512" y1="512" x2="248" y2="260" stroke="#4A7EC7" stroke-width="18" stroke-linecap="round" opacity="0.7"/>
-  <line x1="512" y1="512" x2="778" y2="262" stroke="#4A7EC7" stroke-width="18" stroke-linecap="round" opacity="0.7"/>
-  <line x1="512" y1="512" x2="248" y2="758" stroke="#4A7EC7" stroke-width="18" stroke-linecap="round" opacity="0.7"/>
-  <line x1="512" y1="512" x2="774" y2="760" stroke="#4A7EC7" stroke-width="18" stroke-linecap="round" opacity="0.7"/>
-
-  <!-- Central node -->
-  <circle cx="512" cy="512" r="170">
-    <radialGradient id="cg" cx="38%" cy="38%" r="62%" gradientUnits="objectBoundingBox">
-      <stop offset="0%" stop-color="#5B8DEF"/>
-      <stop offset="100%" stop-color="#2B5CE6"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <defs>
+    <radialGradient id="bg" cx="42%" cy="36%" r="75%">
+      <stop offset="0%" stop-color="#0D1F40"/>
+      <stop offset="100%" stop-color="#050A16"/>
     </radialGradient>
-    <animate attributeName="r" values="170" dur="1s" repeatCount="indefinite"/>
-  </circle>
-  <circle cx="512" cy="512" r="170" fill="url(#cg)"/>
+    <linearGradient id="hub" x1="20%" y1="5%" x2="80%" y2="95%">
+      <stop offset="0%" stop-color="#60B8FF"/>
+      <stop offset="55%" stop-color="#2262E8"/>
+      <stop offset="100%" stop-color="#1A1AB0"/>
+    </linearGradient>
+    <linearGradient id="sat" x1="20%" y1="5%" x2="80%" y2="95%">
+      <stop offset="0%" stop-color="#70C4FF"/>
+      <stop offset="55%" stop-color="#2E70F0"/>
+      <stop offset="100%" stop-color="#2020C0"/>
+    </linearGradient>
+    <linearGradient id="wa" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#80AAFF" stop-opacity="0.06"/>
+      <stop offset="48%" stop-color="#80AAFF" stop-opacity="0.48"/>
+      <stop offset="100%" stop-color="#80AAFF" stop-opacity="0.06"/>
+    </linearGradient>
+    <linearGradient id="wb" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#80AAFF" stop-opacity="0.06"/>
+      <stop offset="48%" stop-color="#80AAFF" stop-opacity="0.48"/>
+      <stop offset="100%" stop-color="#80AAFF" stop-opacity="0.06"/>
+    </linearGradient>
+  </defs>
 
-  <!-- Top-left node -->
-  <circle cx="248" cy="260" r="94" fill="url(#ng1)"/>
-  <radialGradient id="ng1" cx="38%" cy="35%" r="62%" gradientUnits="objectBoundingBox">
-    <stop offset="0%" stop-color="#6B9EFF"/>
-    <stop offset="100%" stop-color="#2B5CE6"/>
-  </radialGradient>
+  <rect width="200" height="200" rx="44" fill="url(#bg)"/>
 
-  <!-- Top-right node -->
-  <circle cx="778" cy="262" r="82" fill="url(#ng2)"/>
-  <radialGradient id="ng2" cx="38%" cy="35%" r="62%" gradientUnits="objectBoundingBox">
-    <stop offset="0%" stop-color="#7AAEFD"/>
-    <stop offset="100%" stop-color="#3B6FEE"/>
-  </radialGradient>
+  <!-- 4 wires -->
+  <line x1="100" y1="100" x2="52"  y2="52"  stroke="url(#wa)" stroke-width="1.6" stroke-linecap="round"/>
+  <line x1="100" y1="100" x2="152" y2="56"  stroke="url(#wb)" stroke-width="1.6" stroke-linecap="round"/>
+  <line x1="100" y1="100" x2="48"  y2="148" stroke="url(#wa)" stroke-width="1.4" stroke-linecap="round"/>
+  <line x1="100" y1="100" x2="152" y2="150" stroke="url(#wb)" stroke-width="1.4" stroke-linecap="round"/>
 
-  <!-- Bottom-left node -->
-  <circle cx="248" cy="758" r="82" fill="url(#ng3)"/>
-  <radialGradient id="ng3" cx="38%" cy="35%" r="62%" gradientUnits="objectBoundingBox">
-    <stop offset="0%" stop-color="#5B9EFF"/>
-    <stop offset="100%" stop-color="#1B4CD6"/>
-  </radialGradient>
+  <!-- Hub dominante -->
+  <circle cx="100" cy="100" r="32" fill="url(#hub)"/>
 
-  <!-- Bottom-right node -->
-  <circle cx="774" cy="760" r="74" fill="url(#ng4)"/>
-  <radialGradient id="ng4" cx="38%" cy="35%" r="62%" gradientUnits="objectBoundingBox">
-    <stop offset="0%" stop-color="#7AB8FF"/>
-    <stop offset="100%" stop-color="#3B6FEE"/>
-  </radialGradient>
+  <!-- 2 satélites grandes arriba -->
+  <circle cx="52"  cy="52"  r="16" fill="url(#sat)"/>
+  <circle cx="152" cy="56"  r="16" fill="url(#sat)"/>
+
+  <!-- 2 satélites chicos abajo -->
+  <circle cx="48"  cy="148" r="11" fill="url(#sat)"/>
+  <circle cx="152" cy="150" r="11" fill="url(#sat)"/>
 </svg>
