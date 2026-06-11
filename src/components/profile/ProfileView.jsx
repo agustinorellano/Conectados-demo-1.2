@@ -244,19 +244,109 @@ function ImageGuideModal({ type, onClose, onUpload }) {
 /* ── New section constants ─────────────────────────────── */
 const CARD_DARK = { background: 'rgba(20,30,48,0.95)', border: '1px solid rgba(255,255,255,0.07)' };
 
+/* ── Channel icons — custom SVG, 14×14, stroke-based ──── */
+const ChannelIcons = {
+  redes: (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="7" cy="7" r="2.2"/>
+      <circle cx="2.2" cy="2.5" r="1.3"/>
+      <circle cx="11.8" cy="2.5" r="1.3"/>
+      <circle cx="2.2" cy="11.5" r="1.3"/>
+      <circle cx="11.8" cy="11.5" r="1.3"/>
+      <line x1="4.1" y1="3.8" x2="5.3" y2="5.5"/>
+      <line x1="9.9" y1="3.8" x2="8.7" y2="5.5"/>
+      <line x1="4.1" y1="10.2" x2="5.3" y2="8.5"/>
+      <line x1="9.9" y1="10.2" x2="8.7" y2="8.5"/>
+    </svg>
+  ),
+  email: (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1.5" y="3" width="11" height="8" rx="1.5"/>
+      <polyline points="1.5,3.5 7,7.5 12.5,3.5"/>
+    </svg>
+  ),
+  app: (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3.5" y="1" width="7" height="12" rx="1.8"/>
+      <line x1="6.2" y1="11" x2="7.8" y2="11"/>
+    </svg>
+  ),
+  push: (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M7 2C4.8 2 3 3.8 3 6v3l-1 1.5h10L11 9V6c0-2.2-1.8-4-4-4z"/>
+      <line x1="7" y1="2" x2="7" y2="1"/>
+      <path d="M5.8 11.5a1.2 1.2 0 002.4 0"/>
+    </svg>
+  ),
+  whatsapp: (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M7 1.5A5.5 5.5 0 001.5 7c0 1 .27 2 .75 2.8L1.5 12.5l2.8-.72A5.5 5.5 0 107 1.5z"/>
+      <path d="M5 5.5c.2.6.6 1.2 1.1 1.7.5.5 1.1.9 1.7 1.1l.9-.9c.1-.1.3-.1.4 0l1.3.9c.1.1.1.3 0 .4-.4.5-1 .8-1.6.8-1.8 0-3.8-2-3.8-3.8 0-.6.3-1.2.8-1.6.1-.1.3-.1.4 0l.9 1.3c.1.1.1.3 0 .4l-.9.9"/>
+    </svg>
+  ),
+  web: (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="7" cy="7" r="5.5"/>
+      <path d="M7 1.5C5.5 3.5 5.5 10.5 7 12.5M7 1.5C8.5 3.5 8.5 10.5 7 12.5"/>
+      <line x1="1.5" y1="7" x2="12.5" y2="7"/>
+      <path d="M2.5 4.5h9M2.5 9.5h9"/>
+    </svg>
+  ),
+  carteleria: (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1.5" y="1.5" width="11" height="7" rx="1.2"/>
+      <line x1="7" y1="8.5" x2="7" y2="12"/>
+      <line x1="4.5" y1="12" x2="9.5" y2="12"/>
+    </svg>
+  ),
+  pantallas: (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1" y="2" width="12" height="8.5" rx="1.2"/>
+      <line x1="5" y1="12" x2="9" y2="12"/>
+      <line x1="7" y1="10.5" x2="7" y2="12"/>
+      <polyline points="4.5,7 6,5 7.5,6.5 9,4.5"/>
+    </svg>
+  ),
+  eventos: (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1.5" y="3" width="11" height="9.5" rx="1.2"/>
+      <line x1="1.5" y1="6" x2="12.5" y2="6"/>
+      <line x1="4.5" y1="1.5" x2="4.5" y2="4.5"/>
+      <line x1="9.5" y1="1.5" x2="9.5" y2="4.5"/>
+    </svg>
+  ),
+  sampling: (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M7 1.5L8.5 5h3.5l-2.8 2 1 3.5L7 8.5l-3.2 2 1-3.5L2 5h3.5z"/>
+    </svg>
+  ),
+  fidelizacion: (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M7 11.5S2 8.5 2 5.2A2.8 2.8 0 017 3.5 2.8 2.8 0 0112 5.2C12 8.5 7 11.5 7 11.5z"/>
+    </svg>
+  ),
+  beneficios: (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M7 1.5l1.5 3 3.5.5-2.5 2.5.6 3.5L7 9.5l-3.1 1.5.6-3.5L2 5l3.5-.5z"/>
+      <line x1="7" y1="9.5" x2="7" y2="12.5"/>
+      <line x1="4" y1="12.5" x2="10" y2="12.5"/>
+    </svg>
+  ),
+};
+
 const CAPABILITY_OPTIONS = [
-  { id: 'redes',        label: 'Redes Sociales',          icon: '📱' },
-  { id: 'email',        label: 'Email Marketing',          icon: '✉️' },
-  { id: 'app',          label: 'App Propia',               icon: '📲' },
-  { id: 'push',         label: 'Push Notifications',       icon: '🔔' },
-  { id: 'whatsapp',     label: 'WhatsApp',                 icon: '💬' },
-  { id: 'web',          label: 'Sitio Web',                icon: '🌐' },
-  { id: 'carteleria',   label: 'Cartelería en Sucursales', icon: '🪧' },
-  { id: 'pantallas',    label: 'Pantallas Digitales',      icon: '📺' },
-  { id: 'eventos',      label: 'Eventos',                  icon: '🎪' },
-  { id: 'sampling',     label: 'Sampling',                 icon: '🎁' },
-  { id: 'fidelizacion', label: 'Fidelización',             icon: '⭐' },
-  { id: 'beneficios',   label: 'Beneficios Corp.',         icon: '🏆' },
+  { id: 'redes',        label: 'Redes Sociales'         },
+  { id: 'email',        label: 'Email Marketing'         },
+  { id: 'app',          label: 'App Propia'              },
+  { id: 'push',         label: 'Push Notifications'      },
+  { id: 'whatsapp',     label: 'WhatsApp'                },
+  { id: 'web',          label: 'Sitio Web'               },
+  { id: 'carteleria',   label: 'Cartelería en Sucursales'},
+  { id: 'pantallas',    label: 'Pantallas Digitales'     },
+  { id: 'eventos',      label: 'Eventos'                 },
+  { id: 'sampling',     label: 'Sampling'                },
+  { id: 'fidelizacion', label: 'Fidelización'            },
+  { id: 'beneficios',   label: 'Beneficios Corp.'        },
 ];
 
 const STRUCTURE_OPTS  = ['Centralizada', 'Descentralizada', 'Mixta'];
@@ -461,7 +551,7 @@ function CapabilitiesSection({ capabilities, onChange }) {
                 }`}
                 style={active ? { background: 'linear-gradient(135deg, #1871D8, #1459B0)', boxShadow: '0 2px 8px rgba(24,113,216,0.28)' } : {}}
               >
-                <span>{cap.icon}</span>
+                <span className="flex items-center">{ChannelIcons[cap.id]}</span>
                 {cap.label}
               </button>
             );
