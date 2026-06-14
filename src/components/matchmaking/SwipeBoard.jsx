@@ -1,4 +1,4 @@
-import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion';
+import { AnimatePresence, animate, motion, useMotionValue, useTransform } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
 import CompanyDetailModal from './CompanyDetailModal';
 import SwipeHeader from './SwipeHeader';
@@ -486,8 +486,8 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
   const handleDragEnd = (_, info) => {
     if (info.offset.x < -SWIPE_THRESHOLD_X) { handleSkip(); return; }
     if (info.offset.x >  SWIPE_THRESHOLD_X) { handleLike(); return; }
-    x.set(0);
-    y.set(0);
+    animate(x, 0, { type: 'spring', stiffness: 500, damping: 40 });
+    animate(y, 0, { type: 'spring', stiffness: 500, damping: 40 });
   };
 
   /* ── Card width ── */
