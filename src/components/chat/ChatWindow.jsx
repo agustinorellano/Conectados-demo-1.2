@@ -416,6 +416,7 @@ function ChatWindow({
   onQuickAction,
   onScheduleMeeting,
   onSend,
+  onSendAudio,
   proposalDraft,
   onCreateTask,
   onOpenAllianceRoom,
@@ -688,6 +689,7 @@ function ChatWindow({
         onChange={onChangeDraft}
         onQuickAction={onQuickAction}
         onSend={onSend}
+        onSendAudio={onSendAudio}
         value={proposalDraft}
       />
 

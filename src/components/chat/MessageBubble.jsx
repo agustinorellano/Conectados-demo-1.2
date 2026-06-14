@@ -1,4 +1,5 @@
-import { Calendar, CheckSquare, Clock, Eye, Play, ThumbsDown, ThumbsUp } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Calendar, CheckSquare, Clock, Eye, Pause, Play, ThumbsDown, ThumbsUp } from 'lucide-react';
 
 const GRAD_PALETTE = [
   ['#8B5CF6', '#6D28D9'], ['#3B82F6', '#1D4ED8'],
@@ -29,10 +30,8 @@ function Shell({ isOwn, time, status, initials, convId, children }) {
       </div>
     );
   }
-
   return (
     <div className="flex items-end gap-2.5">
-      {/* Other's avatar */}
       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full font-['Space_Grotesk'] text-[11px] font-bold text-white"
         style={{ background: avatarGrad(convId || '') }}>
         {initials || '?'}
@@ -66,33 +65,102 @@ function TextBubble({ message, initials, convId }) {
   );
 }
 
-/* ── Audio ───────────────────────────────────────────────────────── */
+/* ── Audio (real playback) ───────────────────────────────────────── */
+const BARS = [3, 5, 8, 4, 9, 6, 3, 7, 5, 4, 8, 3, 6, 4, 7, 5, 8, 4, 6, 3];
+
 function AudioBubble({ message, initials, convId }) {
-  const isOwn = message.sender === 'me';
-  const bars  = [3, 5, 8, 4, 9, 6, 3, 7, 5, 4, 8, 3, 6, 4];
+  const isOwn  = message.sender === 'me';
+  const audioRef = useRef(null);
+
+  const [playing,  setPlaying]  = useState(false);
+  const [progress, setProgress] = useState(0);   // 0–1
+  const [elapsed,  setElapsed]  = useState('0:00');
+
+  /* Build / revoke object URL only once per message */
+  const srcUrl = message.src || null;
+
+  useEffect(() => {
+    const el = audioRef.current;
+    if (!el || !srcUrl) return;
+
+    const onTimeUpdate = () => {
+      if (!el.duration) return;
+      setProgress(el.currentTime / el.duration);
+      const s = Math.floor(el.currentTime);
+      setElapsed(`${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`);
+    };
+    const onEnded = () => { setPlaying(false); setProgress(0); setElapsed('0:00'); };
+
+    el.addEventListener('timeupdate', onTimeUpdate);
+    el.addEventListener('ended', onEnded);
+    return () => {
+      el.removeEventListener('timeupdate', onTimeUpdate);
+      el.removeEventListener('ended', onEnded);
+    };
+  }, [srcUrl]);
+
+  const togglePlay = () => {
+    const el = audioRef.current;
+    if (!el) return;
+    if (playing) { el.pause(); setPlaying(false); }
+    else         { el.play().catch(() => {}); setPlaying(true); }
+  };
+
+  const handleSeek = (e) => {
+    const el = audioRef.current;
+    if (!el || !el.duration) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    el.currentTime = ratio * el.duration;
+    setProgress(ratio);
+  };
+
+  const bubbleStyle = isOwn ? {
+    background: 'linear-gradient(135deg, #3730A3 0%, #4338CA 100%)',
+    borderRadius: '18px 18px 4px 18px',
+    boxShadow: '0 2px 12px rgba(67,56,202,0.35)',
+  } : {
+    background: 'rgba(255,255,255,0.08)',
+    border: '1px solid rgba(255,255,255,0.09)',
+    borderRadius: '18px 18px 18px 4px',
+  };
+
   return (
     <Shell isOwn={isOwn} time={message.time} status={message.status} initials={initials} convId={convId}>
-      <div className="flex items-center gap-3 px-4 py-3"
-        style={isOwn ? {
-          background: 'linear-gradient(135deg, #3730A3 0%, #4338CA 100%)',
-          borderRadius: '18px 18px 4px 18px',
-          boxShadow: '0 2px 12px rgba(67,56,202,0.35)',
-        } : {
-          background: 'rgba(255,255,255,0.08)',
-          border: '1px solid rgba(255,255,255,0.09)',
-          borderRadius: '18px 18px 18px 4px',
-        }}>
-        <button type="button"
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
-          style={{ background: 'rgba(255,255,255,0.15)' }}>
-          <Play className="h-3.5 w-3.5 fill-current text-white" />
+      {srcUrl && <audio ref={audioRef} src={srcUrl} preload="metadata" />}
+
+      <div className="flex items-center gap-3 px-4 py-3" style={bubbleStyle}>
+        {/* Play/Pause */}
+        <button type="button" onClick={togglePlay}
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition active:scale-90"
+          style={{ background: 'rgba(255,255,255,0.18)' }}>
+          {playing
+            ? <Pause  className="h-3.5 w-3.5 fill-current text-white" />
+            : <Play   className="h-3.5 w-3.5 fill-current text-white" />}
         </button>
-        <div className="flex flex-1 items-end gap-[2px]">
-          {bars.map((h, i) => (
-            <div key={i} className="w-[2px] rounded-full bg-white/30" style={{ height: `${h * 2.2}px` }} />
-          ))}
+
+        {/* Waveform / progress bar */}
+        <div className="flex flex-1 cursor-pointer flex-col gap-1" onClick={handleSeek}>
+          {/* Bars */}
+          <div className="flex items-end gap-[2px]">
+            {BARS.map((h, i) => {
+              const filled = progress > i / BARS.length;
+              return (
+                <div key={i} className="w-[2px] rounded-full transition-colors"
+                  style={{ height: `${h * 2.2}px`, background: filled ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.25)' }} />
+              );
+            })}
+          </div>
+          {/* Thin progress track */}
+          <div className="h-0.5 w-full overflow-hidden rounded-full" style={{ background: 'rgba(255,255,255,0.15)' }}>
+            <div className="h-full rounded-full bg-white/70 transition-all" style={{ width: `${progress * 100}%` }} />
+          </div>
         </div>
-        <span className="shrink-0 text-[11px] text-white/45">{message.duration || '0:12'}</span>
+
+        {/* Time */}
+        <span className="shrink-0 font-['Space_Grotesk'] text-[11px] tabular-nums text-white/50">
+          {playing ? elapsed : (message.duration || '0:00')}
+        </span>
       </div>
     </Shell>
   );
@@ -151,7 +219,7 @@ function MeetingBubble({ message, initials, convId }) {
 const PROPOSAL_STATUS = {
   pendiente:   { label: 'Pendiente',   color: '#F59E0B', bg: 'rgba(245,158,11,0.12)',  border: 'rgba(245,158,11,0.25)',  Icon: Clock      },
   vista:       { label: 'Vista',       color: '#4A9FFF', bg: 'rgba(74,159,255,0.10)',  border: 'rgba(74,159,255,0.22)',  Icon: Eye        },
-  en_revision: { label: 'En revisión', color: '#A78BFA', bg: 'rgba(167,139,250,0.10)',border: 'rgba(167,139,250,0.22)', Icon: Clock      },
+  en_revision: { label: 'En revisión', color: '#A78BFA', bg: 'rgba(167,139,250,0.10)', border: 'rgba(167,139,250,0.22)', Icon: Clock      },
   aceptada:    { label: 'Aceptada',    color: '#10B981', bg: 'rgba(16,185,129,0.12)',  border: 'rgba(16,185,129,0.28)', Icon: ThumbsUp   },
   rechazada:   { label: 'Rechazada',   color: '#EF4444', bg: 'rgba(239,68,68,0.10)',   border: 'rgba(239,68,68,0.22)',  Icon: ThumbsDown },
 };

@@ -145,6 +145,19 @@ function ChatView({
     setProposalDraft('');
   };
 
+  const handleSendAudio = ({ src, duration }) => {
+    if (!activeConversation) return;
+    updateActive(conv => ({
+      ...conv,
+      lastInteraction: 'Ahora',
+      lastMessage: '🎙 Audio',
+      messages: [
+        ...conv.messages,
+        { id: `${conv.id}-audio-${Date.now()}`, sender: 'me', type: 'audio', src, duration, time: 'Ahora' },
+      ],
+    }));
+  };
+
   const handleProposalPreset = () => setProposalDraft(PROPOSAL_TEMPLATE);
 
   /* ── Create team chat ── */
@@ -262,6 +275,7 @@ function ChatView({
               onQuickAction={setProposalDraft}
               onScheduleMeeting={onScheduleMeeting}
               onSend={handleSend}
+              onSendAudio={handleSendAudio}
               proposalDraft={proposalDraft}
               onCreateTask={() => {}}
               onOpenAllianceRoom={onOpenAllianceRoom}
