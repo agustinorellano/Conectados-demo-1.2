@@ -393,9 +393,11 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
   const [savedIds,     setSavedIds]     = useState(() => new Set());
 
   /* ── Drag motion values ── */
-  const x      = useMotionValue(0);
-  const y      = useMotionValue(0);
-  const rotate = useTransform(x, [-240, 240], [-12, 12]);
+  const x        = useMotionValue(0);
+  const y        = useMotionValue(0);
+  const rotate   = useTransform(x, [-240, 240], [-12, 12]);
+  const flyAnimX = useRef(null);
+  const flyAnimY = useRef(null);
 
   /* ── LIKE / NOPE stamp opacity ── */
   const likeOpacity = useTransform(x, [20,  SWIPE_THRESHOLD_X],  [0, 1]);
@@ -429,6 +431,8 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
 
   /* ── Reset drag position when a new card mounts ── */
   useEffect(() => {
+    flyAnimX.current?.stop();
+    flyAnimY.current?.stop();
     x.set(0);
     y.set(0);
   }, [activeIndex]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -485,14 +489,14 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
 
   const handleDragEnd = (_, info) => {
     if (info.offset.x < -SWIPE_THRESHOLD_X) {
-      animate(x, -520, { duration: 0.28, ease: [0.32, 0, 0.67, 0] });
-      animate(y, 20,   { duration: 0.28 });
+      flyAnimX.current = animate(x, -520, { duration: 0.28, ease: [0.32, 0, 0.67, 0] });
+      flyAnimY.current = animate(y, 20,   { duration: 0.28 });
       handleSkip();
       return;
     }
     if (info.offset.x > SWIPE_THRESHOLD_X) {
-      animate(x, 520,  { duration: 0.28, ease: [0.32, 0, 0.67, 0] });
-      animate(y, -20,  { duration: 0.28 });
+      flyAnimX.current = animate(x, 520,  { duration: 0.28, ease: [0.32, 0, 0.67, 0] });
+      flyAnimY.current = animate(y, -20,  { duration: 0.28 });
       handleLike();
       return;
     }
