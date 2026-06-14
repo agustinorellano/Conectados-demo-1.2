@@ -1,21 +1,41 @@
 import { animate, motion, useMotionValue, useTransform } from 'framer-motion';
-import { Archive, Bookmark, Star, VolumeX } from 'lucide-react';
+import { Archive, Bookmark, FileText, Star, VolumeX } from 'lucide-react';
 import { useRef, useState } from 'react';
 
-/* ── Business state config — dark mode ─────────────────────────── */
+/* ── Relationship state ─────────────────────────────────────────── */
 const STATE_CFG = {
-  activo:    { dot: 'bg-emerald-400', badge: 'bg-emerald-400/15 text-emerald-300', label: 'Activo'    },
-  pendiente: { dot: 'bg-amber-400',   badge: 'bg-amber-400/15   text-amber-300',   label: 'Pendiente' },
-  cerrado:   { dot: 'bg-slate-500',   badge: 'bg-white/8         text-white/40',   label: 'Cerrado'   },
-  inactivo:  { dot: 'bg-slate-600',   badge: 'bg-white/5         text-white/30',   label: 'Inactivo'  },
+  activo:      { color: '#10B981', label: 'Activa',          border: 'rgba(16,185,129,0.50)'  },
+  pendiente:   { color: '#F59E0B', label: 'Pendiente',       border: 'rgba(245,158,11,0.50)'  },
+  negociacion: { color: '#4A9FFF', label: 'En negociación',  border: 'rgba(74,159,255,0.50)'  },
+  cerrado:     { color: '#6B7280', label: 'Cerrada',         border: 'rgba(107,114,128,0.40)' },
 };
 
-/* ── Message-type prefix ────────────────────────────────────────── */
-const MSG_PREFIX = { audio: '🎤 ', task: '✅ ', meeting: '📅 ', note: '📝 ' };
+/* ── Last-action label (no emojis) ─────────────────────────────── */
+const ACTION_PREFIX = {
+  audio:    'Audio · ',
+  task:     'Task creada · ',
+  meeting:  'Reunión agendada · ',
+  proposal: 'Propuesta enviada · ',
+  note:     'Nota · ',
+};
+
+/* ── Gradient per company name ──────────────────────────────────── */
+const GRAD = [
+  ['#6D28D9','#8B5CF6'], ['#1D4ED8','#3B82F6'],
+  ['#047857','#10B981'], ['#BE185D','#EC4899'],
+  ['#0E7490','#06B6D4'], ['#4338CA','#6366F1'],
+  ['#B45309','#F59E0B'], ['#0369A1','#0EA5E9'],
+];
+function grad(str = '') {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = str.charCodeAt(i) + ((h << 5) - h);
+  const [a, b] = GRAD[Math.abs(h) % GRAD.length];
+  return `linear-gradient(135deg, ${a} 0%, ${b} 100%)`;
+}
 
 /* ═══════════════════════════════════════════════════════════════════
-   ChatItem — swipe actions + long-press context menu + rich badges
-══════════════════════════════════════════════════════════════════════ */
+   ChatItem
+═══════════════════════════════════════════════════════════════════ */
 function ChatItem({
   conversation,
   isActive,
@@ -26,12 +46,10 @@ function ChatItem({
   isFavorite,
   isPinned,
 }) {
-  /* ── Drag motion values ── */
-  const x            = useMotionValue(0);
-  const pinOpacity   = useTransform(x, [0,   60], [0, 1]);
-  const archOpacity  = useTransform(x, [-60,  0], [1, 0]);
+  const x           = useMotionValue(0);
+  const favOpacity  = useTransform(x, [0, 60],  [0, 1]);
+  const archOpacity = useTransform(x, [-60, 0], [1, 0]);
 
-  /* ── Long-press state ── */
   const timerRef       = useRef(null);
   const pressTriggered = useRef(false);
   const [contextMenu, setContextMenu] = useState(false);
@@ -47,20 +65,17 @@ function ChatItem({
   const initials = logo && /^[A-Z]{1,3}$/.test(logo)
     ? logo
     : company?.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase() || '??';
-  const prefix   = MSG_PREFIX[lastMessageType] || '';
+  const prefix   = ACTION_PREFIX[lastMessageType] || '';
   const msgText  = lastMessage || contact || sector || '';
 
-  /* ── Snap helper ── */
   const snap = () => animate(x, 0, { type: 'spring', stiffness: 500, damping: 40 });
 
-  /* ── Drag end — trigger action then snap back ── */
   const handleDragEnd = (_, info) => {
-    if      (info.offset.x >  75) { onPin?.(conversation.id);     }
-    else if (info.offset.x < -75) { onArchive?.(conversation.id); }
+    if      (info.offset.x >  80) { onFavorite?.(conversation.id); }
+    else if (info.offset.x < -80) { onArchive?.(conversation.id);  }
     snap();
   };
 
-  /* ── Long-press handlers ── */
   const handlePointerDown = () => {
     pressTriggered.current = false;
     timerRef.current = window.setTimeout(() => {
@@ -68,55 +83,50 @@ function ChatItem({
       setContextMenu(true);
     }, 520);
   };
-  const cancelPress = () => { if (timerRef.current) clearTimeout(timerRef.current); };
+  const cancelPress = () => { clearTimeout(timerRef.current); };
   const handleClick = () => {
     if (pressTriggered.current) { pressTriggered.current = false; return; }
     onSelect(conversation.id);
   };
 
-  /* ── Context menu actions ── */
   const ACTIONS = [
-    { Icon: Star,     label: isFavorite ? 'Quitar fav.' : 'Favorito', fn: () => { onFavorite?.(conversation.id); setContextMenu(false); } },
-    { Icon: Bookmark, label: isPinned   ? 'Quitar pin'  : 'Anclar',   fn: () => { onPin?.(conversation.id);      setContextMenu(false); } },
-    { Icon: VolumeX,  label: 'Silenciar',                             fn: () => setContextMenu(false) },
-    { Icon: Archive,  label: 'Archivar',                              fn: () => { onArchive?.(conversation.id);   setContextMenu(false); } },
+    { Icon: Star,     label: isFavorite ? 'Quitar dest.' : 'Destacar',  fn: () => { onFavorite?.(conversation.id); setContextMenu(false); } },
+    { Icon: Bookmark, label: isPinned   ? 'Desanclar'   : 'Anclar',    fn: () => { onPin?.(conversation.id);      setContextMenu(false); } },
+    { Icon: VolumeX,  label: 'Silenciar',                               fn: () => setContextMenu(false) },
+    { Icon: Archive,  label: 'Archivar',                                fn: () => { onArchive?.(conversation.id);  setContextMenu(false); } },
   ];
 
   return (
-    <div className="relative overflow-hidden rounded-2xl">
+    <div className="relative overflow-hidden rounded-[16px]">
 
-      {/* ── Pin hint — revealed on right swipe ── */}
+      {/* Swipe reveal — Destacar */}
       <motion.div
-        className="absolute inset-0 flex items-center rounded-2xl pl-5"
+        className="absolute inset-0 flex items-center rounded-[16px] pl-5"
         style={{
-          background: 'linear-gradient(90deg, #D1FAE5 0%, rgba(209,250,229,0) 80%)',
-          opacity: pinOpacity,
-          pointerEvents: 'none',
-        }}
-      >
-        <Star className="h-5 w-5 text-emerald-500" />
-        <span className="ml-1.5 text-[12px] font-semibold text-emerald-600">Favorito</span>
+          background: 'linear-gradient(90deg, rgba(245,158,11,0.18) 0%, transparent 80%)',
+          opacity: favOpacity, pointerEvents: 'none',
+        }}>
+        <Star className="h-4 w-4 text-amber-400" />
+        <span className="ml-2 text-[12px] font-semibold text-amber-400">Destacar</span>
       </motion.div>
 
-      {/* ── Archive hint — revealed on left swipe ── */}
+      {/* Swipe reveal — Archivar */}
       <motion.div
-        className="absolute inset-0 flex items-center justify-end rounded-2xl pr-5"
+        className="absolute inset-0 flex items-center justify-end rounded-[16px] pr-5"
         style={{
-          background: 'linear-gradient(270deg, #F1F5F9 0%, rgba(241,245,249,0) 80%)',
-          opacity: archOpacity,
-          pointerEvents: 'none',
-        }}
-      >
-        <span className="mr-1.5 text-[12px] font-semibold text-slate-500">Archivar</span>
-        <Archive className="h-5 w-5 text-slate-500" />
+          background: 'linear-gradient(270deg, rgba(107,114,128,0.18) 0%, transparent 80%)',
+          opacity: archOpacity, pointerEvents: 'none',
+        }}>
+        <span className="mr-2 text-[12px] font-semibold text-white/40">Archivar</span>
+        <Archive className="h-4 w-4 text-white/40" />
       </motion.div>
 
-      {/* ── Main draggable card ── */}
+      {/* Main card */}
       <motion.div
         style={{ x }}
         drag="x"
         dragConstraints={{ left: -120, right: 120 }}
-        dragElastic={0.18}
+        dragElastic={0.15}
         dragMomentum={false}
         onDragStart={cancelPress}
         onDragEnd={handleDragEnd}
@@ -124,89 +134,105 @@ function ChatItem({
         onPointerDown={handlePointerDown}
         onPointerUp={cancelPress}
         onPointerLeave={cancelPress}
-        className={`relative w-full cursor-pointer select-none rounded-2xl px-3 py-3.5 transition-colors duration-150 ${
-          isActive ? 'bg-[#1871D8]/12 ring-1 ring-inset ring-[#1871D8]/25' : 'hover:bg-white/5'
-        }${isPinned ? ' border-l-2 border-[#1871D8]/40' : ''}`}
+        className="relative w-full cursor-pointer select-none"
       >
-        <div className="flex items-start gap-3">
+        <div
+          className="flex items-stretch gap-3 rounded-[16px] px-3 py-3.5 transition-colors"
+          style={isActive
+            ? { background: 'rgba(74,159,255,0.10)', border: '1px solid rgba(74,159,255,0.20)' }
+            : { background: 'transparent', border: '1px solid transparent' }}
+        >
+          {/* Left color accent line (relationship state) */}
+          <div className="flex items-stretch">
+            <div className="w-[3px] self-stretch rounded-full"
+              style={{ background: cfg.color, opacity: 0.7 }} />
+          </div>
 
-          {/* Avatar */}
-          <div className="relative shrink-0">
+          {/* Logo — square rounded, CRM style */}
+          <div className="relative shrink-0 self-start mt-0.5">
             <div
-              className="flex h-12 w-12 items-center justify-center rounded-full font-['Space_Grotesk'] text-[13px] font-bold text-white"
-              style={{
-                background: isTeam
-                  ? 'linear-gradient(135deg, #4C1D95, #7C3AED)'
-                  : 'linear-gradient(135deg, #141E30, #35577D)',
-              }}
+              className="flex h-[44px] w-[44px] items-center justify-center rounded-[12px] font-['Space_Grotesk'] text-[13px] font-bold text-white"
+              style={{ background: isTeam ? 'linear-gradient(135deg, #4C1D95, #7C3AED)' : grad(company) }}
             >
               {initials}
             </div>
-
-            {/* Status dot */}
-            {!isTeam && (
-              <span
-                className={`absolute bottom-0.5 right-0.5 h-[11px] w-[11px] rounded-full ring-2 ring-white ${cfg.dot}`}
-              />
-            )}
-
-            {/* Unread badge */}
+            {/* Unread dot */}
             {unread > 0 && (
-              <span className="absolute -right-1 -top-1 flex min-w-[18px] h-[18px] items-center justify-center rounded-full bg-[#1871D8] px-1 text-[9px] font-bold text-white ring-2 ring-white">
+              <span className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#1871D8] px-1 text-[9px] font-bold text-white">
                 {unread}
               </span>
             )}
           </div>
 
           {/* Content */}
-          <div className="min-w-0 flex-1 pt-0.5">
-
+          <div className="min-w-0 flex-1">
             {/* Row 1: name + score + time */}
             <div className="flex items-center justify-between gap-2">
-              <p className={`truncate text-[14px] leading-tight ${
-                isActive ? 'text-[#4A9FFF]' : 'text-white'
-              } ${unread > 0 ? 'font-bold' : 'font-semibold'}`}>
-                {company}
-                {isFavorite && <span className="ml-1 text-amber-400 text-[12px]">★</span>}
-                {isPinned   && <span className="ml-1 text-[10px] text-slate-400">📌</span>}
-              </p>
-              <div className="flex shrink-0 items-center gap-1.5">
+              <div className="flex min-w-0 items-center gap-2">
+                <p className={`truncate font-['Space_Grotesk'] text-[14px] leading-tight ${
+                  isActive ? 'text-[#4A9FFF]' : 'text-white'
+                } ${unread > 0 ? 'font-bold' : 'font-semibold'}`}>
+                  {company}
+                </p>
+                {isFavorite && (
+                  <Star className="h-3 w-3 shrink-0 fill-amber-400 text-amber-400" />
+                )}
+                {isPinned && (
+                  <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider text-white/30">fijado</span>
+                )}
+              </div>
+              <div className="flex shrink-0 items-center gap-2">
                 {score != null && !isTeam && (
-                  <span className="rounded-full bg-[#141E30]/90 px-2 py-0.5 text-[10px] font-bold text-white">
+                  <span className="rounded-[6px] px-1.5 py-0.5 text-[10px] font-bold text-white/70"
+                    style={{ background: 'rgba(255,255,255,0.08)' }}>
                     {score}
                   </span>
                 )}
-                <p className="whitespace-nowrap text-[11px] text-white/40">{lastInteraction}</p>
+                <p className="whitespace-nowrap text-[11px] text-white/30">{lastInteraction}</p>
               </div>
             </div>
 
-            {/* Row 2: last message preview */}
-            <p className={`mt-0.5 line-clamp-1 text-[13px] leading-snug ${
-              unread > 0 ? 'font-medium text-white/70' : 'text-white/40'
+            {/* Row 2: sector · contact */}
+            <p className="mt-0.5 text-[12px] text-white/35">
+              {[sector, contact].filter(Boolean).join(' · ')}
+            </p>
+
+            {/* Row 3: last action/message */}
+            <p className={`mt-0.5 line-clamp-1 text-[12px] leading-snug ${
+              unread > 0 ? 'font-medium text-white/65' : 'text-white/35'
             }`}>
               {prefix}{msgText}
             </p>
 
-            {/* Row 3: status + extra badges */}
-            <div className="mt-1.5 flex flex-wrap items-center gap-1">
+            {/* Row 4: business indicators (no emojis) */}
+            <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+              {/* Relationship state */}
               {!isTeam && businessState && (
-                <span className={`rounded-full px-2 py-[1px] text-[10px] font-semibold capitalize ${cfg.badge}`}>
+                <span className="flex items-center gap-1 rounded-[6px] px-2 py-0.5 text-[10px] font-semibold"
+                  style={{ background: `${cfg.color}14`, color: cfg.color }}>
+                  <span className="h-1.5 w-1.5 rounded-full" style={{ background: cfg.color }} />
                   {cfg.label}
                 </span>
               )}
               {isTeam && (
-                <span className="rounded-full border border-violet-200 bg-violet-50 px-2 py-[1px] text-[10px] font-semibold text-violet-700">
+                <span className="rounded-[6px] px-2 py-0.5 text-[10px] font-semibold text-violet-400"
+                  style={{ background: 'rgba(139,92,246,0.14)' }}>
                   Interno
                 </span>
               )}
+              {/* Task count */}
               {taskCount > 0 && (
-                <span className="rounded-full bg-blue-50 px-2 py-[1px] text-[10px] font-semibold text-blue-600">
-                  ✅ {taskCount}
+                <span className="flex items-center gap-1 rounded-[6px] px-2 py-0.5 text-[10px] font-semibold text-[#4A9FFF]"
+                  style={{ background: 'rgba(74,159,255,0.10)' }}>
+                  {taskCount} {taskCount === 1 ? 'tarea' : 'tareas'}
                 </span>
               )}
+              {/* Proposal count */}
               {proposalCount > 0 && (
-                <span className="rounded-full bg-indigo-50 px-2 py-[1px] text-[10px] font-semibold text-indigo-600">
-                  📄 {proposalCount}
+                <span className="flex items-center gap-1 rounded-[6px] px-2 py-0.5 text-[10px] font-semibold text-[#A78BFA]"
+                  style={{ background: 'rgba(167,139,250,0.10)' }}>
+                  <FileText className="h-2.5 w-2.5" />
+                  {proposalCount} {proposalCount === 1 ? 'propuesta' : 'propuestas'}
                 </span>
               )}
             </div>
@@ -214,26 +240,19 @@ function ChatItem({
         </div>
       </motion.div>
 
-      {/* ── Context menu overlay ── */}
+      {/* Context menu */}
       {contextMenu && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="absolute inset-0 z-50 flex items-center justify-around rounded-2xl px-3"
-          style={{ background: 'rgba(15,23,42,0.93)', backdropFilter: 'blur(4px)' }}
-          onClick={() => setContextMenu(false)}
-        >
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+          className="absolute inset-0 z-50 flex items-center justify-around rounded-[16px] px-3"
+          style={{ background: 'rgba(10,15,30,0.95)', backdropFilter: 'blur(6px)', border: '1px solid rgba(255,255,255,0.10)' }}
+          onClick={() => setContextMenu(false)}>
           {ACTIONS.map(({ Icon, label, fn }) => (
-            <button
-              key={label}
-              onClick={(e) => { e.stopPropagation(); fn(); }}
-              type="button"
-              className="flex flex-col items-center gap-1.5"
-            >
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 transition hover:bg-white/20">
-                <Icon className="h-4 w-4 text-white" />
+            <button key={label} onClick={(e) => { e.stopPropagation(); fn(); }} type="button"
+              className="flex flex-col items-center gap-1.5">
+              <div className="flex h-10 w-10 items-center justify-center rounded-[12px] bg-white/8 transition hover:bg-white/15">
+                <Icon className="h-4 w-4 text-white/70" />
               </div>
-              <span className="text-[10px] text-white/70">{label}</span>
+              <span className="text-[10px] font-medium text-white/50">{label}</span>
             </button>
           ))}
         </motion.div>
