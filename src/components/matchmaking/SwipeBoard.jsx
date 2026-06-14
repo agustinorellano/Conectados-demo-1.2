@@ -484,8 +484,18 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
   };
 
   const handleDragEnd = (_, info) => {
-    if (info.offset.x < -SWIPE_THRESHOLD_X) { handleSkip(); return; }
-    if (info.offset.x >  SWIPE_THRESHOLD_X) { handleLike(); return; }
+    if (info.offset.x < -SWIPE_THRESHOLD_X) {
+      animate(x, -520, { duration: 0.28, ease: [0.32, 0, 0.67, 0] });
+      animate(y, 20,   { duration: 0.28 });
+      handleSkip();
+      return;
+    }
+    if (info.offset.x > SWIPE_THRESHOLD_X) {
+      animate(x, 520,  { duration: 0.28, ease: [0.32, 0, 0.67, 0] });
+      animate(y, -20,  { duration: 0.28 });
+      handleLike();
+      return;
+    }
     animate(x, 0, { type: 'spring', stiffness: 500, damping: 40 });
     animate(y, 0, { type: 'spring', stiffness: 500, damping: 40 });
   };

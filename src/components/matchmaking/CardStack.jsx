@@ -48,13 +48,7 @@ function CardStack({
             dragMomentum={false}
             initial={{ opacity: 0, scale: 0.97 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{
-              opacity: 0,
-              x: exitState.x,
-              y: exitState.y,
-              rotate: exitState.x > 0 ? 12 : -12,
-              transition: { duration: 0.22, ease: [0.32, 0, 0.67, 0] },
-            }}
+            exit={{ opacity: 0, transition: { duration: 0.15 } }}
             transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
             onDragEnd={onDragEnd}
           >
