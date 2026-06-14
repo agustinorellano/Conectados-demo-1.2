@@ -1,5 +1,6 @@
 import { AnimatePresence, animate, motion, useMotionValue, useTransform } from 'framer-motion';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { SlidersHorizontal, Star, X, Zap } from 'lucide-react';
 import CompanyDetailModal from './CompanyDetailModal';
 import SwipeHeader from './SwipeHeader';
 import CardStack from './CardStack';
