@@ -1,5 +1,5 @@
 import {
-  Bot, Calendar, ChevronLeft, Send, Share2, TrendingUp, Video, X,
+  Bot, Calendar, ChevronLeft, FileText, Share2, Sparkles, TrendingUp, Video, X, Zap,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
@@ -25,15 +25,28 @@ function twoWeeksFromNow() {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-/* ── IA suggestion copy ──────────────────────────────────────────── */
-function getIaSuggestion(conv) {
+/* ── IA suggestion ───────────────────────────────────────────────── */
+function getIaData(conv) {
   const score = conv.score ?? 75;
-  const state = conv.businessState;
-  if (state === 'activo')
-    return `${conv.company} tiene ${score}% de compatibilidad. Es buen momento para proponer una reunión y avanzar en los detalles de la alianza.`;
-  if (state === 'pendiente')
-    return `Esta alianza está en pausa. Un mensaje de seguimiento puede reactivarla — llevás ${conv.lastInteraction?.toLowerCase() || 'días'} sin respuesta.`;
-  return `${conv.company} alcanza ${score}/100 en match. Proponé una acción concreta para dar el próximo paso.`;
+  const name  = conv.company || 'Esta empresa';
+  if (score >= 85) return {
+    score,
+    reason:  `Ambas empresas buscan acciones conjuntas en ${conv.sector?.toLowerCase() || 'el mercado'}.`,
+    rec:     'Coordiná una reunión comercial para avanzar en los detalles.',
+    step:    'Proponé una fecha concreta esta semana.',
+  };
+  if (score >= 70) return {
+    score,
+    reason:  `${name} complementa tu oferta en audiencia y distribución.`,
+    rec:     'Enviá una propuesta inicial para evaluar el fit.`,',
+    step:    'Iniciá con una propuesta de canje o colaboración.',
+  };
+  return {
+    score,
+    reason:  `Hay puntos de contacto en sector y objetivos comerciales.`,
+    rec:     'Un primer mensaje puede abrir la conversación.',
+    step:    'Presentate y contá brevemente tu propuesta de valor.',
+  };
 }
 
 /* ── Meeting Modal ───────────────────────────────────────────────── */
@@ -55,82 +68,82 @@ function MeetingModal({ conversation, onClose, onConfirm }) {
     onClose();
   };
 
+  const fieldStyle = {
+    background: 'rgba(255,255,255,0.06)',
+    border: '1px solid rgba(255,255,255,0.10)',
+    color: 'white',
+  };
+
   return (
     <AnimatePresence>
       <motion.div
-        animate={{ opacity: 1 }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
-        exit={{ opacity: 0 }}
-        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }} initial={{ opacity: 0 }} exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 flex items-end justify-center bg-black/55 backdrop-blur-sm"
         onClick={onClose}
       >
         <motion.div
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          className="relative mx-4 w-full max-w-sm overflow-hidden rounded-[28px] bg-white shadow-2xl"
-          exit={{ opacity: 0, scale: 0.95, y: 8 }}
-          initial={{ opacity: 0, scale: 0.95, y: 8 }}
+          animate={{ y: 0 }} initial={{ y: 40 }} exit={{ y: 40 }}
+          transition={{ type: 'spring', damping: 28, stiffness: 320 }}
+          className="relative w-full max-w-lg overflow-hidden rounded-t-[28px]"
+          style={{ background: '#0F1828', border: '1px solid rgba(255,255,255,0.08)' }}
           onClick={e => e.stopPropagation()}
-          transition={{ duration: 0.22, ease: [0.34, 1.1, 0.64, 1] }}
         >
-          <div className="flex items-center justify-between border-b border-slate-100 px-6 py-5">
+          <div className="flex justify-center pt-3 pb-2">
+            <div className="h-1 w-10 rounded-full bg-white/20" />
+          </div>
+
+          <div className="flex items-center justify-between border-b px-6 py-4" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#1871D8]">Agenda</p>
-              <h3 className="mt-1 font-['Space_Grotesk'] text-lg font-bold tracking-tight text-[#1A1A1A]">
-                Agendar Reunión
-              </h3>
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#4A9FFF]">Agenda</p>
+              <h3 className="mt-0.5 font-['Space_Grotesk'] text-[18px] font-bold text-white">Agendar Reunión</h3>
             </div>
-            <button
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-slate-200"
-              onClick={onClose}
-              type="button"
-            >
+            <button onClick={onClose} type="button"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white/50 transition hover:bg-white/15">
               <X className="h-4 w-4" />
             </button>
           </div>
 
-          <div className="flex items-center gap-3 border-b border-slate-100 bg-slate-50 px-6 py-4">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-gradient-to-br from-[#141E30] to-[#35577D] font-['Space_Grotesk'] text-xs font-bold text-white shadow-sm">
+          <div className="flex items-center gap-3 px-6 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+            <div
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] font-['Space_Grotesk'] text-xs font-bold text-white"
+              style={{ background: 'linear-gradient(135deg, #141E30, #35577D)' }}
+            >
               {initials}
             </div>
             <div>
-              <p className="text-sm font-semibold text-[#1A1A1A]">{conversation.company}</p>
-              <p className="text-xs text-slate-400">{conversation.sector}</p>
+              <p className="text-[14px] font-bold text-white">{conversation.company}</p>
+              <p className="text-[12px] text-white/35">{conversation.sector}</p>
             </div>
           </div>
 
-          <form className="space-y-4 px-6 py-5" onSubmit={handleSubmit}>
+          <form className="space-y-4 px-6 py-5" onSubmit={handleSubmit}
+            style={{ paddingBottom: 'max(20px, env(safe-area-inset-bottom))' }}>
             <div>
-              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Fecha</label>
-              <input
-                className="w-full rounded-[14px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-[#1A1A1A] outline-none transition focus:border-[#1871D8] focus:ring-2 focus:ring-[#1871D8]/15"
-                min={todayIso()} onChange={e => setDate(e.target.value)} required type="date" value={date}
-              />
+              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.18em] text-white/35">Fecha</label>
+              <input className="w-full rounded-[14px] px-4 py-3 text-[14px] outline-none"
+                style={fieldStyle} min={todayIso()} onChange={e => setDate(e.target.value)}
+                required type="date" value={date} />
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Inicio</label>
-                <input
-                  className="w-full rounded-[14px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-[#1A1A1A] outline-none transition focus:border-[#1871D8] focus:ring-2 focus:ring-[#1871D8]/15"
-                  onChange={e => setTime(e.target.value)} required type="time" value={time}
-                />
-              </div>
-              <div>
-                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Fin</label>
-                <input
-                  className="w-full rounded-[14px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-[#1A1A1A] outline-none transition focus:border-[#1871D8] focus:ring-2 focus:ring-[#1871D8]/15"
-                  onChange={e => setEndTime(e.target.value)} required type="time" value={endTime}
-                />
-              </div>
+              {[['Inicio', time, setTime], ['Fin', endTime, setEndTime]].map(([lbl, val, set]) => (
+                <div key={lbl}>
+                  <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.18em] text-white/35">{lbl}</label>
+                  <input className="w-full rounded-[14px] px-4 py-3 text-[14px] outline-none"
+                    style={fieldStyle} onChange={e => set(e.target.value)} required type="time" value={val} />
+                </div>
+              ))}
             </div>
             <div className="flex gap-3 pt-1">
-              <button
-                className="flex-1 rounded-[16px] border border-slate-200 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
-                onClick={onClose} type="button"
-              >Cancelar</button>
-              <button
-                className="flex-1 rounded-[16px] bg-[#141E30] py-3 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#1A2C45] hover:shadow-md"
-                type="submit"
-              >Confirmar</button>
+              <button onClick={onClose} type="button"
+                className="flex-1 rounded-[16px] py-3 text-[14px] font-semibold text-white/50 transition"
+                style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                Cancelar
+              </button>
+              <button type="submit"
+                className="flex-1 rounded-[16px] py-3 text-[14px] font-bold text-white transition hover:brightness-110"
+                style={{ background: 'linear-gradient(135deg, #1871D8, #1459B0)', boxShadow: '0 4px 14px rgba(24,113,216,0.35)' }}>
+                Confirmar
+              </button>
             </div>
           </form>
         </motion.div>
@@ -142,327 +155,256 @@ function MeetingModal({ conversation, onClose, onConfirm }) {
 /* ── Task Modal ──────────────────────────────────────────────────── */
 function TaskModal({ conversation, onClose, onConfirm }) {
   const company = conversation?.company || '';
-  const [title,       setTitle]       = useState(`Seguimiento propuesta con ${company}`);
-  const [description, setDescription] = useState('');
-  const [priority,    setPriority]    = useState('alta');
-  const [dueDate,     setDueDate]     = useState(twoWeeksFromNow());
-  const [assignee,    setAssignee]    = useState('Agustín Rosales');
-  const [alianza,     setAlianza]     = useState(company);
+  const [title,    setTitle]    = useState(`Seguimiento propuesta con ${company}`);
+  const [desc,     setDesc]     = useState('');
+  const [priority, setPriority] = useState('alta');
+  const [dueDate,  setDueDate]  = useState(twoWeeksFromNow());
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!title.trim()) return;
-    onConfirm({ title: title.trim(), description, priority, dueDate, assignee, alianza, partner: company, source: 'chat' });
+    onConfirm({ title: title.trim(), description: desc, priority, dueDate, partner: company, source: 'chat' });
   };
 
-  const priorityOptions = [
-    { value: 'alta',  label: 'Alta',  active: 'bg-red-100 text-red-700 border-red-200',      inactive: 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50' },
-    { value: 'media', label: 'Media', active: 'bg-amber-100 text-amber-700 border-amber-200', inactive: 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50' },
-    { value: 'baja',  label: 'Baja',  active: 'bg-slate-100 text-slate-600 border-slate-200', inactive: 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50' },
+  const fieldStyle = { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', color: 'white' };
+
+  const priorityOpts = [
+    { v: 'alta',  l: 'Alta',  activeStyle: { background: 'rgba(239,68,68,0.18)', border: '1px solid rgba(239,68,68,0.35)', color: '#FCA5A5' } },
+    { v: 'media', l: 'Media', activeStyle: { background: 'rgba(245,158,11,0.18)', border: '1px solid rgba(245,158,11,0.35)', color: '#FCD34D' } },
+    { v: 'baja',  l: 'Baja',  activeStyle: { background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: 'white' } },
   ];
 
   return (
     <motion.div
-      animate={{ opacity: 1 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
-      exit={{ opacity: 0 }}
-      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }} initial={{ opacity: 0 }} exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/55 backdrop-blur-sm"
       onClick={onClose}
     >
       <motion.div
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="relative mx-4 w-full max-w-sm overflow-hidden rounded-[28px] bg-white shadow-2xl"
-        exit={{ opacity: 0, scale: 0.95, y: 8 }}
-        initial={{ opacity: 0, scale: 0.95, y: 8 }}
+        animate={{ y: 0 }} initial={{ y: 40 }} exit={{ y: 40 }}
+        transition={{ type: 'spring', damping: 28, stiffness: 320 }}
+        className="relative w-full max-w-lg overflow-hidden rounded-t-[28px]"
+        style={{ background: '#0F1828', border: '1px solid rgba(255,255,255,0.08)', maxHeight: '88dvh' }}
         onClick={e => e.stopPropagation()}
-        transition={{ duration: 0.22, ease: [0.34, 1.1, 0.64, 1] }}
       >
-        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-5">
+        <div className="flex justify-center pt-3 pb-2">
+          <div className="h-1 w-10 rounded-full bg-white/20" />
+        </div>
+        <div className="flex items-center justify-between px-6 pb-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#1871D8]">Workplace</p>
-            <h3 className="mt-1 font-['Space_Grotesk'] text-lg font-bold tracking-tight text-[#1A1A1A]">Crear Task</h3>
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#4A9FFF]">Workplace</p>
+            <h3 className="mt-0.5 font-['Space_Grotesk'] text-[18px] font-bold text-white">Crear Task</h3>
           </div>
-          <button
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-slate-200"
-            onClick={onClose} type="button"
-          >
+          <button onClick={onClose} type="button"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white/50 transition hover:bg-white/15">
             <X className="h-4 w-4" />
           </button>
         </div>
-        <form className="max-h-[70vh] space-y-4 overflow-y-auto px-6 py-5" onSubmit={handleSubmit}>
+
+        <form onSubmit={handleSubmit} className="overflow-y-auto space-y-4 px-6 py-5"
+          style={{ maxHeight: '70vh', paddingBottom: 'max(20px, env(safe-area-inset-bottom))' }}>
           <div>
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Título</label>
-            <input
-              className="w-full rounded-[14px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-[#1A1A1A] outline-none transition focus:border-[#1871D8] focus:ring-2 focus:ring-[#1871D8]/15"
-              onChange={e => setTitle(e.target.value)} required value={title}
-            />
+            <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.18em] text-white/35">Título</label>
+            <input className="w-full rounded-[14px] px-4 py-3 text-[14px] outline-none"
+              style={fieldStyle} onChange={e => setTitle(e.target.value)} required value={title} />
           </div>
           <div>
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Descripción</label>
-            <textarea
-              className="w-full resize-none rounded-[14px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-[#1A1A1A] outline-none transition focus:border-[#1871D8] focus:ring-2 focus:ring-[#1871D8]/15"
-              onChange={e => setDescription(e.target.value)}
-              placeholder="Revisión conjunta y próximos pasos…"
-              rows={3} value={description}
-            />
+            <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.18em] text-white/35">Descripción</label>
+            <textarea className="w-full resize-none rounded-[14px] px-4 py-3 text-[14px] outline-none placeholder:text-white/20"
+              style={fieldStyle} onChange={e => setDesc(e.target.value)}
+              placeholder="Próximos pasos y detalles…" rows={3} value={desc} />
           </div>
           <div>
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Asignar a</label>
-            <select
-              className="w-full rounded-[14px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-[#1A1A1A] outline-none transition focus:border-[#1871D8] focus:ring-2 focus:ring-[#1871D8]/15"
-              onChange={e => setAssignee(e.target.value)} value={assignee}
-            >
-              <option value="Agustín Rosales">Agustín Rosales</option>
-              <option value="Equipo Ventas">Equipo Ventas</option>
-              <option value="Equipo Marketing">Equipo Marketing</option>
-              {company && <option value={company}>{company}</option>}
-            </select>
-          </div>
-          <div>
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Prioridad</label>
+            <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.18em] text-white/35">Prioridad</label>
             <div className="flex gap-2">
-              {priorityOptions.map(opt => (
-                <button
-                  key={opt.value} onClick={() => setPriority(opt.value)} type="button"
-                  className={`flex-1 rounded-[10px] border py-2 text-[12px] font-semibold transition-all ${
-                    priority === opt.value ? opt.active : opt.inactive
-                  }`}
-                >
-                  {opt.label}
+              {priorityOpts.map(o => (
+                <button key={o.v} onClick={() => setPriority(o.v)} type="button"
+                  className="flex-1 rounded-[12px] py-2.5 text-[13px] font-bold transition-all"
+                  style={priority === o.v ? o.activeStyle : { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.35)' }}>
+                  {o.l}
                 </button>
               ))}
             </div>
           </div>
           <div>
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Fecha límite</label>
-            <input
-              className="w-full rounded-[14px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-[#1A1A1A] outline-none transition focus:border-[#1871D8] focus:ring-2 focus:ring-[#1871D8]/15"
-              onChange={e => setDueDate(e.target.value)} type="date" value={dueDate}
-            />
+            <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.18em] text-white/35">Fecha límite</label>
+            <input className="w-full rounded-[14px] px-4 py-3 text-[14px] outline-none"
+              style={fieldStyle} onChange={e => setDueDate(e.target.value)} type="date" value={dueDate} />
           </div>
-          <div>
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Alianza relacionada</label>
-            <select
-              className="w-full rounded-[14px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-[#1A1A1A] outline-none transition focus:border-[#1871D8] focus:ring-2 focus:ring-[#1871D8]/15"
-              onChange={e => setAlianza(e.target.value)} value={alianza}
-            >
-              {company && <option value={company}>{company}</option>}
-              <option value="Sin alianza específica">Sin alianza específica</option>
-            </select>
-          </div>
-          <button
-            className="w-full rounded-[16px] bg-[#141E30] py-3.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#1A2C45] hover:shadow-md"
-            type="submit"
-          >Crear Task</button>
+          <button type="submit"
+            className="w-full rounded-[16px] py-3.5 text-[14px] font-bold text-white transition hover:brightness-110"
+            style={{ background: 'linear-gradient(135deg, #1871D8, #1459B0)', boxShadow: '0 4px 16px rgba(24,113,216,0.35)' }}>
+            Crear Task
+          </button>
         </form>
       </motion.div>
     </motion.div>
   );
 }
 
-/* ── Score label ─────────────────────────────────────────────────── */
-function scoreLabel(score) {
-  if (score >= 85) return { text: 'Alto potencial',  cls: 'text-emerald-600' };
-  if (score >= 70) return { text: 'Buen potencial',  cls: 'text-emerald-500' };
-  return                  { text: 'Potencial medio', cls: 'text-slate-500'   };
-}
+/* ── Context Panel ───────────────────────────────────────────────── */
+const BIZ_STATES = ['activo', 'pendiente', 'cerrado'];
+const BIZ_STYLE  = {
+  activo:    { bg: 'rgba(16,185,129,0.15)', border: 'rgba(16,185,129,0.28)', color: '#10B981' },
+  pendiente: { bg: 'rgba(245,158,11,0.15)', border: 'rgba(245,158,11,0.28)', color: '#F59E0B' },
+  cerrado:   { bg: 'rgba(255,255,255,0.07)', border: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.45)' },
+};
 
-/* ── Context Panel content ───────────────────────────────────────── */
-const BUSINESS_STATES = ['activo', 'pendiente', 'cerrado'];
-
-function ContextPanelContent({ conversation, onCreateTask, onOpenAllianceRoom, onConvertToOpportunity }) {
-  const [bizState,      setBizState]      = useState(conversation?.businessState || 'pendiente');
-  const [tags,          setTags]          = useState(conversation?.tags || ['Alianza estratégica']);
-  const [newTag,        setNewTag]        = useState('');
-  const [showTaskModal, setShowTaskModal] = useState(false);
-  const [taskCreated,   setTaskCreated]   = useState(false);
-  const [converted,     setConverted]     = useState(false);
+function ContextPanel({ conversation, onCreateTask, onOpenAllianceRoom, onConvertToOpportunity, onClose }) {
+  const [bizState,    setBizState]    = useState(conversation?.businessState || 'pendiente');
+  const [tags,        setTags]        = useState(conversation?.tags || ['Alianza estratégica']);
+  const [newTag,      setNewTag]      = useState('');
+  const [taskModal,   setTaskModal]   = useState(false);
+  const [taskDone,    setTaskDone]    = useState(false);
+  const [converted,   setConverted]   = useState(false);
 
   useEffect(() => {
     setBizState(conversation?.businessState || 'pendiente');
     setTags(conversation?.tags || ['Alianza estratégica']);
-    setTaskCreated(false);
+    setTaskDone(false);
     setConverted(false);
   }, [conversation?.id]);
 
-  const score   = conversation?.score ?? 78;
+  const score  = conversation?.score ?? 78;
   const contact = conversation?.contact || conversation?.sector || '';
-  const sl      = scoreLabel(score);
 
   const scoreColor =
-    score >= 85 ? 'text-emerald-600 bg-emerald-50 border-emerald-200'
-    : score >= 70 ? 'text-blue-600 bg-blue-50 border-blue-200'
-    : 'text-slate-600 bg-slate-100 border-slate-200';
+    score >= 85 ? { color: '#10B981', bg: 'rgba(16,185,129,0.12)', border: 'rgba(16,185,129,0.25)' }
+    : score >= 70 ? { color: '#4A9FFF', bg: 'rgba(74,159,255,0.10)', border: 'rgba(74,159,255,0.22)' }
+    : { color: 'rgba(255,255,255,0.45)', bg: 'rgba(255,255,255,0.06)', border: 'rgba(255,255,255,0.10)' };
 
-  const bizStateStyle = {
-    activo:    'bg-emerald-50 text-emerald-700',
-    pendiente: 'bg-amber-50 text-amber-700',
-    cerrado:   'bg-slate-100 text-slate-600',
-  };
-
-  const handleConvert = () => {
-    setConverted(true);
-    setBizState('activo');
-    onConvertToOpportunity?.();
-  };
+  const fieldStyle = { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', color: 'white' };
+  const divider = { borderTop: '1px solid rgba(255,255,255,0.06)' };
 
   return (
     <div className="flex flex-col">
-      <div className="border-b border-slate-100 px-5 py-4">
-        <p className="font-['Space_Grotesk'] text-[15px] font-bold text-[#1A1A1A]">Contexto del negocio</p>
+      <div className="px-5 py-4" style={divider}>
+        <p className="font-['Space_Grotesk'] text-[15px] font-bold text-white">Contexto del negocio</p>
       </div>
 
       {/* Match info */}
-      <div className="space-y-3 border-b border-slate-100 p-5">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">Info del Match</p>
+      <div className="space-y-3 px-5 py-4" style={divider}>
+        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/30">Info del Match</p>
         <div className="flex items-center justify-between">
           <div className="min-w-0 flex-1">
-            <p className="truncate text-[13px] font-semibold text-[#1A1A1A]">{conversation?.company}</p>
-            <p className="truncate text-[12px] text-slate-400">{contact}</p>
+            <p className="text-[14px] font-bold text-white">{conversation?.company}</p>
+            <p className="text-[12px] text-white/35">{contact}</p>
           </div>
           {score != null && !conversation?.isTeam && (
-            <span className={`ml-3 shrink-0 rounded-full border px-2.5 py-1 text-[11px] font-bold ${scoreColor}`}>
+            <span className="ml-3 shrink-0 rounded-full px-3 py-1 text-[12px] font-bold"
+              style={{ background: scoreColor.bg, border: `1px solid ${scoreColor.border}`, color: scoreColor.color }}>
               {score}/100
             </span>
           )}
         </div>
         {!conversation?.isTeam && (
-          <p className="text-[12px] leading-relaxed text-slate-500">
-            Coincidimos por complementariedad de servicios y audiencia.
-          </p>
-        )}
-        {!conversation?.isTeam && (
-          <div className="space-y-1.5 rounded-[12px] border border-slate-100 bg-white p-3">
-            <div className="flex items-center justify-between text-[12px]">
-              <span className="text-slate-400">Tipo</span>
-              <span className="font-semibold text-[#1A1A1A]">Alianza comercial</span>
-            </div>
-            <div className="flex items-center justify-between text-[12px]">
-              <span className="text-slate-400">Sector</span>
-              <span className="ml-2 truncate text-right font-semibold text-[#1A1A1A]">{conversation?.sector}</span>
-            </div>
-            <div className="flex items-center justify-between text-[12px]">
-              <span className="text-slate-400">Ciudad</span>
-              <span className="font-semibold text-[#1A1A1A]">{conversation?.location || 'Argentina'}</span>
-            </div>
+          <div className="rounded-[14px] px-4 py-3 space-y-2" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
+            {[['Tipo', 'Alianza comercial'], ['Sector', conversation?.sector], ['Ciudad', conversation?.location || 'Argentina']].map(([k, v]) => (
+              <div key={k} className="flex items-center justify-between text-[12px]">
+                <span className="text-white/30">{k}</span>
+                <span className="font-semibold text-white/80">{v}</span>
+              </div>
+            ))}
           </div>
         )}
       </div>
 
-      {/* Score de Oportunidad */}
+      {/* Score bar */}
       {!conversation?.isTeam && (
-        <div className="space-y-2 border-b border-slate-100 p-5">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">Score de Oportunidad</p>
+        <div className="space-y-2 px-5 py-4" style={divider}>
           <div className="flex items-center justify-between">
-            <span className="text-[14px] font-bold text-[#1A1A1A]">{score} / 100</span>
-            <span className={`text-[12px] font-semibold ${sl.cls}`}>{sl.text}</span>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/30">Score de Oportunidad</p>
+            <span className="text-[13px] font-bold" style={{ color: scoreColor.color }}>{score}/100</span>
           </div>
-          <div className="h-1.5 w-full rounded-full bg-slate-100">
-            <div
-              className="h-1.5 rounded-full bg-emerald-400 transition-all duration-500"
-              style={{ width: `${score}%` }}
-            />
+          <div className="h-1.5 w-full overflow-hidden rounded-full" style={{ background: 'rgba(255,255,255,0.08)' }}>
+            <motion.div className="h-1.5 rounded-full"
+              style={{ background: `linear-gradient(90deg, ${scoreColor.color}88, ${scoreColor.color})` }}
+              initial={{ width: 0 }} animate={{ width: `${score}%` }}
+              transition={{ duration: 0.8, ease: [0.34, 1.1, 0.64, 1] }} />
           </div>
         </div>
       )}
 
-      {/* Business State */}
+      {/* Business state */}
       {!conversation?.isTeam && (
-        <div className="space-y-2 border-b border-slate-100 p-5">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">Estado del negocio</p>
-          <div className="flex gap-1.5">
-            {BUSINESS_STATES.map(state => (
-              <button
-                key={state} onClick={() => setBizState(state)} type="button"
-                className={`flex-1 rounded-[10px] px-2 py-2 text-[12px] font-semibold capitalize transition-all ${
-                  bizState === state
-                    ? (bizStateStyle[state] || 'bg-slate-100 text-slate-600') + ' shadow-sm ring-1 ring-inset ring-black/5'
-                    : 'border border-slate-200 bg-white text-slate-500 hover:bg-slate-50'
-                }`}
-              >
-                {state.charAt(0).toUpperCase() + state.slice(1)}
-              </button>
-            ))}
+        <div className="space-y-2 px-5 py-4" style={divider}>
+          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/30">Estado del negocio</p>
+          <div className="flex gap-2">
+            {BIZ_STATES.map(s => {
+              const st = BIZ_STYLE[s];
+              const active = bizState === s;
+              return (
+                <button key={s} onClick={() => setBizState(s)} type="button"
+                  className="flex-1 rounded-[12px] py-2.5 text-[12px] font-bold capitalize transition-all"
+                  style={active
+                    ? { background: st.bg, border: `1px solid ${st.border}`, color: st.color }
+                    : { background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.35)' }
+                  }>
+                  {s.charAt(0).toUpperCase() + s.slice(1)}
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
 
       {/* Tags */}
-      <div className="space-y-2 border-b border-slate-100 p-5">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">Tags</p>
+      <div className="space-y-2 px-5 py-4" style={divider}>
+        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/30">Tags</p>
         <div className="flex flex-wrap gap-1.5">
           {tags.map(tag => (
-            <span key={tag} className="group flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[12px] font-medium text-slate-600">
+            <span key={tag} className="group flex items-center gap-1 rounded-full px-2.5 py-1 text-[12px] font-medium text-white/60"
+              style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.10)' }}>
               {tag}
-              <button
-                onClick={() => setTags(t => t.filter(x => x !== tag))}
-                type="button"
-                className="leading-none text-slate-400 opacity-0 transition-opacity hover:text-red-500 group-hover:opacity-100"
-              >×</button>
+              <button onClick={() => setTags(t => t.filter(x => x !== tag))} type="button"
+                className="leading-none text-white/25 opacity-0 transition-opacity group-hover:opacity-100 hover:!text-red-400">×</button>
             </span>
           ))}
         </div>
-        <form
-          onSubmit={e => {
-            e.preventDefault();
-            const t = newTag.trim();
-            if (t && !tags.includes(t)) setTags(prev => [...prev, t]);
-            setNewTag('');
-          }}
-          className="flex gap-1.5"
-        >
-          <input
-            value={newTag} onChange={e => setNewTag(e.target.value)} placeholder="+ Agregar tag"
-            className="flex-1 rounded-[10px] border border-slate-200 bg-white px-3 py-1.5 text-[12px] outline-none focus:border-[#1871D8]/40 focus:ring-1 focus:ring-[#1871D8]/15"
-          />
-          <button type="submit" className="rounded-[10px] bg-slate-100 px-3 py-1.5 text-[12px] font-semibold text-slate-600 transition hover:bg-slate-200">
+        <form onSubmit={e => { e.preventDefault(); const t = newTag.trim(); if (t && !tags.includes(t)) setTags(p => [...p, t]); setNewTag(''); }}
+          className="flex gap-1.5">
+          <input value={newTag} onChange={e => setNewTag(e.target.value)} placeholder="+ Agregar tag"
+            className="flex-1 rounded-[10px] px-3 py-1.5 text-[12px] outline-none placeholder:text-white/20"
+            style={fieldStyle} />
+          <button type="submit"
+            className="rounded-[10px] px-3 py-1.5 text-[12px] font-bold text-white/60 transition hover:text-white/80"
+            style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.08)' }}>
             OK
           </button>
         </form>
       </div>
 
-      {/* Acciones rápidas */}
-      <div className="space-y-2 p-5">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">Acciones rápidas</p>
+      {/* Quick actions */}
+      <div className="space-y-2 px-5 py-4 pb-8" style={divider}>
+        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/30">Acciones rápidas</p>
         <div className="space-y-2">
           {!conversation?.isTeam && (
-            <button
-              onClick={handleConvert} disabled={converted} type="button"
-              className={`flex w-full items-center gap-2.5 rounded-[12px] border px-4 py-3 text-left text-[13px] font-semibold transition-all ${
-                converted
-                  ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
-                  : 'border-[#141E30]/20 bg-[#141E30]/5 text-[#141E30] hover:bg-[#141E30]/10'
-              }`}
-            >
-              <TrendingUp className="h-3.5 w-3.5 shrink-0" />
+            <button onClick={() => { setConverted(true); setBizState('activo'); onConvertToOpportunity?.(); }}
+              disabled={converted} type="button"
+              className="flex w-full items-center gap-3 rounded-[14px] px-4 py-3 text-left text-[13px] font-bold text-white/80 transition"
+              style={converted
+                ? { background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.25)', color: '#10B981' }
+                : { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.09)' }}>
+              <TrendingUp className="h-4 w-4 shrink-0" />
               {converted ? 'Alianza activa ✓' : 'Convertir en oportunidad'}
             </button>
           )}
-
           {[
-            { label: 'Marcar oportunidad',  onClick: () => setBizState('activo'),   icon: '⚡' },
-            { label: 'Cerrar negocio',       onClick: () => setBizState('cerrado'),  icon: '✓' },
-            { label: 'Agendar seguimiento',  onClick: () => {},                     icon: '📅' },
-            { label: 'Crear Task',           onClick: () => setShowTaskModal(true), icon: '＋', highlight: true },
-          ].map(action => (
-            <button
-              key={action.label} onClick={action.onClick} type="button"
-              className={`flex w-full items-center gap-2.5 rounded-[12px] border px-4 py-3 text-left text-[13px] font-semibold transition-all ${
-                action.highlight
-                  ? 'border-[#141E30]/20 bg-[#141E30]/5 text-[#141E30] hover:bg-[#141E30]/10'
-                  : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50'
-              }`}
-            >
-              <span className="text-base">{action.icon}</span>
-              {action.label}
+            { label: 'Crear Task',           onClick: () => setTaskModal(true), icon: '＋' },
+            { label: 'Marcar oportunidad',   onClick: () => setBizState('activo'), icon: '⚡' },
+            { label: 'Cerrar negocio',       onClick: () => setBizState('cerrado'), icon: '✓' },
+          ].map(a => (
+            <button key={a.label} onClick={a.onClick} type="button"
+              className="flex w-full items-center gap-3 rounded-[14px] px-4 py-3 text-left text-[13px] font-semibold text-white/65 transition hover:text-white/85"
+              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <span className="text-base text-white/40">{a.icon}</span>
+              {a.label}
             </button>
           ))}
-
           {onOpenAllianceRoom && !conversation?.isTeam && (
-            <button
-              onClick={onOpenAllianceRoom} type="button"
-              className="flex w-full items-center gap-2.5 rounded-[12px] border border-violet-200 bg-violet-50 px-4 py-3 text-left text-[13px] font-semibold text-violet-700 transition-all hover:bg-violet-100"
-            >
+            <button onClick={onOpenAllianceRoom} type="button"
+              className="flex w-full items-center gap-3 rounded-[14px] px-4 py-3 text-left text-[13px] font-bold transition hover:brightness-110"
+              style={{ background: 'rgba(139,92,246,0.14)', border: '1px solid rgba(139,92,246,0.28)', color: '#C4B5FD' }}>
               <Video className="h-4 w-4 shrink-0" />
               Alliance Room
             </button>
@@ -470,31 +412,25 @@ function ContextPanelContent({ conversation, onCreateTask, onOpenAllianceRoom, o
         </div>
       </div>
 
-      {/* Task created flash */}
       <AnimatePresence>
-        {taskCreated && (
-          <motion.div
-            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            className="mx-5 mb-5 rounded-[12px] border border-emerald-200 bg-emerald-50 px-4 py-3"
-          >
-            <p className="text-[12px] font-semibold text-emerald-700">✓ Task creada y sincronizada con Workplace</p>
+        {taskDone && (
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+            className="mx-5 mb-5 rounded-[12px] px-4 py-3"
+            style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.25)' }}>
+            <p className="text-[12px] font-bold text-emerald-400">✓ Task creada y sincronizada con Workplace</p>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Task Modal */}
       <AnimatePresence>
-        {showTaskModal && (
-          <TaskModal
-            conversation={conversation}
-            onClose={() => setShowTaskModal(false)}
+        {taskModal && (
+          <TaskModal conversation={conversation} onClose={() => setTaskModal(false)}
             onConfirm={task => {
               onCreateTask?.(task);
-              setShowTaskModal(false);
-              setTaskCreated(true);
-              setTimeout(() => setTaskCreated(false), 4000);
-            }}
-          />
+              setTaskModal(false);
+              setTaskDone(true);
+              setTimeout(() => setTaskDone(false), 4000);
+            }} />
         )}
       </AnimatePresence>
     </div>
@@ -503,10 +439,7 @@ function ContextPanelContent({ conversation, onCreateTask, onOpenAllianceRoom, o
 
 /* ═══════════════════════════════════════════════════════════════════
    ChatWindow
-   — Clicking avatar/name opens context panel
-   — Alliance Room uses Video icon (no emoji)
-   — IA suggestion block at top of messages (dismissible)
-══════════════════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════════════ */
 function ChatWindow({
   conversation,
   onBack,
@@ -524,198 +457,235 @@ function ChatWindow({
   const [showMeetingModal, setShowMeetingModal] = useState(false);
   const [meetingScheduled, setMeetingScheduled] = useState(false);
   const [contextOpen,      setContextOpen]      = useState(false);
-  const [showIaBlock,      setShowIaBlock]      = useState(true);
+  const [showIaCard,       setShowIaCard]       = useState(true);
   const [showInviteModal,  setShowInviteModal]  = useState(false);
   const messagesEndRef = useRef(null);
 
-  /* Reset IA block when conversation changes */
   useEffect(() => {
-    setShowIaBlock(true);
+    setShowIaCard(true);
     setMeetingScheduled(false);
   }, [conversation.id]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [conversation.messages]);
 
   const handleMeetingConfirm = meeting => {
     onScheduleMeeting?.(meeting);
     setMeetingScheduled(true);
-    setTimeout(() => setMeetingScheduled(false), 3000);
+    setTimeout(() => setMeetingScheduled(false), 3500);
   };
 
   const initials = getInitials(conversation.logo, conversation.company);
   const contact  = conversation.contact || conversation.sector || '';
+  const iaData   = getIaData(conversation);
 
-  const showIaSuggestion =
-    showIaBlock && !conversation.isTeam && conversation.score != null;
-
-  /* Quick action pills */
-  const quickPills = [
-    { key: 'meeting',  icon: Calendar, label: 'Reunión',   onClick: () => setShowMeetingModal(true) },
-    { key: 'proposal', icon: Send,     label: 'Propuesta', onClick: onProposalPreset               },
-    { key: 'share',    icon: Share2,   label: 'Compartir', onClick: null                           },
-  ];
+  const showIaSuggestion = showIaCard && !conversation.isTeam && conversation.score != null;
 
   return (
-    <div className="relative flex h-full min-w-0 flex-col overflow-hidden">
-
+    <div
+      className="relative flex h-full min-w-0 flex-col overflow-hidden"
+      style={{ background: '#080D1C' }}
+    >
       {/* ══ HEADER ══════════════════════════════════════════════════ */}
-      <header className="flex h-[60px] shrink-0 items-center gap-2 border-b border-slate-100 px-3">
-
-        {/* Back */}
-        <button
-          type="button"
-          onClick={onBack}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 active:scale-95"
-        >
+      <header
+        className="flex h-[64px] shrink-0 items-center gap-3 px-3"
+        style={{ borderBottom: '1px solid rgba(255,255,255,0.07)', background: 'rgba(8,13,28,0.97)' }}
+      >
+        <button type="button" onClick={onBack}
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white/45 transition hover:bg-white/8 active:scale-95">
           <ChevronLeft className="h-5 w-5" />
         </button>
 
-        {/* Avatar + name — clicking opens context panel */}
-        <button
-          type="button"
-          onClick={() => setContextOpen(true)}
-          className="flex min-w-0 flex-1 items-center gap-2.5 rounded-xl px-1 py-1 text-left transition hover:bg-slate-50 active:scale-[0.99]"
-        >
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#141E30] to-[#35577D] font-['Space_Grotesk'] text-[11px] font-bold text-white shadow-sm">
+        <button type="button" onClick={() => setContextOpen(true)}
+          className="flex min-w-0 flex-1 items-center gap-3 rounded-2xl px-2 py-1.5 text-left transition hover:bg-white/5 active:scale-[0.99]">
+          <div
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-['Space_Grotesk'] text-[12px] font-bold text-white shadow-md"
+            style={{ background: 'linear-gradient(135deg, #1A2A4A, #2A4070)' }}
+          >
             {initials}
           </div>
           <div className="min-w-0">
-            <h2 className="truncate font-['Space_Grotesk'] text-[15px] font-bold leading-tight tracking-tight text-[#1A1A1A]">
-              {conversation.company}
-            </h2>
-            <p className="truncate text-[11px] leading-none text-slate-400">
+            <div className="flex items-center gap-2">
+              <h2 className="truncate font-['Space_Grotesk'] text-[15px] font-bold leading-tight text-white">
+                {conversation.company}
+              </h2>
+              {!conversation.isTeam && (
+                <span className="shrink-0 h-1.5 w-1.5 rounded-full bg-emerald-400" />
+              )}
+            </div>
+            <p className="truncate text-[11px] leading-none text-white/30 mt-0.5">
               {[contact, conversation.location].filter(Boolean).join(' · ')}
             </p>
           </div>
         </button>
 
-        {/* Alliance Room icon button (header) */}
         {onOpenAllianceRoom && !conversation.isTeam && (
-          <button
-            type="button"
-            onClick={onOpenAllianceRoom}
-            title="Alliance Room"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-violet-200 bg-violet-50 text-violet-700 transition hover:bg-violet-100 active:scale-95"
-          >
+          <button type="button" onClick={onOpenAllianceRoom} title="Alliance Room"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition hover:bg-white/8 active:scale-95"
+            style={{ border: '1px solid rgba(139,92,246,0.35)', color: '#A78BFA' }}>
             <Video className="h-4 w-4" />
           </button>
         )}
       </header>
 
-      {/* ══ QUICK ACTION PILLS ══════════════════════════════════════ */}
-      <div className="flex shrink-0 gap-2 overflow-x-auto border-b border-slate-100 px-4 py-2.5 [scrollbar-width:none]">
-        {quickPills.map(pill => {
-          const Icon = pill.icon;
-          return (
-            <button
-              key={pill.key}
-              onClick={pill.onClick || undefined}
-              type="button"
-              className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3.5 text-[12px] font-semibold text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:border-[#1871D8]/30 hover:text-[#1871D8] hover:shadow-md"
-            >
-              <Icon className="h-3.5 w-3.5" />
-              {pill.label}
-            </button>
-          );
-        })}
-      </div>
+      {/* ══ QUICK ACTION CARDS ══════════════════════════════════════ */}
+      {!conversation.isTeam && (
+        <div
+          className="flex shrink-0 gap-3 px-4 py-3"
+          style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+        >
+          {/* Reunión */}
+          <button type="button" onClick={() => setShowMeetingModal(true)}
+            className="flex flex-1 items-center gap-3 rounded-[18px] px-4 py-3.5 text-left transition hover:brightness-110 active:scale-[0.98]"
+            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[12px]"
+              style={{ background: 'rgba(74,159,255,0.15)' }}>
+              <Calendar className="h-4 w-4 text-[#4A9FFF]" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[13px] font-bold text-white">Reunión</p>
+              <p className="text-[11px] text-white/35 truncate">Agendar o ver reuniones</p>
+            </div>
+          </button>
 
-      {/* ══ FLASH — meeting scheduled ═══════════════════════════════ */}
+          {/* Compartir */}
+          <button type="button"
+            className="flex flex-1 items-center gap-3 rounded-[18px] px-4 py-3.5 text-left transition hover:brightness-110 active:scale-[0.98]"
+            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[12px]"
+              style={{ background: 'rgba(139,92,246,0.15)' }}>
+              <Share2 className="h-4 w-4 text-[#A78BFA]" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[13px] font-bold text-white">Compartir</p>
+              <p className="text-[11px] text-white/35 truncate">Perfil u oportunidad</p>
+            </div>
+          </button>
+        </div>
+      )}
+
+      {/* ══ MEETING SCHEDULED FLASH ═════════════════════════════════ */}
       <AnimatePresence>
         {meetingScheduled && (
-          <motion.div
-            key="meeting-confirm"
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            initial={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2 }}
-            className="shrink-0 border-b border-blue-100 bg-blue-50 px-5 py-2.5 text-sm font-semibold text-blue-700"
-          >
-            Reunión agendada. Aparece en el Calendario del Dashboard.
+          <motion.div key="flash"
+            initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+            className="shrink-0 px-5 py-2.5 text-[13px] font-semibold text-emerald-400"
+            style={{ background: 'rgba(16,185,129,0.10)', borderBottom: '1px solid rgba(16,185,129,0.18)' }}>
+            ✓ Reunión agendada — aparece en tu Calendario
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* ══ MESSAGES ════════════════════════════════════════════════ */}
-      <div
-        className="flex-1 space-y-4 overflow-y-auto bg-[linear-gradient(180deg,rgba(248,249,250,0.35),rgba(255,255,255,0.65))] px-5 py-5 scroll-smooth"
-        style={{ overscrollBehavior: 'contain' }}
-      >
-        {/* ── Empty team state — shown inside the group chat ── */}
+      <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4 [scrollbar-width:none]"
+        style={{ overscrollBehavior: 'contain' }}>
+
+        {/* Empty team state */}
         {conversation.isTeam && conversation.isEmpty && (
-          <div
-            className="rounded-[20px] p-5"
-            style={{
-              background: 'linear-gradient(135deg, rgba(24,113,216,0.10) 0%, rgba(20,30,48,0.95) 100%)',
-              border: '1px solid rgba(24,113,216,0.18)',
-            }}
-          >
+          <div className="rounded-[20px] p-5"
+            style={{ background: 'linear-gradient(135deg, rgba(24,113,216,0.10) 0%, rgba(20,30,48,0.95) 100%)', border: '1px solid rgba(24,113,216,0.18)' }}>
             <div className="mb-3 flex items-center gap-3">
-              <div
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px]"
-                style={{ background: 'rgba(24,113,216,0.15)' }}
-              >
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px]" style={{ background: 'rgba(24,113,216,0.15)' }}>
                 <span className="text-[18px]">👥</span>
               </div>
               <div>
                 <p className="text-[14px] font-bold text-white">Tu equipo está vacío</p>
-                <p className="text-[12px] text-white/45">Invitá a colaboradores</p>
+                <p className="text-[12px] text-white/35">Invitá a colaboradores</p>
               </div>
             </div>
-            <p className="mb-4 text-[12px] leading-relaxed text-white/40">
-              Incorporá a los miembros de tu empresa para gestionar alianzas,
-              coordinar tareas y trabajar juntos desde Data Plus.
+            <p className="mb-4 text-[12px] leading-relaxed text-white/35">
+              Incorporá a los miembros de tu empresa para gestionar alianzas, coordinar tareas y trabajar juntos desde Conectados.
             </p>
-            <button
-              type="button"
-              onClick={() => setShowInviteModal(true)}
-              className="flex w-full items-center justify-center gap-2 rounded-[14px] py-3 text-[14px] font-semibold text-white transition hover:brightness-110"
-              style={{ background: 'linear-gradient(135deg, #1871D8, #1459B0)', boxShadow: '0 4px 14px rgba(24,113,216,0.30)' }}
-            >
+            <button type="button" onClick={() => setShowInviteModal(true)}
+              className="flex w-full items-center justify-center gap-2 rounded-[14px] py-3 text-[14px] font-bold text-white transition hover:brightness-110"
+              style={{ background: 'linear-gradient(135deg, #1871D8, #1459B0)', boxShadow: '0 4px 14px rgba(24,113,216,0.30)' }}>
               <span className="text-[16px]">+</span>
               Invitar Integrantes
             </button>
           </div>
         )}
 
-        {/* IA suggestion block */}
+        {/* IA Compatibility Card */}
         <AnimatePresence>
           {showIaSuggestion && (
-            <motion.div
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
-              className="rounded-[14px] border border-blue-100 px-4 py-3"
+            <motion.div key="ia"
+              initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.22 }}
+              className="overflow-hidden rounded-[20px]"
               style={{
-                background: 'linear-gradient(135deg, rgba(239,246,255,0.9) 0%, rgba(238,242,255,0.8) 100%)',
+                background: 'linear-gradient(135deg, rgba(24,59,130,0.55) 0%, rgba(14,30,70,0.80) 100%)',
+                border: '1px solid rgba(74,159,255,0.22)',
+                boxShadow: '0 8px 32px rgba(24,113,216,0.15)',
               }}
             >
-              <div className="flex items-start gap-2.5">
-                <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#1871D8]">
-                  <Bot className="h-3.5 w-3.5 text-white" />
+              {/* Header */}
+              <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: '1px solid rgba(74,159,255,0.12)' }}>
+                <div className="flex items-center gap-2">
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full" style={{ background: 'rgba(74,159,255,0.20)' }}>
+                    <Sparkles className="h-3.5 w-3.5 text-[#4A9FFF]" />
+                  </div>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#4A9FFF]">Análisis IA</span>
                 </div>
-                <div className="min-w-0 flex-1">
-                  <p className="mb-0.5 text-[10px] font-bold uppercase tracking-wider text-[#1871D8]">
-                    Sugerencia IA
-                  </p>
-                  <p className="text-[13px] leading-relaxed text-slate-600">
-                    {getIaSuggestion(conversation)}
-                  </p>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1.5 rounded-full px-3 py-1"
+                    style={{ background: 'rgba(16,185,129,0.18)', border: '1px solid rgba(16,185,129,0.30)' }}>
+                    <span className="text-[14px] font-black text-emerald-400">{iaData.score}%</span>
+                    <span className="text-[10px] font-semibold text-emerald-400/70">match</span>
+                  </div>
+                  <button type="button" onClick={() => setShowIaCard(false)}
+                    className="text-white/25 transition hover:text-white/50">
+                    <X className="h-4 w-4" />
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setShowIaBlock(false)}
-                  className="shrink-0 text-slate-300 transition hover:text-slate-500"
-                >
-                  <X className="h-4 w-4" />
+              </div>
+
+              {/* Body */}
+              <div className="px-4 pt-3 pb-1">
+                <p className="text-[12px] leading-relaxed text-white/55">{iaData.reason}</p>
+                <p className="mt-2 text-[13px] font-semibold leading-relaxed text-white/85">{iaData.rec}</p>
+                <div className="mt-2 flex items-start gap-2">
+                  <Zap className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#4A9FFF]/60" />
+                  <p className="text-[11px] text-white/40">{iaData.step}</p>
+                </div>
+              </div>
+
+              {/* CTAs */}
+              <div className="flex gap-2 px-4 py-3">
+                <button type="button" onClick={() => setShowMeetingModal(true)}
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-[12px] py-2.5 text-[12px] font-bold text-white transition hover:brightness-110"
+                  style={{ background: 'rgba(74,159,255,0.20)', border: '1px solid rgba(74,159,255,0.28)' }}>
+                  <Calendar className="h-3 w-3" />
+                  Crear reunión
+                </button>
+                <button type="button" onClick={onProposalPreset}
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-[12px] py-2.5 text-[12px] font-bold text-white transition hover:brightness-110"
+                  style={{ background: 'rgba(139,92,246,0.20)', border: '1px solid rgba(139,92,246,0.28)' }}>
+                  <FileText className="h-3 w-3" />
+                  Propuesta
+                </button>
+                <button type="button"
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-[12px] py-2.5 text-[12px] font-bold text-white transition hover:brightness-110"
+                  style={{ background: 'rgba(16,185,129,0.18)', border: '1px solid rgba(16,185,129,0.28)' }}>
+                  <Bot className="h-3 w-3" />
+                  Guardar
                 </button>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Message list */}
-        {conversation.messages.map(message => (
-          <MessageBubble key={message.id} message={message} />
+        {/* Date separator */}
+        {conversation.messages.length > 0 && (
+          <div className="flex items-center gap-3 py-1">
+            <div className="h-px flex-1" style={{ background: 'rgba(255,255,255,0.06)' }} />
+            <span className="text-[10px] font-semibold text-white/25">Hoy</span>
+            <div className="h-px flex-1" style={{ background: 'rgba(255,255,255,0.06)' }} />
+          </div>
+        )}
+
+        {conversation.messages.map(msg => (
+          <MessageBubble key={msg.id} message={msg} />
         ))}
         <div ref={messagesEndRef} />
       </div>
@@ -725,7 +695,6 @@ function ChatWindow({
         onChange={onChangeDraft}
         onQuickAction={onQuickAction}
         onSend={onSend}
-        quickActions={['Propuesta comercial', 'Alianza estratégica', 'Intercambio de clientes']}
         value={proposalDraft}
       />
 
@@ -734,36 +703,30 @@ function ChatWindow({
         {contextOpen && (
           <>
             <motion.div
-              animate={{ opacity: 1 }}
-              className="absolute inset-0 z-20 bg-black/25"
-              exit={{ opacity: 0 }}
-              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }} initial={{ opacity: 0 }} exit={{ opacity: 0 }}
+              className="absolute inset-0 z-20 bg-black/50 backdrop-blur-[2px]"
               onClick={() => setContextOpen(false)}
             />
             <motion.div
-              animate={{ y: 0 }}
-              className="absolute inset-x-0 bottom-0 z-30 flex max-h-[88%] flex-col overflow-hidden rounded-t-[24px] bg-white shadow-2xl"
-              exit={{ y: '100%' }}
-              initial={{ y: '100%' }}
+              animate={{ y: 0 }} initial={{ y: '100%' }} exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 28, stiffness: 320 }}
+              className="absolute inset-x-0 bottom-0 z-30 flex max-h-[88%] flex-col overflow-hidden rounded-t-[24px]"
+              style={{ background: '#0F1828', border: '1px solid rgba(255,255,255,0.08)' }}
             >
-              {/* Drag handle + close */}
               <div className="relative flex shrink-0 items-center justify-center pb-2 pt-3">
-                <div className="h-1 w-10 rounded-full bg-slate-300" />
-                <button
-                  type="button"
-                  onClick={() => setContextOpen(false)}
-                  className="absolute right-4 flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-slate-200"
-                >
+                <div className="h-1 w-10 rounded-full bg-white/20" />
+                <button type="button" onClick={() => setContextOpen(false)}
+                  className="absolute right-4 flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-white/40 transition hover:bg-white/15">
                   <X className="h-3.5 w-3.5" />
                 </button>
               </div>
-              <div className="overflow-y-auto">
-                <ContextPanelContent
+              <div className="overflow-y-auto [scrollbar-width:none]">
+                <ContextPanel
                   conversation={conversation}
                   onCreateTask={onCreateTask}
                   onOpenAllianceRoom={onOpenAllianceRoom}
                   onConvertToOpportunity={onConvertToOpportunity}
+                  onClose={() => setContextOpen(false)}
                 />
               </div>
             </motion.div>
@@ -780,16 +743,12 @@ function ChatWindow({
         />
       )}
 
-      {/* ══ INVITE TEAM MODAL (from empty team state) ════════════════ */}
+      {/* ══ INVITE MODAL ════════════════════════════════════════════ */}
       <AnimatePresence>
         {showInviteModal && (
-          <InviteModal
-            key="invite-from-window"
+          <InviteModal key="invite-from-window"
             onClose={() => setShowInviteModal(false)}
-            onInvited={() => {
-              setShowInviteModal(false);
-              onTeamInvite?.();   // marca el equipo como no-vacío en ChatView
-            }}
+            onInvited={() => { setShowInviteModal(false); onTeamInvite?.(); }}
           />
         )}
       </AnimatePresence>

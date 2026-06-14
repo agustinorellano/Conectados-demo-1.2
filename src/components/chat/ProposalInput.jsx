@@ -1,17 +1,25 @@
 import { useState } from 'react';
-import { ArrowUp, Paperclip } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ArrowUp, FileText, Image, Paperclip, Presentation, X } from 'lucide-react';
 
-const quickActionMap = {
-  'Propuesta comercial':
-    'Tengo una propuesta comercial para colaborar entre nuestras empresas y generar una activacion con impacto medible.',
-  'Alianza estratégica':
-    'Tengo una propuesta para construir una alianza estrategica entre nuestras empresas y explorar valor compartido.',
-  'Intercambio de clientes':
-    'Veo una oportunidad para intercambiar audiencias y clientes de forma alineada a nuestros objetivos comerciales.'
-};
+const ATTACH_OPTIONS = [
+  { key: 'pdf',      label: 'PDF',            icon: FileText,     color: '#EF4444' },
+  { key: 'image',    label: 'Imagen',          icon: Image,        color: '#3B82F6' },
+  { key: 'doc',      label: 'Presentación',    icon: Presentation, color: '#F59E0B' },
+  { key: 'proposal', label: 'Propuesta',       icon: FileText,     color: '#8B5CF6' },
+];
 
-function ProposalInput({ onChange, onQuickAction, onSend, quickActions, value }) {
-  const [inputValue, setInputValue] = useState(value || '');
+const QUICK_ACTIONS = [
+  { key: 'propuesta',  label: 'Enviar propuesta',    text: 'Quería compartirte una propuesta comercial para que evaluemos una colaboración entre nuestras empresas.' },
+  { key: 'tarea',      label: 'Crear tarea',          text: '' },
+  { key: 'reunion',    label: 'Agendar reunión',      text: 'Me gustaría agendar una reunión para avanzar en los detalles de la alianza.' },
+  { key: 'documento',  label: 'Compartir documento',  text: '' },
+  { key: 'alianza',    label: 'Crear alianza',        text: 'Veo una oportunidad concreta de alianza entre nuestras empresas. ¿Podemos avanzar?' },
+];
+
+function ProposalInput({ onChange, onQuickAction, onSend, value }) {
+  const [inputValue,   setInputValue]   = useState(value || '');
+  const [showAttach,   setShowAttach]   = useState(false);
 
   const handleSend = () => {
     if (!inputValue.trim()) return;
@@ -32,59 +40,119 @@ function ProposalInput({ onChange, onQuickAction, onSend, quickActions, value })
     onChange?.(e.target.value);
   };
 
-  const handleQuickAction = (action) => {
-    const text = quickActionMap[action] || action;
-    setInputValue(text);
-    onChange?.(text);
-    onQuickAction?.(text);
+  const handleQuick = (action) => {
+    if (action.text) {
+      setInputValue(action.text);
+      onChange?.(action.text);
+      onQuickAction?.(action.text);
+    }
   };
 
+  const hasText = inputValue.trim().length > 0;
+
   return (
-    <div className="shrink-0 border-t border-slate-100 bg-white px-4 pt-2 pb-3">
-      {/* Quick chips */}
-      {quickActions?.length > 0 && (
-        <div className="flex gap-2 overflow-x-auto pb-2 [scrollbar-width:none]">
-          {quickActions.map((action) => (
-            <button
-              className="shrink-0 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] font-medium text-slate-500 transition hover:border-[#1871D8]/25 hover:bg-blue-50 hover:text-[#1871D8]"
-              key={action}
-              onClick={() => handleQuickAction(action)}
-              type="button"
-            >
-              {action}
-            </button>
-          ))}
+    <div
+      className="shrink-0 px-4 pt-2 pb-4"
+      style={{ borderTop: '1px solid rgba(255,255,255,0.07)', background: 'rgba(10,15,30,0.97)' }}
+    >
+      {/* Contextual action chips */}
+      <div className="flex gap-2 overflow-x-auto pb-2.5 [scrollbar-width:none]">
+        {QUICK_ACTIONS.map((action) => (
+          <button
+            key={action.key}
+            onClick={() => handleQuick(action)}
+            type="button"
+            className="shrink-0 rounded-full px-3.5 py-1.5 text-[11px] font-semibold text-white/50 transition hover:text-white/80"
+            style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.10)' }}
+          >
+            {action.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Input row */}
+      <div className="relative flex items-center gap-2">
+        {/* Attach */}
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setShowAttach(p => !p)}
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition"
+            style={{
+              background: showAttach ? 'rgba(74,159,255,0.18)' : 'rgba(255,255,255,0.07)',
+              border: '1px solid rgba(255,255,255,0.10)',
+            }}
+          >
+            {showAttach
+              ? <X className="h-4 w-4 text-[#4A9FFF]" />
+              : <Paperclip className="h-4 w-4 text-white/40" />}
+          </button>
+
+          <AnimatePresence>
+            {showAttach && (
+              <motion.div
+                initial={{ opacity: 0, y: 8, scale: 0.92 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 8, scale: 0.92 }}
+                transition={{ duration: 0.15 }}
+                className="absolute bottom-12 left-0 z-20 overflow-hidden rounded-[16px] py-1.5"
+                style={{
+                  background: 'rgba(18,26,54,0.98)',
+                  border: '1px solid rgba(255,255,255,0.10)',
+                  boxShadow: '0 16px 48px rgba(0,0,0,0.55)',
+                  width: '168px',
+                }}
+              >
+                {ATTACH_OPTIONS.map(({ key, label, icon: Icon, color }) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => setShowAttach(false)}
+                    className="flex w-full items-center gap-3 px-4 py-2.5 text-left transition hover:bg-white/5"
+                  >
+                    <div
+                      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[8px]"
+                      style={{ background: `${color}20` }}
+                    >
+                      <Icon className="h-3.5 w-3.5" style={{ color }} />
+                    </div>
+                    <span className="text-[13px] font-medium text-white/75">{label}</span>
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-      )}
 
-      {/* Input row — pill shape */}
-      <div className="flex items-center gap-2">
-        <button
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-slate-400 transition hover:text-slate-600"
-          type="button"
-        >
-          <Paperclip className="h-4 w-4" />
-        </button>
-
+        {/* Text field */}
         <input
-          className="h-14 flex-1 rounded-[28px] border border-slate-200 bg-slate-50 px-5 text-[14px] text-[#1A1A1A] outline-none transition placeholder:text-slate-400 focus:border-[#1871D8]/30 focus:bg-white focus:ring-2 focus:ring-[#1871D8]/10"
+          className="h-11 flex-1 rounded-[22px] px-5 text-[14px] text-white/90 outline-none placeholder:text-white/25"
+          style={{
+            background: 'rgba(255,255,255,0.07)',
+            border: '1px solid rgba(255,255,255,0.10)',
+          }}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           placeholder="Escribe un mensaje..."
           value={inputValue}
         />
 
-        <button
-          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition hover:-translate-y-0.5 ${
-            inputValue.trim()
-              ? 'bg-[#141E30] text-white shadow-sm hover:bg-[#1A2C45] hover:shadow-md'
-              : 'bg-slate-100 text-slate-400 cursor-default'
-          }`}
-          onClick={handleSend}
+        {/* Send */}
+        <motion.button
           type="button"
+          onClick={handleSend}
+          whileTap={hasText ? { scale: 0.88 } : {}}
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition"
+          style={hasText ? {
+            background: 'linear-gradient(135deg, #1871D8, #1459B0)',
+            boxShadow: '0 4px 14px rgba(24,113,216,0.40)',
+          } : {
+            background: 'rgba(255,255,255,0.07)',
+            border: '1px solid rgba(255,255,255,0.10)',
+          }}
         >
-          <ArrowUp className="h-4 w-4" />
-        </button>
+          <ArrowUp className={`h-4 w-4 ${hasText ? 'text-white' : 'text-white/25'}`} />
+        </motion.button>
       </div>
     </div>
   );
