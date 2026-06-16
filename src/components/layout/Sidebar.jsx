@@ -24,7 +24,7 @@ function Sidebar({ activeView, onNavigate }) {
           DP
         </div>
         <div>
-          <h2 className="font-semibold tracking-tight">Data Plus</h2>
+          <h2 className="font-semibold tracking-tight">Conectados</h2>
           <p className="text-sm text-emerald-100/80">Cliente dashboard</p>
         </div>
       </div>

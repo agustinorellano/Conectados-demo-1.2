@@ -17,7 +17,7 @@ const clientSections = [
   {
     id: 'chats',
     label: 'Chats',
-    description: 'Conversaciones entre empresas y entre equipos, sin salir de Data Plus.'
+    description: 'Conversaciones entre empresas y entre equipos, sin salir de Conectados.'
   },
   {
     id: 'assistant',
@@ -37,7 +37,7 @@ function ClientView({ onNavigate }) {
       <section className="section-header">
         <div>
           <p className="eyebrow">Vista cliente</p>
-          <h2>Todo Data Plus sintetizado en seis puntos claros.</h2>
+          <h2>Todo Conectados sintetizado en seis puntos claros.</h2>
         </div>
       </section>
 
@@ -89,7 +89,7 @@ function ClientView({ onNavigate }) {
           <h3>Objetivo de esta vista</h3>
           <p>
             Reducir complejidad visual, mejorar comprension comercial y mostrar
-            rapido el valor de Data Plus.
+            rapido el valor de Conectados.
           </p>
         </article>
       </section>

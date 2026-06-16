@@ -27,7 +27,7 @@ function ManualView() {
           <h3>Soporte</h3>
           <p>
             El producto privilegia conversacion, propuestas y seguimiento dentro
-            de Data Plus para evitar fuga de usuarios.
+            de Conectados para evitar fuga de usuarios.
           </p>
         </article>
       </section>

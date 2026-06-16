@@ -21,7 +21,7 @@ const steps = [
   },
   {
     num: '03',
-    text: 'Centralizamos tareas, chats y seguimiento dentro de Data Plus.'
+    text: 'Centralizamos tareas, chats y seguimiento dentro de Conectados.'
   }
 ];
 

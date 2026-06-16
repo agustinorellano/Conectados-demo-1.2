@@ -79,12 +79,12 @@ const HELP_SECTIONS = [
   },
   {
     id: 'support',
-    label: 'Soporte Data Plus',
+    label: 'Soporte Conectados',
     icon: LifeBuoy,
     intro: 'Respuestas rápidas para dudas operativas y comerciales.',
     items: [
       { title: 'Asesor IA', detail: 'Pedí ayuda para redactar propuestas, priorizar aliados y ordenar ejecución.', hasAICta: true },
-      { title: 'Equipo Data Plus', detail: 'Escalamos bloqueos funcionales o comerciales dentro del producto.' },
+      { title: 'Equipo Conectados', detail: 'Escalamos bloqueos funcionales o comerciales dentro del producto.' },
       { title: 'Centro de ayuda', detail: 'Documentación viva con casos de uso, mejores prácticas y novedades del producto.' },
     ],
   },
@@ -614,7 +614,7 @@ function LegalSection() {
           >
             DP
           </div>
-          <span className="text-[11px] font-semibold text-white/35">Data Plus</span>
+          <span className="text-[11px] font-semibold text-white/35">Conectados</span>
         </div>
         <p className="text-[10px] text-white/25">v1.2.0 · © 2026</p>
       </div>

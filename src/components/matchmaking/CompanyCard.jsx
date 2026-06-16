@@ -106,25 +106,32 @@ function CompanyCard({ company, onViewProfile }) {
           background: 'linear-gradient(to top, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.62) 40%, rgba(0,0,0,0.08) 68%, transparent 100%)',
         }} />
 
-      {/* ── Sector badge ── */}
-      <div className="absolute left-4 top-[68px] z-10 rounded-full px-3.5 py-1.5"
-        style={{ background: 'rgba(0,0,0,0.30)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: '1px solid rgba(255,255,255,0.18)' }}>
-        <span className="text-[10px] font-bold uppercase tracking-[0.20em] text-white/90">{company.sector}</span>
+      {/* ── Name — top left, below floating header ── */}
+      <div className="absolute left-4 right-16 top-[68px] z-10">
+        <h3
+          className="font-['Space_Grotesk'] text-[28px] font-bold leading-tight tracking-tight text-white"
+          style={{ textShadow: '0 2px 20px rgba(0,0,0,0.7)' }}
+        >
+          {company.name}
+        </h3>
       </div>
 
       {/* ── Bottom info — visible without tapping ── */}
-      <div className="absolute bottom-0 left-0 right-0 z-10 px-5 pb-[92px] pt-6">
+      <div className="absolute bottom-0 left-0 right-0 z-10 px-5 pb-[92px] pt-4">
 
-        {/* Name + arrow */}
-        <div className="flex items-end justify-between gap-3">
-          <div className="min-w-0 flex-1">
-            <h3 className="font-['Space_Grotesk'] text-[26px] font-bold leading-tight tracking-tight text-white"
-              style={{ textShadow: '0 2px 16px rgba(0,0,0,0.6)' }}>
-              {company.name}
-            </h3>
-            <div className="mt-1 flex items-center gap-1.5">
+        {/* Distance + Sector + arrow */}
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Distance */}
+            <div className="flex items-center gap-1">
               <Navigation className="h-3 w-3 shrink-0 text-white/45" strokeWidth={2} />
               <span className="text-[12px] font-medium text-white/45">{company.distance ?? '—'} km</span>
+            </div>
+
+            {/* Sector pill */}
+            <div className="rounded-full px-2.5 py-1"
+              style={{ background: 'rgba(0,0,0,0.30)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: '1px solid rgba(255,255,255,0.15)' }}>
+              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/85">{company.sector}</span>
             </div>
           </div>
 
@@ -132,31 +139,18 @@ function CompanyCard({ company, onViewProfile }) {
             <motion.button type="button"
               onClick={(e) => { e.stopPropagation(); onViewProfile(); }}
               whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.90 }}
-              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white"
               style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.45)' }}>
-              <ArrowUp className="h-5 w-5 text-[#141E30]" strokeWidth={2.5} />
+              <ArrowUp className="h-4 w-4 text-[#141E30]" strokeWidth={2.5} />
             </motion.button>
           )}
         </div>
 
-        <div className="my-3 h-px bg-white/[0.10]" />
-
         {/* Ofrece */}
         {offerTags.length > 0 && (
-          <div className="mb-2.5">
-            <p className="mb-1.5 text-[9px] font-semibold uppercase tracking-[0.20em] text-white/35">Ofrece</p>
+          <div className="mt-2.5">
             <div className="flex flex-wrap gap-1.5">
               {offerTags.map(t => <Pill key={t}>{t}</Pill>)}
-            </div>
-          </div>
-        )}
-
-        {/* Busca */}
-        {seekingTags.length > 0 && (
-          <div>
-            <p className="mb-1.5 text-[9px] font-semibold uppercase tracking-[0.20em] text-white/35">Busca</p>
-            <div className="flex flex-wrap gap-1.5">
-              {seekingTags.map(t => <Pill key={t}>{t}</Pill>)}
             </div>
           </div>
         )}

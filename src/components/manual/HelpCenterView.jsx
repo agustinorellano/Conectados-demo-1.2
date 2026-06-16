@@ -27,7 +27,7 @@ const helpTabs = {
     intro: 'Respuestas rapidas para dudas operativas y comerciales.',
     cards: [
       { title: 'Asesor IA', detail: 'Pedi ayuda para redactar propuestas, priorizar aliados y ordenar ejecucion.', cta: true },
-      { title: 'Equipo Data Plus', detail: 'Escalamos bloqueos funcionales o comerciales dentro del producto.' },
+      { title: 'Equipo Conectados', detail: 'Escalamos bloqueos funcionales o comerciales dentro del producto.' },
       { title: 'Centro de ayuda', detail: 'Documentacion viva con casos de uso, mejores practicas y novedades.' }
     ]
   }
@@ -192,7 +192,7 @@ function HelpCenterView({ onNavigateToChat }) {
           Help Center
         </p>
         <h2 className="mt-3 font-['Space_Grotesk'] text-3xl font-bold tracking-tight text-[#1A1A1A]">
-          Guia visual para usar Data Plus con foco comercial
+          Guia visual para usar Conectados con foco comercial
         </h2>
         <p className="mt-3 max-w-2xl text-sm leading-6 text-[#4A4A4A]">{activeContent.intro}</p>
 
