@@ -86,10 +86,6 @@ export default function HeroSection() {
             Encontrá alianzas que potencian tu negocio y generan más valor para tus clientes.
           </motion.p>
 
-          <motion.div {...fadeUp(0.27)} style={{ marginBottom: 12 }}>
-            <AllianceCard />
-          </motion.div>
-
           <motion.div {...fadeUp(0.33)} style={{ marginBottom: 28 }}>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 8,
