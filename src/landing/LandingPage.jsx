@@ -716,14 +716,18 @@ export default function LandingPage() {
       </section>
 
       {/* ── CÓMO FUNCIONA ────────────────────────────────── */}
-      <section id="cómo-funciona" className="py-24 px-6">
+      <section id="cómo-funciona" className="py-24 px-6" style={{ background: '#F8FAFF' }}>
         <div className="mx-auto max-w-6xl">
           <FadeUp className="mb-16 text-center space-y-4">
-            <Label>Cómo funciona</Label>
-            <h2 className="font-['Space_Grotesk'] text-3xl font-bold text-white lg:text-4xl">
+            <div className="flex items-center justify-center gap-3">
+              <div style={{ height: 1, width: 40, background: 'linear-gradient(to right, transparent, #2563EB)' }} />
+              <span className="text-[11px] font-bold uppercase tracking-[0.22em]" style={{ color: '#2563EB' }}>Cómo funciona</span>
+              <div style={{ height: 1, width: 40, background: 'linear-gradient(to left, transparent, #2563EB)' }} />
+            </div>
+            <h2 className="font-['Space_Grotesk'] text-3xl font-bold lg:text-4xl" style={{ color: '#0F172A' }}>
               Tres pasos para tu próxima alianza
             </h2>
-            <p className="mx-auto max-w-xl text-[15px]" style={{ color: C.text }}>
+            <p className="mx-auto max-w-xl text-[15px]" style={{ color: '#64748B' }}>
               Desde crear tu perfil hasta cerrar acuerdos, todo el proceso ocurre dentro de Conectados.
             </p>
           </FadeUp>
@@ -731,34 +735,37 @@ export default function LandingPage() {
           <div className="grid gap-6 md:grid-cols-3">
             {[
               {
-                step: '01', icon: Users, color: '#3B82F6',
+                step: '01', icon: Users, color: '#2563EB',
                 title: 'Creá tu perfil de marca',
                 desc: 'Contás quién sos, qué ofrecés y qué buscás en un aliado. Subís tu imagen, industria, audiencia y capacidades de activación.',
               },
               {
-                step: '02', icon: Zap, color: '#1871D8',
+                step: '02', icon: Zap, color: '#2563EB',
                 title: 'Hacé match con aliados compatibles',
                 desc: 'El algoritmo analiza decenas de variables y te muestra las empresas con mayor compatibilidad real. Swipeás, guardás y conectás.',
               },
               {
-                step: '03', icon: TrendingUp, color: '#10B981',
+                step: '03', icon: TrendingUp, color: '#2563EB',
                 title: 'Gestioná y cerrá alianzas',
                 desc: 'Desde la negociación en el Alliance Room hasta el seguimiento en el Workplace. Todo el ciclo de vida de tu alianza en un lugar.',
               },
             ].map((item, i) => (
               <FadeUp key={item.step} delay={i * 0.1}>
-                <div className="relative h-full rounded-[24px] p-6 space-y-4"
-                  style={{ background: 'rgba(15,24,40,0.8)', border: `1px solid ${C.border}` }}>
-                  <div className="absolute -top-3 left-6">
-                    <span className="font-['Space_Grotesk'] text-[11px] font-bold"
-                      style={{ color: item.color }}>{item.step}</span>
+                <div className="relative h-full rounded-[24px] p-8 space-y-6"
+                  style={{ background: '#fff', border: '1px solid #E8EFFE', boxShadow: '0 4px 24px rgba(37,99,235,0.06)' }}>
+                  {/* Step number */}
+                  <span className="font-['Space_Grotesk'] text-[13px] font-bold" style={{ color: '#2563EB' }}>{item.step}</span>
+
+                  {/* Icon circle */}
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full"
+                    style={{ background: '#EFF6FF' }}>
+                    <item.icon size={28} style={{ color: '#2563EB' }} strokeWidth={1.6} />
                   </div>
-                  <div className="flex h-11 w-11 items-center justify-center rounded-[14px]"
-                    style={{ background: `${item.color}14`, border: `1px solid ${item.color}28` }}>
-                    <item.icon size={20} style={{ color: item.color }} strokeWidth={1.8} />
+
+                  <div className="space-y-2">
+                    <h3 className="font-['Space_Grotesk'] text-[18px] font-bold" style={{ color: '#0F172A' }}>{item.title}</h3>
+                    <p className="text-[14px] leading-relaxed" style={{ color: '#64748B' }}>{item.desc}</p>
                   </div>
-                  <h3 className="font-['Space_Grotesk'] text-[17px] font-bold text-white">{item.title}</h3>
-                  <p className="text-[13px] leading-relaxed" style={{ color: C.text }}>{item.desc}</p>
                 </div>
               </FadeUp>
             ))}
