@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import WebSidebar from './WebSidebar';
 import DashboardView from '../components/dashboard/DashboardView';
@@ -28,6 +28,11 @@ import {
 } from '../utils/companyProfile';
 
 function WebApp() {
+  useEffect(() => {
+    document.body.classList.add('app-view');
+    return () => document.body.classList.remove('app-view');
+  }, []);
+
   const [activeView, setActiveView] = useState('dashboard');
   const [showAllianceRoom, setShowAllianceRoom] = useState(false);
   const [matches, setMatches] = useState([demoInitialMatch]);

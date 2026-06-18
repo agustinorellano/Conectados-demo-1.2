@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Conectados — La plataforma para cerrar alianzas comerciales</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@1,400;1,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  /* Dark warm palette */
+  --d-bg:    #0C091C;       /* dark base — warm violet undertone */
+  --d-bg2:   #100D22;       /* slightly lighter dark */
+  --d-bg3:   #150F2A;       /* card surface dark */
+  --d-border: rgba(255,255,255,.08);
+  --d-text:  rgba(255,255,255,.52);
+
+  /* Light palette */
+  --l-bg:    #F7F6FF;       /* off-white with violet tint */
+  --l-bg2:   #EEEDF8;       /* slightly deeper light */
+  --l-card:  #FFFFFF;
+  --l-border: rgba(10,9,28,.08);
+  --l-text:  rgba(10,9,28,.52);
+  --l-head:  #0C091C;
+
+  /* Brand */
+  --blue:    #1871D8;
+  --blue-l:  #4A9FFF;
+  --green:   #10B981;
+  --violet:  #8B5CF6;
+  --amber:   #F59E0B;
+}
+
+html{scroll-behavior:smooth}
+body{background:var(--d-bg);color:#fff;font-family:'Inter',sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::selection{background:rgba(24,113,216,.35)}
+a{text-decoration:none;color:inherit}
+
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:999px}
+
+/* ── SCROLL PROGRESS ── */
+.spb{position:fixed;top:0;left:0;z-index:200;height:2px;background:linear-gradient(90deg,var(--blue),var(--violet));width:0}
+
+/* ── CURSOR ── */
+.cur{position:fixed;top:0;left:0;z-index:9999;width:10px;height:10px;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);transition:transform .15s,opacity .2s;mix-blend-mode:difference;background:#fff}
+.cur.big{transform:translate(-50%,-50%) scale(5);opacity:.25}
+
+/* ── PARTICLES ── */
+#cvs{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+/* ── REVEAL ── */
+.r{opacity:0;transform:translateY(32px);transition:opacity .75s cubic-bezier(.22,1,.36,1),transform .75s cubic-bezier(.22,1,.36,1)}
+.r.v{opacity:1;transform:none}
+.r.d1{transition-delay:.07s}.r.d2{transition-delay:.14s}.r.d3{transition-delay:.21s}
+.r.d4{transition-delay:.28s}.r.d5{transition-delay:.35s}
+
+/* ── NAV ── */
+nav{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:100;display:flex;align-items:center;border-radius:999px;padding:7px 7px 7px 20px;border:1px solid transparent;transition:background .4s,border-color .4s,backdrop-filter .4s;white-space:nowrap}
+nav.on{background:rgba(12,9,28,.82);border-color:rgba(255,255,255,.09);backdrop-filter:blur(24px)}
+.nlogo{display:flex;align-items:center;gap:9px;margin-right:32px}
+.nmark{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#1871D8,#0A3D7A);display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:800}
+.ntext{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700}
+.nlinks{display:flex;align-items:center;gap:26px;margin-right:26px}
+.nlinks a{font-size:13px;font-weight:500;color:rgba(255,255,255,.42);transition:color .2s}
+.nlinks a:hover{color:#fff}
+.ncta{background:#fff;color:#0A0F1E;border-radius:999px;padding:9px 20px;font-size:13px;font-weight:700;transition:opacity .2s,transform .2s;cursor:pointer}
+.ncta:hover{opacity:.88;transform:scale(.97)}
+@media(max-width:700px){.nlinks{display:none};nav{padding:7px 7px 7px 14px}}
+
+/* ── LAYOUT HELPERS ── */
+section{position:relative;z-index:1}
+.wrap{max-width:1100px;margin:0 auto;padding:0 24px}
+.wrap-sm{max-width:760px;margin:0 auto;padding:0 24px}
+.sh{text-align:center;margin-bottom:72px}
+.ey{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.26em;display:block;margin-bottom:18px}
+.st{font-family:'Space Grotesk',sans-serif;font-size:clamp(30px,4.5vw,52px);font-weight:700;line-height:1.10;letter-spacing:-.025em}
+.st em{font-family:'Playfair Display',serif;font-style:italic;font-weight:400}
+.ssub{font-size:16px;margin-top:16px;max-width:520px;margin-inline:auto;line-height:1.7}
+
+/* glow blob */
+.gb{position:absolute;border-radius:50%;pointer-events:none}
+
+/* ── SECTION THEMES ── */
+/* dark sections */
+.dk{background:var(--d-bg)}
+.dk2{background:var(--d-bg2)}
+.dk .ey,.dk2 .ey{color:rgba(255,255,255,.28)}
+.dk .st,.dk2 .st{color:#fff}
+.dk .st em,.dk2 .st em{color:rgba(255,255,255,.50)}
+.dk .ssub,.dk2 .ssub{color:var(--d-text)}
+
+/* light sections */
+.lt{background:var(--l-bg)}
+.lt2{background:var(--l-bg2)}
+.lt .ey,.lt2 .ey{color:rgba(10,9,28,.35)}
+.lt .st,.lt2 .st{color:var(--l-head)}
+.lt .st em,.lt2 .st em{color:rgba(10,9,28,.45)}
+.lt .ssub,.lt2 .ssub{color:var(--l-text)}
+
+/* section divider — wave shape between dark and light */
+.wave-dl{position:relative;z-index:2;line-height:0}
+.wave-dl svg{display:block;width:100%;height:60px}
+.wave-ld{position:relative;z-index:2;line-height:0}
+.wave-ld svg{display:block;width:100%;height:60px}
+
+/* ════════════════════════════════════════
+   §1 HERO v2 — Light Apple/Linear style
+════════════════════════════════════════ */
+#hero{
+  min-height:100vh;
+  background:linear-gradient(170deg,#F0F4FF 0%,#EEF4FF 40%,#F5F7FF 100%);
+  display:flex;align-items:center;justify-content:center;
+  padding:100px 40px 80px;overflow:hidden;text-align:left;
+}
+/* Image-based hero — seamless integration */
+#hero.img-hero{
+  padding:0;
+  min-height:auto;
+  display:block;
+  background:#EBF0FF;   /* matches image edge color */
+  position:relative;
+  overflow:hidden;
+}
+#hero.img-hero img{
+  width:100%;
+  max-width:1440px;
+  display:block;
+  margin:0 auto;
+  padding-top:70px;
+}
+/* Fade sides on screens wider than image */
+#hero.img-hero::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(to right,  #EBF0FF 0%, transparent 8%, transparent 92%, #EBF0FF 100%);
+  pointer-events:none;
+  z-index:1;
+}
+/* Fade bottom into dark next section */
+#hero.img-hero::after{
+  content:'';
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:160px;
+  background:linear-gradient(to bottom, transparent 0%, #0C091C 100%);
+  pointer-events:none;
+  z-index:1;
+}
+.h2col{max-width:1180px;width:100%;display:grid;grid-template-columns:420px 1fr;gap:80px;align-items:center}
+@media(max-width:1060px){.h2col{grid-template-columns:1fr;gap:60px}}
+
+/* ── Left column ── */
+.h2logo{display:flex;align-items:center;gap:9px;margin-bottom:28px}
+.h2logo-mark{width:32px;height:32px;background:#2563EB;border-radius:9px;display:flex;align-items:center;justify-content:center}
+.h2logo-text{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;color:#0F172A}
+.h2h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(48px,6vw,76px);font-weight:800;line-height:.98;letter-spacing:-.04em;color:#0F172A;margin-bottom:16px}
+.h2h1 .hblue{color:#2563EB}
+.h2sub{font-size:16px;color:#64748B;line-height:1.65;margin-bottom:30px;max-width:380px}
+
+/* Alliance card */
+@keyframes av-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.avis{background:#fff;border-radius:20px;border:1px solid #E2E8F0;box-shadow:0 4px 28px rgba(0,0,0,.07);padding:20px 24px;margin-bottom:12px;animation:av-float 5s ease-in-out infinite}
+.avis-row{display:flex;align-items:center;margin-bottom:0}
+.avbiz{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1}
+.avbiz-av{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 16px rgba(0,0,0,.12);border:3px solid #fff}
+.avbiz-name{font-size:12px;font-weight:700;color:#0F172A}
+.avbiz-cat{font-size:10px;color:#94A3B8}
+
+/* Dotted connector between biz avatars */
+.avlink-c{flex:1;display:flex;align-items:center;justify-content:center;position:relative;height:64px}
+.avlink-dots{position:absolute;inset:0;background-image:radial-gradient(circle,#BFDBFE 1.5px,transparent 1.5px);background-size:9px 9px;background-position:center;opacity:.8}
+.avlink-ic{width:34px;height:34px;border-radius:50%;background:#fff;border:2px solid #BFDBFE;box-shadow:0 2px 10px rgba(37,99,235,.14);display:flex;align-items:center;justify-content:center;position:relative;z-index:1;flex-shrink:0}
+
+/* Badge below alliance card */
+.avbadge{display:inline-flex;align-items:center;gap:8px;background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:999px;padding:9px 18px;font-size:13px;font-weight:600;color:#2563EB;margin-bottom:28px}
+
+/* Benefits row — horizontal, at bottom */
+.h2benefits{display:flex;gap:24px}
+.h2benefit{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;flex:1}
+.h2benefit-ic{width:44px;height:44px;border-radius:14px;background:#F1F5FF;border:1px solid #E0E7FF;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.h2benefit-txt{font-size:11px;color:#475569;font-weight:500;line-height:1.35;max-width:80px}
+
+/* ── Right column ── */
+.h2col-right{display:flex;align-items:center;justify-content:flex-start;gap:16px}
+@media(max-width:1060px){.h2col-right{justify-content:center}}
+
+/* iPhone cluster — positions both phone + protruding card */
+.iphone-cluster{position:relative;flex-shrink:0;animation:av-float 5.5s ease-in-out .4s infinite}
+
+/* iPhone frame */
+.iphone-frame{
+  width:264px;background:#111;border-radius:48px;padding:11px;position:relative;z-index:2;
+  box-shadow:0 0 0 1px rgba(255,255,255,.07),0 0 0 10px #1c1c1e,0 0 0 12px #2e2e2e,0 36px 90px rgba(0,0,0,.28),0 12px 32px rgba(0,0,0,.18)
+}
+.iphone-island{position:absolute;top:17px;left:50%;transform:translateX(-50%);width:86px;height:23px;background:#111;border-radius:12px;z-index:5}
+.iphone-screen{border-radius:37px;background:#F8FAFC;overflow:hidden;position:relative;height:524px}
+
+/* App header */
+.app-hd{display:flex;align-items:center;justify-content:space-between;padding:50px 14px 9px;background:#fff;border-bottom:1px solid #F1F5F9}
+.app-hd-logo{display:flex;align-items:center;gap:6px}
+.app-hd-mark{width:20px;height:20px;border-radius:5px;background:#2563EB;display:flex;align-items:center;justify-content:center}
+.app-hd-txt{font-size:11px;font-weight:700;color:#0F172A}
+.app-hd-ic{width:26px;height:26px;border-radius:50%;background:#F1F5F9;display:flex;align-items:center;justify-content:center;font-size:11px}
+
+/* Tabs */
+.app-tabs{display:flex;gap:4px;padding:7px 10px;background:#fff;border-bottom:1px solid #F1F5F9}
+.app-tab{flex:1;text-align:center;padding:7px;border-radius:10px;font-size:11px;font-weight:600;color:#94A3B8;background:transparent}
+.app-tab.at{background:#0F172A;color:#fff}
+
+/* Swipe card — PROTRUDES left beyond phone frame */
+.sc-overlay{
+  position:absolute;
+  top:134px;       /* below header+tabs */
+  left:-50px;      /* sticks out 50px to the left */
+  width:236px;
+  height:274px;
+  border-radius:20px;
+  overflow:hidden;
+  z-index:10;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  box-shadow:0 24px 60px rgba(0,0,0,.22),0 8px 20px rgba(0,0,0,.14)
+}
+.sc-left{background:linear-gradient(170deg,#3B1E0C 0%,#180A04 100%);position:relative;display:flex;align-items:center;justify-content:center}
+.sc-right{background:linear-gradient(160deg,#EDE3D2 0%,#C8B89A 100%);position:relative;display:flex;align-items:center;justify-content:center}
+.sc-left::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.88) 0%,rgba(0,0,0,.12) 55%,transparent 100%)}
+.sc-right::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.40) 0%,transparent 55%)}
+.sc-emoji{font-size:52px;position:relative;z-index:1;filter:drop-shadow(0 4px 14px rgba(0,0,0,.35))}
+.sc-info{position:absolute;bottom:0;left:0;right:0;padding:11px;z-index:2}
+.sc-chips{display:flex;gap:4px;margin-bottom:5px}
+.sc-chip{background:rgba(255,255,255,.18);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:2px 8px;font-size:8px;font-weight:600;color:rgba(255,255,255,.92)}
+.sc-name{font-size:14px;font-weight:800;color:#fff;letter-spacing:-.02em}
+.sc-cat{font-size:9px;color:rgba(255,255,255,.65);margin-top:2px}
+.sc-tags{display:flex;gap:4px;margin-top:5px;flex-wrap:wrap}
+.sc-tag{background:rgba(255,255,255,.14);border-radius:5px;padding:2px 7px;font-size:7px;color:rgba(255,255,255,.78);font-weight:500}
+
+/* Action buttons — absolutely at bottom of phone screen */
+.app-actions{
+  position:absolute;bottom:0;left:0;right:0;
+  display:flex;align-items:center;justify-content:center;
+  gap:10px;padding:12px 14px 22px;
+  background:linear-gradient(to bottom,transparent 0%,#fff 35%)
+}
+.act-btn{width:38px;height:38px;border-radius:50%;border:1.5px solid #E2E8F0;background:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+.act-btn-main{width:52px;height:52px;border-radius:50%;background:#2563EB;border:none;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;cursor:pointer;box-shadow:0 8px 24px rgba(37,99,235,.40)}
+
+/* Floating cards column */
+.float-col{display:flex;flex-direction:column;gap:10px;width:196px;flex-shrink:0}
+
+.fcard{background:#fff;border-radius:18px;border:1px solid #E2E8F0;padding:14px 16px;box-shadow:0 8px 32px rgba(0,0,0,.08)}
+.fcard-connected{animation:av-float 4.5s ease-in-out .2s infinite;position:relative;padding-top:16px}
+.fcard-check{position:absolute;top:12px;right:12px;width:22px;height:22px;border-radius:50%;background:#2563EB;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px}
+.fcard-title{font-size:13px;font-weight:800;color:#0F172A;margin-bottom:12px;text-align:center}
+.fcard-bizrow{display:flex;align-items:flex-start;justify-content:center;gap:10px}
+.fcard-biz{display:flex;flex-direction:column;align-items:center;gap:5px}
+.fcb-av{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 2px 12px rgba(0,0,0,.10);border:2px solid #fff}
+.fcb-name{font-size:9px;font-weight:700;color:#0F172A;text-align:center}
+.fcb-cat{font-size:8px;color:#94A3B8;text-align:center}
+.fcard-x{font-size:16px;color:#CBD5E1;margin-top:12px}
+.fcard-label{font-size:10px;font-weight:600;color:#64748B;text-align:center;margin-top:12px;display:flex;align-items:center;justify-content:center;gap:5px}
+.fcard-label-i{width:14px;height:14px;border-radius:50%;border:1px solid #CBD5E1;display:inline-flex;align-items:center;justify-content:center;font-size:8px;color:#94A3B8}
+
+.fpill{background:linear-gradient(135deg,#1E3A8A,#1D4ED8);border-radius:16px;padding:12px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 10px 28px rgba(37,99,235,.25);animation:av-float 5s ease-in-out 1s infinite}
+.fpill-ic{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.fpill-txt{flex:1;min-width:0}
+.fpill-t{font-size:11px;font-weight:700;color:#fff}
+.fpill-s{font-size:9px;color:rgba(255,255,255,.55)}
+.fpill-dots{display:flex;gap:3px;flex-shrink:0}
+.fpill-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.4);animation:dotpulse 1.4s ease-in-out infinite}
+.fpill-dot:nth-child(2){animation-delay:.2s}
+.fpill-dot:nth-child(3){animation-delay:.4s}
+@keyframes dotpulse{0%,80%,100%{opacity:.2}40%{opacity:1}}
+
+.fcard-found{display:flex;align-items:center;gap:10px;animation:av-float 4.8s ease-in-out 1.8s infinite}
+.fff-ic{width:32px;height:32px;border-radius:10px;background:#EFF6FF;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.fff-lbl{font-size:8px;font-weight:700;color:#2563EB;margin-bottom:2px}
+.fff-name{font-size:11px;font-weight:700;color:#0F172A}
+.fff-sub{font-size:9px;color:#94A3B8}
+.fff-arr{margin-left:auto;width:24px;height:24px;border-radius:50%;background:#2563EB;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;flex-shrink:0}
+
+/* CTA row */
+.h2cta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:28px}
+.btn-blue{display:inline-flex;align-items:center;gap:8px;background:#2563EB;color:#fff;border-radius:999px;padding:14px 26px;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:transform .2s,box-shadow .2s;text-decoration:none}
+.btn-blue:hover{transform:translateY(-1px);box-shadow:0 10px 30px rgba(37,99,235,.35)}
+.btn-outline{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:14px 22px;font-size:14px;font-weight:600;color:#64748B;border:1.5px solid #E2E8F0;background:#fff;cursor:pointer;transition:border-color .2s,color .2s;text-decoration:none}
+.btn-outline:hover{border-color:#2563EB;color:#2563EB}
+
+.scroll-hint{display:flex;flex-direction:column;align-items:center;gap:7px;font-size:10px;font-weight:500;color:rgba(255,255,255,.20);letter-spacing:.18em;text-transform:uppercase;margin-top:44px;position:relative;z-index:1;animation:shint 2.5s ease-in-out infinite}
+@keyframes shint{0%,100%{opacity:.4}50%{opacity:1}}
+.sline{width:1px;height:44px;background:linear-gradient(to bottom,rgba(255,255,255,.25),transparent)}
+
+/* ════════════════════════════════════════
+   LOGO STRIP — dark
+════════════════════════════════════════ */
+#logos{padding:40px 0;background:var(--d-bg2);border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06)}
+.logo-ey{text-align:center;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.24em;color:rgba(255,255,255,.22);margin-bottom:22px}
+.logo-tw{overflow:hidden;position:relative}
+.logo-tr{display:flex;gap:40px;animation:lscroll 28s linear infinite;width:max-content}
+.logo-item{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.logo-ic{width:24px;height:24px;border-radius:6px;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:rgba(255,255,255,.35)}
+.logo-nm{font-size:13px;font-weight:600;color:rgba(255,255,255,.22);white-space:nowrap}
+.lfl{position:absolute;inset-block:0;left:0;width:100px;background:linear-gradient(to right,var(--d-bg2),transparent);pointer-events:none}
+.lfr{position:absolute;inset-block:0;right:0;width:100px;background:linear-gradient(to left,var(--d-bg2),transparent);pointer-events:none}
+@keyframes lscroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ════════════════════════════════════════
+   STATEMENT — dark warm
+════════════════════════════════════════ */
+#statement{
+  min-height:80vh;display:flex;align-items:center;justify-content:center;
+  padding:120px 24px;text-align:center;overflow:hidden;
+  background:linear-gradient(160deg,#100D22,#140B2E);
+}
+.sob1{top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:500px;background:radial-gradient(ellipse,rgba(139,92,246,.18),transparent 65%);filter:blur(60px)}
+.stmt-pre{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.22em;color:rgba(255,255,255,.25);margin-bottom:32px;display:block;position:relative;z-index:1}
+.stmt-h{font-family:'Space Grotesk',sans-serif;font-size:clamp(32px,5.5vw,66px);font-weight:700;line-height:1.10;letter-spacing:-.028em;position:relative;z-index:1}
+.stmt-h em{font-family:'Playfair Display',serif;font-style:italic;font-weight:400;color:rgba(255,255,255,.50)}
+.stmt-div{width:40px;height:1px;background:linear-gradient(90deg,transparent,rgba(139,92,246,.40),transparent);margin:36px auto;position:relative;z-index:1}
+.stmt-p{font-size:clamp(16px,2vw,20px);color:rgba(255,255,255,.48);line-height:1.78;max-width:560px;margin:0 auto;position:relative;z-index:1}
+
+/* ════════════════════════════════════════
+   PILLARS — LIGHT
+════════════════════════════════════════ */
+#pillars{padding:100px 24px;background:var(--l-bg)}
+.pillars-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;max-width:1100px;margin:0 auto}
+@media(max-width:768px){.pillars-grid{grid-template-columns:1fr}}
+.pillar{padding:48px 40px;border:1px solid var(--l-border);background:rgba(255,255,255,.70);transition:background .3s,border-color .3s,box-shadow .3s}
+.pillar:hover{background:#fff;border-color:rgba(139,92,246,.18);box-shadow:0 8px 40px rgba(139,92,246,.08)}
+.pillar:first-child{border-radius:24px 0 0 24px}
+.pillar:last-child{border-radius:0 24px 24px 0}
+@media(max-width:768px){.pillar:first-child{border-radius:24px 24px 0 0}.pillar:last-child{border-radius:0 0 24px 24px}}
+.pillar-num{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:800;letter-spacing:.15em;display:block;margin-bottom:28px}
+.pillar-icon{font-size:28px;display:block;margin-bottom:20px}
+.pillar-title{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;margin-bottom:12px;color:var(--l-head)}
+.pillar-desc{font-size:13px;color:var(--l-text);line-height:1.7}
+
+/* ════════════════════════════════════════
+   HOW — dark warm
+════════════════════════════════════════ */
+#how{padding:120px 24px;background:linear-gradient(160deg,#100D22,#0C091C)}
+.how-steps{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+@media(max-width:768px){.how-steps{grid-template-columns:1fr}}
+.how-step{padding:48px 40px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.025);transition:background .3s,border-color .3s}
+.how-step:hover{background:rgba(255,255,255,.04);border-color:rgba(139,92,246,.20)}
+.how-step:first-child{border-radius:24px 0 0 24px}
+.how-step:last-child{border-radius:0 24px 24px 0}
+@media(max-width:768px){.how-step:first-child{border-radius:24px 24px 0 0}.how-step:last-child{border-radius:0 0 24px 24px}}
+.hsnum{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:800;letter-spacing:.15em;display:block;margin-bottom:28px}
+.hsicon{font-size:28px;display:block;margin-bottom:20px}
+.hstitle{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;margin-bottom:12px;color:#fff}
+.hsdesc{font-size:13px;color:rgba(255,255,255,.48);line-height:1.7}
+
+/* ════════════════════════════════════════
+   FEATURE ROWS
+════════════════════════════════════════ */
+.feat-dk{padding:140px 24px;overflow:hidden;background:linear-gradient(160deg,#100D22,#0C091C)}
+.feat-lt{padding:140px 24px;overflow:hidden;background:var(--l-bg)}
+.feat-row{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.feat-row.flip{direction:rtl}
+.feat-row.flip>*{direction:ltr}
+@media(max-width:900px){.feat-row{grid-template-columns:1fr;gap:60px;direction:ltr}.feat-row.flip{direction:ltr}}
+
+/* dark feature text */
+.feat-dk .feat-lbl{font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;display:block;margin-bottom:20px}
+.feat-dk .feat-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(28px,4vw,44px);font-weight:700;line-height:1.12;letter-spacing:-.02em;margin-bottom:20px;color:#fff}
+.feat-dk .feat-title em{font-family:'Playfair Display',serif;font-style:italic;font-weight:400;color:rgba(255,255,255,.52)}
+.feat-dk .feat-desc{font-size:15px;color:rgba(255,255,255,.50);line-height:1.78;margin-bottom:32px}
+.feat-dk .feat-pt{display:flex;align-items:flex-start;gap:13px;font-size:14px;color:rgba(255,255,255,.58);line-height:1.5}
+
+/* light feature text */
+.feat-lt .feat-lbl{font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;display:block;margin-bottom:20px}
+.feat-lt .feat-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(28px,4vw,44px);font-weight:700;line-height:1.12;letter-spacing:-.02em;margin-bottom:20px;color:var(--l-head)}
+.feat-lt .feat-title em{font-family:'Playfair Display',serif;font-style:italic;font-weight:400;color:rgba(10,9,28,.45)}
+.feat-lt .feat-desc{font-size:15px;color:var(--l-text);line-height:1.78;margin-bottom:32px}
+.feat-lt .feat-pt{display:flex;align-items:flex-start;gap:13px;font-size:14px;color:rgba(10,9,28,.58);line-height:1.5}
+
+.feat-pts{display:flex;flex-direction:column;gap:13px}
+.fpdot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:8px}
+
+/* ── Dark mockup card ── */
+.pmock-dk{background:linear-gradient(160deg,rgba(21,15,42,.98),rgba(8,7,20,.99));border:1px solid rgba(139,92,246,.14);border-radius:28px;box-shadow:0 40px 100px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.05),0 0 40px rgba(139,92,246,.06);overflow:hidden}
+.pmock-dk .p28{padding:28px}
+
+/* ── Light mockup card ── */
+.pmock-lt{background:#fff;border:1px solid rgba(10,9,28,.10);border-radius:28px;box-shadow:0 20px 60px rgba(10,9,28,.10),0 4px 16px rgba(10,9,28,.06);overflow:hidden}
+.pmock-lt .p28{padding:28px}
+
+/* Match internals (dark) */
+.mscore{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.msbadge{display:flex;align-items:center;gap:6px;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;padding:6px 12px;border-radius:999px}
+.mco{display:flex;align-items:center;gap:16px;margin-bottom:24px}
+.mcav{width:52px;height:52px;border-radius:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:800}
+.mcn-d{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;color:#fff}
+.mcs-d{font-size:12px;color:rgba(255,255,255,.40);margin-top:3px}
+.mcn-l{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;color:var(--l-head)}
+.mcs-l{font-size:12px;color:var(--l-text);margin-top:3px}
+.mbl-d{display:flex;justify-content:space-between;font-size:10px;margin-bottom:8px;color:rgba(255,255,255,.25)}
+.mbl-l{display:flex;justify-content:space-between;font-size:10px;margin-bottom:8px;color:rgba(10,9,28,.35)}
+.mbw{height:5px;background:rgba(255,255,255,.08);border-radius:999px;margin-bottom:20px;overflow:hidden}
+.mbw-l{height:5px;background:rgba(10,9,28,.10);border-radius:999px;margin-bottom:20px;overflow:hidden}
+.mbf{height:100%;border-radius:999px;width:0;transition:width 1.2s cubic-bezier(.22,1,.36,1)}
+.mtags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:24px}
+.mtag{padding:5px 12px;border-radius:999px;font-size:10px;font-weight:700}
+.macts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mao-d{padding:13px;border-radius:14px;border:1px solid rgba(255,255,255,.11);background:transparent;font-size:13px;font-weight:600;color:rgba(255,255,255,.48);cursor:pointer;transition:background .2s;text-align:center}
+.mao-d:hover{background:rgba(255,255,255,.05)}
+.mao-l{padding:13px;border-radius:14px;border:1px solid rgba(10,9,28,.12);background:transparent;font-size:13px;font-weight:600;color:rgba(10,9,28,.50);cursor:pointer;transition:background .2s;text-align:center}
+.mao-l:hover{background:rgba(10,9,28,.04)}
+.mas{padding:13px;border-radius:14px;border:none;font-size:13px;font-weight:700;color:#fff;cursor:pointer;text-align:center;transition:opacity .2s,transform .2s}
+.mas:hover{opacity:.88;transform:scale(.98)}
+
+/* Alliance Room internals */
+.arh{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.arlive{display:flex;align-items:center;gap:6px;font-size:10px;color:rgba(255,255,255,.35)}
+.arlive-dot{width:7px;height:7px;border-radius:50%;background:#EF4444;animation:lpulse 1.5s infinite}
+@keyframes lpulse{0%,100%{opacity:1}50%{opacity:.3}}
+.arps{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.arp{border-radius:14px;padding:14px;background:rgba(139,92,246,.07);border:1px solid rgba(139,92,246,.14)}
+.arpav{height:38px;border-radius:10px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:800}
+.arpn{font-size:10px;font-weight:600;color:rgba(255,255,255,.72)}
+.arpr{font-size:9px;color:rgba(255,255,255,.35);margin-top:2px}
+.arai{border-radius:16px;padding:16px;background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.18)}
+.arail{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:700;color:#A78BFA;margin-bottom:10px}
+.arait{font-size:11px;color:rgba(255,255,255,.48);line-height:1.6}
+.arach{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.arac{font-size:9px;font-weight:600;color:#A78BFA;background:rgba(139,92,246,.14);padding:3px 9px;border-radius:999px}
+
+/* Workplace internals (light) */
+.wpcols{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.wph{display:flex;align-items:center;gap:5px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.2em;color:rgba(10,9,28,.30);margin-bottom:10px}
+.wpd{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.wpc-l{border-radius:9px;padding:9px 10px;background:rgba(10,9,28,.04);border:1px solid rgba(10,9,28,.08);font-size:9px;font-weight:500;color:rgba(10,9,28,.55);margin-bottom:6px;line-height:1.4}
+.wpm-l{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;gap:10px;padding-top:18px;border-top:1px solid rgba(10,9,28,.08)}
+.wpmv{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700}
+.wpml{font-size:9px;color:var(--l-text);margin-top:2px}
+
+/* AI chat */
+.aichat{padding:24px;display:flex;flex-direction:column;gap:10px}
+.aim{border-radius:14px;padding:11px 14px;font-size:11px;line-height:1.6;max-width:86%}
+.aim.u{align-self:flex-end;background:linear-gradient(135deg,#1871D8,#1459B0);color:#fff}
+.aim.b{align-self:flex-start;background:rgba(255,255,255,.06);color:rgba(255,255,255,.70)}
+.aim.ac{align-self:flex-start;background:rgba(139,92,246,.11);border:1px solid rgba(139,92,246,.22);color:#C4B5FD}
+.aial{font-size:9px;font-weight:700;color:#A78BFA;margin-bottom:5px}
+.aiir{display:flex;align-items:center;gap:8px;margin-top:4px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px 14px}
+.aiinp{flex:1;background:transparent;border:none;outline:none;font-size:11px;color:rgba(255,255,255,.28)}
+
+/* ════════════════════════════════════════
+   ROI METRICS — dark warm
+════════════════════════════════════════ */
+#roi{padding:140px 24px;text-align:center;background:linear-gradient(160deg,#140B2E,#0C091C);overflow:hidden}
+.roi-ob{top:50%;left:50%;transform:translate(-50%,-50%);width:800px;height:400px;background:radial-gradient(ellipse,rgba(139,92,246,.15),transparent 65%);filter:blur(60px)}
+.roi-grid{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;border:1px solid rgba(139,92,246,.15);border-radius:24px;overflow:hidden;position:relative;z-index:1}
+@media(max-width:700px){.roi-grid{grid-template-columns:repeat(2,1fr)}}
+.roi-cell{padding:48px 28px;background:rgba(255,255,255,.025);border-right:1px solid rgba(139,92,246,.10);transition:background .3s}
+.roi-cell:last-child{border-right:none}
+.roi-cell:hover{background:rgba(139,92,246,.06)}
+.roi-val{font-family:'Space Grotesk',sans-serif;font-size:clamp(36px,5vw,58px);font-weight:800;line-height:1;letter-spacing:-.03em;display:block;margin-bottom:10px}
+.roi-label{font-size:12px;color:rgba(255,255,255,.40);line-height:1.5}
+
+/* ════════════════════════════════════════
+   TESTIMONIALS — LIGHT
+════════════════════════════════════════ */
+#testimonials{padding:140px 24px;background:var(--l-bg)}
+.tgrid{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:900px){.tgrid{grid-template-columns:1fr;max-width:500px;margin:0 auto}}
+.tcard{background:#fff;border:1px solid rgba(10,9,28,.08);border-radius:24px;padding:32px;display:flex;flex-direction:column;gap:20px;transition:border-color .3s,box-shadow .3s,transform .3s}
+.tcard:hover{border-color:rgba(139,92,246,.20);box-shadow:0 12px 40px rgba(139,92,246,.08);transform:translateY(-3px)}
+.tstars{display:flex;gap:3px;font-size:12px;color:#FBBF24}
+.tbefore{font-size:10px;font-weight:600;color:rgba(10,9,28,.35);background:rgba(10,9,28,.05);border-radius:999px;padding:3px 10px;display:inline-block;margin-bottom:4px}
+.tquote{font-size:14px;color:rgba(10,9,28,.60);line-height:1.78;flex:1}
+.ttransform{font-size:12px;font-weight:600;padding:8px 12px;border-radius:10px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.16);color:#0D8F6A}
+.tauthor{display:flex;align-items:center;gap:12px;border-top:1px solid rgba(10,9,28,.07);padding-top:16px}
+.tav{width:36px;height:36px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,#1871D8,#1459B0);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+.tname{font-size:13px;font-weight:600;color:var(--l-head)}
+.trole{font-size:11px;color:var(--l-text);margin-top:1px}
+
+/* ════════════════════════════════════════
+   PRICING — dark warm
+════════════════════════════════════════ */
+#pricing{padding:140px 24px;background:linear-gradient(160deg,#100D22,#0C091C);overflow:hidden}
+.pg-ob{bottom:0;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(139,92,246,.14),transparent 70%);filter:blur(60px)}
+.pgrid{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;position:relative;z-index:1}
+@media(max-width:900px){.pgrid{grid-template-columns:1fr;max-width:400px;margin:0 auto}}
+.pcard{border-radius:24px;padding:32px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);display:flex;flex-direction:column;gap:24px;position:relative;overflow:hidden;transition:border-color .3s,transform .3s}
+.pcard:hover{transform:translateY(-4px)}
+.pcard.feat{border-color:rgba(139,92,246,.35);background:linear-gradient(160deg,rgba(139,92,246,.12),rgba(15,10,30,.95));box-shadow:0 0 0 1px rgba(139,92,246,.14),0 40px 80px rgba(0,0,0,.30)}
+.ppop{position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--violet);color:#fff;font-size:10px;font-weight:700;border-radius:0 0 10px 10px;padding:4px 14px;white-space:nowrap}
+.pplan{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.2em;margin-bottom:4px}
+.pprice{font-family:'Space Grotesk',sans-serif;font-size:44px;font-weight:800;line-height:1;letter-spacing:-.03em;color:#fff}
+.pperiod{font-size:12px;color:rgba(255,255,255,.38);margin-top:4px}
+.pfeats{list-style:none;display:flex;flex-direction:column;gap:12px;flex:1}
+.pfeats li{display:flex;align-items:center;gap:10px;font-size:13px;color:rgba(255,255,255,.50)}
+.pchk{width:16px;height:16px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:900}
+.pbtn{width:100%;border-radius:14px;padding:14px;border:none;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .2s,transform .2s;text-align:center;display:block}
+.pbtn:hover{opacity:.85;transform:scale(.98)}
+.pbtn.vio{background:var(--violet);color:#fff}
+.pbtn.out{background:transparent;border:1px solid rgba(255,255,255,.14);color:rgba(255,255,255,.50)}
+.pnote{text-align:center;margin-top:28px;font-size:12px;color:rgba(255,255,255,.22);position:relative;z-index:1}
+
+/* ════════════════════════════════════════
+   FAQ — LIGHT
+════════════════════════════════════════ */
+#faq{padding:120px 24px;background:var(--l-bg2)}
+.faq-list{display:flex;flex-direction:column;gap:10px}
+.faq-item{border-radius:18px;overflow:hidden;background:#fff;border:1px solid rgba(10,9,28,.08);transition:border-color .25s,box-shadow .25s}
+.faq-item.open{border-color:rgba(139,92,246,.25);box-shadow:0 4px 20px rgba(139,92,246,.07)}
+.faq-btn{width:100%;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 22px;background:transparent;border:none;cursor:pointer;text-align:left}
+.faq-q{font-size:14px;font-weight:600;color:var(--l-head)}
+.faq-ch{font-size:16px;color:rgba(10,9,28,.30);flex-shrink:0;transition:transform .22s;display:block}
+.faq-item.open .faq-ch{transform:rotate(180deg)}
+.faq-ans{max-height:0;overflow:hidden;transition:max-height .28s ease}
+.faq-ansi{padding:0 22px 18px;font-size:13px;color:var(--l-text);line-height:1.75}
+
+/* ════════════════════════════════════════
+   CTA FINAL — dark warm gradient
+════════════════════════════════════════ */
+#cta-final{
+  padding:160px 24px;text-align:center;overflow:hidden;
+  background:linear-gradient(160deg,#0C091C 0%,#140B2E 40%,#0A1020 80%,#080D1A 100%);
+}
+.ctaob1{top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:500px;background:radial-gradient(ellipse,rgba(139,92,246,.20),transparent 65%);filter:blur(60px)}
+.ctaob2{top:30%;left:25%;width:350px;height:350px;background:radial-gradient(ellipse,rgba(24,113,216,.16),transparent 70%);filter:blur(50px)}
+.cta-ey{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.22em;color:rgba(255,255,255,.28);margin-bottom:28px;display:block;position:relative;z-index:1}
+.cta-h{font-family:'Space Grotesk',sans-serif;font-size:clamp(36px,6vw,72px);font-weight:800;line-height:1.05;letter-spacing:-.03em;max-width:700px;margin:0 auto 20px;position:relative;z-index:1}
+.cta-h em{font-family:'Playfair Display',serif;font-style:italic;font-weight:400;background:linear-gradient(135deg,#A78BFA,#60A5FA);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.cta-p{font-size:17px;color:rgba(255,255,255,.46);margin-bottom:44px;position:relative;z-index:1}
+.cta-fine{font-size:12px;color:rgba(255,255,255,.20);margin-top:24px;display:block;position:relative;z-index:1}
+
+/* ════════════════════════════════════════
+   FOOTER — dark
+════════════════════════════════════════ */
+footer{border-top:1px solid rgba(255,255,255,.07);padding:60px 24px 40px;background:var(--d-bg);position:relative;z-index:1}
+.fi{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:48px}
+@media(max-width:768px){.fi{grid-template-columns:1fr 1fr}}
+.fbsub{font-size:13px;color:rgba(255,255,255,.38);line-height:1.65;margin-top:14px;max-width:260px}
+.fct{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.18em;color:rgba(255,255,255,.24);margin-bottom:18px}
+.flinks{display:flex;flex-direction:column;gap:10px}
+.flinks a{font-size:13px;color:rgba(255,255,255,.38);transition:color .2s}
+.flinks a:hover{color:#fff}
+.fbot{max-width:1100px;margin:48px auto 0;padding-top:24px;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.fcopy{font-size:12px;color:rgba(255,255,255,.22)}
+
+/* ════ SECTION TRANSITIONS (shadow overlaps) ════ */
+.dk-to-lt{background:var(--d-bg);padding-bottom:0}
+.lt-to-dk{background:var(--l-bg);padding-bottom:0}
+</style>
+</head>
+<body>
+
+<div class="cur" id="cur"></div>
+<div class="spb" id="spb"></div>
+<canvas id="cvs"></canvas>
+
+<!-- ══════ NAV ══════════════════════════ -->
+<nav id="nav">
+  <div class="nlogo"><div class="nmark">C</div><span class="ntext">Conectados</span></div>
+  <div class="nlinks">
+    <a href="#how">Cómo funciona</a><a href="#match">Producto</a>
+    <a href="#pricing">Precios</a><a href="#faq">FAQ</a>
+  </div>
+  <a href="/web" class="ncta">Empezar gratis</a>
+</nav>
+
+<!-- ══════ §1 HERO v2 ─ image-based ════════ -->
+<section id="hero" class="img-hero">
+  <img src="hero-mockup.png" alt="Conectados — Deslizá. Conectá." style="width:100%;max-width:1400px;display:block;margin:0 auto;padding-top:72px"/>
+</section>
+
+<!-- hidden h2col for SEO structure -->
+<div style="display:none"><div>
+
+    <!-- LEFT COLUMN -->
+    <div class="h2col-left r">
+
+      <!-- Logo -->
+      <div class="h2logo">
+        <div class="h2logo-mark">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        </div>
+        <span class="h2logo-text">conectados</span>
+      </div>
+
+      <!-- Headline -->
+      <h1 class="h2h1">Deslizá.<br><span class="hblue">Conectá.</span></h1>
+      <p class="h2sub">Encontrá alianzas que potencian tu negocio y generan más valor para tus clientes.</p>
+
+      <!-- Alliance visual card -->
+      <div class="avis r d1">
+        <div class="avis-row">
+          <div class="avbiz">
+            <div class="avbiz-av" style="background:radial-gradient(circle at 40% 35%,#5C3317,#2C1508)">☕</div>
+            <div class="avbiz-name">Cafe Patio</div>
+            <div class="avbiz-cat">Cafetería</div>
+          </div>
+          <div class="avlink-c">
+            <div class="avlink-dots"></div>
+            <div class="avlink-ic">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.5" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            </div>
+          </div>
+          <div class="avbiz">
+            <div class="avbiz-av" style="background:radial-gradient(circle at 50% 40%,#D8CCBA,#B0A088)">🌿</div>
+            <div class="avbiz-name">Naturaé</div>
+            <div class="avbiz-cat">Cosmética natural</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Badge below card -->
+      <div class="avbadge r d2">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+        Alianza conectada
+      </div>
+
+      <!-- Benefits row — horizontal -->
+      <div class="h2benefits r d3">
+        <div class="h2benefit">
+          <div class="h2benefit-ic">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          </div>
+          <div class="h2benefit-txt">Beneficios exclusivos</div>
+        </div>
+        <div class="h2benefit">
+          <div class="h2benefit-ic">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><circle cx="9" cy="9" r="1"/><circle cx="15" cy="15" r="1"/><line x1="17" y1="7" x2="7" y2="17"/><rect x="3" y="3" width="18" height="18" rx="3"/></svg>
+          </div>
+          <div class="h2benefit-txt">Descuentos especiales</div>
+        </div>
+        <div class="h2benefit">
+          <div class="h2benefit-ic">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div class="h2benefit-txt">Más valor para tu negocio</div>
+        </div>
+      </div>
+
+    </div><!-- /h2col-left -->
+
+    <!-- RIGHT COLUMN -->
+    <div class="h2col-right r d2">
+
+      <!-- iPhone + protruding card cluster -->
+      <div class="iphone-cluster">
+
+        <div class="iphone-frame">
+          <div class="iphone-island"></div>
+          <div class="iphone-screen">
+
+            <!-- App header -->
+            <div class="app-hd">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+              <div class="app-hd-logo">
+                <div class="app-hd-mark">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                </div>
+                <span class="app-hd-txt">conectados</span>
+              </div>
+              <div class="app-hd-ic">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="app-tabs">
+              <div class="app-tab at">Para ti</div>
+              <div class="app-tab">Guardados</div>
+            </div>
+
+            <!-- Action buttons at bottom -->
+            <div class="app-actions">
+              <div class="act-btn" style="color:#F59E0B">↺</div>
+              <div class="act-btn" style="color:#EF4444;font-size:12px">✕</div>
+              <div class="act-btn" style="color:#F59E0B;font-size:12px">☆</div>
+              <div class="act-btn" style="color:#EC4899;font-size:13px">♡</div>
+              <div class="act-btn-main">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </div>
+            </div>
+
+          </div><!-- /iphone-screen -->
+        </div><!-- /iphone-frame -->
+
+        <!-- Swipe card — protrudes to the left of phone -->
+        <div class="sc-overlay">
+          <div class="sc-left">
+            <div class="sc-emoji">☕</div>
+            <div class="sc-info">
+              <div class="sc-chips">
+                <div class="sc-chip">9 km</div>
+                <div class="sc-chip">Cafetería</div>
+              </div>
+              <div class="sc-name">Cafe Patio</div>
+              <div class="sc-cat">Cafetería de especialidad</div>
+              <div class="sc-tags">
+                <div class="sc-tag">Espacio físico</div>
+                <div class="sc-tag">Audiencia local</div>
+              </div>
+            </div>
+          </div>
+          <div class="sc-right">
+            <div class="sc-emoji">🌿</div>
+          </div>
+        </div>
+
+      </div><!-- /iphone-cluster -->
+
+      <!-- Floating notification cards -->
+      <div class="float-col">
+
+        <!-- ¡Conectado! -->
+        <div class="fcard fcard-connected">
+          <div class="fcard-check">✓</div>
+          <div class="fcard-title">¡Conectado!</div>
+          <div class="fcard-bizrow">
+            <div class="fcard-biz">
+              <div class="fcb-av" style="background:radial-gradient(circle at 40% 35%,#5C3317,#2C1508)">☕</div>
+              <div class="fcb-name">Cafe Patio</div>
+              <div class="fcb-cat">Cafetería</div>
+            </div>
+            <div class="fcard-x">×</div>
+            <div class="fcard-biz">
+              <div class="fcb-av" style="background:radial-gradient(circle at 50% 40%,#D8CCBA,#A89070)">🌿</div>
+              <div class="fcb-name">Naturaé</div>
+              <div class="fcb-cat">Cosmética natural</div>
+            </div>
+          </div>
+          <div class="fcard-label">
+            Nueva alianza activa
+            <span class="fcard-label-i">i</span>
+          </div>
+        </div>
+
+        <!-- Buscando pill -->
+        <div class="fpill">
+          <div class="fpill-ic">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          </div>
+          <div class="fpill-txt">
+            <div class="fpill-t">Buscando alianzas...</div>
+            <div class="fpill-s">Analizando compatibilidad</div>
+          </div>
+          <div class="fpill-dots">
+            <div class="fpill-dot"></div>
+            <div class="fpill-dot"></div>
+            <div class="fpill-dot"></div>
+          </div>
+        </div>
+
+        <!-- ¡Alianza encontrada! -->
+        <div class="fcard fcard-found">
+          <div class="fff-ic">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.5" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div class="fff-lbl">¡Alianza encontrada!</div>
+            <div class="fff-name">Cafe Patio × Naturaé</div>
+            <div class="fff-sub">Descuentos, promociones y más beneficios.</div>
+          </div>
+          <div class="fff-arr">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+        </div>
+
+      </div><!-- /float-col -->
+
+    </div><!-- /h2col-right -->
+  </div><!-- /h2col -->
+</div><!-- /hidden seo -->
+
+<!-- ══════ LOGO STRIP ─ dark ════════════ -->
+<section id="logos">
+  <p class="logo-ey">Empresas que ya hacen alianzas en Conectados</p>
+  <div class="logo-tw"><div class="logo-tr" id="logoTrack"></div><div class="lfl"></div><div class="lfr"></div></div>
+</section>
+
+<!-- ══════ STATEMENT ─ dark warm ════════ -->
+<section id="statement">
+  <div class="gb sob1"></div>
+  <div class="stmt-pre r">El problema</div>
+  <h2 class="stmt-h r d1">Las mejores alianzas<br>no se encuentran <em>por azar.</em></h2>
+  <div class="stmt-div r d2"></div>
+  <p class="stmt-p r d3">El 73% de las empresas pierde oportunidades de crecimiento por no tener acceso a los aliados correctos. La suerte no es una estrategia. Conectados es.</p>
+</section>
+
+<!-- ══════ PILLARS ─ LIGHT ══════════════ -->
+<section id="pillars">
+  <div class="wrap"><div class="sh r">
+    <span class="ey" style="color:rgba(10,9,28,.35)">Por qué Conectados</span>
+    <h2 class="st" style="color:var(--l-head)">Tres razones para<br><em style="color:rgba(10,9,28,.42)">elegir Conectados</em></h2>
+  </div></div>
+  <div class="pillars-grid">
+    <div class="pillar r"><span class="pillar-num" style="color:#1871D8">01</span><span class="pillar-icon">🎯</span><div class="pillar-title">El aliado correcto</div><div class="pillar-desc">Nuestro algoritmo analiza más de 20 variables para conectarte con empresas que realmente complementan tu propuesta de valor.</div></div>
+    <div class="pillar r d1"><span class="pillar-num" style="color:#8B5CF6">02</span><span class="pillar-icon">🧠</span><div class="pillar-title">Tecnología que trabaja por vos</div><div class="pillar-desc">IA que toma notas, detecta oportunidades, redacta propuestas y rastrea el momentum de cada alianza. Más tiempo para cerrar.</div></div>
+    <div class="pillar r d2"><span class="pillar-num" style="color:#10B981">03</span><span class="pillar-icon">🚀</span><div class="pillar-title">Resultados medibles</div><div class="pillar-desc">Desde el primer match hasta el revenue generado, todo queda registrado. Sabés exactamente cuánto vale cada alianza.</div></div>
+  </div>
+</section>
+
+<!-- ══════ HOW ─ dark ═══════════════════ -->
+<section id="how">
+  <div class="wrap"><div class="sh r">
+    <span class="ey" style="color:rgba(255,255,255,.28)">Proceso</span>
+    <h2 class="st" style="color:#fff">Tres pasos.<br><em style="color:rgba(255,255,255,.48)">Una alianza.</em></h2>
+  </div></div>
+  <div class="how-steps">
+    <div class="how-step r"><span class="hsnum" style="color:#3B82F6">01</span><span class="hsicon">👤</span><div class="hstitle">Construí tu perfil</div><div class="hsdesc">Describí tu empresa, industria, audiencia y qué tipo de alianzas buscás. El sistema aprende con cada interacción.</div></div>
+    <div class="how-step r d1"><span class="hsnum" style="color:#8B5CF6">02</span><span class="hsicon">⚡</span><div class="hstitle">Hacé match</div><div class="hsdesc">El algoritmo te muestra empresas con score de compatibilidad real. Swipeás, guardás y conectás con un clic.</div></div>
+    <div class="how-step r d2"><span class="hsnum" style="color:#10B981">03</span><span class="hsicon">🤝</span><div class="hstitle">Cerrá la alianza</div><div class="hsdesc">Negociá en el Alliance Room, gestioná en el Workplace. La IA toma notas y genera tareas automáticamente.</div></div>
+  </div>
+</section>
+
+<!-- ══════ MATCH ─ dark ═════════════════ -->
+<section class="feat-dk" id="match">
+  <div class="gb" style="top:50%;right:-100px;transform:translateY(-50%);width:600px;height:600px;background:radial-gradient(ellipse,rgba(24,113,216,.14),transparent 70%);filter:blur(50px)"></div>
+  <div class="feat-row wrap">
+    <div class="r">
+      <span class="feat-lbl" style="color:#60A5FA">Match inteligente</span>
+      <h2 class="feat-title">El algoritmo que<br><em>entiende tu negocio</em></h2>
+      <p class="feat-desc">No es un filtro genérico. Analizamos industria, audiencia, propuesta de valor y objetivos para calcular compatibilidad real entre empresas.</p>
+      <div class="feat-pts">
+        <div class="feat-pt"><div class="fpdot" style="background:#3B82F6"></div>Score de afinidad del 0 al 100% basado en datos reales</div>
+        <div class="feat-pt"><div class="fpdot" style="background:#3B82F6"></div>Filtros por zona, categoría y tipo de alianza</div>
+        <div class="feat-pt"><div class="fpdot" style="background:#3B82F6"></div>Mejora con el tiempo según tu actividad</div>
+        <div class="feat-pt"><div class="fpdot" style="background:#3B82F6"></div>Guardado y seguimiento de matches prioritarios</div>
+      </div>
+    </div>
+    <div class="r d1">
+      <div class="pmock-dk">
+        <div class="p28">
+          <div class="mscore"><div class="msbadge" style="background:rgba(16,185,129,.10);color:#10B981;border:1px solid rgba(16,185,129,.20)">● Match 94%</div><span style="font-size:11px;color:rgba(255,255,255,.22)">1 de 12</span></div>
+          <div class="mco"><div class="mcav" style="background:linear-gradient(135deg,rgba(16,185,129,.5),rgba(16,185,129,.2))">BF</div><div><div class="mcn-d">Bloom Florería</div><div class="mcs-d">Florería · CABA · 3.2k seguidores</div></div></div>
+          <div class="mbl-d"><span>Compatibilidad</span><span style="color:#10B981;font-weight:700">94%</span></div>
+          <div class="mbw"><div class="mbf" id="mbar" style="background:linear-gradient(90deg,#10B981,rgba(16,185,129,.4))"></div></div>
+          <div class="mtags"><span class="mtag" style="background:rgba(16,185,129,.10);color:#10B981;border:1px solid rgba(16,185,129,.20)">Co-marketing</span><span class="mtag" style="background:rgba(16,185,129,.10);color:#10B981;border:1px solid rgba(16,185,129,.20)">Eventos</span><span class="mtag" style="background:rgba(16,185,129,.10);color:#10B981;border:1px solid rgba(16,185,129,.20)">Visibilidad</span></div>
+          <div class="macts"><div class="mao-d">Pasar</div><div class="mas" style="background:linear-gradient(135deg,#1871D8,#1459B0);box-shadow:0 6px 20px rgba(24,113,216,.25)">Conectar →</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ ALLIANCE ROOM ─ dark ══════════ -->
+<section class="feat-dk">
+  <div class="gb" style="top:50%;left:-80px;transform:translateY(-50%);width:550px;height:550px;background:radial-gradient(ellipse,rgba(139,92,246,.14),transparent 70%);filter:blur(50px)"></div>
+  <div class="feat-row flip wrap">
+    <div class="r d1">
+      <div class="pmock-dk">
+        <div class="p28">
+          <div class="arh"><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.2em;color:#A78BFA">🎥 Alliance Room</span><div class="arlive"><div class="arlive-dot"></div>En vivo</div></div>
+          <div class="arps">
+            <div class="arp"><div class="arpav" style="background:linear-gradient(135deg,rgba(24,113,216,.4),rgba(24,113,216,.15))">TW</div><div class="arpn">Top White</div><div class="arpr">Anfitrión</div></div>
+            <div class="arp"><div class="arpav" style="background:linear-gradient(135deg,rgba(16,185,129,.4),rgba(16,185,129,.15))">BF</div><div class="arpn">Bloom Florería</div><div class="arpr">Invitado</div></div>
+          </div>
+          <div class="arai"><div class="arail">✦ IA tomando notas</div><div class="arait">"Acordaron campaña primavera con split 60/40. Próximo paso: presentación de branding el lunes."</div><div class="arach"><span class="arac">3 acuerdos</span><span class="arac">2 tareas</span><span class="arac">Momentum 91</span></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="r">
+      <span class="feat-lbl" style="color:#A78BFA">Alliance Room</span>
+      <h2 class="feat-title">Tu sala de<br><em>negociación inteligente</em></h2>
+      <p class="feat-desc">Reuníte con aliados en tiempo real. La IA toma notas, detecta acuerdos, genera tareas y resume la reunión automáticamente.</p>
+      <div class="feat-pts">
+        <div class="feat-pt"><div class="fpdot" style="background:#8B5CF6"></div>Notas automáticas sin intervención manual</div>
+        <div class="feat-pt"><div class="fpdot" style="background:#8B5CF6"></div>Detección de acuerdos en tiempo real</div>
+        <div class="feat-pt"><div class="fpdot" style="background:#8B5CF6"></div>Tareas generadas directo desde la conversación</div>
+        <div class="feat-pt"><div class="fpdot" style="background:#8B5CF6"></div>Score de momentum por alianza</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ WORKPLACE ─ LIGHT ════════════ -->
+<section class="feat-lt">
+  <div class="feat-row wrap">
+    <div class="r">
+      <span class="feat-lbl" style="color:#D97706">Workplace</span>
+      <h2 class="feat-title">El pipeline de tus<br><em>alianzas comerciales</em></h2>
+      <p class="feat-desc">Kanban diseñado para alianzas B2B. Gestioná todo el ciclo desde la negociación hasta el revenue generado, en tiempo real.</p>
+      <div class="feat-pts">
+        <div class="feat-pt"><div class="fpdot" style="background:#F59E0B"></div>Pipeline con valor estimado por etapa</div>
+        <div class="feat-pt"><div class="fpdot" style="background:#F59E0B"></div>Tareas compartidas con tus aliados</div>
+        <div class="feat-pt"><div class="fpdot" style="background:#F59E0B"></div>Revenue generado real por alianza</div>
+        <div class="feat-pt"><div class="fpdot" style="background:#F59E0B"></div>Hasta 6 alianzas activas simultáneas</div>
+      </div>
+    </div>
+    <div class="r d1">
+      <div class="pmock-lt">
+        <div class="p28">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px"><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.2em;color:#D97706">⊞ Workplace</span><span style="font-size:10px;color:var(--l-text)">6 alianzas activas</span></div>
+          <div class="wpcols">
+            <div><div class="wph"><div class="wpd" style="background:rgba(10,9,28,.20)"></div>Backlog</div><div class="wpc-l">Sorteo RRSS</div><div class="wpc-l">Newsletter B2B</div></div>
+            <div><div class="wph"><div class="wpd" style="background:#3B82F6"></div>Ejecución</div><div class="wpc-l">Campaña bundle</div></div>
+            <div><div class="wph"><div class="wpd" style="background:#F59E0B"></div>Revisión</div><div class="wpc-l">Pop-up Dot</div><div class="wpc-l">Pack wellness</div></div>
+            <div><div class="wph"><div class="wpd" style="background:#10B981"></div>Cerrado ✓</div><div class="wpc-l">Día del libro</div></div>
+          </div>
+          <div class="wpm-l">
+            <div><div class="wpmv" style="color:#3B82F6">$382k</div><div class="wpml">Pipeline</div></div>
+            <div><div class="wpmv" style="color:#10B981">$124k</div><div class="wpml">Revenue</div></div>
+            <div><div class="wpmv" style="color:#F59E0B">6</div><div class="wpml">Alianzas</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ AI ─ LIGHT ═══════════════════ -->
+<section class="feat-lt" style="background:var(--l-bg2)">
+  <div class="feat-row flip wrap">
+    <div class="r d1">
+      <div class="pmock-dk">
+        <div class="aichat">
+          <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.22em;color:rgba(255,255,255,.22);margin-bottom:4px;display:block">✦ Asistente IA</span>
+          <div class="aim u">¿Con qué empresa debería aliarse este mes?</div>
+          <div class="aim b">Basado en tu perfil, Bloom Florería tiene 94% de compatibilidad. Su audiencia complementa la tuya perfectamente.</div>
+          <div class="aim ac"><div class="aial">✦ Oportunidad detectada</div>Core Wellness podría generar $85.000 en una campaña wellness + moda este trimestre.</div>
+          <div class="aiir"><input class="aiinp" placeholder="Preguntá algo..." readonly/><span style="color:rgba(255,255,255,.22)">→</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="r">
+      <span class="feat-lbl" style="color:#1871D8">Asistente IA</span>
+      <h2 class="feat-title">Tu director de alianzas,<br><em>disponible 24/7</em></h2>
+      <p class="feat-desc">Analiza tu actividad, detecta oportunidades, sugiere aliados y redacta propuestas. Como tener un estratega de negocios que nunca duerme.</p>
+      <div class="feat-pts">
+        <div class="feat-pt"><div class="fpdot" style="background:#1871D8"></div>Sugerencias basadas en tu perfil real</div>
+        <div class="feat-pt"><div class="fpdot" style="background:#1871D8"></div>Detección automática de oportunidades</div>
+        <div class="feat-pt"><div class="fpdot" style="background:#1871D8"></div>Redacción de propuestas personalizadas</div>
+        <div class="feat-pt"><div class="fpdot" style="background:#1871D8"></div>Alertas de seguimiento inteligentes</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ MÉTRICAS ─ dark warm ══════════ -->
+<section id="roi">
+  <div class="gb roi-ob"></div>
+  <div class="wrap sh r">
+    <span class="ey" style="color:rgba(255,255,255,.28)">Resultados reales</span>
+    <h2 class="st" style="color:#fff">Números que<br><em style="color:rgba(255,255,255,.48)">hablan solos</em></h2>
+  </div>
+  <div class="roi-grid">
+    <div class="roi-cell r"><span class="roi-val" style="color:#60A5FA" data-target="500" data-suffix="+">0</span><div class="roi-label">Empresas activas<br>en la plataforma</div></div>
+    <div class="roi-cell r d1"><span class="roi-val" style="color:#A78BFA" data-target="34" data-suffix="%">0</span><div class="roi-label">Más matches<br>relevantes promedio</div></div>
+    <div class="roi-cell r d2"><span class="roi-val" style="color:#F59E0B" data-target="14" data-suffix=" días">0</span><div class="roi-label">Para la primera<br>alianza cerrada</div></div>
+    <div class="roi-cell r d3"><span class="roi-val" style="color:#34D399" data-target="124" data-prefix="$" data-suffix="k">0</span><div class="roi-label">Revenue promedio<br>por alianza activa</div></div>
+  </div>
+</section>
+
+<!-- ══════ TESTIMONIOS ─ LIGHT ════════════ -->
+<section id="testimonials">
+  <div class="wrap sh r">
+    <span class="ey" style="color:rgba(10,9,28,.35)">Casos reales</span>
+    <h2 class="st" style="color:var(--l-head)">Lo que dicen<br><em style="color:rgba(10,9,28,.42)">quienes ya conectaron</em></h2>
+  </div>
+  <div class="tgrid">
+    <div class="tcard r"><div class="tstars">★★★★★</div><div class="tbefore">Antes: 0 aliados estratégicos</div><p class="tquote">En menos de 2 semanas encontramos 3 alianzas que nunca hubiéramos logrado solos. El matching es increíblemente preciso.</p><div class="ttransform">📈 Hoy: 6 alianzas activas · $382k en pipeline</div><div class="tauthor"><div class="tav">VC</div><div><div class="tname">Valentina Cruz</div><div class="trole">Directora comercial · Luna Beauty</div></div></div></div>
+    <div class="tcard r d1"><div class="tstars">★★★★★</div><div class="tbefore">Antes: reuniones sin seguimiento</div><p class="tquote">El Alliance Room cambió cómo negociamos. Notas, acuerdos y tareas automáticas. Ahorramos horas por reunión.</p><div class="ttransform">⏱ Hoy: 3x más reuniones cerradas por mes</div><div class="tauthor"><div class="tav">ML</div><div><div class="tname">Marcos Linares</div><div class="trole">CEO · Core Wellness</div></div></div></div>
+    <div class="tcard r d2"><div class="tstars">★★★★★</div><div class="tbefore">Antes: planillas y confusión</div><p class="tquote">El Workplace nos permite ver el pipeline completo en un lugar. Antes era todo en planillas. Ahora todo en tiempo real.</p><div class="ttransform">💼 Hoy: $124k en revenue este trimestre</div><div class="tauthor"><div class="tav">SR</div><div><div class="tname">Sofía Reyes</div><div class="trole">Jefa de alianzas · Digital Craft</div></div></div></div>
+  </div>
+</section>
+
+<!-- ══════ PRECIOS ─ dark ════════════════ -->
+<section id="pricing">
+  <div class="gb pg-ob"></div>
+  <div class="wrap sh r">
+    <span class="ey" style="color:rgba(255,255,255,.28)">Precios</span>
+    <h2 class="st" style="color:#fff">Empezá gratis.<br><em style="color:rgba(255,255,255,.48)">Crecé cuando quieras.</em></h2>
+    <p class="ssub" style="color:rgba(255,255,255,.40)">Sin tarjeta de crédito. Sin compromiso. Cancelás cuando querás.</p>
+  </div>
+  <div class="pgrid">
+    <div class="pcard r"><div><div class="pplan" style="color:#60A5FA">Starter</div><div class="pprice">Gratis</div><div class="pperiod">para siempre</div></div><ul class="pfeats"><li><span class="pchk" style="background:rgba(59,130,246,.15);color:#60A5FA">✓</span>10 matches diarios</li><li><span class="pchk" style="background:rgba(59,130,246,.15);color:#60A5FA">✓</span>Chat con aliados</li><li><span class="pchk" style="background:rgba(59,130,246,.15);color:#60A5FA">✓</span>Workplace básico</li><li><span class="pchk" style="background:rgba(59,130,246,.15);color:#60A5FA">✓</span>Perfil de empresa</li><li><span class="pchk" style="background:rgba(59,130,246,.15);color:#60A5FA">✓</span>Soporte por email</li></ul><a href="/web" class="pbtn out">Empezar gratis</a></div>
+    <div class="pcard feat r d1"><div class="ppop">MÁS ELEGIDO</div><div><div class="pplan" style="color:#A78BFA">Growth</div><div class="pprice">$49</div><div class="pperiod">USD / mes · o $39/mes anual</div></div><ul class="pfeats"><li><span class="pchk" style="background:rgba(139,92,246,.15);color:#C4B5FD">✓</span>Matches ilimitados</li><li><span class="pchk" style="background:rgba(139,92,246,.15);color:#C4B5FD">✓</span>Alliance Room</li><li><span class="pchk" style="background:rgba(139,92,246,.15);color:#C4B5FD">✓</span>Asistente IA completo</li><li><span class="pchk" style="background:rgba(139,92,246,.15);color:#C4B5FD">✓</span>1 Boost mensual</li><li><span class="pchk" style="background:rgba(139,92,246,.15);color:#C4B5FD">✓</span>Analítica avanzada</li><li><span class="pchk" style="background:rgba(139,92,246,.15);color:#C4B5FD">✓</span>Soporte prioritario</li></ul><a href="/web" class="pbtn vio">Elegir Growth</a></div>
+    <div class="pcard r d2"><div><div class="pplan" style="color:#34D399">Scale</div><div class="pprice">$129</div><div class="pperiod">USD / mes · o $99/mes anual</div></div><ul class="pfeats"><li><span class="pchk" style="background:rgba(16,185,129,.15);color:#34D399">✓</span>Todo en Growth</li><li><span class="pchk" style="background:rgba(16,185,129,.15);color:#34D399">✓</span>Outreach directo</li><li><span class="pchk" style="background:rgba(16,185,129,.15);color:#34D399">✓</span>API access</li><li><span class="pchk" style="background:rgba(16,185,129,.15);color:#34D399">✓</span>Multi-empresa</li><li><span class="pchk" style="background:rgba(16,185,129,.15);color:#34D399">✓</span>Account manager</li><li><span class="pchk" style="background:rgba(16,185,129,.15);color:#34D399">✓</span>SLA garantizado</li></ul><a href="/web" class="pbtn out">Elegir Scale</a></div>
+  </div>
+  <p class="pnote r">✓ Sin tarjeta de crédito &nbsp;·&nbsp; ✓ Gratis para siempre en Starter &nbsp;·&nbsp; ✓ Cancelás cuando querés</p>
+</section>
+
+<!-- ══════ FAQ ─ LIGHT ═══════════════════ -->
+<section id="faq">
+  <div class="wrap-sm"><div class="sh r">
+    <span class="ey" style="color:rgba(10,9,28,.35)">FAQ</span>
+    <h2 class="st" style="color:var(--l-head)">Preguntas<br><em style="color:rgba(10,9,28,.42)">frecuentes</em></h2>
+  </div>
+  <div class="faq-list">
+    <div class="faq-item r"><button class="faq-btn" onclick="faq(this)"><span class="faq-q">¿Qué tipo de empresas pueden usar Conectados?</span><span class="faq-ch">⌄</span></button><div class="faq-ans"><div class="faq-ansi">Conectados está diseñado para dueños de PYMES, emprendedores, directores comerciales, jefes de alianzas y representantes de marca en cualquier industria. Si tu negocio puede crecer con alianzas, Conectados es para vos.</div></div></div>
+    <div class="faq-item r d1"><button class="faq-btn" onclick="faq(this)"><span class="faq-q">¿Cómo funciona el sistema de matching?</span><span class="faq-ch">⌄</span></button><div class="faq-ans"><div class="faq-ansi">Nuestro algoritmo analiza más de 20 variables: industria, audiencia, zona geográfica, propuesta de valor y objetivos comerciales. El resultado es un score de compatibilidad del 0 al 100% que mejora con el tiempo.</div></div></div>
+    <div class="faq-item r d2"><button class="faq-btn" onclick="faq(this)"><span class="faq-q">¿Puedo probar Conectados gratis?</span><span class="faq-ch">⌄</span></button><div class="faq-ans"><div class="faq-ansi">Sí. El plan Starter es gratuito para siempre e incluye hasta 10 matches diarios, chat, Workplace básico y perfil de empresa. Para Alliance Room y Asistente IA, podés upgradar cuando quieras.</div></div></div>
+    <div class="faq-item r d3"><button class="faq-btn" onclick="faq(this)"><span class="faq-q">¿Qué es el Alliance Room?</span><span class="faq-ch">⌄</span></button><div class="faq-ans"><div class="faq-ansi">Es un espacio de negociación en tiempo real. Te reunís con tus aliados y la IA toma notas automáticamente, detecta acuerdos, genera tareas y crea un resumen ejecutivo al finalizar.</div></div></div>
+    <div class="faq-item r d4"><button class="faq-btn" onclick="faq(this)"><span class="faq-q">¿Mis datos están seguros?</span><span class="faq-ch">⌄</span></button><div class="faq-ans"><div class="faq-ansi">Sí. Toda la información de tu empresa es confidencial y solo visible para vos y las empresas con las que elegís conectar. No compartimos datos con terceros.</div></div></div>
+  </div></div>
+</section>
+
+<!-- ══════ CTA FINAL ─ dark warm ═════════ -->
+<section id="cta-final">
+  <div class="gb ctaob1"></div>
+  <div class="gb ctaob2"></div>
+  <span class="cta-ey r">Empezá hoy</span>
+  <h2 class="cta-h r d1">La alianza que cambia<br>tu negocio <em>ya existe.</em></h2>
+  <p class="cta-p r d2">500+ empresas ya la encontraron en Conectados. Sumate gratis.</p>
+  <div class="cta-row r d3">
+    <a href="/web" class="btn-w">Empezar gratis <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    <a href="#how" class="btn-g">Ver cómo funciona</a>
+  </div>
+  <span class="cta-fine r d4">Sin tarjeta de crédito · Gratis para siempre en Starter · Cancelás cuando querés</span>
+</section>
+
+<!-- ══════ FOOTER ════════════════════════ -->
+<footer>
+  <div class="fi">
+    <div><div class="nlogo"><div class="nmark">C</div><span class="ntext">Conectados</span></div><p class="fbsub">La plataforma de matching comercial para empresas, marcas y emprendedores de Latinoamérica.</p></div>
+    <div><div class="fct">Producto</div><div class="flinks"><a href="#">Match</a><a href="#">Alliance Room</a><a href="#">Workplace</a><a href="#">Asistente IA</a></div></div>
+    <div><div class="fct">Empresa</div><div class="flinks"><a href="#">Sobre nosotros</a><a href="#">Blog</a><a href="#">Contacto</a></div></div>
+    <div><div class="fct">Legal</div><div class="flinks"><a href="#">Privacidad</a><a href="#">Términos</a><a href="#">Cookies</a></div></div>
+  </div>
+  <div class="fbot"><span class="fcopy">© 2026 Conectados. Todos los derechos reservados.</span><span style="font-size:12px;color:rgba(255,255,255,.20)">🌐 Argentina · Latinoamérica</span></div>
+</footer>
+
+<script>
+/* cursor */
+const cur=document.getElementById('cur');
+document.addEventListener('mousemove',e=>{cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';});
+document.querySelectorAll('a,button,.mas,.mao-d,.mao-l').forEach(el=>{el.addEventListener('mouseenter',()=>cur.classList.add('big'));el.addEventListener('mouseleave',()=>cur.classList.remove('big'));});
+
+/* scroll bar + nav */
+const spb=document.getElementById('spb'),nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>{
+  spb.style.width=(window.scrollY/(document.body.scrollHeight-window.innerHeight)*100)+'%';
+  nav.classList.toggle('on',true);
+  /* parallax orbs */
+  const sy=window.scrollY;
+  const o1=document.querySelector('.hob1');if(o1)o1.style.transform=`translateX(-50%) translateY(${sy*.10}px)`;
+  const o2=document.querySelector('.hob2');if(o2)o2.style.transform=`translateY(${sy*.07}px)`;
+},{passive:true});
+
+/* particles */
+(function(){
+  const c=document.getElementById('cvs'),ctx=c.getContext('2d');
+  let W,H,ps=[];
+  function resize(){W=c.width=innerWidth;H=c.height=innerHeight;}
+  window.addEventListener('resize',resize);resize();
+  const pal=['rgba(139,92,246,','rgba(24,113,216,','rgba(167,139,250,','rgba(255,255,255,'];
+  class P{reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.r=Math.random()*1.4+.3;this.vx=(Math.random()-.5)*.16;this.vy=(Math.random()-.5)*.16;this.a=Math.random()*.28+.04;this.col=pal[Math.floor(Math.random()*pal.length)];}constructor(){this.reset();}update(){this.x+=this.vx;this.y+=this.vy;if(this.x<0||this.x>W||this.y<0||this.y>H)this.reset();}draw(){ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fillStyle=this.col+this.a+')';ctx.fill();}}
+  for(let i=0;i<70;i++)ps.push(new P());
+  function loop(){ctx.clearRect(0,0,W,H);ps.forEach(p=>{p.update();p.draw();});requestAnimationFrame(loop);}
+  loop();
+})();
+
+/* reveal */
+const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('v');}),{rootMargin:'-55px'});
+document.querySelectorAll('.r').forEach(el=>obs.observe(el));
+
+/* counters */
+function animN(el){const t=parseFloat(el.dataset.target),pre=el.dataset.prefix||'',suf=el.dataset.suffix||'';let s=null;const d=1600;function step(ts){if(!s)s=ts;const p=Math.min((ts-s)/d,1),e=1-Math.pow(1-p,4),v=e*t;el.textContent=pre+(Number.isInteger(t)?Math.round(v).toLocaleString('es-AR'):v.toFixed(0))+suf;if(p<1)requestAnimationFrame(step);}requestAnimationFrame(step);}
+const co=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting&&e.target.dataset.target){animN(e.target);co.unobserve(e.target);}}),{rootMargin:'-80px'});
+document.querySelectorAll('[data-target]').forEach(el=>co.observe(el));
+
+/* match bar */
+const bObs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){document.getElementById('mbar').style.width='94%';bObs.disconnect();}}),{rootMargin:'-80px'});
+const mb=document.getElementById('mbar');if(mb)bObs.observe(mb);
+
+/* logos */
+const LOGOS=['Bloom Florería','Sushi Nakama','Luna Beauty','Core Wellness','Digital Craft','Café Patio','Top White','Aether Studio','Verde Market','Nomad Co.','Kinetic Lab','Pulse Agency'];
+const lt=document.getElementById('logoTrack');
+[...LOGOS,...LOGOS].forEach(name=>{const el=document.createElement('div');el.className='logo-item';el.innerHTML=`<div class="logo-ic">${name.slice(0,2).toUpperCase()}</div><span class="logo-nm">${name}</span>`;lt.appendChild(el);});
+
+/* magnetic buttons */
+document.querySelectorAll('.btn-w').forEach(btn=>{
+  btn.addEventListener('mousemove',e=>{const r=btn.getBoundingClientRect(),dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);btn.style.transform=`translate(${dx*.14}px,${dy*.14}px) scale(1.03)`;});
+  btn.addEventListener('mouseleave',()=>{btn.style.transform='';});
+});
+
+/* faq */
+function faq(btn){const item=btn.closest('.faq-item'),ans=item.querySelector('.faq-ans'),isOpen=item.classList.contains('open');document.querySelectorAll('.faq-item.open').forEach(i=>{i.classList.remove('open');i.querySelector('.faq-ans').style.maxHeight='0';});if(!isOpen){item.classList.add('open');ans.style.maxHeight=ans.scrollHeight+'px';}}
+
+/* hero on load */
+window.addEventListener('load',()=>{document.querySelectorAll('#hero .r').forEach(el=>el.classList.add('v'));});
+</script>
+</body>
+</html>

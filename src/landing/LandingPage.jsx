@@ -5,6 +5,7 @@ import {
   Globe, LayoutDashboard, MessageSquare, PanelsTopLeft,
   Sparkles, TrendingUp, Users, Video, Zap, Star, Menu, X
 } from 'lucide-react';
+import HeroSection from './components/HeroSection';
 
 /* ─── palette ──────────────────────────────────────────────── */
 const C = {
@@ -344,16 +345,17 @@ function LogosCarousel() {
 }
 
 /* ─── feature section ──────────────────────────────────────── */
-function FeatureSection({ label, labelColor, title, description, side = 'left', children, id }) {
+function FeatureSection({ label, labelColor, title, description, side = 'left', children, id, bg }) {
+  const light = !!bg
   return (
-    <section id={id} className="py-24 px-6">
+    <section id={id} className="py-24 px-6" style={bg ? { background: bg } : {}}>
       <div className={`mx-auto max-w-6xl flex flex-col gap-16 lg:flex-row lg:items-center lg:gap-20 ${side === 'right' ? 'lg:flex-row-reverse' : ''}`}>
         <FadeUp className="flex-1 space-y-6">
           <Label color={labelColor}>{label}</Label>
-          <h2 className="font-['Space_Grotesk'] text-3xl font-bold leading-tight text-white lg:text-4xl">
+          <h2 className="font-['Space_Grotesk'] text-3xl font-bold leading-tight lg:text-4xl" style={{ color: light ? '#0F172A' : '#fff' }}>
             {title}
           </h2>
-          <p className="text-[15px] leading-relaxed" style={{ color: C.text }}>{description}</p>
+          <p className="text-[15px] leading-relaxed" style={{ color: light ? '#64748B' : C.text }}>{description}</p>
         </FadeUp>
         <FadeUp delay={0.1} className="flex-1">
           {children}
@@ -701,81 +703,7 @@ export default function LandingPage() {
       <Navbar />
 
       {/* ── HERO ─────────────────────────────────────────── */}
-      <section className="relative min-h-screen flex items-center overflow-hidden pt-20">
-        {/* Background grid */}
-        <div className="absolute inset-0 -z-10"
-          style={{
-            backgroundImage: `linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)`,
-            backgroundSize: '60px 60px',
-          }} />
-        {/* Radial glow */}
-        <div className="absolute left-1/2 top-1/3 -z-10 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[120px] opacity-20"
-          style={{ background: 'radial-gradient(circle, #1871D8 0%, transparent 70%)' }} />
-
-        <div className="mx-auto max-w-6xl px-6 py-20">
-          <div className="grid gap-16 lg:grid-cols-2 lg:items-center">
-            {/* Left */}
-            <div className="space-y-8">
-              <FadeUp>
-                <div className="inline-flex items-center gap-2 rounded-full px-3.5 py-1.5"
-                  style={{ background: 'rgba(24,113,216,0.12)', border: '1px solid rgba(24,113,216,0.25)' }}>
-                  <Sparkles size={12} className="text-blue-400" />
-                  <span className="text-[12px] font-semibold text-blue-300">Matching inteligente para empresas</span>
-                </div>
-              </FadeUp>
-
-              <FadeUp delay={0.05}>
-                <h1 className="font-['Space_Grotesk'] text-4xl font-bold leading-[1.12] tracking-tight text-white lg:text-6xl">
-                  Encontrá tu próxima{' '}
-                  <span style={{
-                    background: 'linear-gradient(135deg, #60A5FA 0%, #1871D8 50%, #8B5CF6 100%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                  }}>
-                    alianza comercial
-                  </span>
-                </h1>
-              </FadeUp>
-
-              <FadeUp delay={0.1}>
-                <p className="text-[16px] leading-relaxed lg:text-[17px]" style={{ color: C.text }}>
-                  Conectados es la plataforma donde marcas, emprendedores y equipos comerciales se conectan, negocian y cierran acuerdos estratégicos en un solo lugar.
-                </p>
-              </FadeUp>
-
-              <FadeUp delay={0.15} className="flex flex-col gap-3 sm:flex-row">
-                <a href="/web"
-                  className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-[14px] font-bold text-white transition hover:-translate-y-0.5"
-                  style={{ background: 'linear-gradient(135deg, #1871D8, #1459B0)', boxShadow: '0 8px 32px rgba(24,113,216,0.40)' }}>
-                  Empezar gratis
-                  <ArrowRight size={15} />
-                </a>
-                <a href="#cómo-funciona"
-                  className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-[14px] font-semibold text-white/70 transition hover:text-white"
-                  style={{ border: '1px solid rgba(255,255,255,0.14)' }}>
-                  Ver cómo funciona
-                </a>
-              </FadeUp>
-
-              <FadeUp delay={0.2}>
-                <div className="flex items-center gap-6 pt-2">
-                  {[['500+', 'Empresas activas'], ['2.400+', 'Matches realizados'], ['$1.2M+', 'Valor generado']].map(([v, l]) => (
-                    <div key={l}>
-                      <p className="font-['Space_Grotesk'] text-[18px] font-bold text-white">{v}</p>
-                      <p className="text-[11px]" style={{ color: C.text }}>{l}</p>
-                    </div>
-                  ))}
-                </div>
-              </FadeUp>
-            </div>
-
-            {/* Right — mockup */}
-            <FadeUp delay={0.2}>
-              <HeroMockup />
-            </FadeUp>
-          </div>
-        </div>
-      </section>
+      <HeroSection />
 
       {/* ── LOGOS ────────────────────────────────────────── */}
       <section className="border-y py-10 px-6" style={{ borderColor: C.border, background: 'rgba(255,255,255,0.015)' }}>
@@ -844,10 +772,15 @@ export default function LandingPage() {
         label="Match Inteligente"
         labelColor="#3B82F6"
         side="left"
+        bg="#EEF2FF"
         title="El algoritmo que entiende tu negocio"
         description="No es un simple filtro. Analizamos industria, audiencia, lo que ofrecés, lo que buscás, ubicación y más de 20 variables para calcular un score de compatibilidad real. Solo ves empresas que pueden generar valor mutuo."
       >
-        <MatchMockup />
+        <img
+          src="/match-mockup.png"
+          alt="Match inteligente"
+          style={{ width: '100%', maxWidth: 560, display: 'block' }}
+        />
       </FeatureSection>
 
       {/* ── ALLIANCE ROOM ────────────────────────────────── */}

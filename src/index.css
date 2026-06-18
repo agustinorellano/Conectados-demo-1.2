@@ -45,7 +45,11 @@ body {
   color: var(--text);
   background: #070C18;
   background-attachment: fixed;
-  overflow: hidden; /* prevent body scroll — each view scrolls internally */
+}
+
+/* web app views manage their own scroll internally */
+body.app-view {
+  overflow: hidden;
 }
 
 button,
