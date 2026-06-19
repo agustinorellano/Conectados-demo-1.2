@@ -84,6 +84,24 @@ function Pill({ children }) {
   );
 }
 
+function SeekPill({ children }) {
+  const icon = TAG_ICON[children];
+  return (
+    <span
+      className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium"
+      style={{
+        background: 'rgba(74,222,128,0.13)',
+        border: '1px solid rgba(74,222,128,0.28)',
+        color: 'rgba(134,239,172,0.95)',
+        backdropFilter: 'blur(8px)',
+      }}
+    >
+      {icon && <span className="opacity-70">{icon}</span>}
+      {children}
+    </span>
+  );
+}
+
 function CompanyCard({ company, onViewProfile }) {
   const bg     = industryBg[company.sector]     || industryBg.Tecnologia;
   const accent = industryAccent[company.sector] || 'rgba(24,113,216,0.55)';
@@ -165,12 +183,21 @@ function CompanyCard({ company, onViewProfile }) {
           )}
         </div>
 
-        {/* Ofrece */}
-        {offerTags.length > 0 && (
-          <div className="mt-2.5">
-            <div className="flex flex-wrap gap-1.5">
-              {offerTags.map(t => <Pill key={t}>{t}</Pill>)}
-            </div>
+        {/* Ofrece + Busca */}
+        {(offerTags.length > 0 || seekingTags.length > 0) && (
+          <div className="mt-2.5 space-y-2">
+            {offerTags.length > 0 && (
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-white/35 shrink-0">Ofrece</span>
+                {offerTags.map(t => <Pill key={t}>{t}</Pill>)}
+              </div>
+            )}
+            {seekingTags.length > 0 && (
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-white/35 shrink-0">Busca</span>
+                {seekingTags.map(t => <SeekPill key={t}>{t}</SeekPill>)}
+              </div>
+            )}
           </div>
         )}
       </div>
