@@ -80,7 +80,7 @@ function WebSidebar({ activeView, onNavigate, userPlan, companyName }) {
       onHoverEnd={() => { setExpanded(false); setNotifOpen(false); }}
       animate={{ width: expanded ? 232 : 64 }}
       transition={spring}
-      className="relative z-40 m-3 flex shrink-0 flex-col overflow-hidden"
+      className="relative z-40 m-3 flex shrink-0 flex-col overflow-hidden self-start"
       style={{
         background: t.sidebarBg,
         border: `1px solid ${t.sidebarBorder}`,
