@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowUp, Navigation } from 'lucide-react';
+import { ArrowUp, Navigation, Users, Eye, Share2, ShoppingBag, Truck, TrendingUp, BarChart2, Radio, Star, Zap } from 'lucide-react';
 
 /* ── Per-sector gradient backgrounds ─────────────────── */
 const industryBg = {
@@ -50,16 +50,35 @@ function formatTags(raw = '') {
     .slice(0, 3);
 }
 
+const TAG_ICON = {
+  'Espacio físico': <ShoppingBag size={10} strokeWidth={2} />,
+  'Audiencia':      <Users size={10} strokeWidth={2} />,
+  'Producto':       <Star size={10} strokeWidth={2} />,
+  'Logística':      <Truck size={10} strokeWidth={2} />,
+  'Ventas':         <TrendingUp size={10} strokeWidth={2} />,
+  'Visibilidad':    <Eye size={10} strokeWidth={2} />,
+  'Tráfico':        <BarChart2 size={10} strokeWidth={2} />,
+  'Canales':        <Radio size={10} strokeWidth={2} />,
+  'Branding':       <Zap size={10} strokeWidth={2} />,
+  'Engagement':     <Share2 size={10} strokeWidth={2} />,
+  'Clientes':       <Users size={10} strokeWidth={2} />,
+  'Redes sociales': <Share2 size={10} strokeWidth={2} />,
+  'Cross-selling':  <Users size={10} strokeWidth={2} />,
+  'Audiencia local':<Users size={10} strokeWidth={2} />,
+};
+
 function Pill({ children }) {
+  const icon = TAG_ICON[children];
   return (
     <span
-      className="rounded-full px-2.5 py-1 text-[11px] font-medium text-white/80"
+      className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium text-white/80"
       style={{
         background: 'rgba(255,255,255,0.11)',
         border: '1px solid rgba(255,255,255,0.13)',
         backdropFilter: 'blur(8px)',
       }}
     >
+      {icon && <span className="opacity-70">{icon}</span>}
       {children}
     </span>
   );

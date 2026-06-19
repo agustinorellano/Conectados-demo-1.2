@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, useInView, useMotionValue, useSpring, AnimatePresence } from 'framer-motion';
 import {
   ArrowRight, Bot, BriefcaseBusiness, Check, ChevronDown,
-  Globe, LayoutDashboard, Link2, MessageSquare, PanelsTopLeft,
-  Sparkles, TrendingUp, Users, Video, Zap, Star, Menu, X
+  Eye, Globe, LayoutDashboard, Link2, MessageSquare, PanelsTopLeft,
+  Sparkles, Tag, TrendingUp, Users, Video, Zap, Star, Menu, X
 } from 'lucide-react';
 import HeroSection from './components/HeroSection';
 
@@ -371,22 +371,32 @@ function MatchMockup() {
   const [active, setActive] = useState(0);
   const cards = [
     {
-      name: 'Bloom Florería', type: 'Florería', location: 'CABA', followers: '3.2k',
-      score: 94, tags: ['Co-marketing', 'Eventos', 'Visibilidad'], color: '#10B981',
+      name: 'Alma Indumentaria', type: 'Indumentaria', location: 'Rosario, Santa Fe', followers: '5.1k',
+      score: 92, color: '#2563EB',
+      tags: [
+        { label: 'Co-marketing', icon: <Users size={12} strokeWidth={2} /> },
+        { label: 'Descuentos', icon: <Tag size={12} strokeWidth={2} /> },
+        { label: 'Visibilidad', icon: <Eye size={12} strokeWidth={2} /> },
+      ],
       logo: (
-        <svg width="80" height="60" viewBox="0 0 80 60" fill="none">
-          <text x="4" y="36" fontFamily="Inter, system-ui, sans-serif" fontSize="28" fontWeight="300" letterSpacing="-0.5" fill="#1E2A3A">bloom</text>
-          <text x="5" y="52" fontFamily="Inter, system-ui, sans-serif" fontSize="11" fontWeight="400" letterSpacing="0.5" fill="#1E2A3A" opacity="0.6">Florería</text>
+        <svg width="88" height="60" viewBox="0 0 88 60" fill="none">
+          <text x="2" y="36" fontFamily="Inter, system-ui, sans-serif" fontSize="28" fontWeight="300" letterSpacing="-0.5" fill="#1E2A3A">alma</text>
+          <text x="2" y="52" fontFamily="Inter, system-ui, sans-serif" fontSize="11" fontWeight="400" letterSpacing="0.8" fill="#1E2A3A" opacity="0.55">Indumentaria</text>
         </svg>
       ),
     },
     {
-      name: 'Luna Beauty', type: 'Belleza', location: 'Palermo', followers: '5.8k',
-      score: 87, tags: ['Cross-selling', 'Redes sociales', 'Visibilidad'], color: '#8B5CF6',
+      name: 'Verde Luz', type: 'Tienda de plantas', location: 'Palermo, CABA', followers: '2.8k',
+      score: 87, color: '#10B981',
+      tags: [
+        { label: 'Co-marketing', icon: <Users size={12} strokeWidth={2} /> },
+        { label: 'Descuentos', icon: <Tag size={12} strokeWidth={2} /> },
+        { label: 'Visibilidad', icon: <Eye size={12} strokeWidth={2} /> },
+      ],
       logo: (
-        <svg width="80" height="60" viewBox="0 0 80 60" fill="none">
-          <text x="4" y="36" fontFamily="Inter, system-ui, sans-serif" fontSize="28" fontWeight="300" letterSpacing="-0.5" fill="#1E2A3A">luna</text>
-          <text x="5" y="52" fontFamily="Inter, system-ui, sans-serif" fontSize="11" fontWeight="400" letterSpacing="0.5" fill="#1E2A3A" opacity="0.6">Beauty</text>
+        <svg width="88" height="60" viewBox="0 0 88 60" fill="none">
+          <text x="2" y="36" fontFamily="Inter, system-ui, sans-serif" fontSize="28" fontWeight="300" letterSpacing="-0.5" fill="#1E2A3A">verde</text>
+          <text x="2" y="52" fontFamily="Inter, system-ui, sans-serif" fontSize="11" fontWeight="400" letterSpacing="0.8" fill="#1E2A3A" opacity="0.55">Tienda de plantas</text>
         </svg>
       ),
     },
@@ -436,11 +446,12 @@ function MatchMockup() {
           </div>
 
           {/* Tags */}
-          <div className="flex flex-wrap gap-1.5">
-            {card.tags.map(tag => (
-              <span key={tag} className="rounded-full px-2.5 py-1 text-[10px] font-semibold"
-                style={{ background: `${card.color}12`, color: card.color, border: `1px solid ${card.color}22` }}>
-                {tag}
+          <div className="flex flex-wrap gap-2">
+            {card.tags.map(t => (
+              <span key={t.label} className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold"
+                style={{ background: '#F0F4FF', color: card.color, border: '1px solid #E2E8F4' }}>
+                <span style={{ color: card.color, opacity: 0.8 }}>{t.icon}</span>
+                {t.label}
               </span>
             ))}
           </div>
