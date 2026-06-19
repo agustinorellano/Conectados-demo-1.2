@@ -83,15 +83,20 @@ function Navbar() {
   }, []);
 
   return (
-    <motion.header
-      className="fixed inset-x-0 top-0 z-50 transition-all duration-300"
-      style={{
-        background: scrolled ? 'rgba(7,12,24,0.88)' : 'rgba(240,244,255,0.85)',
-        backdropFilter: 'blur(20px)',
-        borderBottom: scrolled ? '1px solid rgba(255,255,255,0.06)' : `1px solid ${C.border}`,
-      }}
-    >
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+    <div className="fixed inset-x-0 top-0 z-50 flex justify-center px-6 pt-4 pointer-events-none">
+      <motion.header
+        className="pointer-events-auto w-full max-w-5xl transition-all duration-300"
+        style={{
+          background: scrolled ? 'rgba(7,12,24,0.92)' : 'rgba(255,255,255,0.92)',
+          backdropFilter: 'blur(20px)',
+          border: scrolled ? '1px solid rgba(255,255,255,0.10)' : `1px solid ${C.border}`,
+          borderRadius: 999,
+          boxShadow: scrolled
+            ? '0 8px 32px rgba(0,0,0,0.35)'
+            : '0 4px 24px rgba(0,0,0,0.08)',
+        }}
+      >
+      <div className="flex items-center justify-between px-5 py-3">
         {/* Logo */}
         <div className="flex items-center gap-2.5">
           <div className="flex h-8 w-8 items-center justify-center rounded-[10px] text-xs font-bold text-white"
@@ -161,7 +166,8 @@ function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.header>
+      </motion.header>
+    </div>
   );
 }
 
