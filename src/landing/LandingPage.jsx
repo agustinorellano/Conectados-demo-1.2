@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, useInView, useMotionValue, useSpring, AnimatePresence } from 'framer-motion';
 import {
   ArrowRight, Bot, BriefcaseBusiness, Check, ChevronDown,
-  Globe, LayoutDashboard, MessageSquare, PanelsTopLeft,
+  Globe, LayoutDashboard, Link2, MessageSquare, PanelsTopLeft,
   Sparkles, TrendingUp, Users, Video, Zap, Star, Menu, X
 } from 'lucide-react';
 import HeroSection from './components/HeroSection';
@@ -255,8 +255,8 @@ function Navbar() {
 
         {/* Desktop nav */}
         <nav className="hidden items-center gap-8 md:flex">
-          {['Producto', 'Cómo funciona', 'Precios', 'FAQ'].map(item => (
-            <a key={item} href={`#${item.toLowerCase().replace(/\s/g, '-')}`}
+          {['Producto', 'Cómo funciona', 'El circuito', 'Precios', 'FAQ'].map(item => (
+            <a key={item} href={`#${item.toLowerCase().replace(/\s/g, '-').replace(/á/g,'a').replace(/é/g,'e').replace(/í/g,'i').replace(/ó/g,'o').replace(/ú/g,'u')}`}
               className="text-[13px] font-medium text-white/50 transition hover:text-white">
               {item}
             </a>
@@ -292,8 +292,8 @@ function Navbar() {
             style={{ background: 'rgba(7,12,24,0.97)' }}
           >
             <div className="space-y-1 px-6 py-4">
-              {['Producto', 'Cómo funciona', 'Precios', 'FAQ'].map(item => (
-                <a key={item} href={`#${item.toLowerCase().replace(/\s/g, '-')}`}
+              {['Producto', 'Cómo funciona', 'El circuito', 'Precios', 'FAQ'].map(item => (
+                <a key={item} href={`#${item.toLowerCase().replace(/\s/g, '-').replace(/á/g,'a').replace(/é/g,'e').replace(/í/g,'i').replace(/ó/g,'o').replace(/ú/g,'u')}`}
                   onClick={() => setMenuOpen(false)}
                   className="block py-2.5 text-[14px] font-medium text-white/60 transition hover:text-white">
                   {item}
@@ -829,6 +829,134 @@ export default function LandingPage() {
       >
         <WorkplaceMockup />
       </FeatureSection>
+
+      {/* ── CIRCUITO ─────────────────────────────────────── */}
+      <section id="el-circuito" className="py-28 px-6" style={{ background: C.bg }}>
+        <div className="mx-auto max-w-5xl">
+          <FadeUp className="mb-20 text-center space-y-4">
+            <div className="flex items-center justify-center gap-3">
+              <div style={{ height: 1, width: 40, background: 'linear-gradient(to right, transparent, rgba(24,113,216,0.6))' }} />
+              <span className="text-[11px] font-bold uppercase tracking-[0.22em]" style={{ color: '#4A9FFF' }}>El circuito</span>
+              <div style={{ height: 1, width: 40, background: 'linear-gradient(to left, transparent, rgba(24,113,216,0.6))' }} />
+            </div>
+            <h2 className="font-['Space_Grotesk'] text-3xl font-bold text-white lg:text-4xl">
+              De un match a un negocio,<br />todo en Conectados
+            </h2>
+            <p className="text-[15px] mx-auto max-w-lg" style={{ color: C.text }}>
+              Cada alianza recorre el mismo camino. Conectados acompaña cada etapa.
+            </p>
+          </FadeUp>
+
+          {/* Circuit — 5 stages */}
+          <FadeUp delay={0.12}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 0, position: 'relative' }}>
+
+              {/* Connector line behind cards */}
+              <div style={{
+                position: 'absolute', top: 52, left: '10%', right: '10%', height: 2,
+                background: 'linear-gradient(to right, rgba(24,113,216,0.15), #1871D8, #1871D8, #1871D8, rgba(24,113,216,0.9))',
+                zIndex: 0,
+              }} />
+
+              {[
+                {
+                  label: 'Alianza', desc: 'Match por afinidad real',
+                  icon: <Link2 size={20} color="#4A9FFF" strokeWidth={2} />,
+                  companies: ['CP', 'NA'], opacity: 0.35,
+                },
+                {
+                  label: 'Chat', desc: 'Primera conversación',
+                  icon: <MessageSquare size={20} color="#4A9FFF" strokeWidth={2} />,
+                  companies: ['CP', 'NA'], opacity: 0.55,
+                },
+                {
+                  label: 'Workplace', desc: 'Tareas y acuerdos',
+                  icon: <PanelsTopLeft size={20} color="#4A9FFF" strokeWidth={2} />,
+                  companies: ['CP', 'NA'], opacity: 0.72,
+                },
+                {
+                  label: 'Proyecto', desc: 'Activación conjunta',
+                  icon: <Zap size={20} color="#4A9FFF" strokeWidth={2} />,
+                  companies: ['CP', 'NA'], opacity: 0.88,
+                },
+                {
+                  label: 'Negocio', desc: 'Revenue medible',
+                  icon: <TrendingUp size={20} color="#fff" strokeWidth={2} />,
+                  companies: ['CP', 'NA'], opacity: 1, highlight: true,
+                },
+              ].map((step, i) => (
+                <div key={step.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, position: 'relative', zIndex: 1 }}>
+
+                  {/* Node card */}
+                  <div style={{
+                    width: 104, height: 104, borderRadius: 24,
+                    background: step.highlight
+                      ? 'linear-gradient(135deg, #1871D8, #0E4FA8)'
+                      : 'rgba(255,255,255,0.04)',
+                    border: step.highlight
+                      ? '1px solid rgba(74,159,255,0.5)'
+                      : '1px solid rgba(255,255,255,0.08)',
+                    display: 'flex', flexDirection: 'column',
+                    alignItems: 'center', justifyContent: 'center', gap: 10,
+                    boxShadow: step.highlight ? '0 0 40px rgba(24,113,216,0.35)' : 'none',
+                    position: 'relative', overflow: 'visible',
+                  }}>
+                    {/* Pulse for last */}
+                    {step.highlight && (
+                      <motion.div
+                        animate={{ scale: [1, 1.22, 1], opacity: [0.4, 0, 0.4] }}
+                        transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+                        style={{
+                          position: 'absolute', inset: -12, borderRadius: 32,
+                          border: '2px solid #1871D8', pointerEvents: 'none',
+                        }}
+                      />
+                    )}
+
+                    {/* Two company avatars */}
+                    <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                      {['CP', 'NA'].map((initials, j) => (
+                        <div key={j} style={{
+                          width: 28, height: 28, borderRadius: '50%',
+                          background: step.highlight
+                            ? 'rgba(255,255,255,0.2)'
+                            : `rgba(24,113,216,${step.opacity * 0.5})`,
+                          border: `1.5px solid rgba(255,255,255,${step.opacity * 0.4})`,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontSize: 8, fontWeight: 800,
+                          color: step.highlight ? '#fff' : `rgba(255,255,255,${step.opacity})`,
+                          letterSpacing: '0.02em',
+                        }}>
+                          {initials}
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Icon */}
+                    <div style={{ opacity: step.highlight ? 1 : step.opacity }}>
+                      {step.icon}
+                    </div>
+                  </div>
+
+                  {/* Label + desc */}
+                  <div style={{ textAlign: 'center', paddingInline: 4 }}>
+                    <div style={{
+                      fontSize: 13, fontWeight: 700,
+                      color: step.highlight ? '#fff' : `rgba(255,255,255,${step.opacity + 0.1})`,
+                      marginBottom: 5, letterSpacing: '-0.01em',
+                    }}>
+                      {step.label}
+                    </div>
+                    <div style={{ fontSize: 11, lineHeight: 1.55, color: `rgba(255,255,255,${step.opacity * 0.6})` }}>
+                      {step.desc}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </FadeUp>
+        </div>
+      </section>
 
       {/* ── ASISTENTE IA ─────────────────────────────────── */}
       <section className="py-24 px-6" style={{ background: 'rgba(255,255,255,0.015)' }}>
