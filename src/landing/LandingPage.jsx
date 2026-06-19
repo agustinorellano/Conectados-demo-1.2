@@ -370,8 +370,39 @@ function FeatureSection({ label, labelColor, title, description, side = 'left', 
 function MatchMockup() {
   const [active, setActive] = useState(0);
   const cards = [
-    { name: 'Bloom Florería', sector: 'Florería · CABA', score: 94, tags: ['Co-marketing', 'Eventos', 'Visibilidad'], color: '#10B981' },
-    { name: 'Luna Beauty', sector: 'Belleza · Palermo', score: 87, tags: ['Cross-selling', 'Redes sociales'], color: '#8B5CF6' },
+    {
+      name: 'Bloom Florería', type: 'Florería', location: 'CABA', followers: '3.2k',
+      score: 94, tags: ['Co-marketing', 'Eventos', 'Visibilidad'], color: '#10B981',
+      logo: (
+        <svg width="68" height="68" viewBox="0 0 68 68" fill="none">
+          <rect width="68" height="68" rx="16" fill="#F0FDF4"/>
+          {/* Flower petals */}
+          <ellipse cx="34" cy="23" rx="5" ry="8" fill="#10B981" opacity="0.75"/>
+          <ellipse cx="34" cy="45" rx="5" ry="8" fill="#10B981" opacity="0.75"/>
+          <ellipse cx="23" cy="34" rx="8" ry="5" fill="#10B981" opacity="0.75"/>
+          <ellipse cx="45" cy="34" rx="8" ry="5" fill="#10B981" opacity="0.75"/>
+          <circle cx="34" cy="34" r="7" fill="#059669"/>
+          <circle cx="34" cy="34" r="3" fill="#fff" opacity="0.5"/>
+        </svg>
+      ),
+    },
+    {
+      name: 'Luna Beauty', type: 'Belleza', location: 'Palermo', followers: '5.8k',
+      score: 87, tags: ['Cross-selling', 'Redes sociales', 'Visibilidad'], color: '#8B5CF6',
+      logo: (
+        <svg width="68" height="68" viewBox="0 0 68 68" fill="none">
+          <rect width="68" height="68" rx="16" fill="#F5F3FF"/>
+          {/* Crescent moon */}
+          <circle cx="36" cy="34" r="16" fill="#8B5CF6" opacity="0.2"/>
+          <circle cx="42" cy="30" r="13" fill="#F5F3FF"/>
+          <circle cx="34" cy="34" r="14" fill="#8B5CF6" opacity="0.85"/>
+          <circle cx="40" cy="28" r="11" fill="#F5F3FF"/>
+          {/* Stars */}
+          <circle cx="48" cy="22" r="2" fill="#8B5CF6"/>
+          <circle cx="52" cy="30" r="1.5" fill="#8B5CF6" opacity="0.6"/>
+        </svg>
+      ),
+    },
   ];
   const card = cards[active];
 
@@ -379,34 +410,38 @@ function MatchMockup() {
     <div className="overflow-hidden rounded-[28px]"
       style={{ background: '#fff', border: '1px solid #E2E8F4', boxShadow: '0 8px 48px rgba(37,99,235,0.10)' }}>
       <div className="p-6 space-y-4">
+
         {/* Score badge + counter */}
         <div className="flex items-center justify-between">
           <Label color={card.color}>Match {card.score}%</Label>
           <span className="text-[11px] font-semibold" style={{ color: C.text }}>1 de 12</span>
         </div>
 
-        {/* Company card */}
+        {/* Company card — like img 2 */}
         <div className="rounded-[18px] p-4 space-y-3" style={{ background: '#F8FAFF', border: '1px solid #E2E8F4' }}>
-          <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-[14px] flex items-center justify-center text-sm font-bold text-white"
-              style={{ background: `linear-gradient(135deg, ${card.color}, ${card.color}99)` }}>
-              {card.name.slice(0,2)}
-            </div>
-            <div>
-              <p className="text-[15px] font-bold" style={{ color: C.heading }}>{card.name}</p>
-              <p className="text-[12px]" style={{ color: C.text }}>{card.sector}</p>
+
+          {/* Logo + info side by side */}
+          <div className="flex items-center gap-4">
+            {card.logo}
+            <div className="flex-1 min-w-0">
+              <p className="text-[16px] font-bold leading-tight" style={{ color: C.heading }}>{card.name}</p>
+              <p className="text-[12px] mt-0.5" style={{ color: C.text }}>{card.type}</p>
+              <p className="text-[11px] mt-1.5 flex items-center gap-1" style={{ color: C.text }}>
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1C4.07 1 2.5 2.57 2.5 4.5c0 2.63 3.5 6.5 3.5 6.5s3.5-3.87 3.5-6.5C9.5 2.57 7.93 1 6 1zm0 4.75a1.25 1.25 0 110-2.5 1.25 1.25 0 010 2.5z" fill="#94A3B8"/></svg>
+                {card.location} · {card.followers} seguidores
+              </p>
             </div>
           </div>
 
           {/* Score bar */}
           <div>
             <div className="mb-1.5 flex items-center justify-between">
-              <span className="text-[10px] font-medium" style={{ color: C.text }}>Compatibilidad</span>
-              <span className="text-[11px] font-bold" style={{ color: card.color }}>{card.score}%</span>
+              <span className="text-[11px] font-medium" style={{ color: C.text }}>Compatibilidad</span>
+              <span className="text-[12px] font-bold" style={{ color: card.color }}>{card.score}%</span>
             </div>
             <div className="h-2 rounded-full" style={{ background: '#E2E8F4' }}>
               <motion.div key={active} className="h-full rounded-full"
-                style={{ background: `linear-gradient(90deg, ${card.color}, ${card.color}99)` }}
+                style={{ background: card.color }}
                 initial={{ width: 0 }}
                 animate={{ width: `${card.score}%` }}
                 transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }} />
