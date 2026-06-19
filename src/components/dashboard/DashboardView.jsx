@@ -8,12 +8,19 @@ import {
   TrendingUp,
   Users,
   Video,
+  X,
   Zap,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
 import CalendarWidget from './CalendarWidget';
 import { useTheme } from '../../context/ThemeContext';
+
+const NOTIFICATIONS = [
+  { id: 1, text: 'Nuevo match con Bloom Florería', sub: 'Score 94% · hace 2 min', dot: '#10B981', unread: true },
+  { id: 2, text: 'Luna Beauty respondió tu propuesta', sub: 'hace 15 min', dot: '#3B82F6', unread: true },
+  { id: 3, text: 'Alliance Room disponible', sub: 'Bloom · hace 1h', dot: '#8B5CF6', unread: false },
+];
 
 // ─── Alliance Notes data ─────────────────────────────────────────────────────
 const ALLIANCE_NOTES = [
@@ -154,15 +161,78 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
   const { t } = useTheme();
   const [reminders, setReminders] = useState(initialReminders);
   const [expandedNote, setExpandedNote] = useState(null);
+  const [notifOpen, setNotifOpen]   = useState(false);
+  const [readIds,   setReadIds]     = useState(new Set());
 
-  const pendingCount = reminders.filter((r) => !r.done).length;
+  const pendingCount  = reminders.filter((r) => !r.done).length;
+  const unreadCount   = NOTIFICATIONS.filter(n => n.unread && !readIds.has(n.id)).length;
   const toggleReminder = (id) =>
     setReminders((prev) => prev.map((r) => (r.id === id ? { ...r, done: !r.done } : r)));
   const resolveAll = () => setReminders((prev) => prev.map((r) => ({ ...r, done: true })));
+  const openNotif  = () => { setNotifOpen(true);  setReadIds(new Set(NOTIFICATIONS.map(n => n.id))); };
+
+  const companyName = dashboardData?.commerce?.name ?? 'Mi empresa';
 
   return (
-    <div className="h-full overflow-y-auto px-4 py-4 [scrollbar-width:none]" style={{ background: t.bg, transition: 'background 0.3s ease' }}>
-    <div className="space-y-4 pb-4">
+    <div className="h-full overflow-y-auto [scrollbar-width:none]" style={{ background: t.bg, transition: 'background 0.3s ease' }}>
+
+    {/* ── Mobile top header ── */}
+    <div className="sticky top-0 z-20 flex items-center justify-between px-4 py-3"
+      style={{ background: t.bg, borderBottom: `1px solid ${t.panelBorder}` }}>
+      <div>
+        <p className="text-[15px] font-bold leading-tight" style={{ color: t.text1 }}>{companyName}</p>
+        <p className="text-[11px]" style={{ color: t.text3 }}>Dashboard</p>
+      </div>
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => notifOpen ? setNotifOpen(false) : openNotif()}
+          className="relative flex h-9 w-9 items-center justify-center rounded-full transition"
+          style={{ background: notifOpen ? t.accentActive : t.surface }}
+        >
+          <Bell size={17} strokeWidth={1.8} style={{ color: t.text2 }} />
+          {unreadCount > 0 && (
+            <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold text-white"
+              style={{ background: '#EF4444' }}>
+              {unreadCount}
+            </span>
+          )}
+        </button>
+
+        <AnimatePresence>
+          {notifOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -6, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -6, scale: 0.97 }}
+              transition={{ duration: 0.15 }}
+              className="absolute right-0 top-full mt-2 w-[280px] overflow-hidden rounded-[18px]"
+              style={{ background: t.dropdownBg, border: `1px solid ${t.dropdownBorder}`, boxShadow: '0 12px 40px rgba(0,0,0,0.20)', zIndex: 50 }}
+            >
+              <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: `1px solid ${t.surfaceBorder}` }}>
+                <span className="text-[11px] font-bold uppercase tracking-[0.15em]" style={{ color: t.text3 }}>Notificaciones</span>
+                <button type="button" onClick={() => setNotifOpen(false)} style={{ color: t.text3 }}><X size={13} /></button>
+              </div>
+              {NOTIFICATIONS.map(n => (
+                <div key={n.id} className="flex items-start gap-3 px-4 py-3 transition"
+                  style={{ borderBottom: `1px solid ${t.surfaceBorder}` }}
+                  onMouseEnter={e => e.currentTarget.style.background = t.surface}
+                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                >
+                  <div className="mt-1.5 h-2 w-2 shrink-0 rounded-full" style={{ background: n.dot }} />
+                  <div className="min-w-0">
+                    <p className="text-[13px] font-medium leading-snug" style={{ color: t.text1 }}>{n.text}</p>
+                    <p className="mt-0.5 text-[11px]" style={{ color: t.text3 }}>{n.sub}</p>
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+
+    <div className="space-y-4 px-4 py-4 pb-4">
       {/* 4 METRIC CARDS */}
       <section className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         {metricCards.map((card, index) => (
