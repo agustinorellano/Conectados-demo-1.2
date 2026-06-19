@@ -713,7 +713,7 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
 
           {/* ── Right panel: company detail ── */}
           <div className="flex flex-1 min-h-0 p-4 pl-0">
-            <div className="flex flex-1 flex-col overflow-hidden rounded-[24px]"
+            <div className="flex flex-1 min-h-0 flex-col overflow-hidden rounded-[24px]"
               style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
               <DesktopDetailPanel
                 company={activeCompany}
