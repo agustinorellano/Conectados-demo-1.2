@@ -621,8 +621,21 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
 
           <div className="flex flex-1 min-h-0">
 
-          {/* ── Left panel: card + controls ── */}
-          <div className="flex w-[440px] shrink-0 flex-col h-full" style={{ borderRight: '1px solid rgba(255,255,255,0.07)' }}>
+          {/* ── Left panel: company detail ── */}
+          <div className="flex flex-1 min-h-0 p-4 pr-0">
+            <div className="flex flex-1 min-h-0 flex-col overflow-hidden rounded-[24px]"
+              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <DesktopDetailPanel
+                company={activeCompany}
+                score={activeCompany?.score ?? 0}
+                deckIndex={activeIndex}
+                deckTotal={deck.length}
+              />
+            </div>
+          </div>
+
+          {/* ── Right panel: card + controls ── */}
+          <div className="flex w-[440px] shrink-0 flex-col h-full" style={{ borderLeft: '1px solid rgba(255,255,255,0.07)' }}>
 
             {/* Tab header */}
             <div className="flex shrink-0 items-center justify-between px-5 py-4">
@@ -709,19 +722,6 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
                 </div>
               </div>
             )}
-          </div>
-
-          {/* ── Right panel: company detail ── */}
-          <div className="flex flex-1 min-h-0 p-4 pl-0">
-            <div className="flex flex-1 min-h-0 flex-col overflow-hidden rounded-[24px]"
-              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <DesktopDetailPanel
-                company={activeCompany}
-                score={activeCompany?.score ?? 0}
-                deckIndex={activeIndex}
-                deckTotal={deck.length}
-              />
-            </div>
           </div>
 
           {/* Flash toast — top center on desktop */}
