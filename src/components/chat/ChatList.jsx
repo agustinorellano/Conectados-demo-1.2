@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
-  AlertCircle, Archive, Bot, Check, Copy, Link, Mail,
+  Archive, Bot, Check, Copy, Link, Mail,
   Phone, Plus, Search, TrendingUp, Users, Video, X, Zap,
 } from 'lucide-react';
 import ChatItem from './ChatItem';
@@ -65,103 +65,16 @@ const MEMBER_STATUS = {
 };
 
 /* ──────────────────────────────────────────────────────────────────
-   PIPELINE — replaces story bubbles
-   Compact horizontal cards showing key relationships at a glance
+   AI NOTICE — minimal single-line banner
 ─────────────────────────────────────────────────────────────────── */
-function PipelineCard({ conv, onSelect }) {
-  const initials = conv.logo && /^[A-Z]{1,3}$/.test(conv.logo)
-    ? conv.logo
-    : conv.company?.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase() || '??';
-  const cfg = STATE_CFG[conv.businessState] || STATE_CFG.pendiente;
-
-  return (
-    <button type="button" onClick={() => onSelect(conv.id)}
-      className="flex shrink-0 flex-col gap-2 rounded-[14px] p-3 text-left transition active:scale-[0.97]"
-      style={{
-        background: 'rgba(255,255,255,0.05)',
-        border: '1px solid rgba(255,255,255,0.08)',
-        width: '148px',
-      }}>
-      {/* Logo + state dot */}
-      <div className="flex items-center justify-between">
-        <div className="flex h-9 w-9 items-center justify-center rounded-[10px] font-['Space_Grotesk'] text-[12px] font-bold text-white"
-          style={{ background: grad(conv.company) }}>
-          {initials}
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="h-1.5 w-1.5 rounded-full" style={{ background: cfg.color }} />
-          {conv.score != null && (
-            <span className="text-[10px] font-bold text-white/40">{conv.score}</span>
-          )}
-        </div>
-      </div>
-
-      {/* Company name */}
-      <div>
-        <p className="truncate text-[12px] font-bold text-white/90">{conv.company}</p>
-        <p className="mt-0.5 text-[10px] text-white/30">{conv.sector}</p>
-      </div>
-
-      {/* Last interaction */}
-      <div className="flex items-center justify-between">
-        <span className="rounded-[5px] px-1.5 py-0.5 text-[9px] font-semibold"
-          style={{ background: `${cfg.color}14`, color: cfg.color }}>
-          {cfg.label}
-        </span>
-        <span className="text-[9px] text-white/25">{conv.lastInteraction}</span>
-      </div>
-    </button>
-  );
-}
-
-/* ──────────────────────────────────────────────────────────────────
-   AI OPPORTUNITY CENTER — replaces "Asistente Virtual" pill
-─────────────────────────────────────────────────────────────────── */
-const OPPORTUNITIES = [
-  { icon: AlertCircle, color: '#F59E0B', text: '3 alianzas requieren seguimiento esta semana.' },
-  { icon: TrendingUp,  color: '#10B981', text: 'Luna Beauty respondió tu propuesta. Revisá la conversación.' },
-  { icon: Zap,         color: '#4A9FFF', text: 'Oportunidad detectada con Bloom Florería — 92% compatibilidad.' },
-];
-
-function AiOpportunityCenter({ onOpen }) {
+function AiNotice({ onOpen }) {
   return (
     <button type="button" onClick={onOpen}
-      className="mx-4 mb-3 block w-auto rounded-[18px] p-4 text-left transition hover:brightness-105 active:scale-[0.99]"
-      style={{
-        background: 'linear-gradient(135deg, rgba(12,18,40,0.95) 0%, rgba(18,28,60,0.90) 100%)',
-        border: '1px solid rgba(74,159,255,0.18)',
-        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 20px rgba(24,113,216,0.10)',
-      }}>
-      {/* Header */}
-      <div className="mb-3 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-[12px]"
-            style={{ background: 'linear-gradient(135deg, #1459B0, #1871D8)', boxShadow: '0 0 14px rgba(24,113,216,0.40)' }}>
-            <Bot className="h-4 w-4 text-white" />
-            <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-[1.5px] bg-emerald-400"
-              style={{ borderColor: 'rgba(12,18,40,0.95)' }} />
-          </div>
-          <div>
-            <p className="text-[13px] font-bold text-white">Centro de oportunidades</p>
-            <p className="text-[10px] text-white/35">Asistente IA · En línea</p>
-          </div>
-        </div>
-        <span className="rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-[#4A9FFF]"
-          style={{ background: 'rgba(74,159,255,0.12)', border: '1px solid rgba(74,159,255,0.18)' }}>IA</span>
-      </div>
-
-      {/* Opportunities list */}
-      <div className="space-y-2">
-        {OPPORTUNITIES.map(({ icon: Icon, color, text }, i) => (
-          <div key={i} className="flex items-start gap-2.5">
-            <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-[6px]"
-              style={{ background: `${color}18` }}>
-              <Icon className="h-3 w-3" style={{ color }} />
-            </div>
-            <p className="text-[11px] leading-relaxed text-white/50">{text}</p>
-          </div>
-        ))}
-      </div>
+      className="mx-4 mb-3 flex items-center gap-2.5 rounded-[10px] px-3 py-2.5 text-left transition hover:brightness-110 w-auto"
+      style={{ background: 'rgba(74,159,255,0.07)', border: '1px solid rgba(74,159,255,0.14)' }}>
+      <Zap className="h-3.5 w-3.5 shrink-0 text-[#4A9FFF]" />
+      <p className="flex-1 text-[12px] text-white/50 truncate">Luna Beauty respondió tu propuesta</p>
+      <span className="shrink-0 text-[10px] font-bold text-[#4A9FFF]">Ver →</span>
     </button>
   );
 }
@@ -585,26 +498,18 @@ function ChatList({
   const isEmpty    = filtered.length === 0;
   const hasRealTeam = teamMembers.length > 1;
 
-  /* Pipeline: top 5 active non-team conversations */
-  const pipelineConvs = useMemo(() =>
-    conversations.filter(c => !c.isTeam && !archived.has(c.id)).slice(0, 6),
-  [conversations, archived]);
-
   return (
     <div className="h-full overflow-y-auto [scrollbar-width:none] [-webkit-overflow-scrolling:touch]"
       style={{ background: '#0A0F1E' }}>
 
       {/* ── Header ── */}
-      <div className="flex items-center justify-between px-5 pb-3 pt-5">
-        <div>
-          <h2 className="font-['Space_Grotesk'] text-[22px] font-bold text-white">Chats</h2>
-          <p className="text-[11px] text-white/30">Gestión de alianzas comerciales</p>
-        </div>
+      <div className="flex items-center justify-between px-4 pb-3 pt-5">
+        <h2 className="font-['Space_Grotesk'] text-[18px] font-bold text-white">Mensajes</h2>
         <div className="flex items-center gap-2">
           {onOpenAllianceRoom && (
             <button type="button" onClick={onOpenAllianceRoom} title="Alliance Room"
-              className="flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-white/8"
-              style={{ border: '1.5px solid rgba(139,92,246,0.35)', color: '#A78BFA' }}>
+              className="flex h-8 w-8 items-center justify-center rounded-full transition hover:bg-white/8"
+              style={{ color: 'rgba(255,255,255,0.35)' }}>
               <Video className="h-4 w-4" />
             </button>
           )}
@@ -613,53 +518,38 @@ function ChatList({
       </div>
 
       {/* ── Search ── */}
-      <div className="px-5 pb-4">
-        <div className="chat-search flex h-[46px] items-center gap-3 rounded-[14px] px-4">
-          <Search className="h-4 w-4 shrink-0 text-[#6EAAFF]" />
+      <div className="px-4 pb-3">
+        <div className="chat-search flex h-[38px] items-center gap-2.5 rounded-[10px] px-3">
+          <Search className="h-3.5 w-3.5 shrink-0 text-white/30" />
           <input
-            className="flex-1 bg-transparent text-[14px] text-white outline-none border-0 ring-0 shadow-none placeholder:text-[#6EAAFF]/60"
-            onChange={handleSearchChange} placeholder="Buscar empresa, sector, tag…" value={query} />
+            className="flex-1 bg-transparent text-[13px] text-white outline-none border-0 ring-0 shadow-none placeholder:text-white/25"
+            onChange={handleSearchChange} placeholder="Buscar…" value={query} />
           <AnimatePresence>
             {query && (
               <motion.button initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.7 }}
                 onClick={handleClearSearch} type="button"
-                className="flex h-5 w-5 items-center justify-center rounded-full"
-                style={{ background: 'rgba(74,159,255,0.15)' }}>
-                <X className="h-3 w-3 text-[#60A5FA]/70" />
+                className="flex h-4 w-4 items-center justify-center rounded-full bg-white/10">
+                <X className="h-2.5 w-2.5 text-white/50" />
               </motion.button>
             )}
           </AnimatePresence>
         </div>
       </div>
 
-      {/* ── Pipeline de relaciones (replaces story bubbles) ── */}
-      {!debouncedQuery && pipelineConvs.length > 0 && (
-        <div className="mb-3">
-          <p className="mb-2 px-5 text-[10px] font-bold uppercase tracking-[0.20em] text-white/25">
-            Accesos rápidos
-          </p>
-          <div className="flex gap-3 overflow-x-auto px-5 pb-1 [scrollbar-width:none]">
-            {pipelineConvs.map(conv => (
-              <PipelineCard key={conv.id} conv={conv} onSelect={onSelect} />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ── Business segments ── */}
-      <div className="flex gap-1.5 overflow-x-auto px-5 pb-3 [scrollbar-width:none]">
+      {/* ── Segment tabs ── */}
+      <div className="flex gap-0 border-b px-4 pb-0" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
         {SEGMENTS.map(seg => {
           const isActive = activeSegment === seg.key;
           const count    = segmentCounts[seg.key];
           return (
             <button key={seg.key} type="button" onClick={() => setActiveSegment(seg.key)}
-              className="shrink-0 rounded-[10px] px-3.5 py-2 text-[12px] font-semibold transition-all"
+              className="shrink-0 pb-2.5 pt-1 text-[12px] font-semibold transition-colors mr-4"
               style={isActive
-                ? { background: 'rgba(255,255,255,0.12)', color: 'white', border: '1px solid rgba(255,255,255,0.16)' }
-                : { background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.40)', border: '1px solid transparent' }}>
+                ? { color: 'white', borderBottom: '2px solid #4A9FFF', marginBottom: -1 }
+                : { color: 'rgba(255,255,255,0.30)', borderBottom: '2px solid transparent', marginBottom: -1 }}>
               {seg.label}
               {count > 0 && (
-                <span className="ml-1.5 text-[10px]" style={{ opacity: isActive ? 0.55 : 0.35 }}>
+                <span className="ml-1 text-[10px]" style={{ opacity: isActive ? 0.5 : 0.3 }}>
                   {count}
                 </span>
               )}
@@ -668,14 +558,16 @@ function ChatList({
         })}
       </div>
 
+      {/* ── AI notice ── */}
+      {!debouncedQuery && (
+        <div className="pt-3">
+          <AiNotice onOpen={onOpenAssistant} />
+        </div>
+      )}
+
       {/* ── Team completion bar ── */}
       {!debouncedQuery && hasRealTeam && (
         <TeamCompletionBar members={teamMembers} onManage={() => setShowManage(true)} />
-      )}
-
-      {/* ── AI Opportunity Center ── */}
-      {!debouncedQuery && (
-        <AiOpportunityCenter onOpen={onOpenAssistant} />
       )}
 
       {/* ── Conversation list ── */}

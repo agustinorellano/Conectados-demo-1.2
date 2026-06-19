@@ -137,28 +137,27 @@ function ChatItem({
         className="relative w-full cursor-pointer select-none"
       >
         <div
-          className="flex items-stretch gap-3 rounded-[16px] px-3 py-3.5 transition-colors"
+          className="flex items-center gap-3 rounded-[14px] px-3 py-3 transition-colors"
           style={isActive
-            ? { background: 'rgba(74,159,255,0.10)', border: '1px solid rgba(74,159,255,0.20)' }
+            ? { background: 'rgba(74,159,255,0.08)', border: '1px solid rgba(74,159,255,0.16)' }
             : { background: 'transparent', border: '1px solid transparent' }}
         >
-          {/* Left color accent line (relationship state) */}
-          <div className="flex items-stretch">
-            <div className="w-[3px] self-stretch rounded-full"
-              style={{ background: cfg.color, opacity: 0.7 }} />
-          </div>
-
-          {/* Logo — square rounded, CRM style */}
-          <div className="relative shrink-0 self-start mt-0.5">
+          {/* Avatar */}
+          <div className="relative shrink-0">
             <div
-              className="flex h-[44px] w-[44px] items-center justify-center rounded-[12px] font-['Space_Grotesk'] text-[13px] font-bold text-white"
+              className="flex h-[40px] w-[40px] items-center justify-center rounded-full font-['Space_Grotesk'] text-[13px] font-bold text-white"
               style={{ background: isTeam ? 'linear-gradient(135deg, #4C1D95, #7C3AED)' : grad(company) }}
             >
               {initials}
             </div>
-            {/* Unread dot */}
+            {/* State dot */}
+            {!isTeam && (
+              <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full ring-2 ring-[#0A0F1E]"
+                style={{ background: cfg.color }} />
+            )}
+            {/* Unread badge */}
             {unread > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#1871D8] px-1 text-[9px] font-bold text-white">
+              <span className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#1871D8] px-1 text-[9px] font-bold text-white">
                 {unread}
               </span>
             )}
@@ -166,76 +165,25 @@ function ChatItem({
 
           {/* Content */}
           <div className="min-w-0 flex-1">
-            {/* Row 1: name + score + time */}
+            {/* Row 1: name + time */}
             <div className="flex items-center justify-between gap-2">
-              <div className="flex min-w-0 items-center gap-2">
-                <p className={`truncate font-['Space_Grotesk'] text-[14px] leading-tight ${
-                  isActive ? 'text-[#4A9FFF]' : 'text-white'
-                } ${unread > 0 ? 'font-bold' : 'font-semibold'}`}>
+              <div className="flex min-w-0 items-center gap-1.5">
+                <p className={`truncate text-[13px] leading-tight ${
+                  isActive ? 'font-bold text-white' : unread > 0 ? 'font-bold text-white' : 'font-semibold text-white/80'
+                }`}>
                   {company}
                 </p>
-                {isFavorite && (
-                  <Star className="h-3 w-3 shrink-0 fill-amber-400 text-amber-400" />
-                )}
-                {isPinned && (
-                  <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider text-white/30">fijado</span>
-                )}
+                {isFavorite && <Star className="h-2.5 w-2.5 shrink-0 fill-amber-400 text-amber-400" />}
               </div>
-              <div className="flex shrink-0 items-center gap-2">
-                {score != null && !isTeam && (
-                  <span className="rounded-[6px] px-1.5 py-0.5 text-[10px] font-bold text-white/70"
-                    style={{ background: 'rgba(255,255,255,0.08)' }}>
-                    {score}
-                  </span>
-                )}
-                <p className="whitespace-nowrap text-[11px] text-white/30">{lastInteraction}</p>
-              </div>
+              <p className="shrink-0 text-[11px] text-white/25">{lastInteraction}</p>
             </div>
 
-            {/* Row 2: sector · contact */}
-            <p className="mt-0.5 text-[12px] text-white/35">
-              {[sector, contact].filter(Boolean).join(' · ')}
-            </p>
-
-            {/* Row 3: last action/message */}
+            {/* Row 2: last message */}
             <p className={`mt-0.5 line-clamp-1 text-[12px] leading-snug ${
-              unread > 0 ? 'font-medium text-white/65' : 'text-white/35'
+              unread > 0 ? 'text-white/60' : 'text-white/30'
             }`}>
-              {prefix}{msgText}
+              {prefix}{msgText || [sector, contact].filter(Boolean).join(' · ')}
             </p>
-
-            {/* Row 4: business indicators (no emojis) */}
-            <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-              {/* Relationship state */}
-              {!isTeam && businessState && (
-                <span className="flex items-center gap-1 rounded-[6px] px-2 py-0.5 text-[10px] font-semibold"
-                  style={{ background: `${cfg.color}14`, color: cfg.color }}>
-                  <span className="h-1.5 w-1.5 rounded-full" style={{ background: cfg.color }} />
-                  {cfg.label}
-                </span>
-              )}
-              {isTeam && (
-                <span className="rounded-[6px] px-2 py-0.5 text-[10px] font-semibold text-violet-400"
-                  style={{ background: 'rgba(139,92,246,0.14)' }}>
-                  Interno
-                </span>
-              )}
-              {/* Task count */}
-              {taskCount > 0 && (
-                <span className="flex items-center gap-1 rounded-[6px] px-2 py-0.5 text-[10px] font-semibold text-[#4A9FFF]"
-                  style={{ background: 'rgba(74,159,255,0.10)' }}>
-                  {taskCount} {taskCount === 1 ? 'tarea' : 'tareas'}
-                </span>
-              )}
-              {/* Proposal count */}
-              {proposalCount > 0 && (
-                <span className="flex items-center gap-1 rounded-[6px] px-2 py-0.5 text-[10px] font-semibold text-[#A78BFA]"
-                  style={{ background: 'rgba(167,139,250,0.10)' }}>
-                  <FileText className="h-2.5 w-2.5" />
-                  {proposalCount} {proposalCount === 1 ? 'propuesta' : 'propuestas'}
-                </span>
-              )}
-            </div>
           </div>
         </div>
       </motion.div>
