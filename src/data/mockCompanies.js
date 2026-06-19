@@ -791,7 +791,7 @@ export const recommendedCompanies = alliances
       synergyFromThem: Math.round(alliance.match_score * 0.98),
       synergyToThem: Math.round(alliance.match_score * 0.94),
       capacityScore: Math.round(company.scores.overall * 10),
-      reciprocityScore: company.alliance_profile.open_to_alliance ? 1.12 : 0.9,
+      reciprocityScore: company.alliance_profile.open_to_alliance ? 0.88 : 0.65,
       operationalFitScore: company.scores.operaciones >= 7 ? 1.08 : 0.97,
       multiBenefit: alliance.alliance_type !== 'cross_selling',
       reciprocates: alliance.status !== 'rechazada',

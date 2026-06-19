@@ -1,8 +1,8 @@
 import { AnimatePresence, animate, motion, useMotionValue, useTransform } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  ArrowLeft, ArrowRight, Heart, MapPin, RotateCcw,
-  SlidersHorizontal, Star, Users, X, Zap,
+  ArrowLeft, ArrowRight, ExternalLink, Heart, MapPin, RotateCcw,
+  SlidersHorizontal, Star, TrendingUp, Users, X, Zap,
 } from 'lucide-react';
 import CompanyDetailModal from './CompanyDetailModal';
 import SwipeHeader from './SwipeHeader';
@@ -219,9 +219,9 @@ function SavedGrid({ companies, onView }) {
 }
 
 /* ── Desktop right panel — company detail ───────────────────── */
-const COMMON_CONNECTIONS = ['Bloom Florería', 'Luna Beauty'];
+const COMMON_CONNECTIONS = ['Bloom Florería', 'Sushi Nakama'];
 
-function DesktopDetailPanel({ company, score, onSkip, onLike, onSave }) {
+function DesktopDetailPanel({ company, score, deckIndex, deckTotal, onViewProfile }) {
   if (!company) {
     return (
       <div className="flex flex-1 items-center justify-center">
@@ -232,50 +232,107 @@ function DesktopDetailPanel({ company, score, onSkip, onLike, onSave }) {
 
   const offerTags = parseTags(company.offer || '');
   const seekTags  = parseTags(company.seeking || '');
+  const followers = company.instagramData?.followers ?? company.stats?.audience ?? null;
+  const followersLabel = followers != null
+    ? followers >= 1000 ? `${(followers / 1000).toFixed(1)}k` : `${followers}`
+    : null;
+  const lift = company.stats?.conversionLift;
 
   return (
     <div className="flex flex-1 flex-col h-full overflow-y-auto px-8 py-7 [scrollbar-width:none]">
 
+      {/* Progress */}
+      {deckTotal > 0 && (
+        <div className="flex items-center justify-between mb-5">
+          <span className="text-[11px] text-white/25">
+            Empresa <span className="text-white/45 font-semibold">{deckIndex + 1}</span> de {deckTotal}
+          </span>
+          <div className="flex gap-1">
+            {Array.from({ length: Math.min(deckTotal, 8) }).map((_, i) => (
+              <div key={i} className="h-1 rounded-full transition-all"
+                style={{
+                  width: i === deckIndex % 8 ? 16 : 6,
+                  background: i === deckIndex % 8 ? '#4A9FFF' : 'rgba(255,255,255,0.12)',
+                }} />
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Company header */}
-      <div className="flex items-start gap-4 mb-7">
-        <div className="h-16 w-16 shrink-0 rounded-2xl flex items-center justify-center font-['Space_Grotesk'] text-xl font-black text-white"
+      <div className="flex items-start gap-4 mb-5">
+        <div className="h-14 w-14 shrink-0 rounded-2xl flex items-center justify-center font-['Space_Grotesk'] text-lg font-black text-white"
           style={{ background: 'linear-gradient(135deg, #1871D8, #0A3D7A)' }}>
           {typeof company.logo === 'string' ? company.logo.slice(0, 2) : company.name.slice(0, 2).toUpperCase()}
         </div>
-        <div>
-          <h2 className="font-['Space_Grotesk'] text-2xl font-bold text-white leading-tight">{company.name}</h2>
-          <p className="text-white/50 text-sm mt-1">{company.sector}</p>
-          {company.distance != null && (
-            <p className="flex items-center gap-1 text-white/30 text-xs mt-1.5">
-              <MapPin size={10} /> {company.distance} km de distancia
-            </p>
-          )}
+        <div className="flex-1 min-w-0">
+          <h2 className="font-['Space_Grotesk'] text-xl font-bold text-white leading-tight truncate">{company.name}</h2>
+          <p className="text-white/45 text-sm mt-0.5">{company.sector}</p>
+          <div className="flex items-center gap-3 mt-1.5">
+            {company.distance != null && (
+              <span className="flex items-center gap-1 text-white/25 text-xs">
+                <MapPin size={10} /> {company.distance} km
+              </span>
+            )}
+            {followersLabel && (
+              <span className="flex items-center gap-1 text-white/25 text-xs">
+                <Users size={10} /> {followersLabel} seguidores
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
+      {/* Description */}
+      {company.description && (
+        <p className="text-[13px] leading-relaxed text-white/40 mb-5 line-clamp-3">
+          {company.description}
+        </p>
+      )}
+
       {/* Compatibility score */}
-      <div className="mb-7">
-        <div className="flex items-center justify-between mb-2.5">
+      <div className="mb-5">
+        <div className="flex items-center justify-between mb-2">
           <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/35">Compatibilidad</span>
-          <span className="font-['Space_Grotesk'] text-2xl font-black" style={{ color: '#4A9FFF' }}>{score}%</span>
+          <span className="font-['Space_Grotesk'] text-xl font-black" style={{ color: score >= 80 ? '#4ADE80' : score >= 60 ? '#4A9FFF' : '#FBBF24' }}>{score}%</span>
         </div>
-        <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.07)' }}>
+        <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.07)' }}>
           <motion.div className="h-full rounded-full"
-            style={{ background: 'linear-gradient(to right, #1871D8, #4A9FFF)' }}
+            style={{ background: score >= 80 ? 'linear-gradient(to right, #16A34A, #4ADE80)' : 'linear-gradient(to right, #1871D8, #4A9FFF)' }}
             initial={{ width: 0 }}
             animate={{ width: `${score}%` }}
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }} />
         </div>
       </div>
 
+      {/* Stats row */}
+      {lift && (
+        <div className="mb-5 flex gap-3">
+          <div className="flex-1 rounded-[14px] p-3 flex flex-col gap-1"
+            style={{ background: 'rgba(74,222,128,0.07)', border: '1px solid rgba(74,222,128,0.15)' }}>
+            <TrendingUp size={13} style={{ color: '#4ADE80' }} />
+            <p className="text-[18px] font-black font-['Space_Grotesk']" style={{ color: '#4ADE80' }}>{lift}</p>
+            <p className="text-[10px] text-white/30">Impacto en ventas</p>
+          </div>
+          {company.stats?.channels && (
+            <div className="flex-1 rounded-[14px] p-3 flex flex-col gap-1"
+              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <Zap size={13} style={{ color: '#4A9FFF' }} />
+              <p className="text-[11px] font-semibold text-white/70 mt-0.5 leading-tight">{company.stats.channels.replace(/\+/g, '·')}</p>
+              <p className="text-[10px] text-white/30">Canales activos</p>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* What they offer */}
       {offerTags.length > 0 && (
-        <div className="mb-5">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/35 mb-3">Ofrece</p>
-          <div className="flex flex-wrap gap-2">
+        <div className="mb-4">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/30 mb-2">Ofrece</p>
+          <div className="flex flex-wrap gap-1.5">
             {offerTags.map(t => (
-              <span key={t} className="rounded-full px-3 py-1.5 text-xs font-medium text-[#4A9FFF]"
-                style={{ background: 'rgba(74,159,255,0.10)', border: '1px solid rgba(74,159,255,0.22)' }}>{t}</span>
+              <span key={t} className="rounded-full px-2.5 py-1 text-[11px] font-medium text-[#4A9FFF]"
+                style={{ background: 'rgba(74,159,255,0.10)', border: '1px solid rgba(74,159,255,0.20)' }}>{t}</span>
             ))}
           </div>
         </div>
@@ -283,27 +340,27 @@ function DesktopDetailPanel({ company, score, onSkip, onLike, onSave }) {
 
       {/* What they seek */}
       {seekTags.length > 0 && (
-        <div className="mb-7">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/35 mb-3">Busca</p>
-          <div className="flex flex-wrap gap-2">
+        <div className="mb-5">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/30 mb-2">Busca</p>
+          <div className="flex flex-wrap gap-1.5">
             {seekTags.map(t => (
-              <span key={t} className="rounded-full px-3 py-1.5 text-xs font-medium text-white/55"
-                style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.10)' }}>{t}</span>
+              <span key={t} className="rounded-full px-2.5 py-1 text-[11px] font-medium text-white/50"
+                style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.09)' }}>{t}</span>
             ))}
           </div>
         </div>
       )}
 
       {/* Conexiones en común */}
-      <div className="mb-8 rounded-[18px] p-4" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
-        <div className="flex items-center gap-2 mb-3">
-          <Users size={13} style={{ color: '#4A9FFF' }} />
-          <span className="text-xs font-semibold text-white/50">{COMMON_CONNECTIONS.length} conexiones en común</span>
+      <div className="mb-5 rounded-[16px] p-3.5" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+        <div className="flex items-center gap-2 mb-2.5">
+          <Users size={12} style={{ color: '#4A9FFF' }} />
+          <span className="text-[11px] font-semibold text-white/40">{COMMON_CONNECTIONS.length} conexiones en común</span>
         </div>
         <div className="flex flex-wrap gap-2">
           {COMMON_CONNECTIONS.map(c => (
-            <span key={c} className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium text-white/55"
-              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)' }}>
+            <span key={c} className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium text-white/50"
+              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)' }}>
               <div className="h-4 w-4 rounded-full flex items-center justify-center text-[8px] font-bold text-white"
                 style={{ background: 'linear-gradient(135deg, #1871D8, #0A3D7A)' }}>
                 {c.slice(0, 1)}
@@ -314,39 +371,17 @@ function DesktopDetailPanel({ company, score, onSkip, onLike, onSave }) {
         </div>
       </div>
 
-      {/* Action CTAs */}
-      <div className="mt-auto grid grid-cols-2 gap-3">
-        <motion.button type="button" onClick={onSkip}
-          whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
-          className="flex items-center justify-center gap-2 rounded-[16px] py-4 text-[14px] font-semibold transition"
-          style={{ border: '1.5px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.55)' }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'rgba(255,255,255,0.8)'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = ''; e.currentTarget.style.color = 'rgba(255,255,255,0.55)'; }}>
-          <X size={16} strokeWidth={2.5} />
-          Pasar
+      {/* Ver perfil completo */}
+      <div className="mt-auto">
+        <motion.button type="button" onClick={onViewProfile}
+          whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
+          className="flex w-full items-center justify-center gap-2 rounded-[14px] py-3 text-[13px] font-semibold transition"
+          style={{ border: '1px solid rgba(255,255,255,0.10)', color: 'rgba(255,255,255,0.40)' }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = 'rgba(255,255,255,0.65)'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = ''; e.currentTarget.style.color = 'rgba(255,255,255,0.40)'; }}>
+          <ExternalLink size={13} />
+          Ver perfil completo
         </motion.button>
-        <motion.button type="button" onClick={onLike}
-          whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
-          className="flex items-center justify-center gap-2 rounded-[16px] py-4 text-[14px] font-bold text-white transition"
-          style={{ background: 'linear-gradient(135deg, #1871D8, #1459B0)', boxShadow: '0 4px 20px rgba(24,113,216,0.35)' }}>
-          <Heart size={16} strokeWidth={2} />
-          Conectar
-        </motion.button>
-      </div>
-
-      {/* Keyboard hints */}
-      <div className="flex items-center justify-center gap-4 mt-4">
-        <div className="flex items-center gap-1.5 text-[11px] text-white/20">
-          <kbd className="rounded px-1.5 py-0.5 font-mono text-[10px]"
-            style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)' }}>←</kbd>
-          Pasar
-        </div>
-        <div className="h-3 w-px bg-white/10" />
-        <div className="flex items-center gap-1.5 text-[11px] text-white/20">
-          Conectar
-          <kbd className="rounded px-1.5 py-0.5 font-mono text-[10px]"
-            style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)' }}>→</kbd>
-        </div>
       </div>
     </div>
   );
@@ -556,11 +591,21 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
                   <CardStack {...cardStackProps} />
                 </div>
 
-                {/* Drag affordance hint */}
-                <div className="flex items-center justify-center gap-2 py-3 shrink-0">
-                  <ArrowLeft size={12} className="text-white/20" />
-                  <span className="text-[11px] text-white/20">Arrastrá la card o usá las teclas</span>
-                  <ArrowRight size={12} className="text-white/20" />
+                {/* Drag affordance + keyboard hints */}
+                <div className="flex items-center justify-center gap-3 py-2.5 shrink-0">
+                  <div className="flex items-center gap-1 text-[11px] text-white/18">
+                    <kbd className="rounded px-1.5 py-0.5 font-mono text-[10px]"
+                      style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.10)' }}>←</kbd>
+                    Pasar
+                  </div>
+                  <ArrowLeft size={11} className="text-white/15" />
+                  <span className="text-[10px] text-white/18">arrastrá</span>
+                  <ArrowRight size={11} className="text-white/15" />
+                  <div className="flex items-center gap-1 text-[11px] text-white/18">
+                    Conectar
+                    <kbd className="rounded px-1.5 py-0.5 font-mono text-[10px]"
+                      style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.10)' }}>→</kbd>
+                  </div>
                 </div>
 
                 {/* Desktop action buttons */}
@@ -603,9 +648,9 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
           <DesktopDetailPanel
             company={activeCompany}
             score={activeCompany?.score ?? 0}
-            onSkip={handleSkip}
-            onLike={handleLike}
-            onSave={handleSave}
+            deckIndex={activeIndex}
+            deckTotal={deck.length}
+            onViewProfile={handleViewProfile}
           />
 
           {/* Flash toast — top center on desktop */}
