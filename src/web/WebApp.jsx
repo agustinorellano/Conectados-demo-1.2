@@ -170,6 +170,7 @@ function WebApp() {
             companies={personalizedCompanies}
             dailyMatchCount={dailyMatchCount}
             matches={matches}
+            myCompany={companyView}
             onMatch={handleCreateMatch}
             onNavigateToChats={() => navigate('chats')}
             onOpenPricing={() => navigate('pricing')}

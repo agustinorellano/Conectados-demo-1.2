@@ -5,6 +5,7 @@ import {
   SlidersHorizontal, Star, TrendingUp, Users, X, Zap,
 } from 'lucide-react';
 import CompanyDetailModal from './CompanyDetailModal';
+import MatchOverlay from './MatchOverlay';
 import { InstagramFeedCompact } from '../shared/InstagramFeedPreview';
 import SwipeHeader from './SwipeHeader';
 import CardStack from './CardStack';
@@ -328,56 +329,53 @@ function DesktopDetailPanel({ company, score, deckIndex, deckTotal }) {
       {/* ── Scrollable body ── */}
       <div className="flex flex-col gap-5 px-6 py-5">
 
-        {/* Compatibility — score ring + bar */}
-        <div className="flex items-center gap-4 rounded-[16px] p-4" style={{ background: scoreBg, border: `1px solid ${scoreColor}22` }}>
-          <div className="relative shrink-0 flex items-center justify-center" style={{ width: 56, height: 56 }}>
-            <ScoreRing score={score} color={scoreColor} size={56} />
-            <span className="absolute font-['Space_Grotesk'] text-[13px] font-black" style={{ color: scoreColor }}>
-              {score}%
-            </span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/35">Compatibilidad</span>
-              <span className="text-[11px] font-medium" style={{ color: scoreColor }}>
-                {score >= 80 ? 'Excelente' : score >= 60 ? 'Buena' : 'Moderada'}
-              </span>
+        {/* Compatibility — score ring + bar (enhanced) */}
+        <div className="rounded-[20px] p-5" style={{ background: scoreBg, border: `1px solid ${scoreColor}28` }}>
+          <div className="flex items-center gap-5">
+            <div className="relative shrink-0 flex items-center justify-center" style={{ width: 72, height: 72 }}>
+              <ScoreRing score={score} color={scoreColor} size={72} />
+              <div className="absolute flex flex-col items-center leading-none">
+                <span className="font-['Space_Grotesk'] text-[18px] font-black" style={{ color: scoreColor }}>{score}%</span>
+              </div>
             </div>
-            <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.07)' }}>
-              <motion.div className="h-full rounded-full"
-                style={{ background: scoreGrad }}
-                initial={{ width: 0 }}
-                animate={{ width: `${score}%` }}
-                transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }} />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/40">Compatibilidad</span>
+                <span className="text-[13px] font-bold" style={{ color: scoreColor }}>
+                  {score >= 80 ? 'Excelente' : score >= 60 ? 'Buena' : 'Moderada'}
+                </span>
+              </div>
+              <div className="h-2.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.07)' }}>
+                <motion.div className="h-full rounded-full"
+                  style={{ background: scoreGrad }}
+                  initial={{ width: 0 }}
+                  animate={{ width: `${score}%` }}
+                  transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }} />
+              </div>
+              <div className="flex gap-4 mt-3">
+                <div>
+                  <p className="font-['Space_Grotesk'] text-[15px] font-black text-white">{company.capacityScore ?? 68}%</p>
+                  <p className="text-[10px] text-white/30 mt-0.5">Capacidad</p>
+                </div>
+                <div className="w-px self-stretch" style={{ background: 'rgba(255,255,255,0.08)' }} />
+                <div>
+                  <p className="font-['Space_Grotesk'] text-[15px] font-black" style={{ color: '#4ADE80' }}>{lift ?? '+9%'}</p>
+                  <p className="text-[10px] text-white/30 mt-0.5">Ventas est.</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Description */}
+        {/* Por qué son compatibles */}
         {(company.description || company.culture || company.headline) && (
-          <p className="text-[13px] leading-relaxed text-white/50">
-            {company.description || company.culture || company.headline}
-          </p>
+          <div className="rounded-[16px] p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] mb-2" style={{ color: '#4A9FFF' }}>✦ Por qué son compatibles</p>
+            <p className="text-[13px] leading-relaxed text-white/65">
+              {company.description || company.culture || company.headline}
+            </p>
+          </div>
         )}
-
-        {/* Stats row — always shown above the fold */}
-        <div className="grid grid-cols-3 gap-3">
-          <div className="rounded-[14px] p-3 text-center"
-            style={{ background: scoreBg, border: `1px solid ${scoreColor}22` }}>
-            <p className="font-['Space_Grotesk'] text-[20px] font-black leading-none" style={{ color: scoreColor }}>{score}%</p>
-            <p className="text-[10px] text-white/35 mt-1">Match</p>
-          </div>
-          <div className="rounded-[14px] p-3 text-center"
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
-            <p className="font-['Space_Grotesk'] text-[20px] font-black leading-none text-white">{company.capacityScore ?? 68}%</p>
-            <p className="text-[10px] text-white/35 mt-1">Capacidad</p>
-          </div>
-          <div className="rounded-[14px] p-3 text-center"
-            style={{ background: 'rgba(74,222,128,0.07)', border: '1px solid rgba(74,222,128,0.15)' }}>
-            <p className="font-['Space_Grotesk'] text-[20px] font-black leading-none" style={{ color: '#4ADE80' }}>{lift ?? '+9%'}</p>
-            <p className="text-[10px] text-white/35 mt-1">Ventas est.</p>
-          </div>
-        </div>
 
         {/* Instagram feed strip */}
         {company.instagramData && (
@@ -456,7 +454,7 @@ function DesktopDetailPanel({ company, score, deckIndex, deckTotal }) {
 /* ══════════════════════════════════════════════════════════════
    SWIPE BOARD — main component
 ══════════════════════════════════════════════════════════════ */
-function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPlan }) {
+function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPlan, myCompany }) {
   const deck = useMemo(
     () => companies
       .map(c => ({ ...c, score: calculateMatchScore(c) }))
@@ -472,6 +470,7 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
   const [viewingCompany, setViewingCompany] = useState(null);
 
   /* ── UI state ── */
+  const [matchedCompany, setMatchedCompany] = useState(null);
   const [activeTab,   setActiveTab]   = useState('paraTi');
   const [showFilters, setShowFilters] = useState(false);
   const [filters,     setFilters]     = useState(DEFAULT_FILTERS);
@@ -549,7 +548,7 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
     if (matchLimitReached) { showFlash('Límite diario alcanzado'); return; }
     if (willCreateMatch(activeCompany, activeCompany.score)) {
       onMatch?.(activeCompany);
-      showFlash(`¡Match con ${activeCompany.name}!`);
+      setMatchedCompany(activeCompany);
     } else {
       showFlash('Like enviado');
     }
@@ -752,6 +751,12 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
         </div>
 
         {/* Shared modals */}
+        <MatchOverlay
+          company={matchedCompany}
+          myCompany={myCompany}
+          onClose={() => setMatchedCompany(null)}
+          onGoToChats={() => { setMatchedCompany(null); onMatch?.(matchedCompany); }}
+        />
         <AnimatePresence>
           {viewingCompany && (
             <CompanyDetailModal key={viewingCompany.id} company={viewingCompany} onClose={() => setViewingCompany(null)} onLike={handleLike} />
@@ -848,6 +853,12 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
         )}
       </div>
 
+      <MatchOverlay
+        company={matchedCompany}
+        myCompany={myCompany}
+        onClose={() => setMatchedCompany(null)}
+        onGoToChats={() => { setMatchedCompany(null); onMatch?.(matchedCompany); }}
+      />
       <AnimatePresence>
         {viewingCompany && (
           <CompanyDetailModal key={viewingCompany.id} company={viewingCompany} onClose={() => setViewingCompany(null)} onLike={handleLike} />

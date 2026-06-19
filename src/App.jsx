@@ -185,6 +185,7 @@ function App() {
             companies={personalizedCompanies}
             dailyMatchCount={dailyMatchCount}
             matches={matches}
+            myCompany={companyView}
             onMatch={handleCreateMatch}
             onNavigateToChats={() => setActiveView('chats')}
             onOpenPricing={() => setActiveView('pricing')}

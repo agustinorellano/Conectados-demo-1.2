@@ -1,53 +1,141 @@
-﻿import { Handshake, Send } from 'lucide-react';
+import { Send, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
-function MatchOverlay({ company, onClose, onGoToChats }) {
+const sectorGrad = {
+  Indumentaria:       'linear-gradient(135deg, #9B8EC4, #7B6BA8)',
+  Belleza:            'linear-gradient(135deg, #E8C5D0, #D4909A)',
+  Cafeteria:          'linear-gradient(135deg, #A07850, #6B4228)',
+  Gastronomia:        'linear-gradient(135deg, #4A7A3C, #2D5522)',
+  Gimnasio:           'linear-gradient(135deg, #2C3E6B, #1A2644)',
+  Tecnologia:         'linear-gradient(135deg, #2D1B69, #1A0F42)',
+  Floreria:           'linear-gradient(135deg, #8FB87A, #5A8A44)',
+  Moda:               'linear-gradient(135deg, #B09070, #806040)',
+  Bienestar:          'linear-gradient(135deg, #78A8C0, #4A7890)',
+  'Marketing Digital':'linear-gradient(135deg, #4A2080, #2C1050)',
+};
+
+function CompanyAvatar({ name, sector, size = 64 }) {
+  const initials = name
+    .split(' ')
+    .slice(0, 2)
+    .map(w => w[0])
+    .join('')
+    .toUpperCase();
+  const bg = sectorGrad[sector] || 'linear-gradient(135deg, #1871D8, #0A3D7A)';
+  return (
+    <div
+      className="flex items-center justify-center rounded-[20px] font-['Space_Grotesk'] font-black text-white shadow-lg"
+      style={{ width: size, height: size, background: bg, fontSize: size * 0.3, letterSpacing: '-0.02em' }}
+    >
+      {initials}
+    </div>
+  );
+}
+
+function MatchOverlay({ company, myCompany, onClose, onGoToChats }) {
+  const myName = myCompany?.name ?? 'Tu empresa';
+  const mySector = myCompany?.sector ?? 'Tecnologia';
+
   return (
     <AnimatePresence>
       {company ? (
         <motion.div
           animate={{ opacity: 1 }}
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/45 px-4 backdrop-blur-sm"
+          className="fixed inset-0 z-[60] flex items-center justify-center px-4"
           exit={{ opacity: 0 }}
           initial={{ opacity: 0 }}
+          style={{ background: 'rgba(4,8,20,0.82)', backdropFilter: 'blur(12px)' }}
+          onClick={onClose}
         >
           <motion.div
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            className="w-full max-w-lg rounded-[32px] bg-white p-6 shadow-[0_30px_90px_rgba(20,30,48,0.18)]"
-            exit={{ opacity: 0, y: 16, scale: 0.98 }}
-            initial={{ opacity: 0, y: 18, scale: 0.98 }}
+            className="relative w-full max-w-md overflow-hidden rounded-[32px] p-7"
+            exit={{ opacity: 0, y: 16, scale: 0.97 }}
+            initial={{ opacity: 0, y: 20, scale: 0.97 }}
+            transition={{ type: 'spring', damping: 28, stiffness: 320 }}
+            style={{
+              background: 'linear-gradient(160deg, #0D1628 0%, #101929 100%)',
+              border: '1px solid rgba(255,255,255,0.10)',
+              boxShadow: '0 40px 100px rgba(0,0,0,0.7)',
+            }}
+            onClick={e => e.stopPropagation()}
           >
-            <p className="text-xs font-medium uppercase tracking-[0.24em] text-[#1871D8]">
-              Match detectado
-            </p>
-            <h3 className="mt-3 font-['Space_Grotesk'] text-3xl font-bold tracking-tight text-[#1A1A1A]">
-              ¡Hay potencial comercial!
-            </h3>
-            <p className="mt-3 text-sm leading-6 text-[#4A4A4A]">
-              {company.name} muestra alta reciprocidad y un fit claro para construir una
-              propuesta conjunta con valor real.
+            {/* Close */}
+            <button
+              type="button"
+              onClick={onClose}
+              className="absolute right-5 top-5 flex h-8 w-8 items-center justify-center rounded-full"
+              style={{ background: 'rgba(255,255,255,0.07)' }}
+            >
+              <X size={14} className="text-white/50" />
+            </button>
+
+            {/* Label */}
+            <p className="text-[10px] font-bold uppercase tracking-[0.26em]" style={{ color: '#4A9FFF' }}>
+              ✦ Conexión detectada
             </p>
 
-            <div className="mt-6 flex items-center justify-center">
-              <div className="rounded-full bg-gradient-to-r from-[#141E30] to-[#35577D] p-5 text-white shadow-lg">
-                <Handshake className="h-8 w-8" />
+            {/* Logos row */}
+            <div className="mt-5 flex items-center justify-center gap-0">
+              {/* My company */}
+              <div className="flex flex-col items-center gap-2">
+                <CompanyAvatar name={myName} sector={mySector} size={68} />
+                <p className="text-[11px] font-semibold text-white/50 max-w-[80px] text-center leading-tight">{myName}</p>
+              </div>
+
+              {/* Connector */}
+              <div className="flex flex-col items-center mx-3">
+                <motion.div
+                  className="flex items-center gap-1"
+                  initial={{ opacity: 0, scale: 0.6 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.25, type: 'spring', damping: 16 }}
+                >
+                  {[0, 1, 2].map(i => (
+                    <motion.div
+                      key={i}
+                      className="rounded-full"
+                      style={{ width: i === 1 ? 8 : 5, height: i === 1 ? 8 : 5, background: '#4A9FFF' }}
+                      animate={{ opacity: [0.4, 1, 0.4] }}
+                      transition={{ duration: 1.4, repeat: Infinity, delay: i * 0.18 }}
+                    />
+                  ))}
+                </motion.div>
+                <p className="mt-1.5 text-[9px] font-bold uppercase tracking-[0.2em] text-white/20">alianza</p>
+              </div>
+
+              {/* Their company */}
+              <div className="flex flex-col items-center gap-2">
+                <CompanyAvatar name={company.name} sector={company.sector} size={68} />
+                <p className="text-[11px] font-semibold text-white/50 max-w-[80px] text-center leading-tight">{company.name}</p>
               </div>
             </div>
 
+            {/* Headline */}
+            <h3 className="mt-6 font-['Space_Grotesk'] text-[22px] font-bold tracking-tight text-white leading-tight">
+              ¡Hay potencial de alianza!
+            </h3>
+            <p className="mt-2 text-[13px] leading-6 text-white/50">
+              {company.name} muestra alta reciprocidad y un fit claro para construir una propuesta conjunta con valor real.
+            </p>
+
+            {/* Actions */}
             <div className="mt-6 flex gap-3">
               <button
-                className="flex-1 rounded-[18px] border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600"
-                onClick={onClose}
                 type="button"
+                onClick={onClose}
+                className="flex-1 rounded-[18px] py-3 text-[13px] font-semibold text-white/50 transition hover:text-white/70"
+                style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.09)' }}
               >
                 Seguir explorando
               </button>
               <button
-                className="flex-1 inline-flex items-center justify-center gap-2 rounded-[18px] bg-[#1871D8] px-4 py-3 text-sm font-semibold text-white"
-                onClick={onGoToChats}
                 type="button"
+                onClick={onGoToChats}
+                className="flex-1 inline-flex items-center justify-center gap-2 rounded-[18px] py-3 text-[13px] font-semibold text-white transition"
+                style={{ background: 'linear-gradient(135deg, #1871D8, #0A3D7A)', boxShadow: '0 8px 24px rgba(24,113,216,0.35)' }}
               >
-                <Send className="h-4 w-4" />
+                <Send size={14} />
                 Enviar propuesta
               </button>
             </div>
