@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Bot, BriefcaseBusiness, Building2, CreditCard,
-  LayoutDashboard, MessageSquare, PanelsTopLeft,
-  Search, Settings, Zap, X,
+  LayoutDashboard, MessageSquare, Moon, PanelsTopLeft,
+  Search, Settings, Sun, X, Zap,
 } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 const mainNav = [
   { id: 'dashboard',  label: 'Dashboard',  icon: LayoutDashboard },
@@ -23,7 +24,6 @@ const bottomNav = [
 const planLabel = { starter: 'Starter', growth: 'Growth', scale: 'Scale' };
 const planColor = { starter: '#3B82F6', growth: '#8B5CF6', scale: '#10B981' };
 
-/* Quick search results pool */
 const SEARCH_POOL = [
   { id: 'bloom',   name: 'Bloom Florería',  sector: 'Florería',    score: 94, view: 'alliances' },
   { id: 'luna',    name: 'Luna Beauty',     sector: 'Belleza',     score: 87, view: 'alliances' },
@@ -33,7 +33,6 @@ const SEARCH_POOL = [
   { id: 'cafe',    name: 'Café Patio',      sector: 'Cafetería',   score: 71, view: 'alliances' },
 ];
 
-/* Sidebar recommendations (top matches not yet connected) */
 const RECOMMENDATIONS = [
   { id: 'verde',  name: 'Verde Market',  sector: 'Retail',     score: 91 },
   { id: 'aether', name: 'Aether Studio', sector: 'Diseño',     score: 86 },
@@ -41,8 +40,9 @@ const RECOMMENDATIONS = [
 ];
 
 function WebSidebar({ activeView, onNavigate, userPlan, companyName }) {
-  const [query, setQuery]         = useState('');
-  const [searchFocus, setFocus]   = useState(false);
+  const { t, theme, toggleTheme } = useTheme();
+  const [query, setQuery]       = useState('');
+  const [searchFocus, setFocus] = useState(false);
 
   const results = query.trim().length >= 1
     ? SEARCH_POOL.filter(c =>
@@ -57,8 +57,9 @@ function WebSidebar({ activeView, onNavigate, userPlan, companyName }) {
     <aside
       className="flex h-full w-[220px] shrink-0 flex-col py-5"
       style={{
-        background: 'linear-gradient(180deg, rgba(8,14,28,0.98) 0%, rgba(6,10,22,0.98) 100%)',
-        borderRight: '1px solid rgba(255,255,255,0.07)',
+        background: t.sidebarBg,
+        borderRight: `1px solid ${t.sidebarBorder}`,
+        transition: 'background 0.3s ease, border-color 0.3s ease',
       }}
     >
       {/* ── Logo + company ── */}
@@ -71,18 +72,18 @@ function WebSidebar({ activeView, onNavigate, userPlan, companyName }) {
             C
           </div>
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-white leading-tight">Conectados</p>
-            <p className="truncate text-[11px] text-white/40 leading-tight mt-0.5">{companyName}</p>
+            <p className="truncate text-sm font-semibold leading-tight" style={{ color: t.text1 }}>Conectados</p>
+            <p className="truncate text-[11px] leading-tight mt-0.5" style={{ color: t.text3 }}>{companyName}</p>
           </div>
         </div>
 
         {/* Plan badge */}
         <div
           className="mt-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1"
-          style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)' }}
+          style={{ background: t.planBg, border: `1px solid ${t.planBorder}` }}
         >
           <div className="h-1.5 w-1.5 rounded-full" style={{ background: planColor[userPlan] ?? '#3B82F6' }} />
-          <span className="text-[11px] font-semibold text-white/55">Plan {planLabel[userPlan] ?? userPlan}</span>
+          <span className="text-[11px] font-semibold" style={{ color: t.planText }}>Plan {planLabel[userPlan] ?? userPlan}</span>
         </div>
       </div>
 
@@ -91,11 +92,11 @@ function WebSidebar({ activeView, onNavigate, userPlan, companyName }) {
         <div
           className="flex items-center gap-2 rounded-[12px] px-3 py-2.5 transition-all"
           style={{
-            background: searchFocus ? 'rgba(24,113,216,0.12)' : 'rgba(255,255,255,0.06)',
-            border: searchFocus ? '1px solid rgba(24,113,216,0.35)' : '1px solid rgba(255,255,255,0.09)',
+            background: searchFocus ? t.searchFocusBg : t.searchBg,
+            border: `1px solid ${searchFocus ? t.searchFocusBorder : t.searchBorder}`,
           }}
         >
-          <Search size={13} style={{ color: searchFocus ? '#4A9FFF' : 'rgba(255,255,255,0.30)', flexShrink: 0 }} />
+          <Search size={13} style={{ color: searchFocus ? t.accent : t.searchIcon, flexShrink: 0 }} />
           <input
             type="text"
             value={query}
@@ -103,16 +104,17 @@ function WebSidebar({ activeView, onNavigate, userPlan, companyName }) {
             onFocus={() => setFocus(true)}
             onBlur={() => setTimeout(() => setFocus(false), 150)}
             placeholder="Buscar empresas…"
-            className="flex-1 bg-transparent text-[12px] text-white outline-none placeholder:text-white/25 min-w-0"
+            className="flex-1 bg-transparent text-[12px] outline-none min-w-0"
+            style={{ color: t.searchText }}
           />
           {query && (
-            <button type="button" onClick={() => setQuery('')} className="shrink-0 text-white/25 hover:text-white/50 transition">
+            <button type="button" onClick={() => setQuery('')} className="shrink-0 transition"
+              style={{ color: t.text3 }}>
               <X size={11} />
             </button>
           )}
         </div>
 
-        {/* Search dropdown */}
         <AnimatePresence>
           {showDropdown && (
             <motion.div
@@ -121,23 +123,26 @@ function WebSidebar({ activeView, onNavigate, userPlan, companyName }) {
               exit={{ opacity: 0, y: -4 }}
               transition={{ duration: 0.14 }}
               className="absolute left-3 right-3 top-full mt-1.5 z-50 rounded-[14px] overflow-hidden"
-              style={{ background: 'rgba(14,22,44,0.98)', border: '1px solid rgba(255,255,255,0.12)', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}
+              style={{ background: t.dropdownBg, border: `1px solid ${t.dropdownBorder}`, boxShadow: '0 8px 32px rgba(0,0,0,0.18)' }}
             >
               {results.length > 0 ? results.map(r => (
                 <button
                   key={r.id}
                   type="button"
                   onClick={() => { onNavigate(r.view); setQuery(''); setFocus(false); }}
-                  className="flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left transition hover:bg-white/[0.06]"
+                  className="flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left transition"
+                  style={{ ':hover': { background: t.surface } }}
+                  onMouseEnter={e => e.currentTarget.style.background = t.surface}
+                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                 >
                   <div className="min-w-0">
-                    <p className="text-[12px] font-semibold text-white/85 truncate">{r.name}</p>
-                    <p className="text-[10px] text-white/35">{r.sector}</p>
+                    <p className="text-[12px] font-semibold truncate" style={{ color: t.text1 }}>{r.name}</p>
+                    <p className="text-[10px]" style={{ color: t.text3 }}>{r.sector}</p>
                   </div>
-                  <span className="shrink-0 text-[11px] font-bold" style={{ color: '#4A9FFF' }}>{r.score}%</span>
+                  <span className="shrink-0 text-[11px] font-bold" style={{ color: t.accentMid }}>{r.score}%</span>
                 </button>
               )) : (
-                <div className="px-3 py-3 text-[12px] text-white/30">Sin resultados para "{query}"</div>
+                <div className="px-3 py-3 text-[12px]" style={{ color: t.text3 }}>Sin resultados para "{query}"</div>
               )}
             </motion.div>
           )}
@@ -155,13 +160,13 @@ function WebSidebar({ activeView, onNavigate, userPlan, companyName }) {
               type="button"
               onClick={() => onNavigate(item.id)}
               className="relative flex items-center gap-3 rounded-[12px] px-3 py-2.5 text-left text-sm font-medium transition-all duration-150"
-              style={isActive ? { background: 'rgba(24,113,216,0.18)', color: '#fff' } : { color: 'rgba(255,255,255,0.45)' }}
+              style={{ color: isActive ? t.navTextActive : t.navText }}
             >
               {isActive && (
                 <motion.div
                   layoutId="web-nav-active"
                   className="absolute inset-0 rounded-[12px]"
-                  style={{ background: 'rgba(24,113,216,0.15)', border: '1px solid rgba(24,113,216,0.30)' }}
+                  style={{ background: t.accentActive, border: `1px solid ${t.accentBorder}` }}
                   transition={{ type: 'spring', stiffness: 400, damping: 35 }}
                 />
               )}
@@ -169,7 +174,7 @@ function WebSidebar({ activeView, onNavigate, userPlan, companyName }) {
                 size={16}
                 strokeWidth={isActive ? 2.2 : 1.7}
                 className="relative z-10 shrink-0"
-                style={{ color: isActive ? '#60A5FA' : 'rgba(255,255,255,0.35)' }}
+                style={{ color: isActive ? t.navIconActive : t.navIcon }}
               />
               <span className="relative z-10">{item.label}</span>
             </button>
@@ -177,17 +182,19 @@ function WebSidebar({ activeView, onNavigate, userPlan, companyName }) {
         })}
 
         {/* ── Quizás te interesen ── */}
-        <div className="mt-4 pt-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <div className="mt-4 pt-4" style={{ borderTop: `1px solid ${t.sidebarDivider}` }}>
           <div className="flex items-center gap-1.5 px-3 mb-2">
-            <Zap size={10} style={{ color: '#4A9FFF' }} />
-            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30">Quizás te interesen</span>
+            <Zap size={10} style={{ color: t.accentMid }} />
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: t.text3 }}>Quizás te interesen</span>
           </div>
           {RECOMMENDATIONS.map(rec => (
             <button
               key={rec.id}
               type="button"
               onClick={() => onNavigate('alliances')}
-              className="flex w-full items-center gap-2.5 rounded-[10px] px-3 py-2 text-left transition hover:bg-white/[0.05]"
+              className="flex w-full items-center gap-2.5 rounded-[10px] px-3 py-2 text-left transition"
+              onMouseEnter={e => e.currentTarget.style.background = t.surface}
+              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
             >
               <div
                 className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[8px] text-[9px] font-black text-white"
@@ -196,17 +203,17 @@ function WebSidebar({ activeView, onNavigate, userPlan, companyName }) {
                 {rec.name.slice(0, 2).toUpperCase()}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-[11px] font-semibold text-white/65">{rec.name}</p>
-                <p className="text-[9px] text-white/30">{rec.sector}</p>
+                <p className="truncate text-[11px] font-semibold" style={{ color: t.text2 }}>{rec.name}</p>
+                <p className="text-[9px]" style={{ color: t.text3 }}>{rec.sector}</p>
               </div>
-              <span className="shrink-0 text-[10px] font-bold" style={{ color: '#4A9FFF' }}>{rec.score}%</span>
+              <span className="shrink-0 text-[10px] font-bold" style={{ color: t.accentMid }}>{rec.score}%</span>
             </button>
           ))}
         </div>
       </nav>
 
-      {/* ── Bottom nav ── */}
-      <div className="flex flex-col gap-0.5 px-3 pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+      {/* ── Bottom nav + theme toggle ── */}
+      <div className="flex flex-col gap-0.5 px-3 pt-3" style={{ borderTop: `1px solid ${t.sidebarDivider}` }}>
         {bottomNav.map((item) => {
           const Icon = item.icon;
           const isActive = item.id === activeView;
@@ -216,18 +223,41 @@ function WebSidebar({ activeView, onNavigate, userPlan, companyName }) {
               type="button"
               onClick={() => onNavigate(item.id)}
               className="flex items-center gap-3 rounded-[12px] px-3 py-2.5 text-left text-sm font-medium transition-all duration-150"
-              style={{ color: isActive ? '#fff' : 'rgba(255,255,255,0.40)' }}
+              style={{ color: isActive ? t.navTextActive : t.navText }}
             >
               <Icon
                 size={16}
                 strokeWidth={1.7}
                 className="shrink-0"
-                style={{ color: isActive ? '#60A5FA' : 'rgba(255,255,255,0.30)' }}
+                style={{ color: isActive ? t.navIconActive : t.navIcon }}
               />
               <span>{item.label}</span>
             </button>
           );
         })}
+
+        {/* Theme toggle */}
+        <button
+          type="button"
+          onClick={toggleTheme}
+          className="flex items-center gap-3 rounded-[12px] px-3 py-2.5 text-left text-sm font-medium transition-all duration-150 mt-1"
+          style={{ color: t.text2 }}
+          onMouseEnter={e => e.currentTarget.style.background = t.surface}
+          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+        >
+          <motion.div
+            key={theme}
+            initial={{ scale: 0.7, rotate: -30, opacity: 0 }}
+            animate={{ scale: 1, rotate: 0, opacity: 1 }}
+            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {theme === 'dark'
+              ? <Sun size={16} strokeWidth={1.7} style={{ color: t.navIcon }} />
+              : <Moon size={16} strokeWidth={1.7} style={{ color: t.navIcon }} />
+            }
+          </motion.div>
+          <span>{theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}</span>
+        </button>
       </div>
     </aside>
   );

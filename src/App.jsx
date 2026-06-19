@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTheme } from './context/ThemeContext';
 import { AnimatePresence, motion } from 'framer-motion';
 import BottomNav from './components/layout/BottomNav';
 import SplashScreen from './components/splash/SplashScreen';
@@ -33,6 +34,7 @@ import {
 } from './utils/companyProfile';
 
 function App() {
+  const { t } = useTheme();
   const [stage, setStage] = useState('splash');
   const [activeView, setActiveView] = useState('dashboard');
   const [showAllianceRoom, setShowAllianceRoom] = useState(false);
@@ -258,7 +260,7 @@ function App() {
   }
 
   return (
-    <div className="h-screen overflow-hidden" style={{ background: '#070C18' }}>
+    <div className="h-screen overflow-hidden" style={{ background: t.bg, transition: 'background 0.3s ease' }}>
       {showAllianceRoom && (
         <AllianceRoomView onExit={() => setShowAllianceRoom(false)} />
       )}

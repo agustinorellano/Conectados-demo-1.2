@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { buildAssistantReply, createWelcomeMessage } from '../../utils/assistant';
+import { useTheme } from '../../context/ThemeContext';
 
 /* ─────────────────────────────────────────────────────────
    IA MODES
@@ -262,14 +263,14 @@ function IaModePicker({ mode, setMode }) {
             whileTap={{ scale: 0.94 }}
             className="flex shrink-0 items-center gap-2 rounded-[14px] px-3.5 py-2 text-[12px] font-semibold transition-all"
             style={{
-              background: active ? m.gradient : 'rgba(255,255,255,0.88)',
+              background: active ? m.gradient : 'rgba(255,255,255,0.06)',
               backdropFilter: 'blur(8px)',
               WebkitBackdropFilter: 'blur(8px)',
-              color: active ? 'white' : '#64748B',
+              color: active ? 'white' : 'rgba(255,255,255,0.45)',
               boxShadow: active
                 ? `0 4px 16px ${m.glow}, inset 0 1px 0 rgba(255,255,255,0.18)`
-                : '0 1px 4px rgba(20,30,48,0.07)',
-              border: active ? 'none' : '1px solid rgba(20,30,48,0.08)',
+                : 'none',
+              border: active ? 'none' : '1px solid rgba(255,255,255,0.08)',
             }}
           >
             <m.Icon className="h-3.5 w-3.5 shrink-0" />
@@ -304,19 +305,19 @@ function QuickPromptGrid({ mode, onSelect }) {
           whileHover={{ y: -1 }}
           className="flex flex-col gap-2 rounded-[16px] p-3.5 text-left transition-all"
           style={{
-            background: 'rgba(255,255,255,0.90)',
+            background: 'rgba(255,255,255,0.05)',
             backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(20,30,48,0.07)',
-            boxShadow: '0 2px 10px rgba(20,30,48,0.06)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            boxShadow: 'none',
           }}
         >
           <div
             className="flex h-8 w-8 items-center justify-center rounded-[10px]"
-            style={{ background: `${mode.color}12` }}
+            style={{ background: `${mode.color}22` }}
           >
             <Icon className="h-4 w-4" style={{ color: mode.color }} strokeWidth={1.8} />
           </div>
-          <p className="text-[12px] font-medium leading-snug text-slate-600">{text}</p>
+          <p className="text-[12px] font-medium leading-snug" style={{ color: 'rgba(255,255,255,0.60)' }}>{text}</p>
         </motion.button>
       ))}
     </motion.div>
@@ -390,11 +391,11 @@ function ActionConfirmCard({ action, onConfirm, onCancel }) {
       transition={{ type: 'spring', damping: 24, stiffness: 340 }}
       className="overflow-hidden rounded-[20px]"
       style={{
-        background: 'rgba(255,255,255,0.94)',
+        background: 'rgba(255,255,255,0.06)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
-        border: '1px solid rgba(20,30,48,0.09)',
-        boxShadow: '0 8px 32px rgba(20,30,48,0.12)',
+        border: '1px solid rgba(255,255,255,0.10)',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.30)',
       }}
     >
       {/* Header strip */}
@@ -409,8 +410,8 @@ function ActionConfirmCard({ action, onConfirm, onCancel }) {
           <action.Icon className="h-4 w-4" style={{ color: action.color }} />
         </div>
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Acción propuesta</p>
-          <p className="font-['Space_Grotesk'] text-[15px] font-bold text-[#141E30]">{action.label}</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em]" style={{ color: 'rgba(255,255,255,0.35)' }}>Acción propuesta</p>
+          <p className="font-['Space_Grotesk'] text-[15px] font-bold text-white">{action.label}</p>
         </div>
       </div>
 
@@ -423,14 +424,14 @@ function ActionConfirmCard({ action, onConfirm, onCancel }) {
           { label: 'Plazo',         value: action.due },
         ].map(({ label, value, accent }) => (
           <div key={label}>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">{label}</p>
-            <p className="mt-0.5 font-semibold" style={{ color: accent || '#374151' }}>{value}</p>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ color: 'rgba(255,255,255,0.30)' }}>{label}</p>
+            <p className="mt-0.5 font-semibold" style={{ color: accent || 'rgba(255,255,255,0.75)' }}>{value}</p>
           </div>
         ))}
       </div>
 
       {/* CTA buttons */}
-      <div className="flex gap-2 border-t border-slate-100 px-4 py-3">
+      <div className="flex gap-2 border-t px-4 py-3" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
         <button
           type="button"
           onClick={() => { setConfirmed(true); onConfirm(action); }}
@@ -442,7 +443,8 @@ function ActionConfirmCard({ action, onConfirm, onCancel }) {
         <button
           type="button"
           onClick={onCancel}
-          className="flex items-center justify-center rounded-[12px] px-4 py-2.5 text-[13px] font-semibold text-slate-500 transition hover:bg-slate-100"
+          className="flex items-center justify-center rounded-[12px] px-4 py-2.5 text-[13px] font-semibold transition"
+          style={{ color: 'rgba(255,255,255,0.40)' }}
         >
           Cancelar
         </button>
@@ -508,6 +510,8 @@ function ScalePlanCard() {
    MESSAGE BUBBLE
 ───────────────────────────────────────────────────────── */
 function MessageBubble({ message, mode, onConfirm, onCancelAction, onNavigateToWorkplace }) {
+  const { t } = useTheme();
+
   if (message.type === 'action_card') {
     return (
       <div className="px-4 py-1">
@@ -542,13 +546,12 @@ function MessageBubble({ message, mode, onConfirm, onCancelAction, onNavigateToW
           borderBottomRightRadius: 4,
           boxShadow: '0 3px 12px rgba(20,30,48,0.25)',
         } : {
-          background: 'rgba(255,255,255,0.92)',
+          background: t.surface,
           backdropFilter: 'blur(8px)',
           WebkitBackdropFilter: 'blur(8px)',
-          border: '1px solid rgba(20,30,48,0.07)',
-          color: '#1E293B',
+          border: `1px solid ${t.surfaceBorder}`,
+          color: t.text1,
           borderBottomLeftRadius: 4,
-          boxShadow: '0 2px 10px rgba(20,30,48,0.07)',
         }}
       >
         {blocks.map((b, i) => (
@@ -569,10 +572,9 @@ function TypingIndicator({ mode }) {
       <div
         className="flex items-center gap-1.5 rounded-[18px] px-4 py-3.5"
         style={{
-          background: 'rgba(255,255,255,0.92)',
-          border: '1px solid rgba(20,30,48,0.07)',
+          background: 'rgba(255,255,255,0.07)',
+          border: '1px solid rgba(255,255,255,0.09)',
           borderBottomLeftRadius: 4,
-          boxShadow: '0 2px 10px rgba(20,30,48,0.07)',
         }}
       >
         {[0, 1, 2].map((i) => (
@@ -610,28 +612,30 @@ function ConversationSidebar({ open, onClose, onNewChat, currentId, onSelect }) 
       transition={{ type: 'spring', damping: 28, stiffness: 320 }}
       className="flex flex-col shrink-0 overflow-hidden rounded-[22px]"
       style={{
-        background: 'rgba(255,255,255,0.90)',
+        background: 'rgba(255,255,255,0.04)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
-        border: open ? '1px solid rgba(20,30,48,0.08)' : 'none',
-        boxShadow: open ? '0 4px 24px rgba(20,30,48,0.09)' : 'none',
+        border: open ? '1px solid rgba(255,255,255,0.08)' : 'none',
+        boxShadow: 'none',
       }}
     >
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-4 pb-3 shrink-0">
-        <p className="font-['Space_Grotesk'] text-[14px] font-bold text-[#141E30]">Historial</p>
+        <p className="font-['Space_Grotesk'] text-[14px] font-bold text-white/80">Historial</p>
         <div className="flex items-center gap-1">
           <button
             type="button"
             onClick={onNewChat}
-            className="flex h-7 w-7 items-center justify-center rounded-[8px] text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+            className="flex h-7 w-7 items-center justify-center rounded-[8px] transition hover:bg-white/08"
+            style={{ color: 'rgba(255,255,255,0.40)' }}
           >
             <Plus className="h-3.5 w-3.5" />
           </button>
           <button
             type="button"
             onClick={onClose}
-            className="flex h-7 w-7 items-center justify-center rounded-[8px] text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 md:hidden"
+            className="flex h-7 w-7 items-center justify-center rounded-[8px] transition hover:bg-white/08 md:hidden"
+            style={{ color: 'rgba(255,255,255,0.40)' }}
           >
             <X className="h-3.5 w-3.5" />
           </button>
@@ -645,13 +649,14 @@ function ConversationSidebar({ open, onClose, onNewChat, currentId, onSelect }) 
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar conversaciones…"
-          className="h-8 w-full rounded-[10px] bg-slate-100 pl-8 pr-3 text-[12px] text-slate-700 outline-none transition focus:bg-slate-200"
+          className="h-8 w-full rounded-[10px] pl-8 pr-3 text-[12px] outline-none transition"
+          style={{ background: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.80)', border: '1px solid rgba(255,255,255,0.08)' }}
         />
       </div>
 
       {/* Folders */}
       <div className="px-3 pb-2 shrink-0">
-        <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400">Carpetas</p>
+        <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: 'rgba(255,255,255,0.30)' }}>Carpetas</p>
         <div className="flex flex-wrap gap-1.5">
           {FOLDERS.map((f) => (
             <button
@@ -660,8 +665,8 @@ function ConversationSidebar({ open, onClose, onNewChat, currentId, onSelect }) 
               onClick={() => setOpenFolder(openFolder === f.id ? null : f.id)}
               className="flex items-center gap-1 rounded-[8px] px-2.5 py-1.5 text-[11px] font-medium transition"
               style={{
-                background: openFolder === f.id ? 'rgba(20,30,48,0.08)' : 'rgba(20,30,48,0.04)',
-                color: openFolder === f.id ? '#141E30' : '#64748B',
+                background: openFolder === f.id ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.05)',
+                color: openFolder === f.id ? 'rgba(255,255,255,0.90)' : 'rgba(255,255,255,0.40)',
               }}
             >
               <f.Icon className="h-3 w-3" />
@@ -675,7 +680,7 @@ function ConversationSidebar({ open, onClose, onNewChat, currentId, onSelect }) 
       <div className="flex-1 overflow-y-auto px-3 pb-4 space-y-4 [scrollbar-width:none]">
         {pinned.length > 0 && (
           <div>
-            <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400 flex items-center gap-1.5">
+            <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] flex items-center gap-1.5" style={{ color: 'rgba(255,255,255,0.30)' }}>
               <Star className="h-2.5 w-2.5" /> Fijadas
             </p>
             <div className="space-y-1">
@@ -686,7 +691,7 @@ function ConversationSidebar({ open, onClose, onNewChat, currentId, onSelect }) 
           </div>
         )}
         <div>
-          <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400 flex items-center gap-1.5">
+          <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] flex items-center gap-1.5" style={{ color: 'rgba(255,255,255,0.30)' }}>
             <Clock className="h-2.5 w-2.5" /> Recientes
           </p>
           <div className="space-y-1">
@@ -706,15 +711,15 @@ function ConvItem({ conv, active, onSelect }) {
       type="button"
       onClick={() => onSelect(conv.id)}
       className="flex w-full flex-col gap-0.5 rounded-[12px] px-3 py-2.5 text-left transition"
-      style={{ background: active ? 'rgba(20,30,48,0.08)' : 'transparent' }}
+      style={{ background: active ? 'rgba(255,255,255,0.10)' : 'transparent' }}
     >
       <div className="flex items-center justify-between">
-        <p className={`truncate text-[12px] font-semibold ${active ? 'text-[#141E30]' : 'text-slate-600'}`}>
+        <p className="truncate text-[12px] font-semibold" style={{ color: active ? 'rgba(255,255,255,0.90)' : 'rgba(255,255,255,0.60)' }}>
           {conv.title}
         </p>
-        <span className="ml-2 shrink-0 text-[10px] text-slate-400">{conv.date}</span>
+        <span className="ml-2 shrink-0 text-[10px]" style={{ color: 'rgba(255,255,255,0.28)' }}>{conv.date}</span>
       </div>
-      <p className="truncate text-[11px] text-slate-400">{conv.preview}</p>
+      <p className="truncate text-[11px]" style={{ color: 'rgba(255,255,255,0.30)' }}>{conv.preview}</p>
     </button>
   );
 }
@@ -733,6 +738,7 @@ function AssistantView({
   onCreateOpportunity,
   onNavigateToWorkplace,
 }) {
+  const { t } = useTheme();
   const [messages,     setMessages]     = useState([]);
   const [input,        setInput]        = useState('');
   const [loading,      setLoading]      = useState(false);
@@ -905,11 +911,10 @@ function AssistantView({
       <div
         className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-[22px]"
         style={{
-          background: 'linear-gradient(170deg, rgba(248,250,252,0.97) 0%, rgba(241,245,249,0.97) 100%)',
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-          border: '1px solid rgba(20,30,48,0.08)',
-          boxShadow: '0 4px 24px rgba(20,30,48,0.08)',
+          background: t.panelBg,
+          border: `1px solid ${t.panelBorder}`,
+          boxShadow: t.isDark ? '0 4px 32px rgba(0,0,0,0.40)' : '0 4px 24px rgba(20,30,48,0.08)',
+          transition: 'background 0.3s ease',
         }}
       >
         {/* ── Header ── */}
@@ -918,7 +923,8 @@ function AssistantView({
             <button
               type="button"
               onClick={() => setSidebarOpen((v) => !v)}
-              className="flex h-8 w-8 items-center justify-center rounded-[10px] text-slate-500 transition hover:bg-white hover:shadow-sm"
+              className="flex h-8 w-8 items-center justify-center rounded-[10px] transition"
+            style={{ color: t.text2 }}
             >
               {sidebarOpen
                 ? <ChevronLeft className="h-4 w-4" />
@@ -926,8 +932,8 @@ function AssistantView({
             </button>
             <IaAvatar mode={mode} pulse />
             <div>
-              <p className="font-['Space_Grotesk'] text-[15px] font-bold text-[#141E30]">Copiloto IA</p>
-              <p className="text-[11px] text-slate-400">{mode.tagline}</p>
+              <p className="font-['Space_Grotesk'] text-[15px] font-bold" style={{ color: t.text1 }}>Copiloto IA</p>
+              <p className="text-[11px]" style={{ color: t.text2 }}>{mode.tagline}</p>
             </div>
           </div>
 
@@ -952,7 +958,8 @@ function AssistantView({
             <button
               type="button"
               onClick={handleNewChat}
-              className="flex items-center gap-1.5 rounded-[10px] bg-white px-3 py-1.5 text-[12px] font-semibold text-slate-600 shadow-sm transition hover:bg-slate-50 hover:shadow"
+              className="flex items-center gap-1.5 rounded-[10px] px-3 py-1.5 text-[12px] font-semibold transition"
+            style={{ background: t.surface, color: t.text2, border: `1px solid ${t.surfaceBorder}` }}
             >
               <Plus className="h-3.5 w-3.5" /> Nuevo
             </button>
@@ -995,10 +1002,9 @@ function AssistantView({
           <div
             className="flex items-end gap-2 rounded-[20px] px-3 py-2.5"
             style={{
-              background: 'rgba(255,255,255,0.95)',
+              background: t.surface,
               backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(20,30,48,0.10)',
-              boxShadow: '0 2px 12px rgba(20,30,48,0.08)',
+              border: `1px solid ${t.surfaceBorder}`,
             }}
           >
             {/* Voice button */}
@@ -1009,8 +1015,8 @@ function AssistantView({
               whileTap={{ scale: 0.9 }}
               className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition"
               style={{
-                background: recording ? 'rgba(239,68,68,0.12)' : 'rgba(20,30,48,0.05)',
-                color: recording ? '#EF4444' : '#94A3B8',
+                background: recording ? 'rgba(239,68,68,0.15)' : 'rgba(255,255,255,0.07)',
+                color: recording ? '#EF4444' : 'rgba(255,255,255,0.35)',
               }}
             >
               <AnimatePresence mode="wait">
@@ -1039,7 +1045,8 @@ function AssistantView({
               disabled={loading || recording}
               placeholder={`Escribí a tu copiloto ${mode.label.toLowerCase()}…`}
               rows={1}
-              className="flex-1 resize-none bg-transparent text-[13px] text-slate-700 outline-none placeholder:text-slate-400"
+              className="flex-1 resize-none bg-transparent text-[13px] outline-none placeholder:text-white/25"
+              style={{ color: 'rgba(255,255,255,0.85)' }}
               style={{ maxHeight: 120, lineHeight: '1.5' }}
             />
 
@@ -1055,7 +1062,7 @@ function AssistantView({
                   ? mode.gradient
                   : 'rgba(20,30,48,0.06)',
                 boxShadow: input.trim() && !loading ? `0 4px 12px ${mode.glow}` : 'none',
-                color: input.trim() && !loading ? 'white' : '#94A3B8',
+                color: input.trim() && !loading ? 'white' : 'rgba(255,255,255,0.25)',
               }}
             >
               <Send className="h-3.5 w-3.5" />
@@ -1063,7 +1070,7 @@ function AssistantView({
           </div>
 
           {/* Mode hint */}
-          <p className="mt-1.5 text-center text-[10px] text-slate-400">
+          <p className="mt-1.5 text-center text-[10px]" style={{ color: 'rgba(255,255,255,0.28)' }}>
             Modo <span className="font-semibold" style={{ color: mode.color }}>{mode.label}</span>
             {recording && <span className="ml-1.5 text-red-400">· Transcribiendo voz…</span>}
           </p>

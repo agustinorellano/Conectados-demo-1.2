@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from 'react';
+import { useTheme } from '../context/ThemeContext';
 import { AnimatePresence, motion } from 'framer-motion';
 import WebSidebar from './WebSidebar';
 import DashboardView from '../components/dashboard/DashboardView';
@@ -28,6 +29,8 @@ import {
 } from '../utils/companyProfile';
 
 function WebApp() {
+  const { t } = useTheme();
+
   useEffect(() => {
     document.body.classList.add('app-view');
     return () => document.body.classList.remove('app-view');
@@ -198,7 +201,7 @@ function WebApp() {
   const fullBleed = ['alliances', 'profile', 'chats', 'workplace'].includes(activeView);
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: '#070C18' }}>
+    <div className="flex h-screen overflow-hidden" style={{ background: t.bg, transition: 'background 0.3s ease' }}>
       {showAllianceRoom && (
         <AllianceRoomView onExit={() => setShowAllianceRoom(false)} />
       )}
