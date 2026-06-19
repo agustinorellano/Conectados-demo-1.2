@@ -1,11 +1,23 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Bot, BriefcaseBusiness, Building2, CreditCard,
+  Bell, Bot, BriefcaseBusiness, Building2, CreditCard,
   LayoutDashboard, MessageSquare, PanelsTopLeft,
   Search, Settings, X, Zap,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+
+const MOCK_USER = { name: 'Agustín Orellano', role: 'Admin' };
+
+const NOTIFICATIONS = [
+  { id: 1, text: 'Nuevo match con Bloom Florería', sub: 'Score 94% · hace 2 min', dot: '#10B981', unread: true },
+  { id: 2, text: 'Luna Beauty respondió tu propuesta', sub: 'hace 15 min', dot: '#3B82F6', unread: true },
+  { id: 3, text: 'Alliance Room disponible', sub: 'Bloom · hace 1h', dot: '#8B5CF6', unread: false },
+];
+
+function getInitials(name = '') {
+  return name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase() || 'CO';
+}
 
 const mainNav = [
   { id: 'dashboard',  label: 'Dashboard',  icon: LayoutDashboard },
@@ -41,8 +53,15 @@ const RECOMMENDATIONS = [
 
 function WebSidebar({ activeView, onNavigate, userPlan, companyName }) {
   const { t } = useTheme();
-  const [query, setQuery]       = useState('');
-  const [searchFocus, setFocus] = useState(false);
+  const [query, setQuery]         = useState('');
+  const [searchFocus, setFocus]   = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [readIds, setReadIds]     = useState(new Set());
+
+  const unreadCount = NOTIFICATIONS.filter(n => n.unread && !readIds.has(n.id)).length;
+  const markAllRead = () => setReadIds(new Set(NOTIFICATIONS.map(n => n.id)));
+  const companyInitials = getInitials(companyName);
+  const userInitials    = getInitials(MOCK_USER.name);
 
   const results = query.trim().length >= 1
     ? SEARCH_POOL.filter(c =>
@@ -62,28 +81,91 @@ function WebSidebar({ activeView, onNavigate, userPlan, companyName }) {
         transition: 'background 0.3s ease, border-color 0.3s ease',
       }}
     >
-      {/* ── Logo + company ── */}
-      <div className="px-5 mb-5">
-        <div className="flex items-center gap-3">
+      {/* ── Header: empresa + notif bell ── */}
+      <div className="px-4 mb-4">
+        {/* Row: company logo + name + bell */}
+        <div className="flex items-center gap-2.5 mb-3">
+          {/* Company logo with dynamic initials */}
           <div
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xs font-bold text-white"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[11px] font-bold text-white"
             style={{ background: 'linear-gradient(135deg, #1871D8 0%, #0A3D7A 100%)' }}
           >
-            C
+            {companyInitials}
           </div>
-          <div className="min-w-0">
-            <p className="truncate text-sm font-semibold leading-tight" style={{ color: t.text1 }}>Conectados</p>
-            <p className="truncate text-[11px] leading-tight mt-0.5" style={{ color: t.text3 }}>{companyName}</p>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-[13px] font-bold leading-tight" style={{ color: t.text1 }}>{companyName}</p>
+            <div className="mt-0.5 flex items-center gap-1.5">
+              <div className="h-1.5 w-1.5 rounded-full" style={{ background: planColor[userPlan] ?? '#3B82F6' }} />
+              <span className="text-[10px] font-semibold" style={{ color: t.text3 }}>Plan {planLabel[userPlan] ?? userPlan}</span>
+            </div>
+          </div>
+          {/* Notification bell */}
+          <div className="relative shrink-0">
+            <button
+              type="button"
+              onClick={() => { setNotifOpen(o => !o); if (!notifOpen) markAllRead(); }}
+              className="relative flex h-8 w-8 items-center justify-center rounded-[10px] transition-all"
+              style={{ background: notifOpen ? t.accentActive : 'transparent' }}
+              onMouseEnter={e => { if (!notifOpen) e.currentTarget.style.background = t.surface; }}
+              onMouseLeave={e => { if (!notifOpen) e.currentTarget.style.background = 'transparent'; }}
+            >
+              <Bell size={15} strokeWidth={1.8} style={{ color: t.navIcon }} />
+              {unreadCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold text-white"
+                  style={{ background: '#EF4444' }}>
+                  {unreadCount}
+                </span>
+              )}
+            </button>
+
+            {/* Notification dropdown */}
+            <AnimatePresence>
+              {notifOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute left-0 top-full mt-2 z-50 w-[240px] rounded-[16px] overflow-hidden"
+                  style={{ background: t.dropdownBg, border: `1px solid ${t.dropdownBorder}`, boxShadow: '0 12px 32px rgba(0,0,0,0.18)' }}
+                >
+                  <div className="px-3 py-2.5 flex items-center justify-between" style={{ borderBottom: `1px solid ${t.surfaceBorder}` }}>
+                    <span className="text-[11px] font-bold uppercase tracking-[0.15em]" style={{ color: t.text3 }}>Notificaciones</span>
+                    <button type="button" onClick={() => setNotifOpen(false)} style={{ color: t.text3 }}>
+                      <X size={12} />
+                    </button>
+                  </div>
+                  {NOTIFICATIONS.map(n => (
+                    <div key={n.id} className="flex items-start gap-2.5 px-3 py-2.5 transition"
+                      style={{ background: (!n.unread || readIds.has(n.id)) ? 'transparent' : t.accentActive }}
+                      onMouseEnter={e => e.currentTarget.style.background = t.surface}
+                      onMouseLeave={e => e.currentTarget.style.background = (!n.unread || readIds.has(n.id)) ? 'transparent' : t.accentActive}
+                    >
+                      <div className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: n.dot }} />
+                      <div className="min-w-0">
+                        <p className="text-[12px] font-medium leading-snug" style={{ color: t.text1 }}>{n.text}</p>
+                        <p className="mt-0.5 text-[10px]" style={{ color: t.text3 }}>{n.sub}</p>
+                      </div>
+                    </div>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
 
-        {/* Plan badge */}
-        <div
-          className="mt-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1"
-          style={{ background: t.planBg, border: `1px solid ${t.planBorder}` }}
-        >
-          <div className="h-1.5 w-1.5 rounded-full" style={{ background: planColor[userPlan] ?? '#3B82F6' }} />
-          <span className="text-[11px] font-semibold" style={{ color: t.planText }}>Plan {planLabel[userPlan] ?? userPlan}</span>
+        {/* User profile row */}
+        <div className="flex items-center gap-2 rounded-[12px] px-2.5 py-2" style={{ background: t.surface }}>
+          <div
+            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white"
+            style={{ background: 'linear-gradient(135deg, #6D28D9 0%, #4F46E5 100%)' }}
+          >
+            {userInitials}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-[12px] font-semibold leading-tight" style={{ color: t.text1 }}>{MOCK_USER.name}</p>
+            <p className="text-[10px]" style={{ color: t.text3 }}>{MOCK_USER.role}</p>
+          </div>
         </div>
       </div>
 
