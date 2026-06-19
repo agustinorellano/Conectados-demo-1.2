@@ -83,90 +83,106 @@ function Navbar() {
   }, []);
 
   return (
-    <div className="fixed inset-x-0 top-0 z-50 flex justify-center px-6 pt-4 pointer-events-none">
+    <div className="fixed inset-x-0 top-0 z-50 flex flex-col items-center px-4 pt-4 pointer-events-none md:px-6">
+      {/* Pill */}
       <motion.header
         className="pointer-events-auto w-full max-w-5xl transition-all duration-300"
         style={{
           background: scrolled ? 'rgba(7,12,24,0.92)' : 'rgba(255,255,255,0.92)',
           backdropFilter: 'blur(20px)',
           border: scrolled ? '1px solid rgba(255,255,255,0.10)' : `1px solid ${C.border}`,
-          borderRadius: 999,
-          boxShadow: scrolled
-            ? '0 8px 32px rgba(0,0,0,0.35)'
-            : '0 4px 24px rgba(0,0,0,0.08)',
+          borderRadius: menuOpen ? '20px 20px 0 0' : 999,
+          boxShadow: scrolled ? '0 8px 32px rgba(0,0,0,0.35)' : '0 4px 24px rgba(0,0,0,0.08)',
         }}
       >
-      <div className="flex items-center justify-between px-5 py-3">
-        {/* Logo */}
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-[10px] text-xs font-bold text-white"
-            style={{ background: 'linear-gradient(135deg, #1871D8, #0A3D7A)' }}>
-            C
+        <div className="flex items-center justify-between px-4 py-3 md:px-5">
+          {/* Logo */}
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-[10px] text-xs font-bold text-white"
+              style={{ background: 'linear-gradient(135deg, #1871D8, #0A3D7A)' }}>
+              C
+            </div>
+            <span className="font-['Space_Grotesk'] text-[15px] font-bold" style={{ color: scrolled ? '#fff' : C.heading }}>Conectados</span>
           </div>
-          <span className="font-['Space_Grotesk'] text-[15px] font-bold" style={{ color: scrolled ? '#fff' : C.heading }}>Conectados</span>
-        </div>
 
-        {/* Desktop nav */}
-        <nav className="hidden items-center gap-8 md:flex">
-          {['Producto', 'Cómo funciona', 'El circuito', 'Precios', 'FAQ'].map(item => (
-            <a key={item} href={`#${item.toLowerCase().replace(/\s/g, '-').replace(/á/g,'a').replace(/é/g,'e').replace(/í/g,'i').replace(/ó/g,'o').replace(/ú/g,'u')}`}
-              className="text-[13px] font-medium transition"
-              style={{ color: scrolled ? 'rgba(255,255,255,0.55)' : C.text }}
-              onMouseEnter={e => e.currentTarget.style.color = scrolled ? '#fff' : C.heading}
-              onMouseLeave={e => e.currentTarget.style.color = scrolled ? 'rgba(255,255,255,0.55)' : C.text}>
-              {item}
+          {/* Desktop nav */}
+          <nav className="hidden items-center gap-6 md:flex lg:gap-8">
+            {['Producto', 'Cómo funciona', 'El circuito', 'Precios', 'FAQ'].map(item => (
+              <a key={item} href={`#${item.toLowerCase().replace(/\s/g, '-').replace(/á/g,'a').replace(/é/g,'e').replace(/í/g,'i').replace(/ó/g,'o').replace(/ú/g,'u')}`}
+                className="text-[13px] font-medium transition"
+                style={{ color: scrolled ? 'rgba(255,255,255,0.55)' : C.text }}
+                onMouseEnter={e => e.currentTarget.style.color = scrolled ? '#fff' : C.heading}
+                onMouseLeave={e => e.currentTarget.style.color = scrolled ? 'rgba(255,255,255,0.55)' : C.text}>
+                {item}
+              </a>
+            ))}
+          </nav>
+
+          {/* Desktop CTA */}
+          <div className="hidden items-center gap-3 md:flex">
+            <a href="/web" className="text-[13px] font-medium transition" style={{ color: scrolled ? 'rgba(255,255,255,0.55)' : C.text }}>
+              Iniciar sesión
             </a>
-          ))}
-        </nav>
+            <a href="/web"
+              className="rounded-full px-4 py-2 text-[13px] font-semibold text-white transition hover:-translate-y-0.5"
+              style={{ background: 'linear-gradient(135deg, #1871D8, #1459B0)', boxShadow: '0 4px 16px rgba(24,113,216,0.35)' }}>
+              Empezar gratis
+            </a>
+          </div>
 
-        {/* CTA */}
-        <div className="hidden items-center gap-3 md:flex">
-          <a href="/web" className="text-[13px] font-medium transition" style={{ color: scrolled ? 'rgba(255,255,255,0.55)' : C.text }}>
-            Iniciar sesión
-          </a>
-          <a href="/web"
-            className="rounded-full px-4 py-2 text-[13px] font-semibold text-white transition hover:-translate-y-0.5"
-            style={{ background: 'linear-gradient(135deg, #1871D8, #1459B0)', boxShadow: '0 4px 16px rgba(24,113,216,0.35)' }}>
-            Empezar gratis
-          </a>
+          {/* Mobile: CTA + hamburger */}
+          <div className="flex items-center gap-2 md:hidden">
+            <a href="/web"
+              className="rounded-full px-3 py-1.5 text-[12px] font-semibold text-white"
+              style={{ background: 'linear-gradient(135deg, #1871D8, #1459B0)' }}>
+              Empezar
+            </a>
+            <button type="button"
+              className="flex h-8 w-8 items-center justify-center rounded-full transition"
+              style={{ color: scrolled ? 'rgba(255,255,255,0.7)' : C.text, background: scrolled ? 'rgba(255,255,255,0.08)' : C.border + '60' }}
+              onClick={() => setMenuOpen(v => !v)}>
+              {menuOpen ? <X size={16} /> : <Menu size={16} />}
+            </button>
+          </div>
         </div>
+      </motion.header>
 
-        {/* Mobile menu button */}
-        <button type="button" className="md:hidden transition" style={{ color: scrolled ? 'rgba(255,255,255,0.6)' : C.text }} onClick={() => setMenuOpen(v => !v)}>
-          {menuOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
-      </div>
-
-      {/* Mobile menu */}
+      {/* Mobile menu — drops below pill as a separate card */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="overflow-hidden border-t border-white/[0.06] md:hidden"
-            style={{ background: 'rgba(7,12,24,0.97)' }}
+            initial={{ opacity: 0, y: -8, scaleY: 0.95 }}
+            animate={{ opacity: 1, y: 0, scaleY: 1 }}
+            exit={{ opacity: 0, y: -8, scaleY: 0.95 }}
+            className="pointer-events-auto w-full max-w-5xl overflow-hidden md:hidden"
+            style={{
+              transformOrigin: 'top',
+              background: 'rgba(7,12,24,0.97)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              borderTop: 'none',
+              borderRadius: '0 0 20px 20px',
+              boxShadow: '0 12px 40px rgba(0,0,0,0.3)',
+            }}
           >
-            <div className="space-y-1 px-6 py-4">
+            <div className="space-y-1 px-5 py-4">
               {['Producto', 'Cómo funciona', 'El circuito', 'Precios', 'FAQ'].map(item => (
-                <a key={item} href={`#${item.toLowerCase().replace(/\s/g, '-').replace(/á/g,'a').replace(/é/g,'e').replace(/í/g,'i').replace(/ó/g,'o').replace(/ú/g,'u')}`}
+                <a key={item}
+                  href={`#${item.toLowerCase().replace(/\s/g, '-').replace(/á/g,'a').replace(/é/g,'e').replace(/í/g,'i').replace(/ó/g,'o').replace(/ú/g,'u')}`}
                   onClick={() => setMenuOpen(false)}
-                  className="block py-2.5 text-[14px] font-medium text-white/60 transition hover:text-white">
+                  className="block py-3 text-[15px] font-medium text-white/60 transition hover:text-white border-b border-white/[0.05] last:border-0">
                   {item}
                 </a>
               ))}
-              <div className="pt-3 border-t border-white/[0.06] flex flex-col gap-2">
-                <a href="/web" className="block text-center py-2.5 text-[14px] font-medium text-white/55">Iniciar sesión</a>
-                <a href="/web" className="block text-center rounded-full py-3 text-[14px] font-semibold text-white"
-                  style={{ background: 'linear-gradient(135deg, #1871D8, #1459B0)' }}>
-                  Empezar gratis
+              <div className="pt-3">
+                <a href="/web" className="block text-center py-2.5 text-[13px] font-medium text-white/50">
+                  Iniciar sesión
                 </a>
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-      </motion.header>
     </div>
   );
 }
@@ -204,14 +220,14 @@ function LogosCarousel() {
 /* ─── feature section ──────────────────────────────────────── */
 function FeatureSection({ label, labelColor, title, description, side = 'left', children, id, bg }) {
   return (
-    <section id={id} className="py-24 px-6" style={{ background: bg || C.bgMid }}>
-      <div className={`mx-auto max-w-6xl flex flex-col gap-16 lg:flex-row lg:items-center lg:gap-20 ${side === 'right' ? 'lg:flex-row-reverse' : ''}`}>
-        <FadeUp className="flex-1 space-y-6">
+    <section id={id} className="py-16 px-5 md:py-24 md:px-6" style={{ background: bg || C.bgMid }}>
+      <div className={`mx-auto max-w-6xl flex flex-col gap-12 lg:flex-row lg:items-center lg:gap-20 ${side === 'right' ? 'lg:flex-row-reverse' : ''}`}>
+        <FadeUp className="flex-1 space-y-5">
           <Label color={labelColor}>{label}</Label>
-          <h2 className="font-['Space_Grotesk'] text-3xl font-bold leading-tight lg:text-4xl" style={{ color: C.heading }}>
+          <h2 className="font-['Space_Grotesk'] text-2xl font-bold leading-tight md:text-3xl lg:text-4xl" style={{ color: C.heading }}>
             {title}
           </h2>
-          <p className="text-[15px] leading-relaxed" style={{ color: C.text }}>{description}</p>
+          <p className="text-[14px] leading-relaxed md:text-[15px]" style={{ color: C.text }}>{description}</p>
         </FadeUp>
         <FadeUp delay={0.1} className="flex-1">
           {children}
@@ -552,11 +568,11 @@ const FAQS = [
 function FAQ() {
   const [open, setOpen] = useState(null);
   return (
-    <section id="faq" className="py-24 px-6" style={{ background: C.bg }}>
+    <section id="faq" className="py-16 px-5 md:py-24 md:px-6" style={{ background: C.bg }}>
       <div className="mx-auto max-w-3xl">
-        <FadeUp className="mb-16 text-center space-y-4">
+        <FadeUp className="mb-10 text-center space-y-4 md:mb-16">
           <Label color={C.blue}>FAQ</Label>
-          <h2 className="font-['Space_Grotesk'] text-3xl font-bold lg:text-4xl" style={{ color: C.heading }}>
+          <h2 className="font-['Space_Grotesk'] text-2xl font-bold md:text-3xl lg:text-4xl" style={{ color: C.heading }}>
             Preguntas frecuentes
           </h2>
         </FadeUp>
@@ -635,7 +651,7 @@ export default function LandingPage() {
       <HeroSection />
 
       {/* ── LOGOS ────────────────────────────────────────── */}
-      <section className="border-y py-10 px-6" style={{ borderColor: C.border, background: C.bgMid }}>
+      <section className="border-y py-8 px-5 md:py-10 md:px-6" style={{ borderColor: C.border, background: C.bgMid }}>
         <div className="mx-auto max-w-6xl">
           <p className="mb-6 text-center text-[11px] font-semibold uppercase tracking-[0.24em]" style={{ color: C.text }}>
             Empresas que ya están conectadas
@@ -645,23 +661,23 @@ export default function LandingPage() {
       </section>
 
       {/* ── CÓMO FUNCIONA ────────────────────────────────── */}
-      <section id="cómo-funciona" className="py-24 px-6" style={{ background: '#F8FAFF' }}>
+      <section id="cómo-funciona" className="py-16 px-5 md:py-24 md:px-6" style={{ background: '#F8FAFF' }}>
         <div className="mx-auto max-w-6xl">
-          <FadeUp className="mb-16 text-center space-y-4">
+          <FadeUp className="mb-10 text-center space-y-4 md:mb-16">
             <div className="flex items-center justify-center gap-3">
               <div style={{ height: 1, width: 40, background: 'linear-gradient(to right, transparent, #2563EB)' }} />
               <span className="text-[11px] font-bold uppercase tracking-[0.22em]" style={{ color: '#2563EB' }}>Cómo funciona</span>
               <div style={{ height: 1, width: 40, background: 'linear-gradient(to left, transparent, #2563EB)' }} />
             </div>
-            <h2 className="font-['Space_Grotesk'] text-3xl font-bold lg:text-4xl" style={{ color: '#0F172A' }}>
+            <h2 className="font-['Space_Grotesk'] text-2xl font-bold md:text-3xl lg:text-4xl" style={{ color: '#0F172A' }}>
               Tres pasos para tu próxima alianza
             </h2>
-            <p className="mx-auto max-w-xl text-[15px]" style={{ color: '#64748B' }}>
+            <p className="mx-auto max-w-xl text-[14px] md:text-[15px]" style={{ color: '#64748B' }}>
               Desde crear tu perfil hasta cerrar acuerdos, todo el proceso ocurre dentro de Conectados.
             </p>
           </FadeUp>
 
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid gap-5 md:grid-cols-3">
             {[
               {
                 step: '01', icon: Users, color: '#2563EB',
@@ -715,14 +731,14 @@ export default function LandingPage() {
       </FeatureSection>
 
       {/* ── ALLIANCE ROOM ────────────────────────────────── */}
-      <section className="py-24 px-6" style={{ background: C.bgMid }}>
-        <div className="mx-auto max-w-6xl grid gap-16 lg:grid-cols-2 lg:items-center">
+      <section className="py-16 px-5 md:py-24 md:px-6" style={{ background: C.bgMid }}>
+        <div className="mx-auto max-w-6xl grid gap-12 lg:grid-cols-2 lg:items-center lg:gap-16">
           <FadeUp delay={0.1}>
             <AllianceRoomMockup />
           </FadeUp>
-          <FadeUp className="space-y-6">
+          <FadeUp className="space-y-5">
             <Label color="#7C3AED"><Video size={11} /> Alliance Room</Label>
-            <h2 className="font-['Space_Grotesk'] text-3xl font-bold leading-tight lg:text-4xl" style={{ color: C.heading }}>
+            <h2 className="font-['Space_Grotesk'] text-2xl font-bold leading-tight md:text-3xl lg:text-4xl" style={{ color: C.heading }}>
               Tu sala de negociación colaborativa
             </h2>
             <p className="text-[15px] leading-relaxed" style={{ color: C.text }}>
@@ -755,26 +771,26 @@ export default function LandingPage() {
       </FeatureSection>
 
       {/* ── CIRCUITO ─────────────────────────────────────── */}
-      <section id="el-circuito" style={{ background: C.bg, padding: '112px 24px 128px' }}>
+      <section id="el-circuito" className="px-5 py-16 md:px-6 md:py-24" style={{ background: C.bg }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
 
           {/* Header */}
-          <FadeUp style={{ textAlign: 'center', marginBottom: 72 }}>
+          <FadeUp style={{ textAlign: 'center', marginBottom: 48 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 20 }}>
               <div style={{ height: 1, width: 48, background: 'linear-gradient(to right, transparent, rgba(74,159,255,0.5))' }} />
               <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#2563EB' }}>El circuito</span>
               <div style={{ height: 1, width: 48, background: 'linear-gradient(to left, transparent, rgba(74,159,255,0.5))' }} />
             </div>
-            <h2 style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: 'clamp(32px, 4vw, 52px)', fontWeight: 800, color: C.heading, letterSpacing: '-0.03em', lineHeight: 1.1, margin: '0 0 16px' }}>
+            <h2 style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: 'clamp(26px, 4vw, 52px)', fontWeight: 800, color: C.heading, letterSpacing: '-0.03em', lineHeight: 1.1, margin: '0 0 16px' }}>
               De un match a un negocio,<br />todo en Conectados
             </h2>
-            <p style={{ fontSize: 16, color: C.text, maxWidth: 480, margin: '0 auto' }}>
+            <p style={{ fontSize: 15, color: C.text, maxWidth: 480, margin: '0 auto' }}>
               Cada alianza recorre el mismo camino. Una plataforma que acompaña cada etapa del proceso.
             </p>
           </FadeUp>
 
           {/* 5 cards grid */}
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5" style={{ position: 'relative' }}>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5" style={{ position: 'relative' }}>
 
             {/* Connector line — only visible on 5-col layout */}
             <div className="hidden lg:block" style={{
@@ -964,14 +980,14 @@ export default function LandingPage() {
       </section>
 
       {/* ── ASISTENTE IA ─────────────────────────────────── */}
-      <section className="py-24 px-6" style={{ background: C.bg }}>
-        <div className="mx-auto max-w-6xl grid gap-16 lg:grid-cols-2 lg:items-center">
+      <section className="py-16 px-5 md:py-24 md:px-6" style={{ background: C.bg }}>
+        <div className="mx-auto max-w-6xl grid gap-12 lg:grid-cols-2 lg:items-center lg:gap-16">
           <FadeUp delay={0.1}>
             <AIMockup />
           </FadeUp>
-          <FadeUp className="space-y-6">
+          <FadeUp className="space-y-5">
             <Label color={C.blue}><Bot size={11} /> Asistente IA</Label>
-            <h2 className="font-['Space_Grotesk'] text-3xl font-bold leading-tight lg:text-4xl" style={{ color: C.heading }}>
+            <h2 className="font-['Space_Grotesk'] text-2xl font-bold leading-tight md:text-3xl lg:text-4xl" style={{ color: C.heading }}>
               Tu estratega de alianzas siempre disponible
             </h2>
             <p className="text-[15px] leading-relaxed" style={{ color: C.text }}>
@@ -992,11 +1008,11 @@ export default function LandingPage() {
       </section>
 
       {/* ── MÉTRICAS ─────────────────────────────────────── */}
-      <section className="py-24 px-6" style={{ background: C.bgMid }}>
+      <section className="py-16 px-5 md:py-24 md:px-6" style={{ background: C.bgMid }}>
         <div className="mx-auto max-w-6xl">
-          <FadeUp className="mb-16 text-center space-y-4">
+          <FadeUp className="mb-10 text-center space-y-4 md:mb-16">
             <Label color={C.blue}>Resultados reales</Label>
-            <h2 className="font-['Space_Grotesk'] text-3xl font-bold lg:text-4xl" style={{ color: C.heading }}>
+            <h2 className="font-['Space_Grotesk'] text-2xl font-bold md:text-3xl lg:text-4xl" style={{ color: C.heading }}>
               Números que hablan por sí solos
             </h2>
           </FadeUp>
@@ -1029,11 +1045,11 @@ export default function LandingPage() {
       </section>
 
       {/* ── TESTIMONIALES ────────────────────────────────── */}
-      <section className="py-24 px-6" style={{ background: C.bg }}>
+      <section className="py-16 px-5 md:py-24 md:px-6" style={{ background: C.bg }}>
         <div className="mx-auto max-w-6xl">
-          <FadeUp className="mb-16 text-center space-y-4">
+          <FadeUp className="mb-10 text-center space-y-4 md:mb-16">
             <Label color={C.blue}>Casos de éxito</Label>
-            <h2 className="font-['Space_Grotesk'] text-3xl font-bold lg:text-4xl" style={{ color: C.heading }}>
+            <h2 className="font-['Space_Grotesk'] text-2xl font-bold md:text-3xl lg:text-4xl" style={{ color: C.heading }}>
               Lo que dicen nuestros usuarios
             </h2>
           </FadeUp>
@@ -1067,11 +1083,11 @@ export default function LandingPage() {
       </section>
 
       {/* ── PRECIOS ──────────────────────────────────────── */}
-      <section id="precios" className="py-24 px-6" style={{ background: C.bgMid }}>
+      <section id="precios" className="py-16 px-5 md:py-24 md:px-6" style={{ background: C.bgMid }}>
         <div className="mx-auto max-w-5xl">
-          <FadeUp className="mb-16 text-center space-y-4">
+          <FadeUp className="mb-10 text-center space-y-4 md:mb-16">
             <Label color={C.blue}>Precios</Label>
-            <h2 className="font-['Space_Grotesk'] text-3xl font-bold lg:text-4xl" style={{ color: C.heading }}>
+            <h2 className="font-['Space_Grotesk'] text-2xl font-bold md:text-3xl lg:text-4xl" style={{ color: C.heading }}>
               Empezá gratis, crecé cuando quieras
             </h2>
             <p className="text-[15px]" style={{ color: C.text }}>Sin tarjeta de crédito. Sin compromisos.</p>
@@ -1131,10 +1147,10 @@ export default function LandingPage() {
       <FAQ />
 
       {/* ── CTA FINAL ────────────────────────────────────── */}
-      <section className="py-24 px-6" style={{ background: C.bgMid }}>
+      <section className="py-16 px-5 md:py-24 md:px-6" style={{ background: C.bgMid }}>
         <div className="mx-auto max-w-3xl text-center">
           <FadeUp>
-            <div className="relative overflow-hidden rounded-[32px] px-8 py-16 space-y-8"
+            <div className="relative overflow-hidden rounded-[24px] px-6 py-12 space-y-7 md:rounded-[32px] md:px-8 md:py-16 md:space-y-8"
               style={{
                 background: 'linear-gradient(145deg, #0F172A, #0D1526)',
                 border: '1px solid rgba(255,255,255,0.08)',
@@ -1144,7 +1160,7 @@ export default function LandingPage() {
                 style={{ background: '#2563EB' }} />
 
               <div className="space-y-4">
-                <h2 className="font-['Space_Grotesk'] text-3xl font-bold text-white lg:text-5xl leading-tight">
+                <h2 className="font-['Space_Grotesk'] text-2xl font-bold text-white md:text-3xl lg:text-5xl leading-tight">
                   Tu próxima alianza ya está esperando.
                 </h2>
                 <p className="text-[15px]" style={{ color: 'rgba(255,255,255,0.55)' }}>
@@ -1175,9 +1191,9 @@ export default function LandingPage() {
       </section>
 
       {/* ── FOOTER ───────────────────────────────────────── */}
-      <footer className="border-t px-6 py-12" style={{ borderColor: C.border, background: C.bgMid }}>
+      <footer className="border-t px-5 py-10 md:px-6 md:py-12" style={{ borderColor: C.border, background: C.bgMid }}>
         <div className="mx-auto max-w-6xl">
-          <div className="grid gap-10 md:grid-cols-[1fr_auto_auto_auto]">
+          <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-[1fr_auto_auto_auto]">
             <div className="space-y-4">
               <div className="flex items-center gap-2.5">
                 <div className="flex h-8 w-8 items-center justify-center rounded-[10px] text-xs font-bold text-white"
