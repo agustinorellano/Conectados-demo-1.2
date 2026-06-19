@@ -374,15 +374,9 @@ function MatchMockup() {
       name: 'Bloom Florería', type: 'Florería', location: 'CABA', followers: '3.2k',
       score: 94, tags: ['Co-marketing', 'Eventos', 'Visibilidad'], color: '#10B981',
       logo: (
-        <svg width="68" height="68" viewBox="0 0 68 68" fill="none">
-          <rect width="68" height="68" rx="16" fill="#F0FDF4"/>
-          {/* Flower petals */}
-          <ellipse cx="34" cy="23" rx="5" ry="8" fill="#10B981" opacity="0.75"/>
-          <ellipse cx="34" cy="45" rx="5" ry="8" fill="#10B981" opacity="0.75"/>
-          <ellipse cx="23" cy="34" rx="8" ry="5" fill="#10B981" opacity="0.75"/>
-          <ellipse cx="45" cy="34" rx="8" ry="5" fill="#10B981" opacity="0.75"/>
-          <circle cx="34" cy="34" r="7" fill="#059669"/>
-          <circle cx="34" cy="34" r="3" fill="#fff" opacity="0.5"/>
+        <svg width="80" height="60" viewBox="0 0 80 60" fill="none">
+          <text x="4" y="36" fontFamily="Inter, system-ui, sans-serif" fontSize="28" fontWeight="300" letterSpacing="-0.5" fill="#1E2A3A">bloom</text>
+          <text x="5" y="52" fontFamily="Inter, system-ui, sans-serif" fontSize="11" fontWeight="400" letterSpacing="0.5" fill="#1E2A3A" opacity="0.6">Florería</text>
         </svg>
       ),
     },
@@ -390,16 +384,9 @@ function MatchMockup() {
       name: 'Luna Beauty', type: 'Belleza', location: 'Palermo', followers: '5.8k',
       score: 87, tags: ['Cross-selling', 'Redes sociales', 'Visibilidad'], color: '#8B5CF6',
       logo: (
-        <svg width="68" height="68" viewBox="0 0 68 68" fill="none">
-          <rect width="68" height="68" rx="16" fill="#F5F3FF"/>
-          {/* Crescent moon */}
-          <circle cx="36" cy="34" r="16" fill="#8B5CF6" opacity="0.2"/>
-          <circle cx="42" cy="30" r="13" fill="#F5F3FF"/>
-          <circle cx="34" cy="34" r="14" fill="#8B5CF6" opacity="0.85"/>
-          <circle cx="40" cy="28" r="11" fill="#F5F3FF"/>
-          {/* Stars */}
-          <circle cx="48" cy="22" r="2" fill="#8B5CF6"/>
-          <circle cx="52" cy="30" r="1.5" fill="#8B5CF6" opacity="0.6"/>
+        <svg width="80" height="60" viewBox="0 0 80 60" fill="none">
+          <text x="4" y="36" fontFamily="Inter, system-ui, sans-serif" fontSize="28" fontWeight="300" letterSpacing="-0.5" fill="#1E2A3A">luna</text>
+          <text x="5" y="52" fontFamily="Inter, system-ui, sans-serif" fontSize="11" fontWeight="400" letterSpacing="0.5" fill="#1E2A3A" opacity="0.6">Beauty</text>
         </svg>
       ),
     },
