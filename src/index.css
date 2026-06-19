@@ -57,6 +57,15 @@ input {
   font: inherit;
 }
 
+/* ── Dark-bg transparent inputs (web app sidebar, match search, etc.) ── */
+.bg-transparent input,
+input.bg-transparent {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  width: auto !important;
+}
+
 /* ── Chat search bar ── */
 .chat-search {
   background-color: rgba(255,255,255,0.05) !important;

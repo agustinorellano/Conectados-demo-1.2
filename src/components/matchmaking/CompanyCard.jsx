@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowUp, Navigation, Users, Eye, Share2, ShoppingBag, Truck, TrendingUp, BarChart2, Radio, Star, Zap } from 'lucide-react';
+import { UserRound, Navigation, Users, Eye, Share2, ShoppingBag, Truck, TrendingUp, BarChart2, Radio, Star, Zap } from 'lucide-react';
 
 /* ── Per-sector gradient backgrounds ─────────────────── */
 const industryBg = {
@@ -160,7 +160,7 @@ function CompanyCard({ company, onViewProfile }) {
               whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.90 }}
               className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white"
               style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.45)' }}>
-              <ArrowUp className="h-4 w-4 text-[#141E30]" strokeWidth={2.5} />
+              <UserRound className="h-4 w-4 text-[#141E30]" strokeWidth={2.2} />
             </motion.button>
           )}
         </div>

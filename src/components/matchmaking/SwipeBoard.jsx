@@ -233,6 +233,22 @@ const industryBg = {
 /* ── Desktop right panel — full company profile ─────────────── */
 const COMMON_CONNECTIONS = ['Bloom Florería', 'Sushi Nakama'];
 
+function ScoreRing({ score, color, size = 56 }) {
+  const r = (size - 6) / 2;
+  const circ = 2 * Math.PI * r;
+  const dash = (score / 100) * circ;
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ transform: 'rotate(-90deg)' }}>
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth={5} />
+      <motion.circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth={5}
+        strokeLinecap="round"
+        initial={{ strokeDasharray: `0 ${circ}` }}
+        animate={{ strokeDasharray: `${dash} ${circ}` }}
+        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }} />
+    </svg>
+  );
+}
+
 function DesktopDetailPanel({ company, score, deckIndex, deckTotal }) {
   if (!company) {
     return (
@@ -249,32 +265,42 @@ function DesktopDetailPanel({ company, score, deckIndex, deckTotal }) {
   const heroBg     = industryBg[company.sector] || 'linear-gradient(135deg, #1871D8 0%, #0A3D7A 100%)';
   const followers  = company.instagramData?.followers ?? null;
   const lift       = company.stats?.conversionLift;
+
+  /* Score tiers: green ≥80, blue ≥60, amber <60 */
   const scoreColor = score >= 80 ? '#4ADE80' : score >= 60 ? '#4A9FFF' : '#FBBF24';
   const scoreGrad  = score >= 80
-    ? 'linear-gradient(to right, #16A34A, #4ADE80)'
-    : 'linear-gradient(to right, #1871D8, #4A9FFF)';
+    ? 'linear-gradient(90deg, #16A34A, #4ADE80)'
+    : score >= 60
+      ? 'linear-gradient(90deg, #1D5FD0, #4A9FFF)'
+      : 'linear-gradient(90deg, #B45309, #FBBF24)';
+  const scoreBg    = score >= 80
+    ? 'rgba(74,222,128,0.08)'
+    : score >= 60
+      ? 'rgba(74,159,255,0.08)'
+      : 'rgba(251,191,36,0.08)';
 
   return (
     <div className="flex flex-1 flex-col h-full overflow-y-auto [scrollbar-width:none]">
 
       {/* ── Hero image / gradient ── */}
-      <div className="relative h-[200px] shrink-0 overflow-hidden"
-        style={{ background: heroBg }}>
+      <div className="relative shrink-0 overflow-hidden" style={{ height: 220, background: heroBg }}>
         {hasImage && (
           <img src={company.gallery[0]} alt={company.name}
             className="absolute inset-0 h-full w-full object-cover" />
         )}
         <div className="absolute inset-0"
-          style={{ background: 'linear-gradient(to top, rgba(7,12,24,1) 0%, rgba(7,12,24,0.2) 60%, transparent 100%)' }} />
+          style={{ background: 'linear-gradient(to top, rgba(7,12,24,1) 0%, rgba(7,12,24,0.15) 55%, transparent 100%)' }} />
 
-        {/* Progress dots top-right */}
+        {/* Progress dots — bigger, more visible */}
         {deckTotal > 0 && (
-          <div className="absolute top-4 right-4 flex gap-1">
+          <div className="absolute top-4 right-5 flex items-center gap-1.5">
             {Array.from({ length: Math.min(deckTotal, 8) }).map((_, i) => (
-              <div key={i} className="h-1 rounded-full transition-all"
+              <div key={i} className="rounded-full transition-all duration-300"
                 style={{
-                  width: i === deckIndex % 8 ? 14 : 5,
-                  background: i === deckIndex % 8 ? 'white' : 'rgba(255,255,255,0.25)',
+                  height: 6,
+                  width: i === deckIndex % 8 ? 18 : 6,
+                  background: i === deckIndex % 8 ? 'white' : 'rgba(255,255,255,0.30)',
+                  boxShadow: i === deckIndex % 8 ? '0 0 6px rgba(255,255,255,0.5)' : 'none',
                 }} />
             ))}
           </div>
@@ -283,15 +309,15 @@ function DesktopDetailPanel({ company, score, deckIndex, deckTotal }) {
         {/* Company name overlay */}
         <div className="absolute bottom-0 left-0 right-0 px-6 pb-5">
           <h2 className="font-['Space_Grotesk'] text-2xl font-bold text-white leading-tight">{company.name}</h2>
-          <div className="flex items-center gap-3 mt-1">
-            <span className="text-white/60 text-sm">{company.sector}</span>
+          <div className="flex items-center gap-3 mt-1.5">
+            <span className="text-white/65 text-[13px]">{company.sector}</span>
             {company.distance != null && (
-              <span className="flex items-center gap-1 text-white/40 text-xs">
+              <span className="flex items-center gap-1 text-white/40 text-[11px]">
                 <MapPin size={10} /> {company.distance} km
               </span>
             )}
             {followers != null && (
-              <span className="flex items-center gap-1 text-white/40 text-xs">
+              <span className="flex items-center gap-1 text-white/40 text-[11px]">
                 <Users size={10} /> {followers >= 1000 ? `${(followers / 1000).toFixed(1)}k` : followers} seg.
               </span>
             )}
@@ -302,55 +328,61 @@ function DesktopDetailPanel({ company, score, deckIndex, deckTotal }) {
       {/* ── Scrollable body ── */}
       <div className="flex flex-col gap-5 px-6 py-5">
 
-        {/* Compatibility score */}
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/30">Compatibilidad</span>
-            <span className="font-['Space_Grotesk'] text-lg font-black" style={{ color: scoreColor }}>{score}%</span>
+        {/* Compatibility — score ring + bar */}
+        <div className="flex items-center gap-4 rounded-[16px] p-4" style={{ background: scoreBg, border: `1px solid ${scoreColor}22` }}>
+          <div className="relative shrink-0 flex items-center justify-center" style={{ width: 56, height: 56 }}>
+            <ScoreRing score={score} color={scoreColor} size={56} />
+            <span className="absolute font-['Space_Grotesk'] text-[13px] font-black" style={{ color: scoreColor }}>
+              {score}%
+            </span>
           </div>
-          <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.07)' }}>
-            <motion.div className="h-full rounded-full"
-              style={{ background: scoreGrad }}
-              initial={{ width: 0 }}
-              animate={{ width: `${score}%` }}
-              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }} />
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/35">Compatibilidad</span>
+              <span className="text-[11px] font-medium" style={{ color: scoreColor }}>
+                {score >= 80 ? 'Excelente' : score >= 60 ? 'Buena' : 'Moderada'}
+              </span>
+            </div>
+            <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.07)' }}>
+              <motion.div className="h-full rounded-full"
+                style={{ background: scoreGrad }}
+                initial={{ width: 0 }}
+                animate={{ width: `${score}%` }}
+                transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }} />
+            </div>
           </div>
         </div>
 
         {/* Description */}
         {(company.description || company.culture || company.headline) && (
-          <p className="text-[13px] leading-relaxed text-white/45">
+          <p className="text-[13px] leading-relaxed text-white/50">
             {company.description || company.culture || company.headline}
           </p>
         )}
+
+        {/* Stats row — always shown above the fold */}
+        <div className="grid grid-cols-3 gap-3">
+          <div className="rounded-[14px] p-3 text-center"
+            style={{ background: scoreBg, border: `1px solid ${scoreColor}22` }}>
+            <p className="font-['Space_Grotesk'] text-[20px] font-black leading-none" style={{ color: scoreColor }}>{score}%</p>
+            <p className="text-[10px] text-white/35 mt-1">Match</p>
+          </div>
+          <div className="rounded-[14px] p-3 text-center"
+            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <p className="font-['Space_Grotesk'] text-[20px] font-black leading-none text-white">{company.capacityScore ?? 68}%</p>
+            <p className="text-[10px] text-white/35 mt-1">Capacidad</p>
+          </div>
+          <div className="rounded-[14px] p-3 text-center"
+            style={{ background: 'rgba(74,222,128,0.07)', border: '1px solid rgba(74,222,128,0.15)' }}>
+            <p className="font-['Space_Grotesk'] text-[20px] font-black leading-none" style={{ color: '#4ADE80' }}>{lift ?? '+9%'}</p>
+            <p className="text-[10px] text-white/35 mt-1">Ventas est.</p>
+          </div>
+        </div>
 
         {/* Instagram feed strip */}
         {company.instagramData && (
           <div className="rounded-[16px] p-4" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
             <InstagramFeedCompact data={company.instagramData} />
-          </div>
-        )}
-
-        {/* Stats row */}
-        {(lift || company.capacityScore) && (
-          <div className="grid grid-cols-3 gap-3">
-            <div className="rounded-[14px] p-3 text-center"
-              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
-              <p className="font-['Space_Grotesk'] text-[18px] font-black" style={{ color: scoreColor }}>{score}%</p>
-              <p className="text-[10px] text-white/30 mt-0.5">Match</p>
-            </div>
-            <div className="rounded-[14px] p-3 text-center"
-              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
-              <p className="font-['Space_Grotesk'] text-[18px] font-black text-white">{company.capacityScore ?? 72}%</p>
-              <p className="text-[10px] text-white/30 mt-0.5">Capacidad</p>
-            </div>
-            {lift && (
-              <div className="rounded-[14px] p-3 text-center"
-                style={{ background: 'rgba(74,222,128,0.07)', border: '1px solid rgba(74,222,128,0.14)' }}>
-                <p className="font-['Space_Grotesk'] text-[18px] font-black" style={{ color: '#4ADE80' }}>{lift}</p>
-                <p className="text-[10px] text-white/30 mt-0.5">Ventas</p>
-              </div>
-            )}
           </div>
         )}
 
@@ -415,7 +447,7 @@ function DesktopDetailPanel({ company, score, deckIndex, deckTotal }) {
           </div>
         </div>
 
-        <div className="h-2" />
+        <div className="h-4" />
       </div>
     </div>
   );
@@ -625,20 +657,20 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
                   <CardStack {...cardStackProps} />
                 </div>
 
-                {/* Drag affordance + keyboard hints */}
-                <div className="flex items-center justify-center gap-3 py-2.5 shrink-0">
-                  <div className="flex items-center gap-1 text-[11px] text-white/18">
-                    <kbd className="rounded px-1.5 py-0.5 font-mono text-[10px]"
-                      style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.10)' }}>←</kbd>
-                    Pasar
+                {/* Keyboard hints */}
+                <div className="flex items-center justify-center gap-4 py-2.5 shrink-0">
+                  <div className="flex items-center gap-1.5">
+                    <kbd className="rounded-[6px] px-2 py-1 font-mono text-[11px] font-semibold text-white/50"
+                      style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.14)' }}>←</kbd>
+                    <span className="text-[12px] text-white/30">Pasar</span>
                   </div>
-                  <ArrowLeft size={11} className="text-white/15" />
-                  <span className="text-[10px] text-white/18">arrastrá</span>
-                  <ArrowRight size={11} className="text-white/15" />
-                  <div className="flex items-center gap-1 text-[11px] text-white/18">
-                    Conectar
-                    <kbd className="rounded px-1.5 py-0.5 font-mono text-[10px]"
-                      style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.10)' }}>→</kbd>
+                  <span className="text-[11px] text-white/15">·</span>
+                  <span className="text-[11px] text-white/25">arrastrá</span>
+                  <span className="text-[11px] text-white/15">·</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[12px] text-white/30">Conectar</span>
+                    <kbd className="rounded-[6px] px-2 py-1 font-mono text-[11px] font-semibold text-white/50"
+                      style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.14)' }}>→</kbd>
                   </div>
                 </div>
 
