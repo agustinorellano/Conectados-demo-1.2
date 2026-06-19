@@ -71,160 +71,6 @@ function Label({ children, color = C.blueLight }) {
   );
 }
 
-/* ─── hero mockup ──────────────────────────────────────────── */
-function HeroMockup() {
-  return (
-    <div className="relative w-full max-w-[600px] mx-auto select-none">
-      {/* Glow */}
-      <div className="absolute inset-0 -z-10 blur-[80px] opacity-30"
-        style={{ background: 'radial-gradient(ellipse at 50% 50%, #1871D8 0%, transparent 70%)' }} />
-
-      {/* Main screen */}
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-        className="overflow-hidden rounded-[20px]"
-        style={{
-          background: 'linear-gradient(160deg, #0D1526 0%, #0A0F1E 100%)',
-          border: '1px solid rgba(255,255,255,0.10)',
-          boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05)',
-        }}
-      >
-        {/* Top bar */}
-        <div className="flex items-center gap-2 border-b border-white/[0.06] px-4 py-3">
-          <div className="flex gap-1.5">
-            {['#FF5F57','#FFBD2E','#28CA41'].map(c => (
-              <div key={c} className="h-2.5 w-2.5 rounded-full" style={{ background: c }} />
-            ))}
-          </div>
-          <div className="mx-auto flex items-center gap-2 rounded-full px-3 py-1"
-            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.07)' }}>
-            <div className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-            <span className="text-[10px] text-white/40">conectados.app</span>
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="grid grid-cols-[160px_1fr] gap-0">
-          {/* Sidebar */}
-          <div className="border-r border-white/[0.05] p-3 space-y-1">
-            {[
-              { icon: LayoutDashboard, label: 'Dashboard', active: false },
-              { icon: BriefcaseBusiness, label: 'Match', active: true },
-              { icon: MessageSquare, label: 'Mensajes', active: false },
-              { icon: PanelsTopLeft, label: 'Workplace', active: false },
-              { icon: Bot, label: 'Asistente', active: false },
-            ].map(({ icon: Icon, label, active }) => (
-              <div key={label}
-                className="flex items-center gap-2 rounded-[8px] px-2.5 py-2"
-                style={{ background: active ? 'rgba(24,113,216,0.18)' : 'transparent' }}>
-                <Icon size={13} style={{ color: active ? '#60A5FA' : 'rgba(255,255,255,0.30)' }} strokeWidth={active ? 2.2 : 1.6} />
-                <span className="text-[11px] font-medium" style={{ color: active ? 'white' : 'rgba(255,255,255,0.35)' }}>
-                  {label}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          {/* Match view preview */}
-          <div className="p-4 space-y-3">
-            <p className="text-[9px] font-semibold uppercase tracking-[0.22em] text-white/30">Match del día</p>
-            {[
-              { name: 'Bloom Florería', sector: 'Florería · CABA', score: 94, color: '#10B981' },
-              { name: 'Luna Beauty', sector: 'Belleza · Palermo', score: 87, color: '#8B5CF6' },
-              { name: 'Sushi Nakama', sector: 'Gastronomía · Recoleta', score: 81, color: '#3B82F6' },
-            ].map((c, i) => (
-              <motion.div key={c.name}
-                initial={{ opacity: 0, x: 12 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.6 + i * 0.1 }}
-                className="flex items-center gap-3 rounded-[12px] px-3 py-2.5"
-                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] text-[10px] font-bold text-white"
-                  style={{ background: `linear-gradient(135deg, ${c.color}80, ${c.color}40)` }}>
-                  {c.name.slice(0,2)}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[11px] font-semibold text-white/85 truncate">{c.name}</p>
-                  <p className="text-[9px] text-white/35">{c.sector}</p>
-                </div>
-                <div className="shrink-0 flex items-center gap-1">
-                  <div className="h-1 w-1 rounded-full" style={{ background: c.color }} />
-                  <span className="text-[10px] font-bold" style={{ color: c.color }}>{c.score}%</span>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Floating metric — top right */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8, y: 10 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ delay: 0.9, type: 'spring', damping: 20 }}
-        className="absolute -right-4 top-8 rounded-[14px] px-3.5 py-2.5"
-        style={{
-          background: 'rgba(16,185,129,0.12)',
-          border: '1px solid rgba(16,185,129,0.25)',
-          backdropFilter: 'blur(12px)',
-        }}
-      >
-        <div className="flex items-center gap-2">
-          <TrendingUp size={13} className="text-emerald-400" />
-          <div>
-            <p className="text-[10px] font-bold text-emerald-400">+34% matches</p>
-            <p className="text-[9px] text-white/35">este mes</p>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Floating match badge — bottom left */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8, y: -10 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ delay: 1.1, type: 'spring', damping: 20 }}
-        className="absolute -left-4 bottom-10 rounded-[14px] px-3.5 py-2.5"
-        style={{
-          background: 'rgba(24,113,216,0.14)',
-          border: '1px solid rgba(24,113,216,0.28)',
-          backdropFilter: 'blur(12px)',
-        }}
-      >
-        <div className="flex items-center gap-2">
-          <Zap size={13} className="text-blue-400" />
-          <div>
-            <p className="text-[10px] font-bold text-blue-300">Nuevo match</p>
-            <p className="text-[9px] text-white/35">Bloom Florería · 94%</p>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Floating alliance badge — bottom right */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 1.3, type: 'spring', damping: 20 }}
-        className="absolute -right-2 -bottom-4 rounded-[14px] px-3.5 py-2.5"
-        style={{
-          background: 'rgba(139,92,246,0.12)',
-          border: '1px solid rgba(139,92,246,0.25)',
-          backdropFilter: 'blur(12px)',
-        }}
-      >
-        <div className="flex items-center gap-2">
-          <Check size={13} className="text-violet-400" />
-          <div>
-            <p className="text-[10px] font-bold text-violet-300">Alianza cerrada</p>
-            <p className="text-[9px] text-white/35">$85.000 generados</p>
-          </div>
-        </div>
-      </motion.div>
-    </div>
-  );
-}
-
 /* ─── navbar ───────────────────────────────────────────────── */
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -240,9 +86,9 @@ function Navbar() {
     <motion.header
       className="fixed inset-x-0 top-0 z-50 transition-all duration-300"
       style={{
-        background: scrolled ? 'rgba(7,12,24,0.88)' : 'transparent',
-        backdropFilter: scrolled ? 'blur(20px)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(255,255,255,0.06)' : '1px solid transparent',
+        background: scrolled ? 'rgba(7,12,24,0.88)' : 'rgba(240,244,255,0.85)',
+        backdropFilter: 'blur(20px)',
+        borderBottom: scrolled ? '1px solid rgba(255,255,255,0.06)' : `1px solid ${C.border}`,
       }}
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
@@ -252,14 +98,17 @@ function Navbar() {
             style={{ background: 'linear-gradient(135deg, #1871D8, #0A3D7A)' }}>
             C
           </div>
-          <span className="font-['Space_Grotesk'] text-[15px] font-bold text-white">Conectados</span>
+          <span className="font-['Space_Grotesk'] text-[15px] font-bold" style={{ color: scrolled ? '#fff' : C.heading }}>Conectados</span>
         </div>
 
         {/* Desktop nav */}
         <nav className="hidden items-center gap-8 md:flex">
           {['Producto', 'Cómo funciona', 'El circuito', 'Precios', 'FAQ'].map(item => (
             <a key={item} href={`#${item.toLowerCase().replace(/\s/g, '-').replace(/á/g,'a').replace(/é/g,'e').replace(/í/g,'i').replace(/ó/g,'o').replace(/ú/g,'u')}`}
-              className="text-[13px] font-medium text-white/50 transition hover:text-white">
+              className="text-[13px] font-medium transition"
+              style={{ color: scrolled ? 'rgba(255,255,255,0.55)' : C.text }}
+              onMouseEnter={e => e.currentTarget.style.color = scrolled ? '#fff' : C.heading}
+              onMouseLeave={e => e.currentTarget.style.color = scrolled ? 'rgba(255,255,255,0.55)' : C.text}>
               {item}
             </a>
           ))}
@@ -267,7 +116,7 @@ function Navbar() {
 
         {/* CTA */}
         <div className="hidden items-center gap-3 md:flex">
-          <a href="/web" className="text-[13px] font-medium text-white/55 transition hover:text-white">
+          <a href="/web" className="text-[13px] font-medium transition" style={{ color: scrolled ? 'rgba(255,255,255,0.55)' : C.text }}>
             Iniciar sesión
           </a>
           <a href="/web"
@@ -278,7 +127,7 @@ function Navbar() {
         </div>
 
         {/* Mobile menu button */}
-        <button type="button" className="md:hidden text-white/60" onClick={() => setMenuOpen(v => !v)}>
+        <button type="button" className="md:hidden transition" style={{ color: scrolled ? 'rgba(255,255,255,0.6)' : C.text }} onClick={() => setMenuOpen(v => !v)}>
           {menuOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
@@ -411,7 +260,7 @@ function MatchMockup() {
         {/* Score badge + counter */}
         <div className="flex items-center justify-between">
           <Label color={card.color}>Match {card.score}%</Label>
-          <span className="text-[11px] font-semibold" style={{ color: C.text }}>1 de 12</span>
+          <span className="text-[11px] font-semibold" style={{ color: C.text }}>{active + 1} de {cards.length}</span>
         </div>
 
         {/* Company card — like img 2 */}
@@ -861,7 +710,7 @@ export default function LandingPage() {
 
       {/* ── ALLIANCE ROOM ────────────────────────────────── */}
       <section className="py-24 px-6" style={{ background: C.bgMid }}>
-        <div className="mx-auto max-w-6xl grid gap-16 lg:grid-cols-2 lg:items-center lg:flex-row-reverse">
+        <div className="mx-auto max-w-6xl grid gap-16 lg:grid-cols-2 lg:items-center">
           <FadeUp delay={0.1}>
             <AllianceRoomMockup />
           </FadeUp>
@@ -919,10 +768,10 @@ export default function LandingPage() {
           </FadeUp>
 
           {/* 5 cards grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 16, position: 'relative' }}>
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5" style={{ position: 'relative' }}>
 
-            {/* Connector line */}
-            <div style={{
+            {/* Connector line — only visible on 5-col layout */}
+            <div className="hidden lg:block" style={{
               position: 'absolute',
               top: 64, left: 'calc(10% + 8px)', right: 'calc(10% + 8px)',
               height: 2,
@@ -1335,7 +1184,6 @@ export default function LandingPage() {
             </div>
             {[
               { title: 'Producto', links: ['Match', 'Alliance Room', 'Workplace', 'Asistente IA'] },
-              { title: 'Empresa', links: ['Sobre nosotros', 'Blog', 'Prensa', 'Contacto'] },
               { title: 'Legal', links: ['Privacidad', 'Términos', 'Cookies'] },
             ].map(col => (
               <div key={col.title} className="space-y-4">
