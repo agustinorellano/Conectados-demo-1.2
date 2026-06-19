@@ -41,13 +41,14 @@ function Counter({ to, suffix = '', prefix = '' }) {
 }
 
 /* ─── fade-in section wrapper ──────────────────────────────── */
-function FadeUp({ children, delay = 0, className = '' }) {
+function FadeUp({ children, delay = 0, className = '', style }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-60px' });
   return (
     <motion.div
       ref={ref}
       className={className}
+      style={style}
       initial={{ opacity: 0, y: 28 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
@@ -831,130 +832,213 @@ export default function LandingPage() {
       </FeatureSection>
 
       {/* ── CIRCUITO ─────────────────────────────────────── */}
-      <section id="el-circuito" className="py-28 px-6" style={{ background: C.bg }}>
-        <div className="mx-auto max-w-5xl">
-          <FadeUp className="mb-20 text-center space-y-4">
-            <div className="flex items-center justify-center gap-3">
-              <div style={{ height: 1, width: 40, background: 'linear-gradient(to right, transparent, rgba(24,113,216,0.6))' }} />
-              <span className="text-[11px] font-bold uppercase tracking-[0.22em]" style={{ color: '#4A9FFF' }}>El circuito</span>
-              <div style={{ height: 1, width: 40, background: 'linear-gradient(to left, transparent, rgba(24,113,216,0.6))' }} />
+      <section id="el-circuito" style={{ background: 'linear-gradient(180deg, #070C18 0%, #080E1F 100%)', padding: '112px 24px 128px' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+
+          {/* Header */}
+          <FadeUp style={{ textAlign: 'center', marginBottom: 72 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 20 }}>
+              <div style={{ height: 1, width: 48, background: 'linear-gradient(to right, transparent, rgba(74,159,255,0.5))' }} />
+              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#4A9FFF' }}>El circuito</span>
+              <div style={{ height: 1, width: 48, background: 'linear-gradient(to left, transparent, rgba(74,159,255,0.5))' }} />
             </div>
-            <h2 className="font-['Space_Grotesk'] text-3xl font-bold text-white lg:text-4xl">
+            <h2 style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: 'clamp(32px, 4vw, 52px)', fontWeight: 800, color: '#fff', letterSpacing: '-0.03em', lineHeight: 1.1, margin: '0 0 16px' }}>
               De un match a un negocio,<br />todo en Conectados
             </h2>
-            <p className="text-[15px] mx-auto max-w-lg" style={{ color: C.text }}>
-              Cada alianza recorre el mismo camino. Conectados acompaña cada etapa.
+            <p style={{ fontSize: 16, color: C.text, maxWidth: 480, margin: '0 auto' }}>
+              Cada alianza recorre el mismo camino. Una plataforma que acompaña cada etapa del proceso.
             </p>
           </FadeUp>
 
-          {/* Circuit — 5 stages */}
-          <FadeUp delay={0.12}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 0, position: 'relative' }}>
+          {/* 5 cards grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 16, position: 'relative' }}>
 
-              {/* Connector line behind cards */}
-              <div style={{
-                position: 'absolute', top: 52, left: '10%', right: '10%', height: 2,
-                background: 'linear-gradient(to right, rgba(24,113,216,0.15), #1871D8, #1871D8, #1871D8, rgba(24,113,216,0.9))',
-                zIndex: 0,
-              }} />
+            {/* Connector line */}
+            <div style={{
+              position: 'absolute',
+              top: 64, left: 'calc(10% + 8px)', right: 'calc(10% + 8px)',
+              height: 2,
+              background: 'linear-gradient(to right, rgba(24,113,216,0.2) 0%, #1871D8 30%, #1871D8 70%, #4A9FFF 100%)',
+              zIndex: 0,
+            }} />
 
-              {[
-                {
-                  label: 'Alianza', desc: 'Match por afinidad real',
-                  icon: <Link2 size={20} color="#4A9FFF" strokeWidth={2} />,
-                  companies: ['CP', 'NA'], opacity: 0.35,
-                },
-                {
-                  label: 'Chat', desc: 'Primera conversación',
-                  icon: <MessageSquare size={20} color="#4A9FFF" strokeWidth={2} />,
-                  companies: ['CP', 'NA'], opacity: 0.55,
-                },
-                {
-                  label: 'Workplace', desc: 'Tareas y acuerdos',
-                  icon: <PanelsTopLeft size={20} color="#4A9FFF" strokeWidth={2} />,
-                  companies: ['CP', 'NA'], opacity: 0.72,
-                },
-                {
-                  label: 'Proyecto', desc: 'Activación conjunta',
-                  icon: <Zap size={20} color="#4A9FFF" strokeWidth={2} />,
-                  companies: ['CP', 'NA'], opacity: 0.88,
-                },
-                {
-                  label: 'Negocio', desc: 'Revenue medible',
-                  icon: <TrendingUp size={20} color="#fff" strokeWidth={2} />,
-                  companies: ['CP', 'NA'], opacity: 1, highlight: true,
-                },
-              ].map((step, i) => (
-                <div key={step.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, position: 'relative', zIndex: 1 }}>
-
-                  {/* Node card */}
-                  <div style={{
-                    width: 104, height: 104, borderRadius: 24,
-                    background: step.highlight
-                      ? 'linear-gradient(135deg, #1871D8, #0E4FA8)'
-                      : 'rgba(255,255,255,0.04)',
-                    border: step.highlight
-                      ? '1px solid rgba(74,159,255,0.5)'
-                      : '1px solid rgba(255,255,255,0.08)',
-                    display: 'flex', flexDirection: 'column',
-                    alignItems: 'center', justifyContent: 'center', gap: 10,
-                    boxShadow: step.highlight ? '0 0 40px rgba(24,113,216,0.35)' : 'none',
-                    position: 'relative', overflow: 'visible',
-                  }}>
-                    {/* Pulse for last */}
-                    {step.highlight && (
-                      <motion.div
-                        animate={{ scale: [1, 1.22, 1], opacity: [0.4, 0, 0.4] }}
-                        transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
-                        style={{
-                          position: 'absolute', inset: -12, borderRadius: 32,
-                          border: '2px solid #1871D8', pointerEvents: 'none',
-                        }}
-                      />
-                    )}
-
-                    {/* Two company avatars */}
-                    <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                      {['CP', 'NA'].map((initials, j) => (
-                        <div key={j} style={{
-                          width: 28, height: 28, borderRadius: '50%',
-                          background: step.highlight
-                            ? 'rgba(255,255,255,0.2)'
-                            : `rgba(24,113,216,${step.opacity * 0.5})`,
-                          border: `1.5px solid rgba(255,255,255,${step.opacity * 0.4})`,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontSize: 8, fontWeight: 800,
-                          color: step.highlight ? '#fff' : `rgba(255,255,255,${step.opacity})`,
-                          letterSpacing: '0.02em',
-                        }}>
-                          {initials}
+            {[
+              {
+                num: '01', label: 'Alianza', desc: 'Encontrás empresas afines mediante match inteligente y scoring de compatibilidad.',
+                icon: <Link2 size={24} color="#4A9FFF" strokeWidth={2} />,
+                accent: '#1871D8',
+                visual: (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {[['CafePro', '#2563EB'], ['NutriApp', '#0891B2'], ['FitBrand', '#7C3AED']].map(([name, clr]) => (
+                      <div key={name} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.04)', borderRadius: 8, padding: '5px 8px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                        <div style={{ width: 20, height: 20, borderRadius: 6, background: clr, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 7, fontWeight: 800, color: '#fff', flexShrink: 0 }}>
+                          {name[0]}
                         </div>
+                        <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>{name}</span>
+                        <div style={{ marginLeft: 'auto', width: 6, height: 6, borderRadius: '50%', background: '#10B981' }} />
+                      </div>
+                    ))}
+                  </div>
+                ),
+              },
+              {
+                num: '02', label: 'Chat', desc: 'Primera conversación directa entre las dos empresas. Sin intermediarios.',
+                icon: <MessageSquare size={24} color="#4A9FFF" strokeWidth={2} />,
+                accent: '#0891B2',
+                visual: (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                    <div style={{ background: 'rgba(24,113,216,0.15)', border: '1px solid rgba(24,113,216,0.25)', borderRadius: '12px 12px 12px 4px', padding: '7px 10px', fontSize: 10, color: 'rgba(255,255,255,0.8)', maxWidth: '80%' }}>
+                      Hola! Vi tu perfil y creo que podemos hacer algo juntos 👋
+                    </div>
+                    <div style={{ alignSelf: 'flex-end', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px 12px 4px 12px', padding: '7px 10px', fontSize: 10, color: 'rgba(255,255,255,0.8)', maxWidth: '80%' }}>
+                      Me interesa. ¿Cuándo hablamos?
+                    </div>
+                    <div style={{ background: 'rgba(24,113,216,0.15)', border: '1px solid rgba(24,113,216,0.25)', borderRadius: '12px 12px 12px 4px', padding: '7px 10px', fontSize: 10, color: 'rgba(255,255,255,0.8)', maxWidth: '70%' }}>
+                      Mañana a las 10 AM 🎯
+                    </div>
+                  </div>
+                ),
+              },
+              {
+                num: '03', label: 'Workplace', desc: 'Espacio compartido con tareas, acuerdos y seguimiento de la alianza.',
+                icon: <PanelsTopLeft size={24} color="#4A9FFF" strokeWidth={2} />,
+                accent: '#F59E0B',
+                visual: (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                    {[
+                      { text: 'Definir propuesta de valor', done: true, color: '#10B981' },
+                      { text: 'Alinear canales de distribución', done: true, color: '#10B981' },
+                      { text: 'Validar con área legal', done: false, color: '#F59E0B' },
+                      { text: 'Activar primera campaña', done: false, color: '#6B7280' },
+                    ].map(t => (
+                      <div key={t.text} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <div style={{ width: 14, height: 14, borderRadius: 4, border: `1.5px solid ${t.color}`, background: t.done ? t.color : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          {t.done && <Check size={8} color="#fff" strokeWidth={3} />}
+                        </div>
+                        <span style={{ fontSize: 9.5, color: t.done ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.35)', textDecoration: t.done ? 'line-through' : 'none' }}>{t.text}</span>
+                      </div>
+                    ))}
+                  </div>
+                ),
+              },
+              {
+                num: '04', label: 'Proyecto', desc: 'Activación conjunta. Campaña en marcha con métricas compartidas.',
+                icon: <Zap size={24} color="#4A9FFF" strokeWidth={2} />,
+                accent: '#8B5CF6',
+                visual: (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                      {[40, 60, 45, 80, 70, 95].map((h, i) => (
+                        <div key={i} style={{ width: 12, height: h * 0.7, borderRadius: 4, background: i === 5 ? '#4A9FFF' : 'rgba(74,159,255,0.25)' }} />
                       ))}
                     </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)' }}>Sem 1</span>
+                      <span style={{ fontSize: 9, color: '#4A9FFF', fontWeight: 700 }}>+58% reach</span>
+                    </div>
+                  </div>
+                ),
+              },
+              {
+                num: '05', label: 'Negocio', desc: 'Revenue medible, clientes nuevos y KPIs compartidos entre aliados.',
+                icon: <TrendingUp size={24} color="#fff" strokeWidth={2} />,
+                accent: '#1871D8',
+                highlight: true,
+                visual: (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+                      <span style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: 28, fontWeight: 800, color: '#fff', letterSpacing: '-0.04em' }}>+$48K</span>
+                    </div>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <div style={{ flex: 1, background: 'rgba(255,255,255,0.1)', borderRadius: 8, padding: '6px 8px' }}>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>340</div>
+                        <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.6)' }}>Clientes nuevos</div>
+                      </div>
+                      <div style={{ flex: 1, background: 'rgba(255,255,255,0.1)', borderRadius: 8, padding: '6px 8px' }}>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: '#4ADE80' }}>92%</div>
+                        <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.6)' }}>Retención</div>
+                      </div>
+                    </div>
+                  </div>
+                ),
+              },
+            ].map((step, i) => (
+              <FadeUp key={step.label} delay={i * 0.08} style={{ position: 'relative', zIndex: 1 }}>
+                <div style={{
+                  borderRadius: 20,
+                  background: step.highlight
+                    ? 'linear-gradient(145deg, #0E2F6E, #0A1F4E)'
+                    : 'rgba(255,255,255,0.03)',
+                  border: step.highlight
+                    ? '1px solid rgba(74,159,255,0.4)'
+                    : '1px solid rgba(255,255,255,0.07)',
+                  padding: '24px 20px 20px',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 16,
+                  boxShadow: step.highlight
+                    ? '0 0 60px rgba(24,113,216,0.2), 0 1px 0 rgba(255,255,255,0.05) inset'
+                    : '0 1px 0 rgba(255,255,255,0.03) inset',
+                  position: 'relative',
+                  overflow: 'hidden',
+                }}>
 
-                    {/* Icon */}
-                    <div style={{ opacity: step.highlight ? 1 : step.opacity }}>
+                  {/* Glow bg for highlight */}
+                  {step.highlight && (
+                    <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 50% 0%, rgba(24,113,216,0.25) 0%, transparent 70%)', pointerEvents: 'none' }} />
+                  )}
+                  {step.highlight && (
+                    <motion.div
+                      animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0, 0.3] }}
+                      transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut' }}
+                      style={{ position: 'absolute', inset: -2, borderRadius: 22, border: '1.5px solid rgba(74,159,255,0.4)', pointerEvents: 'none' }}
+                    />
+                  )}
+
+                  {/* Number + Icon row */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{
+                      width: 36, height: 36, borderRadius: 10,
+                      background: step.highlight ? 'rgba(255,255,255,0.15)' : `rgba(${i * 20 + 24},${113 - i * 8},${216 - i * 20},0.15)`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 12, fontWeight: 800, color: step.highlight ? '#fff' : '#4A9FFF',
+                      fontFamily: 'Space Grotesk, sans-serif', letterSpacing: '-0.02em',
+                    }}>
+                      {step.num}
+                    </div>
+                    <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       {step.icon}
                     </div>
                   </div>
 
+                  {/* Visual mockup area */}
+                  <div style={{
+                    background: 'rgba(0,0,0,0.2)',
+                    borderRadius: 12,
+                    padding: '12px 10px',
+                    border: '1px solid rgba(255,255,255,0.05)',
+                    minHeight: 100,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                  }}>
+                    {step.visual}
+                  </div>
+
                   {/* Label + desc */}
-                  <div style={{ textAlign: 'center', paddingInline: 4 }}>
-                    <div style={{
-                      fontSize: 13, fontWeight: 700,
-                      color: step.highlight ? '#fff' : `rgba(255,255,255,${step.opacity + 0.1})`,
-                      marginBottom: 5, letterSpacing: '-0.01em',
-                    }}>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', marginBottom: 6, letterSpacing: '-0.02em' }}>
                       {step.label}
                     </div>
-                    <div style={{ fontSize: 11, lineHeight: 1.55, color: `rgba(255,255,255,${step.opacity * 0.6})` }}>
+                    <div style={{ fontSize: 11, lineHeight: 1.6, color: C.text }}>
                       {step.desc}
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          </FadeUp>
+              </FadeUp>
+            ))}
+          </div>
         </div>
       </section>
 
