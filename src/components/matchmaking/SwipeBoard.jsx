@@ -1,10 +1,11 @@
 import { AnimatePresence, animate, motion, useMotionValue, useTransform } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  ArrowLeft, ArrowRight, ExternalLink, Heart, MapPin, RotateCcw,
+  ArrowLeft, ArrowRight, Heart, MapPin, RotateCcw,
   SlidersHorizontal, Star, TrendingUp, Users, X, Zap,
 } from 'lucide-react';
 import CompanyDetailModal from './CompanyDetailModal';
+import { InstagramFeedCompact } from '../shared/InstagramFeedPreview';
 import SwipeHeader from './SwipeHeader';
 import CardStack from './CardStack';
 import ActionButtons from './ActionButtons';
@@ -218,10 +219,21 @@ function SavedGrid({ companies, onView }) {
   );
 }
 
-/* ── Desktop right panel — company detail ───────────────────── */
+/* ── industry hero gradient ─────────────────────────────────── */
+const industryBg = {
+  Belleza:     'linear-gradient(135deg, #D4909A 0%, #B06070 100%)',
+  Floreria:    'linear-gradient(135deg, #8FB87A 0%, #5A8A44 100%)',
+  Gastronomia: 'linear-gradient(135deg, #4A7A3C 0%, #2D5522 100%)',
+  Cafeteria:   'linear-gradient(135deg, #A07850 0%, #6B4228 100%)',
+  Bienestar:   'linear-gradient(135deg, #78A8C0 0%, #4A7890 100%)',
+  Indumentaria:'linear-gradient(135deg, #9B8EC4 0%, #7B6BA8 100%)',
+  Tecnologia:  'linear-gradient(135deg, #2D1B69 0%, #1A0F42 100%)',
+};
+
+/* ── Desktop right panel — full company profile ─────────────── */
 const COMMON_CONNECTIONS = ['Bloom Florería', 'Sushi Nakama'];
 
-function DesktopDetailPanel({ company, score, deckIndex, deckTotal, onViewProfile }) {
+function DesktopDetailPanel({ company, score, deckIndex, deckTotal }) {
   if (!company) {
     return (
       <div className="flex flex-1 items-center justify-center">
@@ -230,158 +242,180 @@ function DesktopDetailPanel({ company, score, deckIndex, deckTotal, onViewProfil
     );
   }
 
-  const offerTags = parseTags(company.offer || '');
-  const seekTags  = parseTags(company.seeking || '');
-  const followers = company.instagramData?.followers ?? company.stats?.audience ?? null;
-  const followersLabel = followers != null
-    ? followers >= 1000 ? `${(followers / 1000).toFixed(1)}k` : `${followers}`
-    : null;
-  const lift = company.stats?.conversionLift;
+  const offerTags  = parseTags(company.offer || '');
+  const seekTags   = parseTags(company.seeking || '');
+  const segments   = company.segments || [];
+  const hasImage   = Boolean(company.gallery?.[0]);
+  const heroBg     = industryBg[company.sector] || 'linear-gradient(135deg, #1871D8 0%, #0A3D7A 100%)';
+  const followers  = company.instagramData?.followers ?? null;
+  const lift       = company.stats?.conversionLift;
+  const scoreColor = score >= 80 ? '#4ADE80' : score >= 60 ? '#4A9FFF' : '#FBBF24';
+  const scoreGrad  = score >= 80
+    ? 'linear-gradient(to right, #16A34A, #4ADE80)'
+    : 'linear-gradient(to right, #1871D8, #4A9FFF)';
 
   return (
-    <div className="flex flex-1 flex-col h-full overflow-y-auto px-8 py-7 [scrollbar-width:none]">
+    <div className="flex flex-1 flex-col h-full overflow-y-auto [scrollbar-width:none]">
 
-      {/* Progress */}
-      {deckTotal > 0 && (
-        <div className="flex items-center justify-between mb-5">
-          <span className="text-[11px] text-white/25">
-            Empresa <span className="text-white/45 font-semibold">{deckIndex + 1}</span> de {deckTotal}
-          </span>
-          <div className="flex gap-1">
+      {/* ── Hero image / gradient ── */}
+      <div className="relative h-[200px] shrink-0 overflow-hidden"
+        style={{ background: heroBg }}>
+        {hasImage && (
+          <img src={company.gallery[0]} alt={company.name}
+            className="absolute inset-0 h-full w-full object-cover" />
+        )}
+        <div className="absolute inset-0"
+          style={{ background: 'linear-gradient(to top, rgba(7,12,24,1) 0%, rgba(7,12,24,0.2) 60%, transparent 100%)' }} />
+
+        {/* Progress dots top-right */}
+        {deckTotal > 0 && (
+          <div className="absolute top-4 right-4 flex gap-1">
             {Array.from({ length: Math.min(deckTotal, 8) }).map((_, i) => (
               <div key={i} className="h-1 rounded-full transition-all"
                 style={{
-                  width: i === deckIndex % 8 ? 16 : 6,
-                  background: i === deckIndex % 8 ? '#4A9FFF' : 'rgba(255,255,255,0.12)',
+                  width: i === deckIndex % 8 ? 14 : 5,
+                  background: i === deckIndex % 8 ? 'white' : 'rgba(255,255,255,0.25)',
                 }} />
             ))}
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Company header */}
-      <div className="flex items-start gap-4 mb-5">
-        <div className="h-14 w-14 shrink-0 rounded-2xl flex items-center justify-center font-['Space_Grotesk'] text-lg font-black text-white"
-          style={{ background: 'linear-gradient(135deg, #1871D8, #0A3D7A)' }}>
-          {typeof company.logo === 'string' ? company.logo.slice(0, 2) : company.name.slice(0, 2).toUpperCase()}
-        </div>
-        <div className="flex-1 min-w-0">
-          <h2 className="font-['Space_Grotesk'] text-xl font-bold text-white leading-tight truncate">{company.name}</h2>
-          <p className="text-white/45 text-sm mt-0.5">{company.sector}</p>
-          <div className="flex items-center gap-3 mt-1.5">
+        {/* Company name overlay */}
+        <div className="absolute bottom-0 left-0 right-0 px-6 pb-5">
+          <h2 className="font-['Space_Grotesk'] text-2xl font-bold text-white leading-tight">{company.name}</h2>
+          <div className="flex items-center gap-3 mt-1">
+            <span className="text-white/60 text-sm">{company.sector}</span>
             {company.distance != null && (
-              <span className="flex items-center gap-1 text-white/25 text-xs">
+              <span className="flex items-center gap-1 text-white/40 text-xs">
                 <MapPin size={10} /> {company.distance} km
               </span>
             )}
-            {followersLabel && (
-              <span className="flex items-center gap-1 text-white/25 text-xs">
-                <Users size={10} /> {followersLabel} seguidores
+            {followers != null && (
+              <span className="flex items-center gap-1 text-white/40 text-xs">
+                <Users size={10} /> {followers >= 1000 ? `${(followers / 1000).toFixed(1)}k` : followers} seg.
               </span>
             )}
           </div>
         </div>
       </div>
 
-      {/* Description */}
-      {company.description && (
-        <p className="text-[13px] leading-relaxed text-white/40 mb-5 line-clamp-3">
-          {company.description}
-        </p>
-      )}
+      {/* ── Scrollable body ── */}
+      <div className="flex flex-col gap-5 px-6 py-5">
 
-      {/* Compatibility score */}
-      <div className="mb-5">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/35">Compatibilidad</span>
-          <span className="font-['Space_Grotesk'] text-xl font-black" style={{ color: score >= 80 ? '#4ADE80' : score >= 60 ? '#4A9FFF' : '#FBBF24' }}>{score}%</span>
-        </div>
-        <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.07)' }}>
-          <motion.div className="h-full rounded-full"
-            style={{ background: score >= 80 ? 'linear-gradient(to right, #16A34A, #4ADE80)' : 'linear-gradient(to right, #1871D8, #4A9FFF)' }}
-            initial={{ width: 0 }}
-            animate={{ width: `${score}%` }}
-            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }} />
-        </div>
-      </div>
-
-      {/* Stats row */}
-      {lift && (
-        <div className="mb-5 flex gap-3">
-          <div className="flex-1 rounded-[14px] p-3 flex flex-col gap-1"
-            style={{ background: 'rgba(74,222,128,0.07)', border: '1px solid rgba(74,222,128,0.15)' }}>
-            <TrendingUp size={13} style={{ color: '#4ADE80' }} />
-            <p className="text-[18px] font-black font-['Space_Grotesk']" style={{ color: '#4ADE80' }}>{lift}</p>
-            <p className="text-[10px] text-white/30">Impacto en ventas</p>
+        {/* Compatibility score */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/30">Compatibilidad</span>
+            <span className="font-['Space_Grotesk'] text-lg font-black" style={{ color: scoreColor }}>{score}%</span>
           </div>
-          {company.stats?.channels && (
-            <div className="flex-1 rounded-[14px] p-3 flex flex-col gap-1"
-              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <Zap size={13} style={{ color: '#4A9FFF' }} />
-              <p className="text-[11px] font-semibold text-white/70 mt-0.5 leading-tight">{company.stats.channels.replace(/\+/g, '·')}</p>
-              <p className="text-[10px] text-white/30">Canales activos</p>
+          <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.07)' }}>
+            <motion.div className="h-full rounded-full"
+              style={{ background: scoreGrad }}
+              initial={{ width: 0 }}
+              animate={{ width: `${score}%` }}
+              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }} />
+          </div>
+        </div>
+
+        {/* Description */}
+        {(company.description || company.culture || company.headline) && (
+          <p className="text-[13px] leading-relaxed text-white/45">
+            {company.description || company.culture || company.headline}
+          </p>
+        )}
+
+        {/* Instagram feed strip */}
+        {company.instagramData && (
+          <div className="rounded-[16px] p-4" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
+            <InstagramFeedCompact data={company.instagramData} />
+          </div>
+        )}
+
+        {/* Stats row */}
+        {(lift || company.capacityScore) && (
+          <div className="grid grid-cols-3 gap-3">
+            <div className="rounded-[14px] p-3 text-center"
+              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
+              <p className="font-['Space_Grotesk'] text-[18px] font-black" style={{ color: scoreColor }}>{score}%</p>
+              <p className="text-[10px] text-white/30 mt-0.5">Match</p>
             </div>
-          )}
-        </div>
-      )}
-
-      {/* What they offer */}
-      {offerTags.length > 0 && (
-        <div className="mb-4">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/30 mb-2">Ofrece</p>
-          <div className="flex flex-wrap gap-1.5">
-            {offerTags.map(t => (
-              <span key={t} className="rounded-full px-2.5 py-1 text-[11px] font-medium text-[#4A9FFF]"
-                style={{ background: 'rgba(74,159,255,0.10)', border: '1px solid rgba(74,159,255,0.20)' }}>{t}</span>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* What they seek */}
-      {seekTags.length > 0 && (
-        <div className="mb-5">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/30 mb-2">Busca</p>
-          <div className="flex flex-wrap gap-1.5">
-            {seekTags.map(t => (
-              <span key={t} className="rounded-full px-2.5 py-1 text-[11px] font-medium text-white/50"
-                style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.09)' }}>{t}</span>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Conexiones en común */}
-      <div className="mb-5 rounded-[16px] p-3.5" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
-        <div className="flex items-center gap-2 mb-2.5">
-          <Users size={12} style={{ color: '#4A9FFF' }} />
-          <span className="text-[11px] font-semibold text-white/40">{COMMON_CONNECTIONS.length} conexiones en común</span>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {COMMON_CONNECTIONS.map(c => (
-            <span key={c} className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium text-white/50"
-              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)' }}>
-              <div className="h-4 w-4 rounded-full flex items-center justify-center text-[8px] font-bold text-white"
-                style={{ background: 'linear-gradient(135deg, #1871D8, #0A3D7A)' }}>
-                {c.slice(0, 1)}
+            <div className="rounded-[14px] p-3 text-center"
+              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
+              <p className="font-['Space_Grotesk'] text-[18px] font-black text-white">{company.capacityScore ?? 72}%</p>
+              <p className="text-[10px] text-white/30 mt-0.5">Capacidad</p>
+            </div>
+            {lift && (
+              <div className="rounded-[14px] p-3 text-center"
+                style={{ background: 'rgba(74,222,128,0.07)', border: '1px solid rgba(74,222,128,0.14)' }}>
+                <p className="font-['Space_Grotesk'] text-[18px] font-black" style={{ color: '#4ADE80' }}>{lift}</p>
+                <p className="text-[10px] text-white/30 mt-0.5">Ventas</p>
               </div>
-              {c}
-            </span>
-          ))}
-        </div>
-      </div>
+            )}
+          </div>
+        )}
 
-      {/* Ver perfil completo */}
-      <div className="mt-auto">
-        <motion.button type="button" onClick={onViewProfile}
-          whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
-          className="flex w-full items-center justify-center gap-2 rounded-[14px] py-3 text-[13px] font-semibold transition"
-          style={{ border: '1px solid rgba(255,255,255,0.10)', color: 'rgba(255,255,255,0.40)' }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = 'rgba(255,255,255,0.65)'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = ''; e.currentTarget.style.color = 'rgba(255,255,255,0.40)'; }}>
-          <ExternalLink size={13} />
-          Ver perfil completo
-        </motion.button>
+        {/* Alliance profile */}
+        {(offerTags.length > 0 || seekTags.length > 0 || segments.length > 0) && (
+          <div className="rounded-[16px] p-4 space-y-4"
+            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
+            {offerTags.length > 0 && (
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/25 mb-2">Qué ofrece</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {offerTags.map(t => (
+                    <span key={t} className="rounded-full px-2.5 py-1 text-[11px] font-medium text-[#4A9FFF]"
+                      style={{ background: 'rgba(74,159,255,0.10)', border: '1px solid rgba(74,159,255,0.18)' }}>{t}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {seekTags.length > 0 && (
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/25 mb-2">Qué busca</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {seekTags.map(t => (
+                    <span key={t} className="rounded-full px-2.5 py-1 text-[11px] font-medium text-white/50"
+                      style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.09)' }}>{t}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {segments.length > 0 && (
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/25 mb-2">Segmentos</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {segments.map(t => (
+                    <span key={t} className="rounded-full px-2.5 py-1 text-[11px] font-medium text-white/40"
+                      style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>{t}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Conexiones en común */}
+        <div className="rounded-[16px] p-4"
+          style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
+          <div className="flex items-center gap-2 mb-3">
+            <Users size={12} style={{ color: '#4A9FFF' }} />
+            <span className="text-[11px] font-semibold text-white/35">{COMMON_CONNECTIONS.length} conexiones en común</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {COMMON_CONNECTIONS.map(c => (
+              <span key={c} className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium text-white/45"
+                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                <div className="h-4 w-4 rounded-full flex items-center justify-center text-[8px] font-bold text-white"
+                  style={{ background: 'linear-gradient(135deg, #1871D8, #0A3D7A)' }}>
+                  {c.slice(0, 1)}
+                </div>
+                {c}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className="h-2" />
       </div>
     </div>
   );
@@ -650,7 +684,6 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
             score={activeCompany?.score ?? 0}
             deckIndex={activeIndex}
             deckTotal={deck.length}
-            onViewProfile={handleViewProfile}
           />
 
           {/* Flash toast — top center on desktop */}
