@@ -444,32 +444,71 @@ function MatchMockup() {
 
 /* ─── alliance room mockup ─────────────────────────────────── */
 function AllianceRoomMockup() {
+  const companies = [
+    {
+      name: 'Top White',
+      type: 'Indumentaria · CABA',
+      role: 'Anfitrión',
+      score: 91,
+      logo: (
+        <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+          <rect width="44" height="44" rx="12" fill="#EEF2FF"/>
+          {/* Abstract T shape — minimal wordmark style */}
+          <rect x="11" y="13" width="22" height="3.5" rx="1.75" fill="#2563EB"/>
+          <rect x="19.25" y="16.5" width="5.5" height="15" rx="2" fill="#2563EB"/>
+        </svg>
+      ),
+    },
+    {
+      name: 'Bloom Florería',
+      type: 'Florería · Palermo',
+      role: 'Invitado',
+      score: 91,
+      logo: (
+        <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+          <rect width="44" height="44" rx="12" fill="#F0FDF4"/>
+          {/* Flower icon — 4 petals + center */}
+          <ellipse cx="22" cy="16" rx="3" ry="5" fill="#10B981" opacity="0.85"/>
+          <ellipse cx="22" cy="28" rx="3" ry="5" fill="#10B981" opacity="0.85"/>
+          <ellipse cx="16" cy="22" rx="5" ry="3" fill="#10B981" opacity="0.85"/>
+          <ellipse cx="28" cy="22" rx="5" ry="3" fill="#10B981" opacity="0.85"/>
+          <circle cx="22" cy="22" r="4" fill="#059669"/>
+        </svg>
+      ),
+    },
+  ];
+
   return (
     <div className="overflow-hidden rounded-[28px]"
       style={{ background: '#fff', border: '1px solid #E2E8F4', boxShadow: '0 8px 48px rgba(37,99,235,0.10)' }}>
       <div className="p-6 space-y-4">
+
+        {/* Header */}
         <div className="flex items-center justify-between">
-          <Label color="#8B5CF6"><Video size={11} /> Alliance Room</Label>
+          <Label color="#7C3AED"><Video size={11} /> Alliance Room</Label>
           <div className="flex items-center gap-1.5">
             <div className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
             <span className="text-[10px] font-medium" style={{ color: C.text }}>En vivo</span>
           </div>
         </div>
 
-        {/* Participants */}
+        {/* Company cards */}
         <div className="grid grid-cols-2 gap-3">
-          {[
-            { name: 'Top White', role: 'Anfitrión', color: '#2563EB' },
-            { name: 'Bloom Florería', role: 'Invitado', color: '#10B981' },
-          ].map(p => (
-            <div key={p.name} className="rounded-[16px] p-3 space-y-2"
+          {companies.map(p => (
+            <div key={p.name} className="rounded-[18px] p-4 space-y-3"
               style={{ background: '#F8FAFF', border: '1px solid #E2E8F4' }}>
-              <div className="h-12 w-full rounded-[10px] flex items-center justify-center"
-                style={{ background: `linear-gradient(135deg, ${p.color}22, ${p.color}10)`, border: `1px solid ${p.color}20` }}>
-                <span className="font-bold text-[12px]" style={{ color: p.color }}>{p.name.slice(0,2).toUpperCase()}</span>
+              {/* Logo */}
+              <div>{p.logo}</div>
+              {/* Info */}
+              <div>
+                <p className="text-[13px] font-bold leading-tight" style={{ color: C.heading }}>{p.name}</p>
+                <p className="text-[10px] mt-0.5" style={{ color: C.text }}>{p.type}</p>
               </div>
-              <p className="text-[11px] font-semibold" style={{ color: C.heading }}>{p.name}</p>
-              <p className="text-[9px]" style={{ color: C.text }}>{p.role}</p>
+              {/* Role badge */}
+              <span className="inline-block rounded-full px-2 py-0.5 text-[9px] font-semibold"
+                style={{ background: p.role === 'Anfitrión' ? '#EEF2FF' : '#F0FDF4', color: p.role === 'Anfitrión' ? '#2563EB' : '#059669' }}>
+                {p.role}
+              </span>
             </div>
           ))}
         </div>
@@ -483,9 +522,9 @@ function AllianceRoomMockup() {
           <p className="text-[11px] leading-relaxed" style={{ color: '#6D28D9' }}>
             "Acordaron campaña primavera con split 60/40. Próximo paso: presentación de branding el lunes."
           </p>
-          <div className="mt-2 flex gap-1.5 flex-wrap">
+          <div className="mt-2.5 flex gap-1.5 flex-wrap">
             {['3 acuerdos', '2 tareas', 'Score 91'].map(t => (
-              <span key={t} className="rounded-full px-2 py-0.5 text-[9px] font-semibold"
+              <span key={t} className="rounded-full px-2.5 py-1 text-[9px] font-semibold"
                 style={{ background: '#EDE9FE', color: '#7C3AED' }}>{t}</span>
             ))}
           </div>
