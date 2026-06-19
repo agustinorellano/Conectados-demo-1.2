@@ -152,7 +152,7 @@ function WebApp() {
         );
       case 'pricing':
         return (
-          <PricingView currentPlan={userPlan} onCheckoutSuccess={(plan) => setUserPlan(plan)} />
+          <PricingView currentPlan={userPlan} onCheckoutSuccess={(plan) => setUserPlan(plan)} horizontal />
         );
       case 'workplace':
         return (

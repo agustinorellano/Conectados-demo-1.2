@@ -54,7 +54,7 @@ const plans = [
   }
 ];
 
-function PricingView({ currentPlan, onCheckoutSuccess }) {
+function PricingView({ currentPlan, onCheckoutSuccess, horizontal = false }) {
   const [checkoutPlan, setCheckoutPlan] = useState(null);
   const selectedPlan = plans.find((plan) => plan.id === checkoutPlan);
 
@@ -73,7 +73,7 @@ function PricingView({ currentPlan, onCheckoutSuccess }) {
         </p>
       </section>
 
-      <section className="grid gap-4 xl:grid-cols-3">
+      <section className={`grid gap-4 ${horizontal ? 'grid-cols-3' : 'xl:grid-cols-3'}`}>
         {plans.map((plan) => {
           const isCurrent = plan.id === currentPlan;
           const featured = plan.style === 'featured';
