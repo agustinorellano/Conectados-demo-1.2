@@ -4,8 +4,9 @@ import {
   Check,
   ChevronDown,
   ChevronUp,
-  Plus,
+  Eye,
   TrendingUp,
+  Users,
   Video,
   Zap,
 } from 'lucide-react';
@@ -207,6 +208,45 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
             </div>
           </motion.div>
         ))}
+      </section>
+
+      {/* REACH METRICS */}
+      <section className="rounded-[20px] p-5" style={{ background: 'rgba(20,30,48,0.95)', border: '1px solid rgba(255,255,255,0.07)' }}>
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#4A9FFF]">Alcance</p>
+            <h2 className="mt-1 font-['Space_Grotesk'] text-lg font-bold text-white">Seguidores & Visibilidad</h2>
+          </div>
+          <span className="text-[11px] text-white/30">A través de tus alianzas</span>
+        </div>
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          {[
+            { label: 'Alcance combinado',  value: '84.6K', sub: '+12% este mes',  icon: Users,      color: '#4A9FFF' },
+            { label: 'Seguidores en plataforma', value: '2.1K', sub: 'Tus aliados te siguen', icon: Eye, color: '#10B981' },
+            { label: 'Impresiones est.',   value: '320K',  sub: 'Últimos 30 días', icon: TrendingUp,  color: '#8B5CF6' },
+            { label: 'Audiencia nueva',    value: '6.4K',  sub: 'Nuevos contactos', icon: Zap,        color: '#F59E0B' },
+          ].map((m, i) => {
+            const Icon = m.icon;
+            return (
+              <motion.div key={m.label}
+                className="rounded-[14px] p-4"
+                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: i * 0.06 }}>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-[10px]"
+                    style={{ background: `${m.color}18` }}>
+                    <Icon size={15} style={{ color: m.color }} strokeWidth={1.8} />
+                  </div>
+                </div>
+                <p className="font-['Space_Grotesk'] text-[22px] font-extrabold leading-none text-white">{m.value}</p>
+                <p className="mt-1 text-[10px] font-semibold" style={{ color: m.color }}>{m.sub}</p>
+                <p className="mt-0.5 text-[10px] text-white/35">{m.label}</p>
+              </motion.div>
+            );
+          })}
+        </div>
       </section>
 
       {/* MIDDLE ROW: Bar chart + Recordatorio */}
