@@ -2,6 +2,7 @@ import {
   Bot, Calendar, ChevronLeft, CheckCircle, FileText, Send,
   Share2, Sparkles, TrendingUp, Video, X, Zap,
 } from 'lucide-react';
+import { useTheme } from '../../context/ThemeContext';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import MessageBubble from './MessageBubble';
@@ -423,6 +424,7 @@ function ChatWindow({
   onTeamInvite,
   isDesktop = false,
 }) {
+  const { t } = useTheme();
   const [showMeetingModal, setShowMeetingModal] = useState(false);
   const [meetingScheduled, setMeetingScheduled] = useState(false);
   const [contextOpen,      setContextOpen]      = useState(false);
@@ -454,11 +456,11 @@ function ChatWindow({
 
   return (
     <div className="relative flex h-full min-w-0 flex-col overflow-hidden"
-      style={{ background: '#0A0F1E' }}>
+      style={{ background: t.panelBg, transition: 'background 0.3s ease' }}>
 
       {/* ══ HEADER ══════════════════════════════════════════════════ */}
       <header className="shrink-0 px-4 pt-4 pb-3"
-        style={{ background: '#0A0F1E', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        style={{ background: t.panelBg, borderBottom: `1px solid ${t.panelBorder}` }}>
         <div className="flex items-start gap-3">
           {/* Back — hidden on desktop */}
           {!isDesktop && (

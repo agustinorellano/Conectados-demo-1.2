@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { MessageSquare } from 'lucide-react';
 import ChatList from './ChatList';
 import ChatWindow from './ChatWindow';
+import { useTheme } from '../../context/ThemeContext';
 
 const PROPOSAL_TEMPLATE =
   'Tengo una propuesta para colaborar entre nuestras empresas que puede generar valor en conjunto. Me gustaria comentarte la idea y explorar como podemos trabajar juntos.';
@@ -71,6 +72,7 @@ function ChatView({
   onOpenAllianceRoom,
   onOpenAssistant,
 }) {
+  const { t } = useTheme();
   const [activeConversationId, setActiveConversationId] = useState(null);
   const [threads,              setThreads]              = useState(chatConversations);
   const [proposalDraft,        setProposalDraft]        = useState('');
@@ -266,10 +268,10 @@ function ChatView({
   /* ── DESKTOP: two-column layout ── */
   if (isDesktop) {
     return (
-      <div className="flex h-full" style={{ background: '#0A0F1E' }}>
+      <div className="flex h-full" style={{ background: t.bg, transition: 'background 0.3s ease' }}>
 
         {/* Left column — conversation list */}
-        <div className="h-full w-[340px] shrink-0 overflow-hidden" style={{ borderRight: '1px solid rgba(255,255,255,0.07)' }}>
+        <div className="h-full w-[340px] shrink-0 overflow-hidden" style={{ borderRight: `1px solid ${t.panelBorder}` }}>
           <ChatList {...chatListProps} />
         </div>
 
@@ -288,12 +290,12 @@ function ChatView({
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 className="absolute inset-0 flex flex-col items-center justify-center gap-4">
                 <div className="flex h-16 w-16 items-center justify-center rounded-[20px]"
-                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                  <MessageSquare className="h-7 w-7 text-white/20" />
+                  style={{ background: t.surface, border: `1px solid ${t.surfaceBorder}` }}>
+                  <MessageSquare className="h-7 w-7" style={{ color: t.text3 }} />
                 </div>
                 <div className="text-center">
-                  <p className="text-[15px] font-semibold text-white/30">Ninguna conversación seleccionada</p>
-                  <p className="mt-1 text-[13px] text-white/18">Elegí un chat de la lista para empezar</p>
+                  <p className="text-[15px] font-semibold" style={{ color: t.text2 }}>Ninguna conversación seleccionada</p>
+                  <p className="mt-1 text-[13px]" style={{ color: t.text3 }}>Elegí un chat de la lista para empezar</p>
                 </div>
               </motion.div>
             )}
@@ -307,7 +309,7 @@ function ChatView({
   return (
     <div
       className="relative overflow-hidden"
-      style={{ background: '#0A0F1E', height: '100%' }}
+      style={{ background: t.bg, height: '100%', transition: 'background 0.3s ease' }}
     >
       <AnimatePresence mode="wait" custom={directionRef.current} initial={false}>
 

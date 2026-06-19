@@ -13,6 +13,7 @@ import {
 import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
 import CalendarWidget from './CalendarWidget';
+import { useTheme } from '../../context/ThemeContext';
 
 // ─── Alliance Notes data ─────────────────────────────────────────────────────
 const ALLIANCE_NOTES = [
@@ -150,6 +151,7 @@ const statusStyle = {
 };
 
 function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssistant, onOpenAlliances, onOpenAllianceRoom, onNavigateToChats, onToggleMeeting, userPlan }) {
+  const { t } = useTheme();
   const [reminders, setReminders] = useState(initialReminders);
   const [expandedNote, setExpandedNote] = useState(null);
 
@@ -159,7 +161,7 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
   const resolveAll = () => setReminders((prev) => prev.map((r) => ({ ...r, done: true })));
 
   return (
-    <div className="h-full overflow-y-auto bg-[#0A0F1E] px-4 py-4 [scrollbar-width:none]">
+    <div className="h-full overflow-y-auto px-4 py-4 [scrollbar-width:none]" style={{ background: t.bg, transition: 'background 0.3s ease' }}>
     <div className="space-y-4 pb-4">
       {/* 4 METRIC CARDS */}
       <section className="grid grid-cols-2 gap-3 xl:grid-cols-4">

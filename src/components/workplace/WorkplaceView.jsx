@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useTheme } from '../../context/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search, Plus, X, Calendar, MessageSquare, TrendingUp, ArrowRight,
@@ -1965,6 +1966,7 @@ function CardDetailModal({ opp, onClose }) {
 // WORKPLACE VIEW — MAIN
 // ---------------------------------------------------------------------------
 function WorkplaceView({ currentArea = 'general', onTaskMove, tasks = [], pendingOpportunity = null, onOpportunityAdded }) {
+  const { t } = useTheme();
   const [opportunities, setOpportunities] = useState(() => [
     ...MOCK_OPPORTUNITIES,
     ...tasks.map(adaptTask),
@@ -2076,7 +2078,7 @@ function WorkplaceView({ currentArea = 'general', onTaskMove, tasks = [], pendin
   };
 
   return (
-    <div className="flex flex-col gap-3" style={{ height: '100%', overflow: 'hidden', background: '#0A0F1E' }}>
+    <div className="flex flex-col gap-3" style={{ height: '100%', overflow: 'hidden', background: t.bg, transition: 'background 0.3s ease' }}>
 
       {/* ── Row 1: Search + Filter dropdown + View toggle ── */}
       <div className="flex shrink-0 items-center gap-2">

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTheme } from '../../context/ThemeContext';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowUp, FileText, Image, Mic, Paperclip, Presentation, Send, Smile, Square, X } from 'lucide-react';
 
@@ -32,6 +33,7 @@ function RecordingWave() {
 }
 
 function ProposalInput({ onChange, onSend, onSendAudio, value }) {
+  const { t } = useTheme();
   const [inputValue,   setInputValue]   = useState(value || '');
   const [showAttach,   setShowAttach]   = useState(false);
 
@@ -128,7 +130,7 @@ function ProposalInput({ onChange, onSend, onSendAudio, value }) {
 
   return (
     <div className="shrink-0 px-4 pt-3 pb-4"
-      style={{ borderTop: '1px solid rgba(255,255,255,0.07)', background: '#0A0F1E' }}>
+      style={{ borderTop: `1px solid ${t.panelBorder}`, background: t.panelBg, transition: 'background 0.3s ease' }}>
 
       {/* ── Mic permission error ── */}
       <AnimatePresence>

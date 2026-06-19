@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
+import { useTheme } from '../../context/ThemeContext';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   Archive, Bot, Check, Copy, Link, Mail,
@@ -439,6 +440,7 @@ function ChatList({
   onPin,
   onCreateTeam,
 }) {
+  const { t } = useTheme();
   const [query,          setQuery]          = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [activeSegment,  setActiveSegment]  = useState('activos');
@@ -500,7 +502,7 @@ function ChatList({
 
   return (
     <div className="h-full overflow-y-auto [scrollbar-width:none] [-webkit-overflow-scrolling:touch]"
-      style={{ background: '#0A0F1E' }}>
+      style={{ background: t.panelBg, transition: 'background 0.3s ease' }}>
 
       {/* ── Header ── */}
       <div className="flex items-center justify-between px-4 pb-3 pt-5">
