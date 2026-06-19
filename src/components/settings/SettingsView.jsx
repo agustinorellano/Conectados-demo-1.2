@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   BookOpen, Bot, ChevronDown, ChevronRight, Check, Crown,
-  ExternalLink, LifeBuoy, Lock, MessageSquare, Shield, Sparkles, Star, X, Zap,
+  ExternalLink, LifeBuoy, Lock, MessageSquare, Moon, Shield, Sparkles, Star, Sun, X, Zap,
 } from 'lucide-react';
+import { useTheme } from '../../context/ThemeContext';
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 
@@ -625,18 +626,19 @@ function LegalSection() {
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 function SettingsView({ currentPlan = 'starter', onCheckoutSuccess = () => {}, onNavigateToChat = () => {} }) {
+  const { t, theme, toggleTheme } = useTheme();
   const [expandedPlan, setExpandedPlan] = useState(null);
   const expandedPlanData = PLANS.find((p) => p.id === expandedPlan) ?? null;
 
   return (
     <div
       className="min-h-screen w-full"
-      style={{ background: 'linear-gradient(160deg, #0A0F1E 0%, #141E30 100%)' }}
+      style={{ background: t.bg, transition: 'background 0.3s ease' }}
     >
       {/* Page header */}
       <div className="px-5 pb-4 pt-8">
-        <h1 className="font-['Space_Grotesk'] text-2xl font-bold text-white">Configuración</h1>
-        <p className="mt-1 text-sm text-white/40">Gestioná tu cuenta y preferencias</p>
+        <h1 className="font-['Space_Grotesk'] text-2xl font-bold" style={{ color: t.text1 }}>Configuración</h1>
+        <p className="mt-1 text-sm" style={{ color: t.text3 }}>Gestioná tu cuenta y preferencias</p>
       </div>
 
       {/* Content */}
@@ -649,6 +651,45 @@ function SettingsView({ currentPlan = 'starter', onCheckoutSuccess = () => {}, o
               <PlanCard key={plan.id} plan={plan} isCurrent={plan.id === currentPlan} onExpand={setExpandedPlan} />
             ))}
           </div>
+        </section>
+
+        <section>
+          <SectionLabel text="APARIENCIA" />
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="flex w-full items-center justify-between rounded-[16px] px-4 py-4 transition-all active:scale-[0.98]"
+            style={{ background: t.surface, border: `1px solid ${t.surfaceBorder}` }}
+          >
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-[12px]" style={{ background: t.surface2 }}>
+                <motion.div key={theme} initial={{ scale: 0.7, rotate: -20, opacity: 0 }} animate={{ scale: 1, rotate: 0, opacity: 1 }} transition={{ duration: 0.22 }}>
+                  {theme === 'dark' ? <Sun size={18} style={{ color: t.accentMid }} /> : <Moon size={18} style={{ color: t.accent }} />}
+                </motion.div>
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-semibold" style={{ color: t.text1 }}>
+                  {theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
+                </p>
+                <p className="text-xs mt-0.5" style={{ color: t.text3 }}>
+                  {theme === 'dark' ? 'Cambiar a interfaz clara' : 'Cambiar a interfaz oscura'}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div
+                className="relative h-6 w-11 rounded-full transition-all duration-300"
+                style={{ background: theme === 'dark' ? t.surface2 : t.accent }}
+              >
+                <motion.div
+                  className="absolute top-0.5 h-5 w-5 rounded-full shadow-sm"
+                  style={{ background: '#FFFFFF' }}
+                  animate={{ x: theme === 'dark' ? 2 : 22 }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                />
+              </div>
+            </div>
+          </button>
         </section>
 
         <section>

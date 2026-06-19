@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Bot, BriefcaseBusiness, Building2, CreditCard,
-  LayoutDashboard, MessageSquare, Moon, PanelsTopLeft,
-  Search, Settings, Sun, X, Zap,
+  LayoutDashboard, MessageSquare, PanelsTopLeft,
+  Search, Settings, X, Zap,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
@@ -40,7 +40,7 @@ const RECOMMENDATIONS = [
 ];
 
 function WebSidebar({ activeView, onNavigate, userPlan, companyName }) {
-  const { t, theme, toggleTheme } = useTheme();
+  const { t } = useTheme();
   const [query, setQuery]       = useState('');
   const [searchFocus, setFocus] = useState(false);
 
@@ -236,28 +236,6 @@ function WebSidebar({ activeView, onNavigate, userPlan, companyName }) {
           );
         })}
 
-        {/* Theme toggle */}
-        <button
-          type="button"
-          onClick={toggleTheme}
-          className="flex items-center gap-3 rounded-[12px] px-3 py-2.5 text-left text-sm font-medium transition-all duration-150 mt-1"
-          style={{ color: t.text2 }}
-          onMouseEnter={e => e.currentTarget.style.background = t.surface}
-          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-        >
-          <motion.div
-            key={theme}
-            initial={{ scale: 0.7, rotate: -30, opacity: 0 }}
-            animate={{ scale: 1, rotate: 0, opacity: 1 }}
-            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-          >
-            {theme === 'dark'
-              ? <Sun size={16} strokeWidth={1.7} style={{ color: t.navIcon }} />
-              : <Moon size={16} strokeWidth={1.7} style={{ color: t.navIcon }} />
-            }
-          </motion.div>
-          <span>{theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}</span>
-        </button>
       </div>
     </aside>
   );
