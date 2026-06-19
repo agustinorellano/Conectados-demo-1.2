@@ -619,20 +619,6 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
       <>
         <div className="flex flex-col h-full" style={{ background: BG }}>
 
-          {/* ── Banner ── */}
-          <div className="shrink-0 px-6 pt-5 pb-4">
-            <div className="rounded-[22px] px-6 py-5 text-white"
-              style={{ background: 'linear-gradient(110deg, #1871D8 0%, #145db1 50%, #141E30 100%)' }}>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/65">Explorar</p>
-              <h2 className="mt-1.5 font-['Space_Grotesk'] text-[20px] font-bold leading-tight tracking-tight">
-                Descubrí empresas con las que crear alianzas
-              </h2>
-              <p className="mt-1 text-[12px] leading-5 text-white/70">
-                Cada empresa fue seleccionada según tu perfil, sector y lo que buscás en una alianza.
-              </p>
-            </div>
-          </div>
-
           <div className="flex flex-1 min-h-0">
 
           {/* ── Left panel: card + controls ── */}
@@ -726,12 +712,17 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
           </div>
 
           {/* ── Right panel: company detail ── */}
-          <DesktopDetailPanel
-            company={activeCompany}
-            score={activeCompany?.score ?? 0}
-            deckIndex={activeIndex}
-            deckTotal={deck.length}
-          />
+          <div className="flex flex-1 min-h-0 p-4 pl-0">
+            <div className="flex flex-1 flex-col overflow-hidden rounded-[24px]"
+              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <DesktopDetailPanel
+                company={activeCompany}
+                score={activeCompany?.score ?? 0}
+                deckIndex={activeIndex}
+                deckTotal={deck.length}
+              />
+            </div>
+          </div>
 
           {/* Flash toast — top center on desktop */}
           <AnimatePresence>
