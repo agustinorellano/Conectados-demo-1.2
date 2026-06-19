@@ -774,7 +774,7 @@ export default function LandingPage() {
       {/* ── WORKPLACE ────────────────────────────────────── */}
       <FeatureSection
         id="workplace"
-        label="Workplace"
+        label="Proyectos"
         labelColor="#F59E0B"
         side="left"
         title="El pipeline de tus alianzas comerciales"
@@ -852,7 +852,7 @@ export default function LandingPage() {
                 ),
               },
               {
-                num: '03', label: 'Workplace', desc: 'Espacio compartido con tareas, acuerdos y seguimiento de la alianza.',
+                num: '03', label: 'Proyectos', desc: 'Espacio compartido con tareas, acuerdos y seguimiento de la alianza.',
                 icon: <PanelsTopLeft size={24} color="#4A9FFF" strokeWidth={2} />,
                 accent: '#F59E0B',
                 visual: (
@@ -1218,7 +1218,7 @@ export default function LandingPage() {
               </p>
             </div>
             {[
-              { title: 'Producto', links: ['Match', 'Alliance Room', 'Workplace', 'Asistente IA'] },
+              { title: 'Producto', links: ['Explorar', 'Alliance Room', 'Proyectos', 'Asistente IA'] },
               { title: 'Legal', links: ['Privacidad', 'Términos', 'Cookies'] },
             ].map(col => (
               <div key={col.title} className="space-y-4">

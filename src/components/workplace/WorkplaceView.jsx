@@ -1249,13 +1249,16 @@ const VIEW_OPTIONS = [
 ];
 
 function ViewToggle({ view, setView }) {
+  const { t } = useTheme();
   return (
-    <div className="flex shrink-0 gap-0.5 rounded-[12px] bg-slate-100 p-1">
+    <div className="flex shrink-0 gap-0.5 rounded-[12px] p-1" style={{ background: t.surface }}>
       {VIEW_OPTIONS.map(({ key, Icon, label }) => (
         <button key={key} type="button" onClick={() => setView(key)}
-          className={`flex items-center gap-1 rounded-[9px] px-2 py-1.5 text-[11px] font-semibold transition-all ${
-            view === key ? 'bg-white shadow-sm text-[#141E30]' : 'text-slate-400 hover:text-slate-600'
-          }`}
+          className="flex items-center gap-1 rounded-[9px] px-2 py-1.5 text-[11px] font-semibold transition-all"
+          style={view === key
+            ? { background: t.panelBg, color: t.text1, boxShadow: '0 1px 3px rgba(0,0,0,0.10)' }
+            : { color: t.text3 }
+          }
         >
           <Icon className="h-3.5 w-3.5" />
           <span className="hidden sm:inline">{label}</span>
@@ -1269,6 +1272,7 @@ function ViewToggle({ view, setView }) {
 // OPPORTUNITY CARD — clean (unchanged)
 // ---------------------------------------------------------------------------
 function OpportunityCard({ opp, onOpen }) {
+  const { t } = useTheme();
   const pc = PARTNER_COLORS[opp.partner.colorKey] || PARTNER_COLORS.slate;
   const ps = PRIORITY_STYLES[opp.priority] || PRIORITY_STYLES.baja;
   const completedSubtasks = opp.subtasks.filter(s => s.done).length;
@@ -1277,9 +1281,10 @@ function OpportunityCard({ opp, onOpen }) {
   return (
     <motion.article
       onClick={() => onOpen(opp)}
-      whileHover={{ y: -2, boxShadow: '0 8px 28px rgba(20,30,48,0.10)' }}
+      whileHover={{ y: -2, boxShadow: `0 8px 28px ${t.panelBorder}` }}
       transition={{ duration: 0.15 }}
-      className="rounded-[20px] bg-white ring-1 ring-slate-100 p-4 shadow-sm cursor-pointer select-none"
+      className="rounded-[20px] p-4 shadow-sm cursor-pointer select-none"
+      style={{ background: t.panelBg, border: `1px solid ${t.surfaceBorder}` }}
     >
       <div className="flex items-center gap-2 mb-3">
         <Avatar initials={opp.partner.initials} colorKey={opp.partner.colorKey} size="sm" />
@@ -1297,24 +1302,24 @@ function OpportunityCard({ opp, onOpen }) {
           )}
         </div>
       </div>
-      <h3 className="text-[14px] font-semibold text-slate-800 leading-snug mb-1">{opp.title}</h3>
+      <h3 className="text-[14px] font-semibold leading-snug mb-1" style={{ color: t.text1 }}>{opp.title}</h3>
       {opp.estimatedValue > 0
         ? <p className="text-[13px] font-bold text-emerald-700 mb-3">{fmtARS(opp.estimatedValue)} est.</p>
-        : <p className="text-[12px] text-slate-400 mb-3 truncate">{opp.description || 'Sin descripción'}</p>
+        : <p className="text-[12px] mb-3 truncate" style={{ color: t.text3 }}>{opp.description || 'Sin descripción'}</p>
       }
       {totalSubtasks > 0 && (
         <div className="mb-3">
-          <div className="h-1 w-full rounded-full bg-slate-100 overflow-hidden">
+          <div className="h-1 w-full rounded-full overflow-hidden" style={{ background: t.surface }}>
             <div className="h-full rounded-full bg-emerald-500 transition-all" style={{ width: `${(completedSubtasks / totalSubtasks) * 100}%` }} />
           </div>
-          <p className="mt-1 text-[10px] text-slate-400">{completedSubtasks}/{totalSubtasks} tareas</p>
+          <p className="mt-1 text-[10px]" style={{ color: t.text3 }}>{completedSubtasks}/{totalSubtasks} tareas</p>
         </div>
       )}
       <div className="flex items-center gap-2 flex-wrap">
         <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold ${ps.badge}`}>
           <span className={`w-1.5 h-1.5 rounded-full ${ps.dot}`} />{opp.priority}
         </span>
-        {opp.dueDate && <span className="flex items-center gap-1 text-[11px] text-slate-400"><Calendar className="w-3 h-3" />{opp.dueDate}</span>}
+        {opp.dueDate && <span className="flex items-center gap-1 text-[11px]" style={{ color: t.text3 }}><Calendar className="w-3 h-3" />{opp.dueDate}</span>}
         <span className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-semibold ${
           opp.commercialStatus === 'activo'      ? 'bg-emerald-50 text-emerald-700' :
           opp.commercialStatus === 'negociación' ? 'bg-blue-50 text-blue-700' : 'bg-slate-100 text-slate-500'
@@ -2084,18 +2089,16 @@ function WorkplaceView({ currentArea = 'general', onTaskMove, tasks = [], pendin
       <div className="flex shrink-0 items-center gap-2">
         {/* Search — glass style */}
         <div className="relative flex-1">
-          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2" style={{ color: t.searchIcon }} />
           <input
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder="Buscar alianzas, oportunidades…"
-            className="h-11 w-full rounded-[16px] pl-10 pr-4 text-[13px] text-slate-700 outline-none transition"
+            className="h-11 w-full rounded-[16px] pl-10 pr-4 text-[13px] outline-none transition"
             style={{
-              background: 'rgba(255,255,255,0.88)',
-              backdropFilter: 'blur(10px)',
-              WebkitBackdropFilter: 'blur(10px)',
-              border: '1px solid rgba(20,30,48,0.09)',
-              boxShadow: '0 2px 8px rgba(20,30,48,0.06)',
+              background: t.searchBg,
+              border: `1px solid ${t.searchBorder}`,
+              color: t.searchText,
             }}
           />
         </div>

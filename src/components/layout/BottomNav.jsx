@@ -11,9 +11,9 @@ import { useTheme } from '../../context/ThemeContext';
 const navItems = [
   { id: 'profile',   label: 'Empresa',   icon: Building2 },
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'alliances', label: 'Match',     icon: BriefcaseBusiness },
+  { id: 'alliances', label: 'Explorar',   icon: BriefcaseBusiness },
   { id: 'chats',     label: 'Chats',     icon: MessageSquare },
-  { id: 'workplace', label: 'Workplace', icon: PanelsTopLeft },
+  { id: 'workplace', label: 'Proyectos', icon: PanelsTopLeft },
 ];
 
 function BottomNav({ activeView, onNavigate }) {
