@@ -780,15 +780,10 @@ export default function LandingPage() {
         label="Match Inteligente"
         labelColor="#3B82F6"
         side="left"
-        bg="#EEF2FF"
         title="El algoritmo que entiende tu negocio"
         description="No es un simple filtro. Analizamos industria, audiencia, lo que ofrecés, lo que buscás, ubicación y más de 20 variables para calcular un score de compatibilidad real. Solo ves empresas que pueden generar valor mutuo."
       >
-        <img
-          src="/match-mockup.png"
-          alt="Match inteligente"
-          style={{ width: '100%', maxWidth: 560, display: 'block' }}
-        />
+        <MatchMockup />
       </FeatureSection>
 
       {/* ── ALLIANCE ROOM ────────────────────────────────── */}
