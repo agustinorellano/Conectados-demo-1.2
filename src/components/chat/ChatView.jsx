@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { MessageSquare } from 'lucide-react';
 import ChatList from './ChatList';
 import ChatWindow from './ChatWindow';
 
@@ -213,15 +214,103 @@ function ChatView({
   const handleBack   = ()   => { directionRef.current = -1; setActiveConversationId(null); };
 
   const showChat = activeConversationId !== null && activeConversation !== null;
+  const [isDesktop, setIsDesktop] = useState(() => window.innerWidth >= 1024);
 
+  useEffect(() => {
+    const fn = () => setIsDesktop(window.innerWidth >= 1024);
+    window.addEventListener('resize', fn);
+    return () => window.removeEventListener('resize', fn);
+  }, []);
+
+  /* Auto-select first conversation on desktop */
+  useEffect(() => {
+    if (isDesktop && activeConversationId === null && enrichedThreads.length > 0) {
+      setActiveConversationId(enrichedThreads[0].id);
+    }
+  }, [isDesktop]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const chatListProps = {
+    allowDirectMessage: userPlan === 'scale',
+    activeId: activeConversationId,
+    conversations: enrichedThreads,
+    onCreateOutbound: handleCreateOutbound,
+    onOpenAssistant: onOpenAssistant,
+    onOpenAllianceRoom: onOpenAllianceRoom,
+    onSelect: handleSelect,
+    favorites,
+    archived,
+    pinned,
+    onFavorite: handleFavorite,
+    onArchive: handleArchived,
+    onPin: handlePinned,
+    onCreateTeam: handleCreateTeam,
+  };
+
+  const chatWindowProps = activeConversation ? {
+    conversation: activeConversation,
+    onBack: handleBack,
+    onChangeDraft: setProposalDraft,
+    onConvertToOpportunity: () => updateActive(conv => ({ ...conv, status: 'Alianza activa' })),
+    onProposalPreset: handleProposalPreset,
+    onQuickAction: setProposalDraft,
+    onScheduleMeeting: onScheduleMeeting,
+    onSend: handleSend,
+    onSendAudio: handleSendAudio,
+    proposalDraft,
+    onCreateTask: () => {},
+    onOpenAllianceRoom: onOpenAllianceRoom,
+    onTeamInvite: () => updateActive(conv => ({ ...conv, isEmpty: false })),
+    isDesktop,
+  } : null;
+
+  /* ── DESKTOP: two-column layout ── */
+  if (isDesktop) {
+    return (
+      <div className="flex h-full" style={{ background: '#0A0F1E' }}>
+
+        {/* Left column — conversation list */}
+        <div className="h-full w-[340px] shrink-0 overflow-hidden" style={{ borderRight: '1px solid rgba(255,255,255,0.07)' }}>
+          <ChatList {...chatListProps} />
+        </div>
+
+        {/* Right column — active conversation or empty state */}
+        <div className="relative flex-1 overflow-hidden">
+          <AnimatePresence mode="wait" initial={false}>
+            {showChat && chatWindowProps ? (
+              <motion.div key={activeConversationId}
+                initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}
+                transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+                className="absolute inset-0">
+                <ChatWindow {...chatWindowProps} />
+              </motion.div>
+            ) : (
+              <motion.div key="empty"
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="absolute inset-0 flex flex-col items-center justify-center gap-4">
+                <div className="flex h-16 w-16 items-center justify-center rounded-[20px]"
+                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                  <MessageSquare className="h-7 w-7 text-white/20" />
+                </div>
+                <div className="text-center">
+                  <p className="text-[15px] font-semibold text-white/30">Ninguna conversación seleccionada</p>
+                  <p className="mt-1 text-[13px] text-white/18">Elegí un chat de la lista para empezar</p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── MOBILE: original slide layout ── */
   return (
     <div
-      className="relative overflow-hidden rounded-[0px]"
+      className="relative overflow-hidden"
       style={{ background: '#0A0F1E', height: '100%' }}
     >
       <AnimatePresence mode="wait" custom={directionRef.current} initial={false}>
 
-        {/* ── LIST PANEL ── */}
         {!showChat && (
           <motion.div
             key="list"
@@ -233,27 +322,11 @@ function ChatView({
             transition={spring}
             className="absolute inset-0 overflow-hidden"
           >
-            <ChatList
-              allowDirectMessage={userPlan === 'scale'}
-              activeId={activeConversationId}
-              conversations={enrichedThreads}
-              onCreateOutbound={handleCreateOutbound}
-              onOpenAssistant={onOpenAssistant}
-              onOpenAllianceRoom={onOpenAllianceRoom}
-              onSelect={handleSelect}
-              favorites={favorites}
-              archived={archived}
-              pinned={pinned}
-              onFavorite={handleFavorite}
-              onArchive={handleArchived}
-              onPin={handlePinned}
-              onCreateTeam={handleCreateTeam}
-            />
+            <ChatList {...chatListProps} />
           </motion.div>
         )}
 
-        {/* ── CONVERSATION PANEL ── */}
-        {showChat && (
+        {showChat && chatWindowProps && (
           <motion.div
             key={activeConversationId}
             custom={directionRef.current}
@@ -264,26 +337,7 @@ function ChatView({
             transition={spring}
             className="absolute inset-0 overflow-hidden"
           >
-            <ChatWindow
-              conversation={activeConversation}
-              onBack={handleBack}
-              onChangeDraft={setProposalDraft}
-              onConvertToOpportunity={() =>
-                updateActive(conv => ({ ...conv, status: 'Alianza activa' }))
-              }
-              onProposalPreset={handleProposalPreset}
-              onQuickAction={setProposalDraft}
-              onScheduleMeeting={onScheduleMeeting}
-              onSend={handleSend}
-              onSendAudio={handleSendAudio}
-              proposalDraft={proposalDraft}
-              onCreateTask={() => {}}
-              onOpenAllianceRoom={onOpenAllianceRoom}
-              onTeamInvite={() =>
-                /* marca el hilo como no-vacío cuando el usuario invita */
-                updateActive(conv => ({ ...conv, isEmpty: false }))
-              }
-            />
+            <ChatWindow {...chatWindowProps} />
           </motion.div>
         )}
 

@@ -421,6 +421,7 @@ function ChatWindow({
   onCreateTask,
   onOpenAllianceRoom,
   onTeamInvite,
+  isDesktop = false,
 }) {
   const [showMeetingModal, setShowMeetingModal] = useState(false);
   const [meetingScheduled, setMeetingScheduled] = useState(false);
@@ -459,11 +460,13 @@ function ChatWindow({
       <header className="shrink-0 px-4 pt-4 pb-3"
         style={{ background: '#0A0F1E', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
         <div className="flex items-start gap-3">
-          {/* Back */}
-          <button type="button" onClick={onBack}
-            className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-white/45 transition hover:bg-white/8 active:scale-95">
-            <ChevronLeft className="h-5 w-5" />
-          </button>
+          {/* Back — hidden on desktop */}
+          {!isDesktop && (
+            <button type="button" onClick={onBack}
+              className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-white/45 transition hover:bg-white/8 active:scale-95">
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+          )}
 
           {/* Avatar + info — tapping opens context */}
           <button type="button" onClick={() => setContextOpen(true)}
