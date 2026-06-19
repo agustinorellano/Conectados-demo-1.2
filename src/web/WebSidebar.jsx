@@ -80,7 +80,7 @@ function WebSidebar({ activeView, onNavigate, userPlan, companyName }) {
       onHoverEnd={() => { setExpanded(false); setNotifOpen(false); }}
       animate={{ width: expanded ? 232 : 64 }}
       transition={spring}
-      className="relative z-40 m-3 flex shrink-0 flex-col overflow-hidden self-start"
+      className="relative z-40 m-3 flex shrink-0 flex-col overflow-hidden self-start max-h-[calc(100vh-24px)]"
       style={{
         background: t.sidebarBg,
         border: `1px solid ${t.sidebarBorder}`,
@@ -160,7 +160,7 @@ function WebSidebar({ activeView, onNavigate, userPlan, companyName }) {
       <motion.div
         animate={{ opacity: expanded ? 1 : 0 }}
         transition={{ duration: 0.15, delay: expanded ? 0.08 : 0 }}
-        className="flex flex-col h-full py-4 min-w-[232px]"
+        className="flex flex-col py-4 min-w-[232px] overflow-y-auto [scrollbar-width:none]"
         style={{ pointerEvents: expanded ? 'auto' : 'none' }}
       >
         {/* Header */}
