@@ -618,7 +618,23 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
   if (isDesktop) {
     return (
       <>
-        <div className="flex h-full" style={{ background: BG }}>
+        <div className="flex flex-col h-full" style={{ background: BG }}>
+
+          {/* ── Banner ── */}
+          <div className="shrink-0 px-6 pt-5 pb-4">
+            <div className="rounded-[22px] px-6 py-5 text-white"
+              style={{ background: 'linear-gradient(110deg, #1871D8 0%, #145db1 50%, #141E30 100%)' }}>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/65">Explorar</p>
+              <h2 className="mt-1.5 font-['Space_Grotesk'] text-[20px] font-bold leading-tight tracking-tight">
+                Descubrí empresas con las que crear alianzas
+              </h2>
+              <p className="mt-1 text-[12px] leading-5 text-white/70">
+                Cada empresa fue seleccionada según tu perfil, sector y lo que buscás en una alianza.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-1 min-h-0">
 
           {/* ── Left panel: card + controls ── */}
           <div className="flex w-[440px] shrink-0 flex-col h-full" style={{ borderRight: '1px solid rgba(255,255,255,0.07)' }}>
@@ -732,6 +748,7 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
               </motion.div>
             )}
           </AnimatePresence>
+          </div>{/* end flex-1 panels row */}
         </div>
 
         {/* Shared modals */}
