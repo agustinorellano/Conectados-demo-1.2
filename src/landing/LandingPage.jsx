@@ -71,10 +71,22 @@ function Label({ children, color = C.blueLight }) {
   );
 }
 
+/* ─── app link hook ────────────────────────────────────────── */
+function useAppLink() {
+  const [link, setLink] = useState(() => window.innerWidth < 768 ? '/app' : '/web');
+  useEffect(() => {
+    const fn = () => setLink(window.innerWidth < 768 ? '/app' : '/web');
+    window.addEventListener('resize', fn);
+    return () => window.removeEventListener('resize', fn);
+  }, []);
+  return link;
+}
+
 /* ─── navbar ───────────────────────────────────────────────── */
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const appLink = useAppLink();
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 20);
@@ -120,10 +132,10 @@ function Navbar() {
 
           {/* Desktop CTA */}
           <div className="hidden items-center gap-3 md:flex">
-            <a href="/web" className="text-[13px] font-medium transition" style={{ color: scrolled ? 'rgba(255,255,255,0.55)' : C.text }}>
+            <a href={appLink} className="text-[13px] font-medium transition" style={{ color: scrolled ? 'rgba(255,255,255,0.55)' : C.text }}>
               Iniciar sesión
             </a>
-            <a href="/web"
+            <a href={appLink}
               className="rounded-full px-4 py-2 text-[13px] font-semibold text-white transition hover:-translate-y-0.5"
               style={{ background: 'linear-gradient(135deg, #1871D8, #1459B0)', boxShadow: '0 4px 16px rgba(24,113,216,0.35)' }}>
               Empezar gratis
@@ -132,7 +144,7 @@ function Navbar() {
 
           {/* Mobile: CTA + hamburger */}
           <div className="flex items-center gap-2 md:hidden">
-            <a href="/web"
+            <a href={appLink}
               className="rounded-full px-3 py-1.5 text-[12px] font-semibold text-white"
               style={{ background: 'linear-gradient(135deg, #1871D8, #1459B0)' }}>
               Empezar
@@ -175,7 +187,7 @@ function Navbar() {
                 </a>
               ))}
               <div className="pt-3">
-                <a href="/web" className="block text-center py-2.5 text-[13px] font-medium text-white/50">
+                <a href={appLink} className="block text-center py-2.5 text-[13px] font-medium text-white/50">
                   Iniciar sesión
                 </a>
               </div>
@@ -636,6 +648,7 @@ const PLANS = [
 
 /* ═══════════════════════════════════════════════════════════ */
 export default function LandingPage() {
+  const appLink = useAppLink();
   return (
     <div className="min-h-screen" style={{ background: C.bg, color: C.heading }}>
       <style>{`
@@ -1129,7 +1142,7 @@ export default function LandingPage() {
                     ))}
                   </ul>
 
-                  <a href="/web"
+                  <a href={appLink}
                     className="block w-full rounded-full py-3 text-center text-[13px] font-bold transition hover:-translate-y-0.5"
                     style={plan.featured
                       ? { background: `linear-gradient(135deg, ${plan.color}, ${plan.color}CC)`, color: 'white', boxShadow: `0 6px 24px ${plan.color}30` }
@@ -1169,7 +1182,7 @@ export default function LandingPage() {
               </div>
 
               <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-                <a href="/web"
+                <a href={appLink}
                   className="inline-flex items-center justify-center gap-2 rounded-full px-8 py-4 text-[15px] font-bold text-white transition hover:-translate-y-0.5"
                   style={{ background: 'linear-gradient(135deg, #2563EB, #1D4ED8)', boxShadow: '0 10px 40px rgba(37,99,235,0.45)' }}>
                   Empezar gratis
