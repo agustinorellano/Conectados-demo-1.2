@@ -9,14 +9,15 @@ import HeroSection from './components/HeroSection';
 
 /* ─── palette ──────────────────────────────────────────────── */
 const C = {
-  bg:      '#070C18',
-  bgMid:   '#0A0F1E',
-  bgCard:  '#0F1828',
-  blue:    '#1871D8',
-  blueLight:'#4A9FFF',
-  green:   '#10B981',
-  border:  'rgba(255,255,255,0.07)',
-  text:    'rgba(255,255,255,0.55)',
+  bg:       '#EEF2FF',
+  bgMid:    '#F8FAFF',
+  bgCard:   '#FFFFFF',
+  blue:     '#2563EB',
+  blueLight:'#3B82F6',
+  green:    '#10B981',
+  border:   '#E2E8F4',
+  text:     '#64748B',
+  heading:  '#0F172A',
 };
 
 /* ─── animated counter ─────────────────────────────────────── */
@@ -329,34 +330,33 @@ function LogosCarousel() {
         style={{ width: 'max-content' }}>
         {[...LOGOS, ...LOGOS].map((name, i) => (
           <div key={i} className="flex items-center gap-2.5 shrink-0">
-            <div className="h-6 w-6 rounded-md text-[9px] font-bold text-white flex items-center justify-center"
-              style={{ background: 'rgba(255,255,255,0.08)' }}>
+            <div className="h-6 w-6 rounded-md text-[9px] font-bold flex items-center justify-center"
+              style={{ background: '#E2E8F4', color: C.text }}>
               {name.slice(0,2).toUpperCase()}
             </div>
-            <span className="text-[13px] font-semibold text-white/35 whitespace-nowrap">{name}</span>
+            <span className="text-[13px] font-semibold whitespace-nowrap" style={{ color: '#94A3B8' }}>{name}</span>
           </div>
         ))}
       </div>
       <div className="pointer-events-none absolute inset-y-0 left-0 w-24"
-        style={{ background: `linear-gradient(to right, ${C.bg}, transparent)` }} />
+        style={{ background: `linear-gradient(to right, ${C.bgMid}, transparent)` }} />
       <div className="pointer-events-none absolute inset-y-0 right-0 w-24"
-        style={{ background: `linear-gradient(to left, ${C.bg}, transparent)` }} />
+        style={{ background: `linear-gradient(to left, ${C.bgMid}, transparent)` }} />
     </div>
   );
 }
 
 /* ─── feature section ──────────────────────────────────────── */
 function FeatureSection({ label, labelColor, title, description, side = 'left', children, id, bg }) {
-  const light = !!bg
   return (
-    <section id={id} className="py-24 px-6" style={bg ? { background: bg } : {}}>
+    <section id={id} className="py-24 px-6" style={{ background: bg || C.bgMid }}>
       <div className={`mx-auto max-w-6xl flex flex-col gap-16 lg:flex-row lg:items-center lg:gap-20 ${side === 'right' ? 'lg:flex-row-reverse' : ''}`}>
         <FadeUp className="flex-1 space-y-6">
           <Label color={labelColor}>{label}</Label>
-          <h2 className="font-['Space_Grotesk'] text-3xl font-bold leading-tight lg:text-4xl" style={{ color: light ? '#0F172A' : '#fff' }}>
+          <h2 className="font-['Space_Grotesk'] text-3xl font-bold leading-tight lg:text-4xl" style={{ color: C.heading }}>
             {title}
           </h2>
-          <p className="text-[15px] leading-relaxed" style={{ color: light ? '#64748B' : C.text }}>{description}</p>
+          <p className="text-[15px] leading-relaxed" style={{ color: C.text }}>{description}</p>
         </FadeUp>
         <FadeUp delay={0.1} className="flex-1">
           {children}
@@ -376,31 +376,24 @@ function MatchMockup() {
   const card = cards[active];
 
   return (
-    <div className="overflow-hidden rounded-[24px]"
-      style={{ background: 'linear-gradient(160deg, #0D1526 0%, #0A0F1E 100%)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 24px 60px rgba(0,0,0,0.5)' }}>
-      <div className="p-5 space-y-4">
-        {/* Score badge */}
+    <div className="overflow-hidden rounded-[28px]"
+      style={{ background: '#fff', border: '1px solid #E2E8F4', boxShadow: '0 8px 48px rgba(37,99,235,0.10)' }}>
+      <div className="p-6 space-y-4">
+        {/* Score badge + counter */}
         <div className="flex items-center justify-between">
           <Label color={card.color}>Match {card.score}%</Label>
-          <div className="flex gap-1.5">
-            {cards.map((_, i) => (
-              <button key={i} onClick={() => setActive(i)} type="button"
-                className="h-1.5 rounded-full transition-all"
-                style={{ width: i === active ? 20 : 6, background: i === active ? card.color : 'rgba(255,255,255,0.15)' }} />
-            ))}
-          </div>
+          <span className="text-[11px] font-semibold" style={{ color: C.text }}>1 de 12</span>
         </div>
 
         {/* Company card */}
-        <div className="rounded-[18px] p-4 space-y-3"
-          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
+        <div className="rounded-[18px] p-4 space-y-3" style={{ background: '#F8FAFF', border: '1px solid #E2E8F4' }}>
           <div className="flex items-center gap-3">
             <div className="h-12 w-12 rounded-[14px] flex items-center justify-center text-sm font-bold text-white"
-              style={{ background: `linear-gradient(135deg, ${card.color}80, ${card.color}30)` }}>
+              style={{ background: `linear-gradient(135deg, ${card.color}, ${card.color}99)` }}>
               {card.name.slice(0,2)}
             </div>
             <div>
-              <p className="text-[15px] font-bold text-white">{card.name}</p>
+              <p className="text-[15px] font-bold" style={{ color: C.heading }}>{card.name}</p>
               <p className="text-[12px]" style={{ color: C.text }}>{card.sector}</p>
             </div>
           </div>
@@ -408,12 +401,12 @@ function MatchMockup() {
           {/* Score bar */}
           <div>
             <div className="mb-1.5 flex items-center justify-between">
-              <span className="text-[10px] text-white/35">Compatibilidad</span>
+              <span className="text-[10px] font-medium" style={{ color: C.text }}>Compatibilidad</span>
               <span className="text-[11px] font-bold" style={{ color: card.color }}>{card.score}%</span>
             </div>
-            <div className="h-1.5 rounded-full bg-white/10">
+            <div className="h-2 rounded-full" style={{ background: '#E2E8F4' }}>
               <motion.div key={active} className="h-full rounded-full"
-                style={{ background: `linear-gradient(90deg, ${card.color}, ${card.color}80)` }}
+                style={{ background: `linear-gradient(90deg, ${card.color}, ${card.color}99)` }}
                 initial={{ width: 0 }}
                 animate={{ width: `${card.score}%` }}
                 transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }} />
@@ -424,7 +417,7 @@ function MatchMockup() {
           <div className="flex flex-wrap gap-1.5">
             {card.tags.map(tag => (
               <span key={tag} className="rounded-full px-2.5 py-1 text-[10px] font-semibold"
-                style={{ background: `${card.color}14`, color: card.color, border: `1px solid ${card.color}28` }}>
+                style={{ background: `${card.color}12`, color: card.color, border: `1px solid ${card.color}22` }}>
                 {tag}
               </span>
             ))}
@@ -434,13 +427,13 @@ function MatchMockup() {
         {/* Action buttons */}
         <div className="grid grid-cols-2 gap-3">
           <button type="button" onClick={() => setActive(v => (v + 1) % cards.length)}
-            className="rounded-[14px] py-3 text-[13px] font-semibold text-white/60 transition hover:bg-white/10"
-            style={{ border: '1px solid rgba(255,255,255,0.12)' }}>
-            Siguiente
+            className="rounded-[14px] py-3 text-[13px] font-semibold transition hover:bg-slate-50"
+            style={{ border: '1px solid #E2E8F4', color: C.text }}>
+            Pasar
           </button>
           <button type="button"
             className="rounded-[14px] py-3 text-[13px] font-bold text-white transition"
-            style={{ background: 'linear-gradient(135deg, #1871D8, #1459B0)', boxShadow: '0 4px 16px rgba(24,113,216,0.30)' }}>
+            style={{ background: 'linear-gradient(135deg, #2563EB, #1D4ED8)', boxShadow: '0 4px 16px rgba(37,99,235,0.30)' }}>
             Conectar →
           </button>
         </div>
@@ -452,49 +445,48 @@ function MatchMockup() {
 /* ─── alliance room mockup ─────────────────────────────────── */
 function AllianceRoomMockup() {
   return (
-    <div className="overflow-hidden rounded-[24px]"
-      style={{ background: 'linear-gradient(160deg, #0D1526 0%, #0A0F1E 100%)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 24px 60px rgba(0,0,0,0.5)' }}>
-      <div className="p-5 space-y-4">
+    <div className="overflow-hidden rounded-[28px]"
+      style={{ background: '#fff', border: '1px solid #E2E8F4', boxShadow: '0 8px 48px rgba(37,99,235,0.10)' }}>
+      <div className="p-6 space-y-4">
         <div className="flex items-center justify-between">
           <Label color="#8B5CF6"><Video size={11} /> Alliance Room</Label>
           <div className="flex items-center gap-1.5">
             <div className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
-            <span className="text-[10px] text-white/40">En vivo</span>
+            <span className="text-[10px] font-medium" style={{ color: C.text }}>En vivo</span>
           </div>
         </div>
 
         {/* Participants */}
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-3">
           {[
-            { name: 'Top White', role: 'Anfitrión', color: '#141E30' },
+            { name: 'Top White', role: 'Anfitrión', color: '#2563EB' },
             { name: 'Bloom Florería', role: 'Invitado', color: '#10B981' },
           ].map(p => (
-            <div key={p.name} className="rounded-[14px] p-3 space-y-2"
-              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
-              <div className="h-10 w-full rounded-[10px] flex items-center justify-center"
-                style={{ background: `linear-gradient(135deg, ${p.color}, ${p.color}80)` }}>
-                <span className="text-white font-bold text-[11px]">{p.name.slice(0,2).toUpperCase()}</span>
+            <div key={p.name} className="rounded-[16px] p-3 space-y-2"
+              style={{ background: '#F8FAFF', border: '1px solid #E2E8F4' }}>
+              <div className="h-12 w-full rounded-[10px] flex items-center justify-center"
+                style={{ background: `linear-gradient(135deg, ${p.color}22, ${p.color}10)`, border: `1px solid ${p.color}20` }}>
+                <span className="font-bold text-[12px]" style={{ color: p.color }}>{p.name.slice(0,2).toUpperCase()}</span>
               </div>
-              <p className="text-[10px] font-semibold text-white/70">{p.name}</p>
+              <p className="text-[11px] font-semibold" style={{ color: C.heading }}>{p.name}</p>
               <p className="text-[9px]" style={{ color: C.text }}>{p.role}</p>
             </div>
           ))}
         </div>
 
         {/* AI Notes */}
-        <div className="rounded-[14px] p-3"
-          style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.18)' }}>
+        <div className="rounded-[14px] p-3" style={{ background: '#F5F3FF', border: '1px solid #DDD6FE' }}>
           <div className="flex items-center gap-2 mb-2">
-            <Sparkles size={12} className="text-violet-400" />
-            <span className="text-[10px] font-semibold text-violet-300">IA tomando notas</span>
+            <Sparkles size={12} style={{ color: '#7C3AED' }} />
+            <span className="text-[10px] font-semibold" style={{ color: '#7C3AED' }}>IA tomando notas</span>
           </div>
-          <p className="text-[11px] leading-relaxed" style={{ color: C.text }}>
+          <p className="text-[11px] leading-relaxed" style={{ color: '#6D28D9' }}>
             "Acordaron campaña primavera con split 60/40. Próximo paso: presentación de branding el lunes."
           </p>
           <div className="mt-2 flex gap-1.5 flex-wrap">
             {['3 acuerdos', '2 tareas', 'Score 91'].map(t => (
-              <span key={t} className="rounded-full px-2 py-0.5 text-[9px] font-semibold text-violet-300"
-                style={{ background: 'rgba(139,92,246,0.14)' }}>{t}</span>
+              <span key={t} className="rounded-full px-2 py-0.5 text-[9px] font-semibold"
+                style={{ background: '#EDE9FE', color: '#7C3AED' }}>{t}</span>
             ))}
           </div>
         </div>
@@ -506,31 +498,42 @@ function AllianceRoomMockup() {
 /* ─── workplace mockup ─────────────────────────────────────── */
 function WorkplaceMockup() {
   const cols = [
-    { label: 'Backlog', color: 'rgba(255,255,255,0.10)', items: ['Sorteo RRSS', 'Newsletter B2B'] },
-    { label: 'En ejecución', color: '#3B82F6', items: ['Campaña bundle'] },
-    { label: 'Revisión', color: '#F59E0B', items: ['Pop-up Dot', 'Pack wellness'] },
-    { label: 'Cerrado ✓', color: '#10B981', items: ['Día del libro'] },
+    { label: 'Backlog', dot: '#94A3B8', items: ['Sorteo RRSS', 'Newsletter B2B'] },
+    { label: 'Ejecución', dot: '#3B82F6', items: ['Campaña bundle'] },
+    { label: 'Revisión', dot: '#F59E0B', items: ['Pop-up Dot', 'Pack wellness'] },
+    { label: 'Cerrado ✓', dot: '#10B981', items: ['Día del libro'] },
   ];
 
   return (
-    <div className="overflow-hidden rounded-[24px]"
-      style={{ background: 'linear-gradient(160deg, #0D1526 0%, #0A0F1E 100%)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 24px 60px rgba(0,0,0,0.5)' }}>
-      <div className="p-5 space-y-4">
+    <div className="overflow-hidden rounded-[28px]"
+      style={{ background: '#fff', border: '1px solid #E2E8F4', boxShadow: '0 8px 48px rgba(37,99,235,0.10)' }}>
+      <div className="p-6 space-y-4">
+        {/* Header */}
         <div className="flex items-center justify-between">
-          <Label color="#F59E0B"><PanelsTopLeft size={11} /> Workplace</Label>
-          <span className="text-[10px]" style={{ color: C.text }}>6 alianzas activas</span>
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-[12px] flex items-center justify-center" style={{ background: '#EEF2FF' }}>
+              <PanelsTopLeft size={18} style={{ color: '#2563EB' }} strokeWidth={1.8} />
+            </div>
+            <div>
+              <p className="text-[13px] font-bold uppercase tracking-wider" style={{ color: C.heading }}>Workplace</p>
+              <p className="text-[10px]" style={{ color: C.text }}>Gestión de alianzas</p>
+            </div>
+          </div>
+          <span className="rounded-full px-2.5 py-1 text-[10px] font-semibold"
+            style={{ background: '#EEF2FF', color: '#2563EB' }}>6 alianzas activas</span>
         </div>
 
+        {/* Kanban */}
         <div className="grid grid-cols-4 gap-2">
           {cols.map(col => (
             <div key={col.label} className="space-y-1.5">
               <div className="flex items-center gap-1.5 mb-2">
-                <div className="h-1.5 w-1.5 rounded-full" style={{ background: col.color }} />
-                <span className="text-[9px] font-semibold text-white/40 truncate">{col.label}</span>
+                <div className="h-1.5 w-1.5 rounded-full" style={{ background: col.dot }} />
+                <span className="text-[9px] font-semibold uppercase tracking-wide truncate" style={{ color: C.text }}>{col.label}</span>
               </div>
               {col.items.map(item => (
-                <div key={item} className="rounded-[8px] px-2 py-2 text-[9px] font-medium text-white/70"
-                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <div key={item} className="rounded-[10px] px-2.5 py-2 text-[9px] font-medium"
+                  style={{ background: '#F8FAFF', border: '1px solid #E2E8F4', color: C.heading }}>
                   {item}
                 </div>
               ))}
@@ -539,15 +542,16 @@ function WorkplaceMockup() {
         </div>
 
         {/* Revenue row */}
-        <div className="grid grid-cols-3 gap-2 pt-1 border-t border-white/[0.06]">
+        <div className="grid grid-cols-3 gap-2 pt-3 border-t" style={{ borderColor: C.border }}>
           {[
-            { label: 'Pipeline', value: '$382k', color: '#3B82F6' },
-            { label: 'Revenue', value: '$124k', color: '#10B981' },
-            { label: 'Alianzas', value: '6', color: '#F59E0B' },
+            { label: 'Pipeline', value: '$382k', trend: '↑ 18%', color: '#2563EB' },
+            { label: 'Revenue', value: '$124k', trend: '↑ 12%', color: '#10B981' },
+            { label: 'Alianzas', value: '6', trend: 'Activas', color: '#F59E0B' },
           ].map(m => (
-            <div key={m.label} className="text-center">
-              <p className="font-['Space_Grotesk'] text-[14px] font-bold" style={{ color: m.color }}>{m.value}</p>
-              <p className="text-[9px]" style={{ color: C.text }}>{m.label}</p>
+            <div key={m.label} className="rounded-[10px] p-2 text-center" style={{ background: '#F8FAFF' }}>
+              <p className="font-['Space_Grotesk'] text-[15px] font-bold" style={{ color: m.color }}>{m.value}</p>
+              <p className="text-[8px] font-semibold mt-0.5" style={{ color: m.color }}>{m.trend}</p>
+              <p className="text-[8px] mt-0.5" style={{ color: C.text }}>{m.label}</p>
             </div>
           ))}
         </div>
@@ -565,10 +569,10 @@ function AIMockup() {
   ];
 
   return (
-    <div className="overflow-hidden rounded-[24px]"
-      style={{ background: 'linear-gradient(160deg, #0D1526 0%, #0A0F1E 100%)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 24px 60px rgba(0,0,0,0.5)' }}>
-      <div className="p-5 space-y-3">
-        <Label color="#4A9FFF"><Bot size={11} /> Asistente IA</Label>
+    <div className="overflow-hidden rounded-[28px]"
+      style={{ background: '#fff', border: '1px solid #E2E8F4', boxShadow: '0 8px 48px rgba(37,99,235,0.10)' }}>
+      <div className="p-6 space-y-3">
+        <Label color="#2563EB"><Bot size={11} /> Asistente IA</Label>
         <div className="space-y-3 max-h-[220px] overflow-hidden">
           {messages.map((m, i) => (
             <motion.div key={i}
@@ -576,25 +580,22 @@ function AIMockup() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 + i * 0.2 }}
               className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[85%] rounded-[14px] px-3.5 py-2.5 text-[11px] leading-relaxed ${
-                m.role === 'user'
-                  ? 'text-white'
-                  : m.isAction
-                    ? 'text-violet-200'
-                    : 'text-white/75'
-              }`}
+              <div className={`max-w-[85%] rounded-[14px] px-3.5 py-2.5 text-[11px] leading-relaxed`}
                 style={{
                   background: m.role === 'user'
-                    ? 'linear-gradient(135deg, #1871D8, #1459B0)'
+                    ? 'linear-gradient(135deg, #2563EB, #1D4ED8)'
                     : m.isAction
-                      ? 'rgba(139,92,246,0.12)'
-                      : 'rgba(255,255,255,0.06)',
-                  border: m.isAction ? '1px solid rgba(139,92,246,0.22)' : 'none',
+                      ? '#F5F3FF'
+                      : '#F8FAFF',
+                  color: m.role === 'user'
+                    ? '#fff'
+                    : m.isAction ? '#6D28D9' : C.text,
+                  border: m.isAction ? '1px solid #DDD6FE' : m.role === 'user' ? 'none' : '1px solid #E2E8F4',
                 }}>
                 {m.isAction && (
                   <div className="flex items-center gap-1.5 mb-1.5">
-                    <Sparkles size={10} className="text-violet-400" />
-                    <span className="text-[9px] font-semibold text-violet-400">Oportunidad detectada</span>
+                    <Sparkles size={10} style={{ color: '#7C3AED' }} />
+                    <span className="text-[9px] font-semibold" style={{ color: '#7C3AED' }}>Oportunidad detectada</span>
                   </div>
                 )}
                 {m.text}
@@ -603,9 +604,9 @@ function AIMockup() {
           ))}
         </div>
         <div className="flex items-center gap-2 rounded-[12px] px-3 py-2.5"
-          style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
-          <input className="flex-1 bg-transparent text-[11px] text-white/50 outline-none" placeholder="Preguntá algo..." readOnly />
-          <ArrowRight size={13} className="text-white/30" />
+          style={{ background: '#F8FAFF', border: '1px solid #E2E8F4' }}>
+          <input className="flex-1 bg-transparent text-[11px] outline-none" style={{ color: C.text }} placeholder="Preguntá algo..." readOnly />
+          <ArrowRight size={13} style={{ color: C.border }} />
         </div>
       </div>
     </div>
@@ -624,11 +625,11 @@ const FAQS = [
 function FAQ() {
   const [open, setOpen] = useState(null);
   return (
-    <section id="faq" className="py-24 px-6">
+    <section id="faq" className="py-24 px-6" style={{ background: C.bg }}>
       <div className="mx-auto max-w-3xl">
         <FadeUp className="mb-16 text-center space-y-4">
-          <Label>FAQ</Label>
-          <h2 className="font-['Space_Grotesk'] text-3xl font-bold text-white lg:text-4xl">
+          <Label color={C.blue}>FAQ</Label>
+          <h2 className="font-['Space_Grotesk'] text-3xl font-bold lg:text-4xl" style={{ color: C.heading }}>
             Preguntas frecuentes
           </h2>
         </FadeUp>
@@ -636,12 +637,12 @@ function FAQ() {
           {FAQS.map((faq, i) => (
             <FadeUp key={i} delay={i * 0.05}>
               <div className="overflow-hidden rounded-[18px]"
-                style={{ background: 'rgba(15,24,40,0.8)', border: `1px solid ${open === i ? 'rgba(24,113,216,0.30)' : 'rgba(255,255,255,0.07)'}` }}>
+                style={{ background: '#fff', border: `1px solid ${open === i ? `${C.blue}40` : C.border}`, boxShadow: '0 2px 12px rgba(37,99,235,0.05)' }}>
                 <button type="button" onClick={() => setOpen(open === i ? null : i)}
                   className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left">
-                  <span className="text-[14px] font-semibold text-white/85">{faq.q}</span>
+                  <span className="text-[14px] font-semibold" style={{ color: C.heading }}>{faq.q}</span>
                   <motion.div animate={{ rotate: open === i ? 180 : 0 }} transition={{ duration: 0.22 }}>
-                    <ChevronDown size={16} className="shrink-0 text-white/40" />
+                    <ChevronDown size={16} className="shrink-0" style={{ color: C.text }} />
                   </motion.div>
                 </button>
                 <AnimatePresence initial={false}>
@@ -693,7 +694,7 @@ const PLANS = [
 /* ═══════════════════════════════════════════════════════════ */
 export default function LandingPage() {
   return (
-    <div className="min-h-screen" style={{ background: C.bg, color: 'white' }}>
+    <div className="min-h-screen" style={{ background: C.bg, color: C.heading }}>
       <style>{`
         @keyframes scroll {
           0% { transform: translateX(0) }
@@ -707,7 +708,7 @@ export default function LandingPage() {
       <HeroSection />
 
       {/* ── LOGOS ────────────────────────────────────────── */}
-      <section className="border-y py-10 px-6" style={{ borderColor: C.border, background: 'rgba(255,255,255,0.015)' }}>
+      <section className="border-y py-10 px-6" style={{ borderColor: C.border, background: C.bgMid }}>
         <div className="mx-auto max-w-6xl">
           <p className="mb-6 text-center text-[11px] font-semibold uppercase tracking-[0.24em]" style={{ color: C.text }}>
             Empresas que ya están conectadas
@@ -787,14 +788,14 @@ export default function LandingPage() {
       </FeatureSection>
 
       {/* ── ALLIANCE ROOM ────────────────────────────────── */}
-      <section className="py-24 px-6" style={{ background: 'rgba(255,255,255,0.015)' }}>
+      <section className="py-24 px-6" style={{ background: C.bgMid }}>
         <div className="mx-auto max-w-6xl grid gap-16 lg:grid-cols-2 lg:items-center lg:flex-row-reverse">
           <FadeUp delay={0.1}>
             <AllianceRoomMockup />
           </FadeUp>
           <FadeUp className="space-y-6">
-            <Label color="#8B5CF6"><Video size={11} /> Alliance Room</Label>
-            <h2 className="font-['Space_Grotesk'] text-3xl font-bold leading-tight text-white lg:text-4xl">
+            <Label color="#7C3AED"><Video size={11} /> Alliance Room</Label>
+            <h2 className="font-['Space_Grotesk'] text-3xl font-bold leading-tight lg:text-4xl" style={{ color: C.heading }}>
               Tu sala de negociación colaborativa
             </h2>
             <p className="text-[15px] leading-relaxed" style={{ color: C.text }}>
@@ -803,8 +804,8 @@ export default function LandingPage() {
             <ul className="space-y-3">
               {['Notas automáticas por IA', 'Detección de acuerdos y compromisos', 'Tareas generadas desde la reunión', 'Score de momentum de la alianza'].map(f => (
                 <li key={f} className="flex items-center gap-3 text-[13px]" style={{ color: C.text }}>
-                  <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-violet-500/20">
-                    <Check size={11} className="text-violet-400" strokeWidth={2.5} />
+                  <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full" style={{ background: '#F5F3FF' }}>
+                    <Check size={11} style={{ color: '#7C3AED' }} strokeWidth={2.5} />
                   </div>
                   {f}
                 </li>
@@ -827,17 +828,17 @@ export default function LandingPage() {
       </FeatureSection>
 
       {/* ── CIRCUITO ─────────────────────────────────────── */}
-      <section id="el-circuito" style={{ background: 'linear-gradient(180deg, #070C18 0%, #080E1F 100%)', padding: '112px 24px 128px' }}>
+      <section id="el-circuito" style={{ background: C.bg, padding: '112px 24px 128px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
 
           {/* Header */}
           <FadeUp style={{ textAlign: 'center', marginBottom: 72 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 20 }}>
               <div style={{ height: 1, width: 48, background: 'linear-gradient(to right, transparent, rgba(74,159,255,0.5))' }} />
-              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#4A9FFF' }}>El circuito</span>
+              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#2563EB' }}>El circuito</span>
               <div style={{ height: 1, width: 48, background: 'linear-gradient(to left, transparent, rgba(74,159,255,0.5))' }} />
             </div>
-            <h2 style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: 'clamp(32px, 4vw, 52px)', fontWeight: 800, color: '#fff', letterSpacing: '-0.03em', lineHeight: 1.1, margin: '0 0 16px' }}>
+            <h2 style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: 'clamp(32px, 4vw, 52px)', fontWeight: 800, color: C.heading, letterSpacing: '-0.03em', lineHeight: 1.1, margin: '0 0 16px' }}>
               De un match a un negocio,<br />todo en Conectados
             </h2>
             <p style={{ fontSize: 16, color: C.text, maxWidth: 480, margin: '0 auto' }}>
@@ -963,26 +964,24 @@ export default function LandingPage() {
                   borderRadius: 20,
                   background: step.highlight
                     ? 'linear-gradient(145deg, #0E2F6E, #0A1F4E)'
-                    : 'rgba(255,255,255,0.03)',
+                    : 'linear-gradient(145deg, #0F172A, #0D1526)',
                   border: step.highlight
                     ? '1px solid rgba(74,159,255,0.4)'
-                    : '1px solid rgba(255,255,255,0.07)',
+                    : '1px solid rgba(255,255,255,0.08)',
                   padding: '24px 20px 20px',
                   height: '100%',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: 16,
                   boxShadow: step.highlight
-                    ? '0 0 60px rgba(24,113,216,0.2), 0 1px 0 rgba(255,255,255,0.05) inset'
-                    : '0 1px 0 rgba(255,255,255,0.03) inset',
+                    ? '0 8px 40px rgba(24,113,216,0.3)'
+                    : '0 4px 24px rgba(0,0,0,0.18)',
                   position: 'relative',
                   overflow: 'hidden',
                 }}>
 
-                  {/* Glow bg for highlight */}
-                  {step.highlight && (
-                    <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 50% 0%, rgba(24,113,216,0.25) 0%, transparent 70%)', pointerEvents: 'none' }} />
-                  )}
+                  {/* Subtle top glow */}
+                  <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: step.highlight ? 'rgba(74,159,255,0.4)' : 'rgba(255,255,255,0.07)', pointerEvents: 'none' }} />
                   {step.highlight && (
                     <motion.div
                       animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0, 0.3] }}
@@ -995,24 +994,24 @@ export default function LandingPage() {
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{
                       width: 36, height: 36, borderRadius: 10,
-                      background: step.highlight ? 'rgba(255,255,255,0.15)' : `rgba(${i * 20 + 24},${113 - i * 8},${216 - i * 20},0.15)`,
+                      background: 'rgba(255,255,255,0.08)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 12, fontWeight: 800, color: step.highlight ? '#fff' : '#4A9FFF',
+                      fontSize: 12, fontWeight: 800, color: 'rgba(255,255,255,0.5)',
                       fontFamily: 'Space Grotesk, sans-serif', letterSpacing: '-0.02em',
                     }}>
                       {step.num}
                     </div>
-                    <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       {step.icon}
                     </div>
                   </div>
 
                   {/* Visual mockup area */}
                   <div style={{
-                    background: 'rgba(0,0,0,0.2)',
+                    background: 'rgba(0,0,0,0.25)',
                     borderRadius: 12,
                     padding: '12px 10px',
-                    border: '1px solid rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(255,255,255,0.06)',
                     minHeight: 100,
                     display: 'flex',
                     flexDirection: 'column',
@@ -1026,7 +1025,7 @@ export default function LandingPage() {
                     <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', marginBottom: 6, letterSpacing: '-0.02em' }}>
                       {step.label}
                     </div>
-                    <div style={{ fontSize: 11, lineHeight: 1.6, color: C.text }}>
+                    <div style={{ fontSize: 11, lineHeight: 1.6, color: 'rgba(255,255,255,0.45)' }}>
                       {step.desc}
                     </div>
                   </div>
@@ -1038,14 +1037,14 @@ export default function LandingPage() {
       </section>
 
       {/* ── ASISTENTE IA ─────────────────────────────────── */}
-      <section className="py-24 px-6" style={{ background: 'rgba(255,255,255,0.015)' }}>
+      <section className="py-24 px-6" style={{ background: C.bg }}>
         <div className="mx-auto max-w-6xl grid gap-16 lg:grid-cols-2 lg:items-center">
           <FadeUp delay={0.1}>
             <AIMockup />
           </FadeUp>
           <FadeUp className="space-y-6">
-            <Label color={C.blueLight}><Bot size={11} /> Asistente IA</Label>
-            <h2 className="font-['Space_Grotesk'] text-3xl font-bold leading-tight text-white lg:text-4xl">
+            <Label color={C.blue}><Bot size={11} /> Asistente IA</Label>
+            <h2 className="font-['Space_Grotesk'] text-3xl font-bold leading-tight lg:text-4xl" style={{ color: C.heading }}>
               Tu estratega de alianzas siempre disponible
             </h2>
             <p className="text-[15px] leading-relaxed" style={{ color: C.text }}>
@@ -1054,8 +1053,8 @@ export default function LandingPage() {
             <ul className="space-y-3">
               {['Sugerencias de aliados basadas en tu perfil', 'Detección automática de oportunidades', 'Redacción de propuestas personalizadas', 'Alertas de seguimiento inteligentes'].map(f => (
                 <li key={f} className="flex items-center gap-3 text-[13px]" style={{ color: C.text }}>
-                  <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-500/20">
-                    <Check size={11} className="text-blue-400" strokeWidth={2.5} />
+                  <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full" style={{ background: '#EEF2FF' }}>
+                    <Check size={11} style={{ color: C.blue }} strokeWidth={2.5} />
                   </div>
                   {f}
                 </li>
@@ -1066,28 +1065,28 @@ export default function LandingPage() {
       </section>
 
       {/* ── MÉTRICAS ─────────────────────────────────────── */}
-      <section className="py-24 px-6">
+      <section className="py-24 px-6" style={{ background: C.bgMid }}>
         <div className="mx-auto max-w-6xl">
           <FadeUp className="mb-16 text-center space-y-4">
-            <Label>Resultados reales</Label>
-            <h2 className="font-['Space_Grotesk'] text-3xl font-bold text-white lg:text-4xl">
+            <Label color={C.blue}>Resultados reales</Label>
+            <h2 className="font-['Space_Grotesk'] text-3xl font-bold lg:text-4xl" style={{ color: C.heading }}>
               Números que hablan por sí solos
             </h2>
           </FadeUp>
 
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
             {[
-              { value: 500, suffix: '+', label: 'Empresas activas', color: '#3B82F6', icon: Users },
-              { value: 2400, suffix: '+', label: 'Matches realizados', color: '#1871D8', icon: Zap },
-              { value: 890, suffix: '+', label: 'Alianzas cerradas', color: '#8B5CF6', icon: BriefcaseBusiness },
-              { value: 1200000, prefix: '$', suffix: '+', label: 'Valor generado', color: '#10B981', icon: TrendingUp },
+              { value: 500, suffix: '+', label: 'Empresas activas', color: '#2563EB', icon: Users },
+              { value: 2400, suffix: '+', label: 'Matches realizados', color: '#0891B2', icon: Zap },
+              { value: 890, suffix: '+', label: 'Alianzas cerradas', color: '#7C3AED', icon: BriefcaseBusiness },
+              { value: 1200000, prefix: '$', suffix: '+', label: 'Valor generado', color: '#059669', icon: TrendingUp },
             ].map((m, i) => (
               <FadeUp key={m.label} delay={i * 0.08}>
                 <div className="rounded-[24px] p-6 text-center space-y-3"
-                  style={{ background: 'rgba(15,24,40,0.8)', border: `1px solid ${C.border}` }}>
+                  style={{ background: '#fff', border: `1px solid ${C.border}`, boxShadow: '0 2px 16px rgba(37,99,235,0.06)' }}>
                   <div className="flex justify-center">
                     <div className="flex h-10 w-10 items-center justify-center rounded-[12px]"
-                      style={{ background: `${m.color}14` }}>
+                      style={{ background: `${m.color}12` }}>
                       <m.icon size={18} style={{ color: m.color }} strokeWidth={1.8} />
                     </div>
                   </div>
@@ -1103,11 +1102,11 @@ export default function LandingPage() {
       </section>
 
       {/* ── TESTIMONIALES ────────────────────────────────── */}
-      <section className="py-24 px-6" style={{ background: 'rgba(255,255,255,0.015)' }}>
+      <section className="py-24 px-6" style={{ background: C.bg }}>
         <div className="mx-auto max-w-6xl">
           <FadeUp className="mb-16 text-center space-y-4">
-            <Label>Casos de éxito</Label>
-            <h2 className="font-['Space_Grotesk'] text-3xl font-bold text-white lg:text-4xl">
+            <Label color={C.blue}>Casos de éxito</Label>
+            <h2 className="font-['Space_Grotesk'] text-3xl font-bold lg:text-4xl" style={{ color: C.heading }}>
               Lo que dicen nuestros usuarios
             </h2>
           </FadeUp>
@@ -1116,20 +1115,20 @@ export default function LandingPage() {
             {TESTIMONIALS.map((t, i) => (
               <FadeUp key={t.name} delay={i * 0.1}>
                 <div className="h-full rounded-[24px] p-6 space-y-4"
-                  style={{ background: 'rgba(15,24,40,0.8)', border: `1px solid ${C.border}` }}>
+                  style={{ background: '#fff', border: `1px solid ${C.border}`, boxShadow: '0 2px 16px rgba(37,99,235,0.06)' }}>
                   <div className="flex gap-1">
                     {Array.from({ length: t.score }).map((_, j) => (
                       <Star key={j} size={13} className="text-amber-400 fill-amber-400" />
                     ))}
                   </div>
                   <p className="text-[13px] leading-relaxed" style={{ color: C.text }}>"{t.text}"</p>
-                  <div className="flex items-center gap-3 pt-2 border-t border-white/[0.06]">
+                  <div className="flex items-center gap-3 pt-2 border-t" style={{ borderColor: C.border }}>
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-white"
-                      style={{ background: 'linear-gradient(135deg, #1871D8, #1459B0)' }}>
+                      style={{ background: 'linear-gradient(135deg, #2563EB, #1D4ED8)' }}>
                       {t.name.split(' ').map(n => n[0]).join('').slice(0,2)}
                     </div>
                     <div>
-                      <p className="text-[13px] font-semibold text-white">{t.name}</p>
+                      <p className="text-[13px] font-semibold" style={{ color: C.heading }}>{t.name}</p>
                       <p className="text-[11px]" style={{ color: C.text }}>{t.role}</p>
                     </div>
                   </div>
@@ -1141,11 +1140,11 @@ export default function LandingPage() {
       </section>
 
       {/* ── PRECIOS ──────────────────────────────────────── */}
-      <section id="precios" className="py-24 px-6">
+      <section id="precios" className="py-24 px-6" style={{ background: C.bgMid }}>
         <div className="mx-auto max-w-5xl">
           <FadeUp className="mb-16 text-center space-y-4">
-            <Label>Precios</Label>
-            <h2 className="font-['Space_Grotesk'] text-3xl font-bold text-white lg:text-4xl">
+            <Label color={C.blue}>Precios</Label>
+            <h2 className="font-['Space_Grotesk'] text-3xl font-bold lg:text-4xl" style={{ color: C.heading }}>
               Empezá gratis, crecé cuando quieras
             </h2>
             <p className="text-[15px]" style={{ color: C.text }}>Sin tarjeta de crédito. Sin compromisos.</p>
@@ -1154,11 +1153,11 @@ export default function LandingPage() {
           <div className="grid gap-5 md:grid-cols-3">
             {PLANS.map((plan, i) => (
               <FadeUp key={plan.name} delay={i * 0.1}>
-                <div className={`relative h-full rounded-[24px] p-6 space-y-6 ${plan.featured ? 'ring-2' : ''}`}
+                <div className="relative h-full rounded-[24px] p-6 space-y-6"
                   style={{
-                    background: plan.featured ? `linear-gradient(160deg, ${plan.color}18, rgba(15,24,40,0.95))` : 'rgba(15,24,40,0.8)',
-                    border: plan.featured ? `1px solid ${plan.color}40` : `1px solid ${C.border}`,
-                    ringColor: plan.featured ? plan.color : 'transparent',
+                    background: plan.featured ? `linear-gradient(160deg, ${plan.color}10, #fff)` : '#fff',
+                    border: plan.featured ? `1.5px solid ${plan.color}50` : `1px solid ${C.border}`,
+                    boxShadow: plan.featured ? `0 8px 40px ${plan.color}20` : '0 2px 16px rgba(37,99,235,0.06)',
                   }}>
                   {plan.featured && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2">
@@ -1170,7 +1169,7 @@ export default function LandingPage() {
                   <div>
                     <Label color={plan.color}>{plan.name}</Label>
                     <div className="mt-4 flex items-end gap-1.5">
-                      <span className="font-['Space_Grotesk'] text-4xl font-bold text-white">{plan.price}</span>
+                      <span className="font-['Space_Grotesk'] text-4xl font-bold" style={{ color: C.heading }}>{plan.price}</span>
                       <span className="pb-1 text-[12px]" style={{ color: C.text }}>{plan.period}</span>
                     </div>
                   </div>
@@ -1179,7 +1178,7 @@ export default function LandingPage() {
                     {plan.features.map(f => (
                       <li key={f} className="flex items-center gap-3 text-[13px]" style={{ color: C.text }}>
                         <div className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full"
-                          style={{ background: `${plan.color}20` }}>
+                          style={{ background: `${plan.color}15` }}>
                           <Check size={10} style={{ color: plan.color }} strokeWidth={2.8} />
                         </div>
                         {f}
@@ -1190,8 +1189,8 @@ export default function LandingPage() {
                   <a href="/web"
                     className="block w-full rounded-full py-3 text-center text-[13px] font-bold transition hover:-translate-y-0.5"
                     style={plan.featured
-                      ? { background: `linear-gradient(135deg, ${plan.color}, ${plan.color}CC)`, color: 'white', boxShadow: `0 6px 24px ${plan.color}40` }
-                      : { border: `1px solid ${C.border}`, color: 'rgba(255,255,255,0.65)' }}>
+                      ? { background: `linear-gradient(135deg, ${plan.color}, ${plan.color}CC)`, color: 'white', boxShadow: `0 6px 24px ${plan.color}30` }
+                      : { border: `1.5px solid ${C.border}`, color: C.text }}>
                     {plan.name === 'Starter' ? 'Empezar gratis' : `Elegir ${plan.name}`}
                   </a>
                 </div>
@@ -1205,24 +1204,23 @@ export default function LandingPage() {
       <FAQ />
 
       {/* ── CTA FINAL ────────────────────────────────────── */}
-      <section className="py-24 px-6">
+      <section className="py-24 px-6" style={{ background: C.bgMid }}>
         <div className="mx-auto max-w-3xl text-center">
           <FadeUp>
             <div className="relative overflow-hidden rounded-[32px] px-8 py-16 space-y-8"
               style={{
-                background: 'linear-gradient(160deg, rgba(24,113,216,0.15) 0%, rgba(139,92,246,0.10) 100%)',
-                border: '1px solid rgba(24,113,216,0.20)',
-                boxShadow: '0 0 80px rgba(24,113,216,0.12)',
+                background: 'linear-gradient(145deg, #0F172A, #0D1526)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                boxShadow: '0 24px 80px rgba(0,0,0,0.2)',
               }}>
-              {/* Glow */}
-              <div className="absolute left-1/2 top-0 -z-10 h-64 w-64 -translate-x-1/2 rounded-full blur-[80px] opacity-30"
-                style={{ background: '#1871D8' }} />
+              <div className="absolute left-1/2 top-0 -z-10 h-64 w-64 -translate-x-1/2 rounded-full blur-[80px] opacity-20"
+                style={{ background: '#2563EB' }} />
 
               <div className="space-y-4">
                 <h2 className="font-['Space_Grotesk'] text-3xl font-bold text-white lg:text-5xl leading-tight">
                   Tu próxima alianza ya está esperando.
                 </h2>
-                <p className="text-[15px]" style={{ color: C.text }}>
+                <p className="text-[15px]" style={{ color: 'rgba(255,255,255,0.55)' }}>
                   Más de 500 empresas ya están generando acuerdos en Conectados. Sumate gratis hoy.
                 </p>
               </div>
@@ -1230,18 +1228,18 @@ export default function LandingPage() {
               <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
                 <a href="/web"
                   className="inline-flex items-center justify-center gap-2 rounded-full px-8 py-4 text-[15px] font-bold text-white transition hover:-translate-y-0.5"
-                  style={{ background: 'linear-gradient(135deg, #1871D8, #1459B0)', boxShadow: '0 10px 40px rgba(24,113,216,0.45)' }}>
+                  style={{ background: 'linear-gradient(135deg, #2563EB, #1D4ED8)', boxShadow: '0 10px 40px rgba(37,99,235,0.45)' }}>
                   Empezar gratis
                   <ArrowRight size={16} />
                 </a>
                 <a href="#cómo-funciona"
-                  className="inline-flex items-center justify-center gap-2 rounded-full px-8 py-4 text-[15px] font-semibold text-white/60 transition hover:text-white"
-                  style={{ border: '1px solid rgba(255,255,255,0.14)' }}>
+                  className="inline-flex items-center justify-center gap-2 rounded-full px-8 py-4 text-[15px] font-semibold transition"
+                  style={{ border: '1px solid rgba(255,255,255,0.14)', color: 'rgba(255,255,255,0.6)' }}>
                   Ver cómo funciona
                 </a>
               </div>
 
-              <p className="text-[12px]" style={{ color: C.text }}>
+              <p className="text-[12px]" style={{ color: 'rgba(255,255,255,0.35)' }}>
                 Sin tarjeta de crédito · Gratis para siempre en plan Starter
               </p>
             </div>
@@ -1250,14 +1248,14 @@ export default function LandingPage() {
       </section>
 
       {/* ── FOOTER ───────────────────────────────────────── */}
-      <footer className="border-t px-6 py-12" style={{ borderColor: C.border }}>
+      <footer className="border-t px-6 py-12" style={{ borderColor: C.border, background: C.bgMid }}>
         <div className="mx-auto max-w-6xl">
           <div className="grid gap-10 md:grid-cols-[1fr_auto_auto_auto]">
             <div className="space-y-4">
               <div className="flex items-center gap-2.5">
                 <div className="flex h-8 w-8 items-center justify-center rounded-[10px] text-xs font-bold text-white"
-                  style={{ background: 'linear-gradient(135deg, #1871D8, #0A3D7A)' }}>C</div>
-                <span className="font-['Space_Grotesk'] text-[15px] font-bold text-white">Conectados</span>
+                  style={{ background: 'linear-gradient(135deg, #2563EB, #1D4ED8)' }}>C</div>
+                <span className="font-['Space_Grotesk'] text-[15px] font-bold" style={{ color: C.heading }}>Conectados</span>
               </div>
               <p className="text-[13px] leading-relaxed max-w-xs" style={{ color: C.text }}>
                 La plataforma de matching comercial para empresas, marcas y emprendedores.
@@ -1269,11 +1267,11 @@ export default function LandingPage() {
               { title: 'Legal', links: ['Privacidad', 'Términos', 'Cookies'] },
             ].map(col => (
               <div key={col.title} className="space-y-4">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ color: C.text }}>{col.title}</p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ color: C.heading }}>{col.title}</p>
                 <ul className="space-y-2.5">
                   {col.links.map(link => (
                     <li key={link}>
-                      <a href="#" className="text-[13px] transition hover:text-white" style={{ color: C.text }}>{link}</a>
+                      <a href="#" className="text-[13px] transition hover:text-blue-600" style={{ color: C.text }}>{link}</a>
                     </li>
                   ))}
                 </ul>
