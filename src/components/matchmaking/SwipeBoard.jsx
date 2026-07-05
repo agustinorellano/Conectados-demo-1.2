@@ -1,12 +1,11 @@
 import { AnimatePresence, animate, motion, useMotionValue, useTransform } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  ArrowLeft, ArrowRight, Heart, MapPin, RotateCcw,
-  SlidersHorizontal, Star, TrendingUp, Users, X, Zap,
+  ArrowLeft, ArrowRight, BadgeCheck, Heart, MapPin, RotateCcw,
+  Share2, SlidersHorizontal, Star, TrendingUp, Users, X, Zap,
 } from 'lucide-react';
 import CompanyDetailModal from './CompanyDetailModal';
 import MatchOverlay from './MatchOverlay';
-import { InstagramFeedCompact } from '../shared/InstagramFeedPreview';
 import SwipeHeader from './SwipeHeader';
 import CardStack from './CardStack';
 import ActionButtons from './ActionButtons';
@@ -231,26 +230,10 @@ const industryBg = {
   Tecnologia:  'linear-gradient(135deg, #2D1B69 0%, #1A0F42 100%)',
 };
 
-/* ── Desktop right panel — full company profile ─────────────── */
+/* ── Desktop profile — reference-style single card layout ───── */
 const COMMON_CONNECTIONS = ['Bloom Florería', 'Sushi Nakama'];
 
-function ScoreRing({ score, color, size = 56 }) {
-  const r = (size - 6) / 2;
-  const circ = 2 * Math.PI * r;
-  const dash = (score / 100) * circ;
-  return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ transform: 'rotate(-90deg)' }}>
-      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth={5} />
-      <motion.circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth={5}
-        strokeLinecap="round"
-        initial={{ strokeDasharray: `0 ${circ}` }}
-        animate={{ strokeDasharray: `${dash} ${circ}` }}
-        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }} />
-    </svg>
-  );
-}
-
-function DesktopDetailPanel({ company, score, deckIndex, deckTotal }) {
+function ExploreProfileCard({ company }) {
   if (!company) {
     return (
       <div className="flex flex-1 items-center justify-center">
@@ -265,188 +248,133 @@ function DesktopDetailPanel({ company, score, deckIndex, deckTotal }) {
   const hasImage   = Boolean(company.gallery?.[0]);
   const heroBg     = industryBg[company.sector] || 'linear-gradient(135deg, #1871D8 0%, #0A3D7A 100%)';
   const followers  = company.instagramData?.followers ?? null;
-  const lift       = company.stats?.conversionLift;
-
-  /* Score tiers: green ≥80, blue ≥60, amber <60 */
-  const scoreColor = score >= 80 ? '#4ADE80' : score >= 60 ? '#4A9FFF' : '#FBBF24';
-  const scoreGrad  = score >= 80
-    ? 'linear-gradient(90deg, #16A34A, #4ADE80)'
-    : score >= 60
-      ? 'linear-gradient(90deg, #1D5FD0, #4A9FFF)'
-      : 'linear-gradient(90deg, #B45309, #FBBF24)';
-  const scoreBg    = score >= 80
-    ? 'rgba(74,222,128,0.08)'
-    : score >= 60
-      ? 'rgba(74,159,255,0.08)'
-      : 'rgba(251,191,36,0.08)';
+  const photos     = company.instagramData?.feed?.length ? company.instagramData.feed : (company.gallery || []);
 
   return (
-    <div className="flex flex-1 flex-col h-full overflow-y-auto [scrollbar-width:none]">
+    <div className="mx-auto max-w-2xl px-6 pb-40">
 
-      {/* ── Hero image / gradient ── */}
-      <div className="relative shrink-0 overflow-hidden" style={{ height: 220, background: heroBg }}>
+      {/* ── Hero cover ── */}
+      <div className="relative overflow-hidden rounded-[26px]" style={{ height: 240, background: heroBg }}>
         {hasImage && (
-          <img src={company.gallery[0]} alt={company.name}
-            className="absolute inset-0 h-full w-full object-cover" />
+          <img src={company.gallery[0]} alt={company.name} className="absolute inset-0 h-full w-full object-cover" />
         )}
         <div className="absolute inset-0"
-          style={{ background: 'linear-gradient(to top, rgba(7,12,24,1) 0%, rgba(7,12,24,0.15) 55%, transparent 100%)' }} />
+          style={{ background: 'linear-gradient(to top, rgba(7,12,24,0.55) 0%, rgba(7,12,24,0.05) 55%, transparent 100%)' }} />
+      </div>
 
-        {/* Progress dots — bigger, more visible */}
-        {deckTotal > 0 && (
-          <div className="absolute top-4 right-5 flex items-center gap-1.5">
-            {Array.from({ length: Math.min(deckTotal, 8) }).map((_, i) => (
-              <div key={i} className="rounded-full transition-all duration-300"
-                style={{
-                  height: 6,
-                  width: i === deckIndex % 8 ? 18 : 6,
-                  background: i === deckIndex % 8 ? 'white' : 'rgba(255,255,255,0.30)',
-                  boxShadow: i === deckIndex % 8 ? '0 0 6px rgba(255,255,255,0.5)' : 'none',
-                }} />
-            ))}
+      {/* ── Avatar + name overlapping hero ── */}
+      <div className="relative -mt-11 flex items-end gap-4 px-1">
+        <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full text-xl font-black text-white"
+          style={{ background: heroBg, border: '4px solid #0D1424', boxShadow: '0 10px 28px rgba(0,0,0,0.45)' }}>
+          {company.logo}
+        </div>
+        <div className="flex-1 min-w-0 pb-1.5">
+          <div className="flex items-center gap-1.5">
+            <h2 className="font-['Space_Grotesk'] text-[24px] font-bold text-white leading-tight">{company.name}</h2>
+            <BadgeCheck size={19} className="shrink-0 text-emerald-400" />
           </div>
-        )}
-
-        {/* Company name overlay */}
-        <div className="absolute bottom-0 left-0 right-0 px-6 pb-5">
-          <h2 className="font-['Space_Grotesk'] text-2xl font-bold text-white leading-tight">{company.name}</h2>
-          <div className="flex items-center gap-3 mt-1.5">
-            <span className="text-white/65 text-[13px]">{company.sector}</span>
+          <div className="mt-1.5 flex flex-wrap items-center gap-3">
+            <span className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold text-white/70"
+              style={{ background: 'rgba(255,255,255,0.08)' }}>{company.sector}</span>
             {company.distance != null && (
-              <span className="flex items-center gap-1 text-white/40 text-[11px]">
-                <MapPin size={10} /> {company.distance} km
+              <span className="flex items-center gap-1 text-[12px] text-white/40">
+                <MapPin size={11} /> {company.distance} km
               </span>
             )}
             {followers != null && (
-              <span className="flex items-center gap-1 text-white/40 text-[11px]">
-                <Users size={10} /> {followers >= 1000 ? `${(followers / 1000).toFixed(1)}k` : followers} seg.
+              <span className="flex items-center gap-1 text-[12px] text-white/40">
+                <Users size={11} /> {followers >= 1000 ? `${(followers / 1000).toFixed(1)}k` : followers} seg.
               </span>
             )}
           </div>
         </div>
       </div>
 
-      {/* ── Scrollable body ── */}
-      <div className="flex flex-col gap-5 px-6 py-5">
+      {(company.description || company.culture || company.headline) && (
+        <p className="mt-4 text-[13px] leading-relaxed text-white/55">
+          {company.description || company.culture || company.headline}
+        </p>
+      )}
 
-        {/* Compatibility — score ring + bar (enhanced) */}
-        <div className="rounded-[20px] p-5" style={{ background: scoreBg, border: `1px solid ${scoreColor}28` }}>
-          <div className="flex items-center gap-5">
-            <div className="relative shrink-0 flex items-center justify-center" style={{ width: 72, height: 72 }}>
-              <ScoreRing score={score} color={scoreColor} size={72} />
-              <div className="absolute flex flex-col items-center leading-none">
-                <span className="font-['Space_Grotesk'] text-[18px] font-black" style={{ color: scoreColor }}>{score}%</span>
-              </div>
+      {/* ── Spacer so the floating action bar doesn't cover content below ── */}
+      <div className="h-24" />
+
+      {/* ── Qué ofrece / Qué busca / Segmentos ── */}
+      {(offerTags.length > 0 || seekTags.length > 0 || segments.length > 0) && (
+        <div className="grid grid-cols-3 gap-4 rounded-[18px] p-4"
+          style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
+          <div>
+            <p className="mb-2 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-white/30">
+              <Users size={11} /> Qué ofrece
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {offerTags.map(t => (
+                <span key={t} className="rounded-full px-2.5 py-1 text-[11px] font-medium text-[#4A9FFF]"
+                  style={{ background: 'rgba(74,159,255,0.10)', border: '1px solid rgba(74,159,255,0.18)' }}>{t}</span>
+              ))}
             </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/40">Compatibilidad</span>
-                <span className="text-[13px] font-bold" style={{ color: scoreColor }}>
-                  {score >= 80 ? 'Excelente' : score >= 60 ? 'Buena' : 'Moderada'}
-                </span>
-              </div>
-              <div className="h-2.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.07)' }}>
-                <motion.div className="h-full rounded-full"
-                  style={{ background: scoreGrad }}
-                  initial={{ width: 0 }}
-                  animate={{ width: `${score}%` }}
-                  transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }} />
-              </div>
-              <div className="flex gap-4 mt-3">
-                <div>
-                  <p className="font-['Space_Grotesk'] text-[15px] font-black text-white">{company.capacityScore ?? 68}%</p>
-                  <p className="text-[10px] text-white/30 mt-0.5">Capacidad</p>
-                </div>
-                <div className="w-px self-stretch" style={{ background: 'rgba(255,255,255,0.08)' }} />
-                <div>
-                  <p className="font-['Space_Grotesk'] text-[15px] font-black" style={{ color: '#4ADE80' }}>{lift ?? '+9%'}</p>
-                  <p className="text-[10px] text-white/30 mt-0.5">Ventas est.</p>
-                </div>
-              </div>
+          </div>
+          <div>
+            <p className="mb-2 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-white/30">
+              <Star size={11} /> Qué busca
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {seekTags.map(t => (
+                <span key={t} className="rounded-full px-2.5 py-1 text-[11px] font-medium text-emerald-300"
+                  style={{ background: 'rgba(74,222,128,0.10)', border: '1px solid rgba(74,222,128,0.20)' }}>{t}</span>
+              ))}
+            </div>
+          </div>
+          <div>
+            <p className="mb-2 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-white/30">
+              <Users size={11} /> Segmentos
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {segments.map(t => (
+                <span key={t} className="rounded-full px-2.5 py-1 text-[11px] font-medium text-purple-300"
+                  style={{ background: 'rgba(168,85,247,0.10)', border: '1px solid rgba(168,85,247,0.20)' }}>{t}</span>
+              ))}
             </div>
           </div>
         </div>
+      )}
 
-        {/* Por qué son compatibles */}
-        {(company.description || company.culture || company.headline) && (
-          <div className="rounded-[16px] p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] mb-2" style={{ color: '#4A9FFF' }}>✦ Por qué son compatibles</p>
-            <p className="text-[13px] leading-relaxed text-white/65">
-              {company.description || company.culture || company.headline}
-            </p>
-          </div>
-        )}
-
-        {/* Instagram feed strip */}
-        {company.instagramData && (
-          <div className="rounded-[16px] p-4" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
-            <InstagramFeedCompact data={company.instagramData} />
-          </div>
-        )}
-
-        {/* Alliance profile */}
-        {(offerTags.length > 0 || seekTags.length > 0 || segments.length > 0) && (
-          <div className="rounded-[16px] p-4 space-y-4"
-            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
-            {offerTags.length > 0 && (
-              <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/25 mb-2">Qué ofrece</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {offerTags.map(t => (
-                    <span key={t} className="rounded-full px-2.5 py-1 text-[11px] font-medium text-[#4A9FFF]"
-                      style={{ background: 'rgba(74,159,255,0.10)', border: '1px solid rgba(74,159,255,0.18)' }}>{t}</span>
-                  ))}
-                </div>
+      {/* ── Conexiones en común ── */}
+      <div className="mt-5 rounded-[18px] p-4"
+        style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
+        <div className="flex items-center gap-2 mb-3">
+          <Users size={12} style={{ color: '#4A9FFF' }} />
+          <span className="text-[11px] font-semibold text-white/35">{COMMON_CONNECTIONS.length} conexiones en común</span>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {COMMON_CONNECTIONS.map(c => (
+            <span key={c} className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium text-white/45"
+              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <div className="h-4 w-4 rounded-full flex items-center justify-center text-[8px] font-bold text-white"
+                style={{ background: 'linear-gradient(135deg, #1871D8, #0A3D7A)' }}>
+                {c.slice(0, 1)}
               </div>
-            )}
-            {seekTags.length > 0 && (
-              <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/25 mb-2">Qué busca</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {seekTags.map(t => (
-                    <span key={t} className="rounded-full px-2.5 py-1 text-[11px] font-medium text-white/50"
-                      style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.09)' }}>{t}</span>
-                  ))}
-                </div>
-              </div>
-            )}
-            {segments.length > 0 && (
-              <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/25 mb-2">Segmentos</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {segments.map(t => (
-                    <span key={t} className="rounded-full px-2.5 py-1 text-[11px] font-medium text-white/40"
-                      style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>{t}</span>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+              {c}
+            </span>
+          ))}
+        </div>
+      </div>
 
-        {/* Conexiones en común */}
-        <div className="rounded-[16px] p-4"
-          style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
-          <div className="flex items-center gap-2 mb-3">
-            <Users size={12} style={{ color: '#4A9FFF' }} />
-            <span className="text-[11px] font-semibold text-white/35">{COMMON_CONNECTIONS.length} conexiones en común</span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {COMMON_CONNECTIONS.map(c => (
-              <span key={c} className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium text-white/45"
-                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                <div className="h-4 w-4 rounded-full flex items-center justify-center text-[8px] font-bold text-white"
-                  style={{ background: 'linear-gradient(135deg, #1871D8, #0A3D7A)' }}>
-                  {c.slice(0, 1)}
-                </div>
-                {c}
-              </span>
+      {/* ── Fotos del comercio ── */}
+      {photos.length > 0 && (
+        <div className="mt-5">
+          <p className="mb-2.5 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-white/30">
+            Fotos del comercio
+          </p>
+          <div className="grid grid-cols-3 gap-2">
+            {photos.map((src, i) => (
+              <div key={i} className="aspect-square overflow-hidden rounded-[14px]">
+                <img src={src} alt="" className="h-full w-full object-cover" />
+              </div>
             ))}
           </div>
         </div>
-
-        <div className="h-4" />
-      </div>
+      )}
     </div>
   );
 }
@@ -561,6 +489,22 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
     showFlash(`${activeCompany.name} guardada ★`);
   };
 
+  const handleShare = () => {
+    if (!activeCompany) return;
+    const shareData = {
+      title: activeCompany.name,
+      text: `Mirá ${activeCompany.name} en Conectados`,
+      url: window.location.href,
+    };
+    if (navigator.share) {
+      navigator.share(shareData).catch(() => {});
+    } else if (navigator.clipboard) {
+      navigator.clipboard.writeText(shareData.url).then(() => showFlash('Enlace copiado')).catch(() => {});
+    } else {
+      showFlash('Compartido');
+    }
+  };
+
   const handleViewProfile = () => {
     if (!activeCompany) return;
     setViewingCompany({ ...activeCompany });
@@ -617,112 +561,95 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
   if (isDesktop) {
     return (
       <>
-        <div className="flex flex-col h-full" style={{ background: BG }}>
+        <div className="relative flex flex-col h-full" style={{ background: BG }}>
 
-          <div className="flex flex-1 min-h-0">
-
-          {/* ── Left panel: company detail ── */}
-          <div className="flex flex-1 min-h-0 p-4 pr-0">
-            <div className="flex flex-1 min-h-0 flex-col overflow-hidden rounded-[24px]"
-              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <DesktopDetailPanel
-                company={activeCompany}
-                score={activeCompany?.score ?? 0}
-                deckIndex={activeIndex}
-                deckTotal={deck.length}
-              />
+          {/* ── Top bar: tabs + save + filters ── */}
+          <div className="flex shrink-0 items-center justify-between px-6 py-4">
+            <div className="flex items-center rounded-full p-1"
+              style={{ background: 'rgba(0,0,0,0.28)', border: '1px solid rgba(255,255,255,0.10)' }}>
+              {[{ id: 'paraTi', label: 'Para ti' }, { id: 'guardados', label: 'Guardados' }].map(tab => (
+                <button key={tab.id} type="button" onClick={() => setActiveTab(tab.id)}
+                  className={`rounded-full px-4 py-1.5 text-[13px] font-semibold transition-all ${
+                    activeTab === tab.id ? 'bg-white text-[#141E30] shadow-sm' : 'text-white/55 hover:text-white/80'
+                  }`}>
+                  {tab.label}
+                  {tab.id === 'guardados' && savedIds.size > 0 && (
+                    <span className={`ml-1 text-[11px] ${activeTab === tab.id ? 'text-[#141E30]/60' : 'text-white/35'}`}>({savedIds.size})</span>
+                  )}
+                </button>
+              ))}
             </div>
-          </div>
-
-          {/* ── Right panel: card + controls ── */}
-          <div className="flex w-[440px] shrink-0 flex-col h-full" style={{ borderLeft: '1px solid rgba(255,255,255,0.07)' }}>
-
-            {/* Tab header */}
-            <div className="flex shrink-0 items-center justify-between px-5 py-4">
-              <div className="flex items-center rounded-full p-1"
-                style={{ background: 'rgba(0,0,0,0.28)', border: '1px solid rgba(255,255,255,0.10)' }}>
-                {[{ id: 'paraTi', label: 'Para ti' }, { id: 'guardados', label: 'Guardados' }].map(tab => (
-                  <button key={tab.id} type="button" onClick={() => setActiveTab(tab.id)}
-                    className={`rounded-full px-4 py-1.5 text-[13px] font-semibold transition-all ${
-                      activeTab === tab.id ? 'bg-white text-[#141E30] shadow-sm' : 'text-white/55 hover:text-white/80'
-                    }`}>
-                    {tab.label}
-                    {tab.id === 'guardados' && savedIds.size > 0 && (
-                      <span className={`ml-1 text-[11px] ${activeTab === tab.id ? 'text-[#141E30]/60' : 'text-white/35'}`}>({savedIds.size})</span>
-                    )}
-                  </button>
-                ))}
-              </div>
-              <motion.button type="button" onClick={() => setShowFilters(true)}
+            <div className="flex items-center gap-2">
+              <motion.button type="button" onClick={handleSave}
                 whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.90 }}
                 className="flex h-9 w-9 items-center justify-center rounded-full"
+                style={{ background: 'rgba(251,191,36,0.10)', border: '1.5px solid rgba(251,191,36,0.24)' }}>
+                <Star size={15} className="text-amber-400" />
+              </motion.button>
+              <motion.button type="button" onClick={() => setShowFilters(true)}
+                whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.94 }}
+                className="flex items-center gap-2 rounded-full px-4 py-2"
                 style={{ background: 'rgba(255,255,255,0.07)', border: '1.5px solid rgba(255,255,255,0.12)' }}>
-                <SlidersHorizontal size={16} className="text-white/70" />
+                <SlidersHorizontal size={15} className="text-white/70" />
+                <span className="text-[13px] font-semibold text-white/70">Filtros</span>
               </motion.button>
             </div>
-
-            {activeTab === 'guardados' ? (
-              <SavedGrid companies={savedCompanies} onView={c => setViewingCompany(c)} />
-            ) : (
-              <div className="flex flex-1 flex-col px-5 min-h-0">
-
-                {/* Card container — fixed height so CardStack fills it */}
-                <div className="relative rounded-[24px] overflow-hidden shrink-0" style={{ height: 460 }}>
-                  <CardStack {...cardStackProps} />
-                </div>
-
-                {/* Keyboard hints */}
-                <div className="flex items-center justify-center gap-4 py-2.5 shrink-0">
-                  <div className="flex items-center gap-1.5">
-                    <kbd className="rounded-[6px] px-2 py-1 font-mono text-[11px] font-semibold text-white/50"
-                      style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.14)' }}>←</kbd>
-                    <span className="text-[12px] text-white/30">Pasar</span>
-                  </div>
-                  <span className="text-[11px] text-white/15">·</span>
-                  <span className="text-[11px] text-white/25">arrastrá</span>
-                  <span className="text-[11px] text-white/15">·</span>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[12px] text-white/30">Conectar</span>
-                    <kbd className="rounded-[6px] px-2 py-1 font-mono text-[11px] font-semibold text-white/50"
-                      style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.14)' }}>→</kbd>
-                  </div>
-                </div>
-
-                {/* Desktop action buttons */}
-                <div className="flex items-center justify-center gap-3 pb-5 shrink-0">
-                  <motion.button type="button" onClick={handleUndo}
-                    whileHover={{ scale: 1.10 }} whileTap={{ scale: 0.88 }}
-                    className="flex h-11 w-11 items-center justify-center rounded-full"
-                    style={{ background: 'rgba(255,255,255,0.07)', border: '1.5px solid rgba(255,255,255,0.14)' }}>
-                    <RotateCcw size={17} className="text-amber-400" />
-                  </motion.button>
-
-                  <motion.button type="button" onClick={handleSkip}
-                    whileHover={{ scale: 1.06, x: -2 }} whileTap={{ scale: 0.90 }}
-                    className="flex items-center gap-2 rounded-full px-5 py-3 text-[13px] font-semibold transition"
-                    style={{ background: 'rgba(244,63,94,0.12)', border: '1.5px solid rgba(244,63,94,0.35)', color: '#F87171' }}>
-                    <X size={15} strokeWidth={2.5} />
-                    Pasar
-                  </motion.button>
-
-                  <motion.button type="button" onClick={handleSave}
-                    whileHover={{ scale: 1.10 }} whileTap={{ scale: 0.88 }}
-                    className="flex h-11 w-11 items-center justify-center rounded-full"
-                    style={{ background: 'rgba(251,191,36,0.10)', border: '1.5px solid rgba(251,191,36,0.28)' }}>
-                    <Star size={17} className="text-amber-400" />
-                  </motion.button>
-
-                  <motion.button type="button" onClick={handleLike}
-                    whileHover={{ scale: 1.06, x: 2 }} whileTap={{ scale: 0.90 }}
-                    className="flex items-center gap-2 rounded-full px-5 py-3 text-[13px] font-semibold transition"
-                    style={{ background: 'rgba(34,197,94,0.12)', border: '1.5px solid rgba(34,197,94,0.35)', color: '#4ADE80' }}>
-                    <Heart size={15} strokeWidth={2} />
-                    Conectar
-                  </motion.button>
-                </div>
-              </div>
-            )}
           </div>
+
+          {/* ── Main content ── */}
+          {activeTab === 'guardados' ? (
+            <SavedGrid companies={savedCompanies} onView={c => setViewingCompany(c)} />
+          ) : (
+            <div className="flex-1 min-h-0 overflow-y-auto [scrollbar-width:none]">
+              <ExploreProfileCard company={activeCompany} />
+            </div>
+          )}
+
+          {/* ── Floating action buttons — centered at the bottom ── */}
+          {activeTab !== 'guardados' && activeCompany && (
+            <div className="pointer-events-none absolute inset-x-0 bottom-7 z-40 flex items-center justify-center">
+              <div className="pointer-events-auto flex items-center gap-5 rounded-[28px] px-7 py-4"
+                style={{ background: 'rgba(10,16,30,0.70)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.10)', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}>
+
+                <motion.button type="button" onClick={handleUndo}
+                  whileHover={{ scale: 1.10 }} whileTap={{ scale: 0.88 }}
+                  className="flex h-10 w-10 items-center justify-center rounded-full"
+                  style={{ background: 'rgba(255,255,255,0.07)', border: '1.5px solid rgba(255,255,255,0.14)' }}>
+                  <RotateCcw size={15} className="text-white/45" />
+                </motion.button>
+
+                <motion.button type="button" onClick={handleSkip}
+                  whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.90 }}
+                  className="flex flex-col items-center gap-1.5">
+                  <span className="flex h-16 w-16 items-center justify-center rounded-full"
+                    style={{ background: 'rgba(244,63,94,0.14)', border: '2px solid rgba(244,63,94,0.40)' }}>
+                    <X size={26} strokeWidth={2.5} className="text-[#F87171]" />
+                  </span>
+                  <span className="text-[12px] font-semibold text-[#F87171]">Pasar</span>
+                </motion.button>
+
+                <motion.button type="button" onClick={handleLike}
+                  whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.90 }}
+                  className="flex flex-col items-center gap-1.5">
+                  <span className="flex h-16 w-16 items-center justify-center rounded-full"
+                    style={{ background: 'rgba(34,197,94,0.14)', border: '2px solid rgba(34,197,94,0.40)' }}>
+                    <Heart size={26} strokeWidth={2} className="text-[#4ADE80]" />
+                  </span>
+                  <span className="text-[12px] font-semibold text-[#4ADE80]">Conectar</span>
+                </motion.button>
+
+                <motion.button type="button" onClick={handleShare}
+                  whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.90 }}
+                  className="flex flex-col items-center gap-1.5">
+                  <span className="flex h-16 w-16 items-center justify-center rounded-full"
+                    style={{ background: 'rgba(251,191,36,0.14)', border: '2px solid rgba(251,191,36,0.40)' }}>
+                    <Share2 size={23} strokeWidth={2} className="text-amber-400" />
+                  </span>
+                  <span className="text-[12px] font-semibold text-amber-400">Compartir</span>
+                </motion.button>
+              </div>
+            </div>
+          )}
 
           {/* Flash toast — top center on desktop */}
           <AnimatePresence>
@@ -738,7 +665,6 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
               </motion.div>
             )}
           </AnimatePresence>
-          </div>{/* end flex-1 panels row */}
         </div>
 
         {/* Shared modals */}
