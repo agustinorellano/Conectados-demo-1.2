@@ -9,6 +9,7 @@ import MatchOverlay from './MatchOverlay';
 import SwipeHeader from './SwipeHeader';
 import CardStack from './CardStack';
 import ActionButtons from './ActionButtons';
+import { useTheme } from '../../context/ThemeContext';
 import { calculateMatchScore, shouldRevealCompany, willCreateMatch } from '../../utils/matchmaking';
 
 const SWIPE_THRESHOLD_X = 100;
@@ -176,16 +177,16 @@ const sectorBg = {
   'Marketing Digital': 'linear-gradient(135deg, #2C1050, #4A2080)',
 };
 
-function SavedGrid({ companies, onView }) {
+function SavedGrid({ companies, onView, p = EXPLORE_PALETTE.dark }) {
   if (companies.length === 0) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-3 px-8 text-center">
-        <div className="flex h-14 w-14 items-center justify-center rounded-full" style={{ background: 'rgba(255,255,255,0.08)' }}>
-          <Star className="h-6 w-6 text-white/30" />
+        <div className="flex h-14 w-14 items-center justify-center rounded-full" style={{ background: p.pillBg }}>
+          <Star className="h-6 w-6" style={{ color: p.label }} />
         </div>
         <div>
-          <p className="text-[14px] font-semibold text-white/60">Sin guardados todavía</p>
-          <p className="mt-1 text-[12px] text-white/35">Usá ★ para guardar comercios interesantes</p>
+          <p className="text-[14px] font-semibold" style={{ color: p.body }}>Sin guardados todavía</p>
+          <p className="mt-1 text-[12px]" style={{ color: p.meta }}>Usá ★ para guardar comercios interesantes</p>
         </div>
       </div>
     );
@@ -230,14 +231,56 @@ const industryBg = {
   Tecnologia:  'linear-gradient(135deg, #2D1B69 0%, #1A0F42 100%)',
 };
 
+/* ── Desktop palette — oscuro (original) y claro (Conectado Flow / Apple) ── */
+const EXPLORE_PALETTE = {
+  dark: {
+    bg: 'linear-gradient(160deg, #070C18 0%, #0F1828 55%, #141E30 100%)',
+    name: '#FFFFFF', body: 'rgba(255,255,255,0.55)', meta: 'rgba(255,255,255,0.40)', label: 'rgba(255,255,255,0.30)',
+    avatarRing: '#0D1424', avatarShadow: '0 10px 28px rgba(0,0,0,0.45)',
+    pillBg: 'rgba(255,255,255,0.08)', pillText: 'rgba(255,255,255,0.70)',
+    cardBg: 'rgba(255,255,255,0.03)', cardBorder: '1px solid rgba(255,255,255,0.07)', cardShadow: 'none',
+    chipBg: 'rgba(255,255,255,0.05)', chipBorder: '1px solid rgba(255,255,255,0.08)', chipText: 'rgba(255,255,255,0.45)',
+    offer:   { color: '#4A9FFF', bg: 'rgba(74,159,255,0.10)', border: '1px solid rgba(74,159,255,0.18)' },
+    seek:    { color: '#6EE7B7', bg: 'rgba(74,222,128,0.10)', border: '1px solid rgba(74,222,128,0.20)' },
+    segment: { color: '#D8B4FE', bg: 'rgba(168,85,247,0.10)', border: '1px solid rgba(168,85,247,0.20)' },
+    accent: '#4A9FFF',
+    tabsBg: 'rgba(0,0,0,0.28)', tabsBorder: '1px solid rgba(255,255,255,0.10)',
+    tabActiveBg: '#FFFFFF', tabActiveText: '#141E30', tabIdle: 'rgba(255,255,255,0.55)', tabCount: 'rgba(255,255,255,0.35)',
+    btnBg: 'rgba(255,255,255,0.07)', btnBorder: '1.5px solid rgba(255,255,255,0.12)', btnText: 'rgba(255,255,255,0.70)',
+    floatBg: 'rgba(10,16,30,0.70)', floatBorder: '1px solid rgba(255,255,255,0.10)', floatShadow: '0 20px 50px rgba(0,0,0,0.5)',
+    undoBg: 'rgba(255,255,255,0.07)', undoBorder: '1.5px solid rgba(255,255,255,0.14)', undoIcon: 'rgba(255,255,255,0.45)',
+    toastBg: 'rgba(255,255,255,0.10)', toastBorder: '1px solid rgba(255,255,255,0.15)', toastText: 'rgba(255,255,255,0.90)',
+    empty: 'rgba(255,255,255,0.20)',
+  },
+  light: {
+    bg: '#F5F6FA',
+    name: '#1D1D1F', body: '#515257', meta: '#86868B', label: '#86868B',
+    avatarRing: '#FFFFFF', avatarShadow: '0 8px 24px rgba(15,23,42,0.14)',
+    pillBg: 'rgba(15,23,42,0.06)', pillText: '#515257',
+    cardBg: '#FFFFFF', cardBorder: '1px solid rgba(15,23,42,0.07)', cardShadow: '0 1px 2px rgba(15,23,42,0.04), 0 8px 24px rgba(15,23,42,0.05)',
+    chipBg: '#F5F6FA', chipBorder: '1px solid rgba(15,23,42,0.07)', chipText: '#515257',
+    offer:   { color: '#3446C9', bg: 'rgba(69,91,232,0.09)', border: '1px solid rgba(69,91,232,0.16)' },
+    seek:    { color: '#16794A', bg: 'rgba(34,160,98,0.10)', border: '1px solid rgba(34,160,98,0.20)' },
+    segment: { color: '#7A3FC2', bg: 'rgba(139,92,246,0.09)', border: '1px solid rgba(139,92,246,0.18)' },
+    accent: '#455BE8',
+    tabsBg: 'rgba(15,23,42,0.06)', tabsBorder: '1px solid transparent',
+    tabActiveBg: '#FFFFFF', tabActiveText: '#1D1D1F', tabIdle: '#515257', tabCount: '#86868B',
+    btnBg: '#FFFFFF', btnBorder: '1px solid rgba(15,23,42,0.09)', btnText: '#1D1D1F',
+    floatBg: 'rgba(255,255,255,0.82)', floatBorder: '1px solid rgba(15,23,42,0.08)', floatShadow: '0 20px 50px rgba(15,23,42,0.16)',
+    undoBg: '#F5F6FA', undoBorder: '1px solid rgba(15,23,42,0.09)', undoIcon: '#86868B',
+    toastBg: 'rgba(29,29,31,0.88)', toastBorder: '1px solid rgba(255,255,255,0.08)', toastText: '#FFFFFF',
+    empty: '#A1A1A6',
+  },
+};
+
 /* ── Desktop profile — reference-style single card layout ───── */
 const COMMON_CONNECTIONS = ['Bloom Florería', 'Sushi Nakama'];
 
-function ExploreProfileCard({ company }) {
+function ExploreProfileCard({ company, p }) {
   if (!company) {
     return (
       <div className="flex flex-1 items-center justify-center">
-        <p className="text-sm text-white/20">Seleccioná una empresa para ver el detalle</p>
+        <p className="text-sm" style={{ color: p.empty }}>Seleccioná una empresa para ver el detalle</p>
       </div>
     );
   }
@@ -265,24 +308,24 @@ function ExploreProfileCard({ company }) {
       {/* ── Avatar + name overlapping hero ── */}
       <div className="relative -mt-11 flex items-end gap-4 px-1">
         <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full text-xl font-black text-white"
-          style={{ background: heroBg, border: '4px solid #0D1424', boxShadow: '0 10px 28px rgba(0,0,0,0.45)' }}>
+          style={{ background: heroBg, border: `4px solid ${p.avatarRing}`, boxShadow: p.avatarShadow }}>
           {company.logo}
         </div>
         <div className="flex-1 min-w-0 pb-1.5">
           <div className="flex items-center gap-1.5">
-            <h2 className="font-['Space_Grotesk'] text-[24px] font-bold text-white leading-tight">{company.name}</h2>
-            <BadgeCheck size={19} className="shrink-0 text-emerald-400" />
+            <h2 className="font-['Space_Grotesk'] text-[24px] font-bold leading-tight" style={{ color: p.name }}>{company.name}</h2>
+            <BadgeCheck size={19} className="shrink-0 text-emerald-500" />
           </div>
           <div className="mt-1.5 flex flex-wrap items-center gap-3">
-            <span className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold text-white/70"
-              style={{ background: 'rgba(255,255,255,0.08)' }}>{company.sector}</span>
+            <span className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
+              style={{ background: p.pillBg, color: p.pillText }}>{company.sector}</span>
             {company.distance != null && (
-              <span className="flex items-center gap-1 text-[12px] text-white/40">
+              <span className="flex items-center gap-1 text-[12px]" style={{ color: p.meta }}>
                 <MapPin size={11} /> {company.distance} km
               </span>
             )}
             {followers != null && (
-              <span className="flex items-center gap-1 text-[12px] text-white/40">
+              <span className="flex items-center gap-1 text-[12px]" style={{ color: p.meta }}>
                 <Users size={11} /> {followers >= 1000 ? `${(followers / 1000).toFixed(1)}k` : followers} seg.
               </span>
             )}
@@ -291,7 +334,7 @@ function ExploreProfileCard({ company }) {
       </div>
 
       {(company.description || company.culture || company.headline) && (
-        <p className="mt-4 text-[13px] leading-relaxed text-white/55">
+        <p className="mt-4 text-[13px] leading-relaxed" style={{ color: p.body }}>
           {company.description || company.culture || company.headline}
         </p>
       )}
@@ -302,54 +345,38 @@ function ExploreProfileCard({ company }) {
       {/* ── Qué ofrece / Qué busca / Segmentos ── */}
       {(offerTags.length > 0 || seekTags.length > 0 || segments.length > 0) && (
         <div className="grid grid-cols-3 gap-4 rounded-[18px] p-4"
-          style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
-          <div>
-            <p className="mb-2 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-white/30">
-              <Users size={11} /> Qué ofrece
-            </p>
-            <div className="flex flex-wrap gap-1.5">
-              {offerTags.map(t => (
-                <span key={t} className="rounded-full px-2.5 py-1 text-[11px] font-medium text-[#4A9FFF]"
-                  style={{ background: 'rgba(74,159,255,0.10)', border: '1px solid rgba(74,159,255,0.18)' }}>{t}</span>
-              ))}
+          style={{ background: p.cardBg, border: p.cardBorder, boxShadow: p.cardShadow }}>
+          {[
+            { title: 'Qué ofrece', icon: Users, tags: offerTags, tone: p.offer },
+            { title: 'Qué busca', icon: Star, tags: seekTags, tone: p.seek },
+            { title: 'Segmentos', icon: Users, tags: segments, tone: p.segment },
+          ].map(({ title, icon: Icon, tags, tone }) => (
+            <div key={title}>
+              <p className="mb-2 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.16em]" style={{ color: p.label }}>
+                <Icon size={11} /> {title}
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {tags.map(tag => (
+                  <span key={tag} className="rounded-full px-2.5 py-1 text-[11px] font-medium"
+                    style={{ color: tone.color, background: tone.bg, border: tone.border }}>{tag}</span>
+                ))}
+              </div>
             </div>
-          </div>
-          <div>
-            <p className="mb-2 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-white/30">
-              <Star size={11} /> Qué busca
-            </p>
-            <div className="flex flex-wrap gap-1.5">
-              {seekTags.map(t => (
-                <span key={t} className="rounded-full px-2.5 py-1 text-[11px] font-medium text-emerald-300"
-                  style={{ background: 'rgba(74,222,128,0.10)', border: '1px solid rgba(74,222,128,0.20)' }}>{t}</span>
-              ))}
-            </div>
-          </div>
-          <div>
-            <p className="mb-2 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-white/30">
-              <Users size={11} /> Segmentos
-            </p>
-            <div className="flex flex-wrap gap-1.5">
-              {segments.map(t => (
-                <span key={t} className="rounded-full px-2.5 py-1 text-[11px] font-medium text-purple-300"
-                  style={{ background: 'rgba(168,85,247,0.10)', border: '1px solid rgba(168,85,247,0.20)' }}>{t}</span>
-              ))}
-            </div>
-          </div>
+          ))}
         </div>
       )}
 
       {/* ── Conexiones en común ── */}
       <div className="mt-5 rounded-[18px] p-4"
-        style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
+        style={{ background: p.cardBg, border: p.cardBorder, boxShadow: p.cardShadow }}>
         <div className="flex items-center gap-2 mb-3">
-          <Users size={12} style={{ color: '#4A9FFF' }} />
-          <span className="text-[11px] font-semibold text-white/35">{COMMON_CONNECTIONS.length} conexiones en común</span>
+          <Users size={12} style={{ color: p.accent }} />
+          <span className="text-[11px] font-semibold" style={{ color: p.meta }}>{COMMON_CONNECTIONS.length} conexiones en común</span>
         </div>
         <div className="flex flex-wrap gap-2">
           {COMMON_CONNECTIONS.map(c => (
-            <span key={c} className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium text-white/45"
-              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <span key={c} className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium"
+              style={{ background: p.chipBg, border: p.chipBorder, color: p.chipText }}>
               <div className="h-4 w-4 rounded-full flex items-center justify-center text-[8px] font-bold text-white"
                 style={{ background: 'linear-gradient(135deg, #1871D8, #0A3D7A)' }}>
                 {c.slice(0, 1)}
@@ -363,7 +390,7 @@ function ExploreProfileCard({ company }) {
       {/* ── Fotos del comercio ── */}
       {photos.length > 0 && (
         <div className="mt-5">
-          <p className="mb-2.5 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-white/30">
+          <p className="mb-2.5 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.16em]" style={{ color: p.label }}>
             Fotos del comercio
           </p>
           <div className="grid grid-cols-3 gap-2">
@@ -383,6 +410,8 @@ function ExploreProfileCard({ company }) {
    SWIPE BOARD — main component
 ══════════════════════════════════════════════════════════════ */
 function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPlan, myCompany }) {
+  const { theme } = useTheme();
+  const p = EXPLORE_PALETTE[theme] ?? EXPLORE_PALETTE.dark;
   const deck = useMemo(
     () => companies
       .map(c => ({ ...c, score: calculateMatchScore(c) }))
@@ -561,20 +590,21 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
   if (isDesktop) {
     return (
       <>
-        <div className="relative flex flex-col h-full" style={{ background: BG }}>
+        <div className="relative flex flex-col h-full" style={{ background: p.bg }}>
 
           {/* ── Top bar: tabs + save + filters ── */}
           <div className="flex shrink-0 items-center justify-between px-6 py-4">
             <div className="flex items-center rounded-full p-1"
-              style={{ background: 'rgba(0,0,0,0.28)', border: '1px solid rgba(255,255,255,0.10)' }}>
+              style={{ background: p.tabsBg, border: p.tabsBorder }}>
               {[{ id: 'paraTi', label: 'Para ti' }, { id: 'guardados', label: 'Guardados' }].map(tab => (
                 <button key={tab.id} type="button" onClick={() => setActiveTab(tab.id)}
-                  className={`rounded-full px-4 py-1.5 text-[13px] font-semibold transition-all ${
-                    activeTab === tab.id ? 'bg-white text-[#141E30] shadow-sm' : 'text-white/55 hover:text-white/80'
-                  }`}>
+                  className="rounded-full px-4 py-1.5 text-[13px] font-semibold transition-all"
+                  style={activeTab === tab.id
+                    ? { background: p.tabActiveBg, color: p.tabActiveText, boxShadow: '0 1px 3px rgba(15,23,42,0.12)' }
+                    : { color: p.tabIdle }}>
                   {tab.label}
                   {tab.id === 'guardados' && savedIds.size > 0 && (
-                    <span className={`ml-1 text-[11px] ${activeTab === tab.id ? 'text-[#141E30]/60' : 'text-white/35'}`}>({savedIds.size})</span>
+                    <span className="ml-1 text-[11px]" style={{ color: activeTab === tab.id ? p.tabActiveText : p.tabCount, opacity: 0.7 }}>({savedIds.size})</span>
                   )}
                 </button>
               ))}
@@ -589,19 +619,19 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
               <motion.button type="button" onClick={() => setShowFilters(true)}
                 whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.94 }}
                 className="flex items-center gap-2 rounded-full px-4 py-2"
-                style={{ background: 'rgba(255,255,255,0.07)', border: '1.5px solid rgba(255,255,255,0.12)' }}>
-                <SlidersHorizontal size={15} className="text-white/70" />
-                <span className="text-[13px] font-semibold text-white/70">Filtros</span>
+                style={{ background: p.btnBg, border: p.btnBorder }}>
+                <SlidersHorizontal size={15} style={{ color: p.btnText }} />
+                <span className="text-[13px] font-semibold" style={{ color: p.btnText }}>Filtros</span>
               </motion.button>
             </div>
           </div>
 
           {/* ── Main content ── */}
           {activeTab === 'guardados' ? (
-            <SavedGrid companies={savedCompanies} onView={c => setViewingCompany(c)} />
+            <SavedGrid companies={savedCompanies} onView={c => setViewingCompany(c)} p={p} />
           ) : (
             <div className="flex-1 min-h-0 overflow-y-auto [scrollbar-width:none]">
-              <ExploreProfileCard company={activeCompany} />
+              <ExploreProfileCard company={activeCompany} p={p} />
             </div>
           )}
 
@@ -609,13 +639,13 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
           {activeTab !== 'guardados' && activeCompany && (
             <div className="pointer-events-none absolute inset-x-0 bottom-7 z-40 flex items-center justify-center">
               <div className="pointer-events-auto flex items-center gap-5 rounded-[28px] px-7 py-4"
-                style={{ background: 'rgba(10,16,30,0.70)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.10)', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}>
+                style={{ background: p.floatBg, backdropFilter: 'saturate(180%) blur(20px)', WebkitBackdropFilter: 'saturate(180%) blur(20px)', border: p.floatBorder, boxShadow: p.floatShadow }}>
 
                 <motion.button type="button" onClick={handleUndo}
                   whileHover={{ scale: 1.10 }} whileTap={{ scale: 0.88 }}
                   className="flex h-10 w-10 items-center justify-center rounded-full"
-                  style={{ background: 'rgba(255,255,255,0.07)', border: '1.5px solid rgba(255,255,255,0.14)' }}>
-                  <RotateCcw size={15} className="text-white/45" />
+                  style={{ background: p.undoBg, border: p.undoBorder }}>
+                  <RotateCcw size={15} style={{ color: p.undoIcon }} />
                 </motion.button>
 
                 <motion.button type="button" onClick={handleSkip}
@@ -659,8 +689,8 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -4, scale: 0.96 }}
                 transition={{ duration: 0.18 }}
-                className="pointer-events-none absolute left-1/2 top-5 z-[60] -translate-x-1/2 rounded-[14px] px-5 py-2.5 text-[13px] font-semibold text-white/90"
-                style={{ background: 'rgba(255,255,255,0.10)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.15)' }}>
+                className="pointer-events-none absolute left-1/2 top-5 z-[60] -translate-x-1/2 rounded-[14px] px-5 py-2.5 text-[13px] font-semibold"
+                style={{ background: p.toastBg, color: p.toastText, backdropFilter: 'blur(16px)', border: p.toastBorder }}>
                 {flashMessage}
               </motion.div>
             )}

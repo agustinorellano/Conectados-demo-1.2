@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Bell, Bot, BriefcaseBusiness, Building2, CreditCard,
+  Bell, Bot, BriefcaseBusiness, Building2, CreditCard, Heart,
   LayoutDashboard, MessageSquare, PanelsTopLeft,
-  Search, Settings, X, Zap,
+  Moon, Search, Settings, Sun, X, Zap,
 } from 'lucide-react';
-import { useTheme } from '../context/ThemeContext';
+import { THEMES, useTheme } from '../context/ThemeContext';
 
 const MOCK_USER = { name: 'Agustín Orellano', role: 'Admin' };
 
@@ -20,12 +20,18 @@ function getInitials(name = '') {
 }
 
 const mainNav = [
-  { id: 'dashboard',  label: 'Dashboard',  icon: LayoutDashboard },
   { id: 'alliances',  label: 'Explorar',   icon: BriefcaseBusiness },
+  { id: 'likes',      label: 'Likes',      icon: Heart },
   { id: 'chats',      label: 'Chats',      icon: MessageSquare },
-  { id: 'workplace',  label: 'Proyectos',  icon: PanelsTopLeft },
-  { id: 'assistant',  label: 'Asistente',  icon: Bot },
   { id: 'profile',    label: 'Empresa',    icon: Building2 },
+  { id: 'assistant',  label: 'Asistente',  icon: Bot },
+];
+
+// Ocultas por la simplificación de producto: las vistas siguen en WebApp, solo salen del menú.
+// eslint-disable-next-line no-unused-vars
+const hiddenNav = [
+  { id: 'dashboard',  label: 'Dashboard',  icon: LayoutDashboard },
+  { id: 'workplace',  label: 'Proyectos',  icon: PanelsTopLeft },
 ];
 
 const bottomNav = [
@@ -51,8 +57,12 @@ const RECOMMENDATIONS = [
   { id: 'nomad',  name: 'Nomad Co.',     sector: 'Tecnología', score: 82 },
 ];
 
-function WebSidebar({ activeView, onNavigate, userPlan, companyName }) {
-  const { t } = useTheme();
+function WebSidebar({ activeView, onNavigate, userPlan, companyName, likesCount = 0 }) {
+  const { theme, toggleTheme } = useTheme();
+  // El nav se mantiene azul en ambos temas: siempre usa los tokens oscuros, con el navy de Conectado Flow en modo claro.
+  const t = theme === 'light'
+    ? { ...THEMES.dark, sidebarBg: 'rgba(27,35,82,0.94)', sidebarBorder: 'rgba(255,255,255,0.08)' }
+    : THEMES.dark;
   const [expanded, setExpanded]   = useState(false);
   const [query, setQuery]         = useState('');
   const [searchFocus, setFocus]   = useState(false);
@@ -85,9 +95,15 @@ function WebSidebar({ activeView, onNavigate, userPlan, companyName }) {
         background: t.sidebarBg,
         border: `1px solid ${t.sidebarBorder}`,
         borderRadius: 24,
-        boxShadow: expanded
-          ? '0 8px 40px rgba(24,113,216,0.18), 0 2px 12px rgba(0,0,0,0.22)'
-          : '0 4px 20px rgba(0,0,0,0.18)',
+        backdropFilter: 'saturate(180%) blur(20px)',
+        WebkitBackdropFilter: 'saturate(180%) blur(20px)',
+        boxShadow: theme === 'dark'
+          ? (expanded
+              ? '0 8px 40px rgba(24,113,216,0.18), 0 2px 12px rgba(0,0,0,0.22)'
+              : '0 4px 20px rgba(0,0,0,0.18)')
+          : (expanded
+              ? '0 12px 40px rgba(27,35,82,0.28), 0 2px 8px rgba(15,23,42,0.10)'
+              : '0 4px 16px rgba(27,35,82,0.20)'),
         transition: 'box-shadow 0.3s ease, background 0.3s ease',
       }}
     >
@@ -121,6 +137,10 @@ function WebSidebar({ activeView, onNavigate, userPlan, companyName }) {
             >
               <Icon size={16} strokeWidth={isActive ? 2.2 : 1.7}
                 style={{ color: isActive ? t.navIconActive : t.navIcon }} />
+              {item.id === 'likes' && likesCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold text-white"
+                  style={{ background: '#F43F5E' }}>{likesCount}</span>
+              )}
             </button>
           );
         })}
@@ -297,6 +317,10 @@ function WebSidebar({ activeView, onNavigate, userPlan, companyName }) {
                 <Icon size={16} strokeWidth={isActive ? 2.2 : 1.7} className="relative z-10 shrink-0"
                   style={{ color: isActive ? t.navIconActive : t.navIcon }} />
                 <span className="relative z-10 whitespace-nowrap">{item.label}</span>
+                {item.id === 'likes' && likesCount > 0 && (
+                  <span className="relative z-10 ml-auto rounded-full px-1.5 text-[10px] font-bold text-white"
+                    style={{ background: '#F43F5E' }}>{likesCount}</span>
+                )}
               </button>
             );
           })}
@@ -341,6 +365,14 @@ function WebSidebar({ activeView, onNavigate, userPlan, companyName }) {
               </button>
             );
           })}
+          <button type="button" onClick={toggleTheme}
+            className="flex items-center gap-3 rounded-[12px] px-3 py-2.5 text-left text-sm font-medium transition-all duration-150"
+            style={{ color: t.navText }}>
+            {theme === 'dark'
+              ? <Sun size={16} strokeWidth={1.7} className="shrink-0" style={{ color: t.navIcon }} />
+              : <Moon size={16} strokeWidth={1.7} className="shrink-0" style={{ color: t.navIcon }} />}
+            <span className="whitespace-nowrap">{theme === 'dark' ? 'Tema claro' : 'Tema oscuro'}</span>
+          </button>
         </div>
       </motion.div>
     </motion.aside>

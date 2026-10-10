@@ -1021,3 +1021,33 @@ label { display: grid; gap: 8px; color: #1E3A5F; }
   .swipe-button { flex: 1; min-width: 0; }
   .profile-drawer, .match-overlay-card { left: 16px; right: 16px; width: auto; }
 }
+
+/* ── Tokens de UI que cambian con el tema (claro = estilo Conectado Flow / Apple) ──
+   Oscuro conserva los blancos translúcidos originales. */
+:root,
+:root[data-theme="dark"] {
+  --ui-t1: rgba(255, 255, 255, 0.90);
+  --ui-t2: rgba(255, 255, 255, 0.55);
+  --ui-t3: rgba(255, 255, 255, 0.35);
+  --ui-s1: rgba(255, 255, 255, 0.05);
+  --ui-s2: rgba(255, 255, 255, 0.08);
+  --ui-s3: rgba(255, 255, 255, 0.14);
+  --ui-panel: #0F1828;
+  --ui-page: #0A0F1E;
+  --ui-card: rgba(20, 30, 48, 0.95);
+  --ui-cover: linear-gradient(135deg, #1A2C45 0%, #162038 60%, #141E30 100%);
+  --ui-accent-text: #4A9FFF;
+}
+:root[data-theme="light"] {
+  --ui-t1: #1D1D1F;
+  --ui-t2: #515257;
+  --ui-t3: #86868B;
+  --ui-s1: rgba(15, 23, 42, 0.04);
+  --ui-s2: rgba(15, 23, 42, 0.07);
+  --ui-s3: rgba(15, 23, 42, 0.12);
+  --ui-panel: #FFFFFF;
+  --ui-page: #F5F6FA;
+  --ui-card: #FFFFFF;
+  --ui-cover: linear-gradient(135deg, #455BE8 0%, #6B7BF0 60%, #8E9BF5 100%);
+  --ui-accent-text: #455BE8;
+}

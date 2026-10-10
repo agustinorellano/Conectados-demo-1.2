@@ -263,14 +263,14 @@ function IaModePicker({ mode, setMode }) {
             whileTap={{ scale: 0.94 }}
             className="flex shrink-0 items-center gap-2 rounded-[14px] px-3.5 py-2 text-[12px] font-semibold transition-all"
             style={{
-              background: active ? m.gradient : 'rgba(255,255,255,0.06)',
+              background: active ? m.gradient : 'var(--ui-s1)',
               backdropFilter: 'blur(8px)',
               WebkitBackdropFilter: 'blur(8px)',
-              color: active ? 'white' : 'rgba(255,255,255,0.45)',
+              color: active ? 'white' : 'var(--ui-t3)',
               boxShadow: active
                 ? `0 4px 16px ${m.glow}, inset 0 1px 0 rgba(255,255,255,0.18)`
                 : 'none',
-              border: active ? 'none' : '1px solid rgba(255,255,255,0.08)',
+              border: active ? 'none' : '1px solid var(--ui-s2)',
             }}
           >
             <m.Icon className="h-3.5 w-3.5 shrink-0" />
@@ -305,9 +305,9 @@ function QuickPromptGrid({ mode, onSelect }) {
           whileHover={{ y: -1 }}
           className="flex flex-col gap-2 rounded-[16px] p-3.5 text-left transition-all"
           style={{
-            background: 'rgba(255,255,255,0.05)',
+            background: 'var(--ui-s1)',
             backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255,255,255,0.08)',
+            border: '1px solid var(--ui-s2)',
             boxShadow: 'none',
           }}
         >
@@ -317,7 +317,7 @@ function QuickPromptGrid({ mode, onSelect }) {
           >
             <Icon className="h-4 w-4" style={{ color: mode.color }} strokeWidth={1.8} />
           </div>
-          <p className="text-[12px] font-medium leading-snug" style={{ color: 'rgba(255,255,255,0.60)' }}>{text}</p>
+          <p className="text-[12px] font-medium leading-snug" style={{ color: 'var(--ui-t2)' }}>{text}</p>
         </motion.button>
       ))}
     </motion.div>
@@ -391,10 +391,10 @@ function ActionConfirmCard({ action, onConfirm, onCancel }) {
       transition={{ type: 'spring', damping: 24, stiffness: 340 }}
       className="overflow-hidden rounded-[20px]"
       style={{
-        background: 'rgba(255,255,255,0.06)',
+        background: 'var(--ui-s1)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
-        border: '1px solid rgba(255,255,255,0.10)',
+        border: '1px solid var(--ui-s2)',
         boxShadow: '0 8px 32px rgba(0,0,0,0.30)',
       }}
     >
@@ -410,8 +410,8 @@ function ActionConfirmCard({ action, onConfirm, onCancel }) {
           <action.Icon className="h-4 w-4" style={{ color: action.color }} />
         </div>
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em]" style={{ color: 'rgba(255,255,255,0.35)' }}>Acción propuesta</p>
-          <p className="font-['Space_Grotesk'] text-[15px] font-bold text-white">{action.label}</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em]" style={{ color: 'var(--ui-t3)' }}>Acción propuesta</p>
+          <p className="font-['Space_Grotesk'] text-[15px] font-bold text-(color:--ui-t1)">{action.label}</p>
         </div>
       </div>
 
@@ -424,14 +424,14 @@ function ActionConfirmCard({ action, onConfirm, onCancel }) {
           { label: 'Plazo',         value: action.due },
         ].map(({ label, value, accent }) => (
           <div key={label}>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ color: 'rgba(255,255,255,0.30)' }}>{label}</p>
-            <p className="mt-0.5 font-semibold" style={{ color: accent || 'rgba(255,255,255,0.75)' }}>{value}</p>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ color: 'var(--ui-t3)' }}>{label}</p>
+            <p className="mt-0.5 font-semibold" style={{ color: accent || 'var(--ui-t2)' }}>{value}</p>
           </div>
         ))}
       </div>
 
       {/* CTA buttons */}
-      <div className="flex gap-2 border-t px-4 py-3" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
+      <div className="flex gap-2 border-t px-4 py-3" style={{ borderColor: 'var(--ui-s2)' }}>
         <button
           type="button"
           onClick={() => { setConfirmed(true); onConfirm(action); }}
@@ -444,7 +444,7 @@ function ActionConfirmCard({ action, onConfirm, onCancel }) {
           type="button"
           onClick={onCancel}
           className="flex items-center justify-center rounded-[12px] px-4 py-2.5 text-[13px] font-semibold transition"
-          style={{ color: 'rgba(255,255,255,0.40)' }}
+          style={{ color: 'var(--ui-t3)' }}
         >
           Cancelar
         </button>
@@ -463,7 +463,7 @@ function ScalePlanCard() {
       animate={{ opacity: 1, y: 0 }}
       className="relative mx-4 my-3 overflow-hidden rounded-[20px]"
       style={{
-        background: 'linear-gradient(135deg, rgba(10,15,32,0.92) 0%, rgba(24,113,216,0.18) 100%)',
+        background: 'linear-gradient(135deg, #0F1730 0%, #1B3C7A 100%)',
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
         border: '1px solid rgba(24,113,216,0.22)',
@@ -572,8 +572,8 @@ function TypingIndicator({ mode }) {
       <div
         className="flex items-center gap-1.5 rounded-[18px] px-4 py-3.5"
         style={{
-          background: 'rgba(255,255,255,0.07)',
-          border: '1px solid rgba(255,255,255,0.09)',
+          background: 'var(--ui-s2)',
+          border: '1px solid var(--ui-s2)',
           borderBottomLeftRadius: 4,
         }}
       >
@@ -612,30 +612,30 @@ function ConversationSidebar({ open, onClose, onNewChat, currentId, onSelect }) 
       transition={{ type: 'spring', damping: 28, stiffness: 320 }}
       className="flex flex-col shrink-0 overflow-hidden rounded-[22px]"
       style={{
-        background: 'rgba(255,255,255,0.04)',
+        background: 'var(--ui-s1)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
-        border: open ? '1px solid rgba(255,255,255,0.08)' : 'none',
+        border: open ? '1px solid var(--ui-s2)' : 'none',
         boxShadow: 'none',
       }}
     >
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-4 pb-3 shrink-0">
-        <p className="font-['Space_Grotesk'] text-[14px] font-bold text-white/80">Historial</p>
+        <p className="font-['Space_Grotesk'] text-[14px] font-bold text-(color:--ui-t1)">Historial</p>
         <div className="flex items-center gap-1">
           <button
             type="button"
             onClick={onNewChat}
-            className="flex h-7 w-7 items-center justify-center rounded-[8px] transition hover:bg-white/08"
-            style={{ color: 'rgba(255,255,255,0.40)' }}
+            className="flex h-7 w-7 items-center justify-center rounded-[8px] transition hover:bg-(--ui-s2)"
+            style={{ color: 'var(--ui-t3)' }}
           >
             <Plus className="h-3.5 w-3.5" />
           </button>
           <button
             type="button"
             onClick={onClose}
-            className="flex h-7 w-7 items-center justify-center rounded-[8px] transition hover:bg-white/08 md:hidden"
-            style={{ color: 'rgba(255,255,255,0.40)' }}
+            className="flex h-7 w-7 items-center justify-center rounded-[8px] transition hover:bg-(--ui-s2) md:hidden"
+            style={{ color: 'var(--ui-t3)' }}
           >
             <X className="h-3.5 w-3.5" />
           </button>
@@ -650,13 +650,13 @@ function ConversationSidebar({ open, onClose, onNewChat, currentId, onSelect }) 
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar conversaciones…"
           className="h-8 w-full rounded-[10px] pl-8 pr-3 text-[12px] outline-none transition"
-          style={{ background: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.80)', border: '1px solid rgba(255,255,255,0.08)' }}
+          style={{ background: 'var(--ui-s2)', color: 'var(--ui-t1)', border: '1px solid var(--ui-s2)' }}
         />
       </div>
 
       {/* Folders */}
       <div className="px-3 pb-2 shrink-0">
-        <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: 'rgba(255,255,255,0.30)' }}>Carpetas</p>
+        <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: 'var(--ui-t3)' }}>Carpetas</p>
         <div className="flex flex-wrap gap-1.5">
           {FOLDERS.map((f) => (
             <button
@@ -665,8 +665,8 @@ function ConversationSidebar({ open, onClose, onNewChat, currentId, onSelect }) 
               onClick={() => setOpenFolder(openFolder === f.id ? null : f.id)}
               className="flex items-center gap-1 rounded-[8px] px-2.5 py-1.5 text-[11px] font-medium transition"
               style={{
-                background: openFolder === f.id ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.05)',
-                color: openFolder === f.id ? 'rgba(255,255,255,0.90)' : 'rgba(255,255,255,0.40)',
+                background: openFolder === f.id ? 'var(--ui-s3)' : 'var(--ui-s1)',
+                color: openFolder === f.id ? 'var(--ui-t1)' : 'var(--ui-t3)',
               }}
             >
               <f.Icon className="h-3 w-3" />
@@ -680,7 +680,7 @@ function ConversationSidebar({ open, onClose, onNewChat, currentId, onSelect }) 
       <div className="flex-1 overflow-y-auto px-3 pb-4 space-y-4 [scrollbar-width:none]">
         {pinned.length > 0 && (
           <div>
-            <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] flex items-center gap-1.5" style={{ color: 'rgba(255,255,255,0.30)' }}>
+            <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] flex items-center gap-1.5" style={{ color: 'var(--ui-t3)' }}>
               <Star className="h-2.5 w-2.5" /> Fijadas
             </p>
             <div className="space-y-1">
@@ -691,7 +691,7 @@ function ConversationSidebar({ open, onClose, onNewChat, currentId, onSelect }) 
           </div>
         )}
         <div>
-          <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] flex items-center gap-1.5" style={{ color: 'rgba(255,255,255,0.30)' }}>
+          <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] flex items-center gap-1.5" style={{ color: 'var(--ui-t3)' }}>
             <Clock className="h-2.5 w-2.5" /> Recientes
           </p>
           <div className="space-y-1">
@@ -711,15 +711,15 @@ function ConvItem({ conv, active, onSelect }) {
       type="button"
       onClick={() => onSelect(conv.id)}
       className="flex w-full flex-col gap-0.5 rounded-[12px] px-3 py-2.5 text-left transition"
-      style={{ background: active ? 'rgba(255,255,255,0.10)' : 'transparent' }}
+      style={{ background: active ? 'var(--ui-s2)' : 'transparent' }}
     >
       <div className="flex items-center justify-between">
-        <p className="truncate text-[12px] font-semibold" style={{ color: active ? 'rgba(255,255,255,0.90)' : 'rgba(255,255,255,0.60)' }}>
+        <p className="truncate text-[12px] font-semibold" style={{ color: active ? 'var(--ui-t1)' : 'var(--ui-t2)' }}>
           {conv.title}
         </p>
-        <span className="ml-2 shrink-0 text-[10px]" style={{ color: 'rgba(255,255,255,0.28)' }}>{conv.date}</span>
+        <span className="ml-2 shrink-0 text-[10px]" style={{ color: 'var(--ui-t3)' }}>{conv.date}</span>
       </div>
-      <p className="truncate text-[11px]" style={{ color: 'rgba(255,255,255,0.30)' }}>{conv.preview}</p>
+      <p className="truncate text-[11px]" style={{ color: 'var(--ui-t3)' }}>{conv.preview}</p>
     </button>
   );
 }
@@ -1015,8 +1015,8 @@ function AssistantView({
               whileTap={{ scale: 0.9 }}
               className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition"
               style={{
-                background: recording ? 'rgba(239,68,68,0.15)' : 'rgba(255,255,255,0.07)',
-                color: recording ? '#EF4444' : 'rgba(255,255,255,0.35)',
+                background: recording ? 'rgba(239,68,68,0.15)' : 'var(--ui-s2)',
+                color: recording ? '#EF4444' : 'var(--ui-t3)',
               }}
             >
               <AnimatePresence mode="wait">
@@ -1045,8 +1045,8 @@ function AssistantView({
               disabled={loading || recording}
               placeholder={`Escribí a tu copiloto ${mode.label.toLowerCase()}…`}
               rows={1}
-              className="flex-1 resize-none bg-transparent text-[13px] outline-none placeholder:text-white/25"
-              style={{ color: 'rgba(255,255,255,0.85)' }}
+              className="flex-1 resize-none bg-transparent text-[13px] outline-none placeholder:text-(color:--ui-t3)"
+              style={{ color: 'var(--ui-t1)' }}
               style={{ maxHeight: 120, lineHeight: '1.5' }}
             />
 
@@ -1062,7 +1062,7 @@ function AssistantView({
                   ? mode.gradient
                   : 'rgba(20,30,48,0.06)',
                 boxShadow: input.trim() && !loading ? `0 4px 12px ${mode.glow}` : 'none',
-                color: input.trim() && !loading ? 'white' : 'rgba(255,255,255,0.25)',
+                color: input.trim() && !loading ? 'white' : 'var(--ui-t3)',
               }}
             >
               <Send className="h-3.5 w-3.5" />
@@ -1070,7 +1070,7 @@ function AssistantView({
           </div>
 
           {/* Mode hint */}
-          <p className="mt-1.5 text-center text-[10px]" style={{ color: 'rgba(255,255,255,0.28)' }}>
+          <p className="mt-1.5 text-center text-[10px]" style={{ color: 'var(--ui-t3)' }}>
             Modo <span className="font-semibold" style={{ color: mode.color }}>{mode.label}</span>
             {recording && <span className="ml-1.5 text-red-400">· Transcribiendo voz…</span>}
           </p>

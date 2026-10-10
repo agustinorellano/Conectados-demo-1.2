@@ -73,9 +73,9 @@ function AiNotice({ onOpen }) {
     <button type="button" onClick={onOpen}
       className="mx-4 mb-3 flex items-center gap-2.5 rounded-[10px] px-3 py-2.5 text-left transition hover:brightness-110 w-auto"
       style={{ background: 'rgba(74,159,255,0.07)', border: '1px solid rgba(74,159,255,0.14)' }}>
-      <Zap className="h-3.5 w-3.5 shrink-0 text-[#4A9FFF]" />
-      <p className="flex-1 text-[12px] text-white/50 truncate">Luna Beauty respondió tu propuesta</p>
-      <span className="shrink-0 text-[10px] font-bold text-[#4A9FFF]">Ver →</span>
+      <Zap className="h-3.5 w-3.5 shrink-0 text-(color:--ui-accent-text)" />
+      <p className="flex-1 text-[12px] text-(color:--ui-t2) truncate">Luna Beauty respondió tu propuesta</p>
+      <span className="shrink-0 text-[10px] font-bold text-(color:--ui-accent-text)">Ver →</span>
     </button>
   );
 }
@@ -89,16 +89,16 @@ function TeamCompletionBar({ members, onManage }) {
 
   return (
     <div className="mx-4 mb-3 cursor-pointer rounded-[16px] p-3.5 transition hover:brightness-110"
-      style={{ background: 'rgba(20,30,48,0.95)', border: '1px solid rgba(255,255,255,0.07)' }}
+      style={{ background: 'rgba(20,30,48,0.95)', border: '1px solid var(--ui-s2)' }}
       onClick={onManage} role="button" tabIndex={0}>
       <div className="mb-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Users className="h-3.5 w-3.5 text-[#4A9FFF]" />
-          <span className="text-[12px] font-semibold text-white/75">Tu equipo</span>
+          <Users className="h-3.5 w-3.5 text-(color:--ui-accent-text)" />
+          <span className="text-[12px] font-semibold text-(color:--ui-t2)">Tu equipo</span>
         </div>
-        <span className="text-[10px] text-white/30">{active} de {members.length} activos · {pct}%</span>
+        <span className="text-[10px] text-(color:--ui-t3)">{active} de {members.length} activos · {pct}%</span>
       </div>
-      <div className="h-1 w-full overflow-hidden rounded-full" style={{ background: 'rgba(255,255,255,0.08)' }}>
+      <div className="h-1 w-full overflow-hidden rounded-full" style={{ background: 'var(--ui-s2)' }}>
         <motion.div className="h-1 rounded-full"
           style={{ background: 'linear-gradient(90deg, #1871D8, #4A9FFF)' }}
           initial={{ width: 0 }} animate={{ width: `${pct}%` }}
@@ -109,17 +109,17 @@ function TeamCompletionBar({ members, onManage }) {
           {members.slice(0, 5).map(m => (
             <div key={m.id}
               className="flex h-6 w-6 items-center justify-center rounded-full text-[9px] font-bold text-white ring-2"
-              style={{ background: grad(m.name), ringColor: '#0A0F1E' }}>
+              style={{ background: grad(m.name), ringColor: 'var(--ui-panel)' }}>
               {m.initials}
             </div>
           ))}
           {members.length > 5 && (
-            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/10 text-[9px] font-bold text-white/55 ring-2 ring-[#0A0F1E]">
+            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-(--ui-s2) text-[9px] font-bold text-(color:--ui-t2) ring-2 ring-(--ui-panel)">
               +{members.length - 5}
             </div>
           )}
         </div>
-        <span className="text-[10px] text-[#4A9FFF]">Gestionar →</span>
+        <span className="text-[10px] text-(color:--ui-accent-text)">Gestionar →</span>
       </div>
     </div>
   );
@@ -160,17 +160,17 @@ function FabMenu({ onAction }) {
               style={{
                 background: 'rgba(12,18,40,0.98)',
                 backdropFilter: 'blur(24px)',
-                border: '1px solid rgba(255,255,255,0.10)',
+                border: '1px solid var(--ui-s2)',
                 boxShadow: '0 20px 56px rgba(0,0,0,0.60)',
               }}>
               {FAB_ITEMS.map(({ key, icon: Icon, label, color }) => (
                 <button key={key} type="button" onClick={() => { setOpen(false); onAction(key); }}
-                  className="flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-white/5">
+                  className="flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-(--ui-s1)">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px]"
                     style={{ background: `${color}20` }}>
                     <Icon className="h-[14px] w-[14px]" style={{ color }} />
                   </div>
-                  <span className="text-[13px] font-medium text-white/80">{label}</span>
+                  <span className="text-[13px] font-medium text-(color:--ui-t1)">{label}</span>
                 </button>
               ))}
             </motion.div>
@@ -192,13 +192,13 @@ function TeamManageModal({ members, onClose, onInvite }) {
       <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 30, stiffness: 340 }}
         className="fixed inset-x-0 bottom-0 z-[70] flex flex-col rounded-t-[24px]"
-        style={{ maxHeight: '88dvh', background: '#0F1828', border: '1px solid rgba(255,255,255,0.08)', paddingBottom: 'env(safe-area-inset-bottom)' }}
+        style={{ maxHeight: '88dvh', background: 'var(--ui-panel)', border: '1px solid var(--ui-s2)', paddingBottom: 'env(safe-area-inset-bottom)' }}
         onClick={e => e.stopPropagation()}>
-        <div className="flex justify-center pt-3 pb-2"><div className="h-1 w-10 rounded-full bg-white/20" /></div>
-        <div className="flex shrink-0 items-center justify-between px-5 pb-4 pt-1" style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+        <div className="flex justify-center pt-3 pb-2"><div className="h-1 w-10 rounded-full bg-(--ui-s3)" /></div>
+        <div className="flex shrink-0 items-center justify-between px-5 pb-4 pt-1" style={{ borderBottom: '1px solid var(--ui-s2)' }}>
           <div>
-            <h2 className="font-['Space_Grotesk'] text-[18px] font-bold text-white">Equipo Comercial</h2>
-            <p className="text-[12px] text-white/35">{members.length} integrantes</p>
+            <h2 className="font-['Space_Grotesk'] text-[18px] font-bold text-(color:--ui-t1)">Equipo Comercial</h2>
+            <p className="text-[12px] text-(color:--ui-t3)">{members.length} integrantes</p>
           </div>
           <div className="flex items-center gap-2">
             <button type="button" onClick={onInvite}
@@ -207,8 +207,8 @@ function TeamManageModal({ members, onClose, onInvite }) {
               <Plus className="h-3 w-3" /> Invitar
             </button>
             <button type="button" onClick={onClose}
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10">
-              <X className="h-4 w-4 text-white/60" />
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-(--ui-s2)">
+              <X className="h-4 w-4 text-(color:--ui-t2)" />
             </button>
           </div>
         </div>
@@ -217,20 +217,20 @@ function TeamManageModal({ members, onClose, onInvite }) {
             {members.map(m => {
               const sc = MEMBER_STATUS[m.status] || MEMBER_STATUS.invitado;
               return (
-                <div key={m.id} className="flex items-center gap-3 rounded-[14px] px-3 py-3.5 transition hover:bg-white/5">
+                <div key={m.id} className="flex items-center gap-3 rounded-[14px] px-3 py-3.5 transition hover:bg-(--ui-s1)">
                   <div className="relative shrink-0">
                     <div className="flex h-10 w-10 items-center justify-center rounded-[12px] font-['Space_Grotesk'] text-[12px] font-bold text-white"
                       style={{ background: grad(m.name) }}>
                       {m.initials}
                     </div>
-                    <span className={`absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full ring-2 ring-[#0F1828] ${sc.dot}`} />
+                    <span className={`absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full ring-2 ring-(--ui-panel) ${sc.dot}`} />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[13px] font-semibold text-white">{m.name}</p>
-                    <p className="text-[11px] text-white/35">{m.role} · {sc.label}</p>
+                    <p className="text-[13px] font-semibold text-(color:--ui-t1)">{m.name}</p>
+                    <p className="text-[11px] text-(color:--ui-t3)">{m.role} · {sc.label}</p>
                   </div>
                   {m.status === 'invitado' && (
-                    <button type="button" className="text-[11px] font-semibold text-[#4A9FFF]">Reenviar</button>
+                    <button type="button" className="text-[11px] font-semibold text-(color:--ui-accent-text)">Reenviar</button>
                   )}
                 </div>
               );
@@ -251,7 +251,7 @@ function CreateTeamModal({ onClose, onCreate }) {
   const [name, setName] = useState('');
   const [desc, setDesc] = useState('');
   const [area, setArea] = useState('');
-  const fld = { background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.10)', color: 'white' };
+  const fld = { background: 'var(--ui-s2)', border: '1px solid var(--ui-s2)', color: 'var(--ui-t1)' };
 
   return (
     <>
@@ -260,30 +260,30 @@ function CreateTeamModal({ onClose, onCreate }) {
       <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 30, stiffness: 340 }}
         className="fixed inset-x-0 bottom-0 z-[70] rounded-t-[24px]"
-        style={{ background: '#0F1828', border: '1px solid rgba(255,255,255,0.08)', paddingBottom: 'env(safe-area-inset-bottom)' }}
+        style={{ background: 'var(--ui-panel)', border: '1px solid var(--ui-s2)', paddingBottom: 'env(safe-area-inset-bottom)' }}
         onClick={e => e.stopPropagation()}>
-        <div className="flex justify-center pt-3 pb-2"><div className="h-1 w-10 rounded-full bg-white/20" /></div>
-        <div className="flex items-center justify-between px-5 pb-4 pt-1" style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
-          <h2 className="font-['Space_Grotesk'] text-[18px] font-bold text-white">Crear Equipo</h2>
-          <button type="button" onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10">
-            <X className="h-4 w-4 text-white/60" />
+        <div className="flex justify-center pt-3 pb-2"><div className="h-1 w-10 rounded-full bg-(--ui-s3)" /></div>
+        <div className="flex items-center justify-between px-5 pb-4 pt-1" style={{ borderBottom: '1px solid var(--ui-s2)' }}>
+          <h2 className="font-['Space_Grotesk'] text-[18px] font-bold text-(color:--ui-t1)">Crear Equipo</h2>
+          <button type="button" onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-full bg-(--ui-s2)">
+            <X className="h-4 w-4 text-(color:--ui-t2)" />
           </button>
         </div>
         <form onSubmit={e => { e.preventDefault(); if (!name.trim()) return; onCreate({ name: name.trim(), description: desc, area }); onClose(); }}
           className="space-y-4 px-5 py-5">
           {[['Nombre del equipo *', name, setName, 'Equipo Comercial'], ['Descripción', desc, setDesc, 'Equipo encargado de alianzas…']].map(([lbl, val, set, ph]) => (
             <div key={lbl}>
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.16em] text-white/35">{lbl}</label>
+              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.16em] text-(color:--ui-t3)">{lbl}</label>
               {lbl.includes('Descripción')
                 ? <textarea value={val} onChange={e => set(e.target.value)} rows={2} placeholder={ph}
-                    className="w-full resize-none rounded-[14px] px-4 py-3 text-[14px] outline-none placeholder:text-white/20" style={fld} />
+                    className="w-full resize-none rounded-[14px] px-4 py-3 text-[14px] outline-none placeholder:text-(color:--ui-t3)" style={fld} />
                 : <input value={val} onChange={e => set(e.target.value)} placeholder={ph}
-                    className="w-full rounded-[14px] px-4 py-3 text-[14px] outline-none placeholder:text-white/20" style={fld} />
+                    className="w-full rounded-[14px] px-4 py-3 text-[14px] outline-none placeholder:text-(color:--ui-t3)" style={fld} />
               }
             </div>
           ))}
           <div>
-            <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.16em] text-white/35">Área</label>
+            <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.16em] text-(color:--ui-t3)">Área</label>
             <select value={area} onChange={e => setArea(e.target.value)}
               className="w-full rounded-[14px] px-4 py-3 text-[14px] outline-none" style={fld}>
               <option value="">Seleccionar área…</option>
@@ -321,7 +321,7 @@ function InviteModal({ onClose, onInvited }) {
   const [form, setForm] = useState({ nombre: '', apellido: '', email: '', telefono: '', cargo: '', rol: 'colaborador' });
   const [sent, setSent] = useState(false);
   const upd = (k, v) => setForm(p => ({ ...p, [k]: v }));
-  const fld = { background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.10)', color: 'white' };
+  const fld = { background: 'var(--ui-s2)', border: '1px solid var(--ui-s2)', color: 'var(--ui-t1)' };
 
   const handleSend = (method) => {
     setSent(true);
@@ -335,16 +335,16 @@ function InviteModal({ onClose, onInvited }) {
       <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 30, stiffness: 340 }}
         className="fixed inset-x-0 bottom-0 z-[70] flex flex-col rounded-t-[24px]"
-        style={{ maxHeight: '92dvh', background: '#0F1828', border: '1px solid rgba(255,255,255,0.08)', paddingBottom: 'env(safe-area-inset-bottom)' }}
+        style={{ maxHeight: '92dvh', background: 'var(--ui-panel)', border: '1px solid var(--ui-s2)', paddingBottom: 'env(safe-area-inset-bottom)' }}
         onClick={e => e.stopPropagation()}>
-        <div className="flex justify-center pt-3 pb-2"><div className="h-1 w-10 rounded-full bg-white/20" /></div>
-        <div className="flex shrink-0 items-center justify-between px-5 pb-4 pt-1" style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+        <div className="flex justify-center pt-3 pb-2"><div className="h-1 w-10 rounded-full bg-(--ui-s3)" /></div>
+        <div className="flex shrink-0 items-center justify-between px-5 pb-4 pt-1" style={{ borderBottom: '1px solid var(--ui-s2)' }}>
           <div>
-            <h2 className="font-['Space_Grotesk'] text-[18px] font-bold text-white">Invitar Integrante</h2>
-            <p className="text-[12px] text-white/35">Completá los datos para enviar la invitación</p>
+            <h2 className="font-['Space_Grotesk'] text-[18px] font-bold text-(color:--ui-t1)">Invitar Integrante</h2>
+            <p className="text-[12px] text-(color:--ui-t3)">Completá los datos para enviar la invitación</p>
           </div>
-          <button type="button" onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10">
-            <X className="h-4 w-4 text-white/60" />
+          <button type="button" onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-full bg-(--ui-s2)">
+            <X className="h-4 w-4 text-(color:--ui-t2)" />
           </button>
         </div>
         <div className="flex-1 overflow-y-auto [scrollbar-width:none]">
@@ -352,34 +352,34 @@ function InviteModal({ onClose, onInvited }) {
             <div className="grid grid-cols-2 gap-3">
               {[['nombre', 'Nombre *'], ['apellido', 'Apellido *']].map(([k, lbl]) => (
                 <div key={k}>
-                  <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.14em] text-white/35">{lbl}</label>
+                  <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.14em] text-(color:--ui-t3)">{lbl}</label>
                   <input value={form[k]} onChange={e => upd(k, e.target.value)}
                     className="w-full rounded-[14px] px-3.5 py-2.5 text-[13px] outline-none" style={fld} />
                 </div>
               ))}
             </div>
             <div>
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.14em] text-white/35">Email *</label>
+              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.14em] text-(color:--ui-t3)">Email *</label>
               <input type="email" value={form.email} onChange={e => upd('email', e.target.value)}
                 placeholder="juan@empresa.com"
-                className="w-full rounded-[14px] px-3.5 py-2.5 text-[13px] outline-none placeholder:text-white/20" style={fld} />
+                className="w-full rounded-[14px] px-3.5 py-2.5 text-[13px] outline-none placeholder:text-(color:--ui-t3)" style={fld} />
             </div>
             <div className="grid grid-cols-2 gap-3">
               {[['telefono', 'Teléfono', '+54 11…'], ['cargo', 'Cargo', 'Ventas']].map(([k, lbl, ph]) => (
                 <div key={k}>
-                  <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.14em] text-white/35">{lbl}</label>
+                  <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.14em] text-(color:--ui-t3)">{lbl}</label>
                   <input value={form[k]} onChange={e => upd(k, e.target.value)} placeholder={ph}
-                    className="w-full rounded-[14px] px-3.5 py-2.5 text-[13px] outline-none placeholder:text-white/20" style={fld} />
+                    className="w-full rounded-[14px] px-3.5 py-2.5 text-[13px] outline-none placeholder:text-(color:--ui-t3)" style={fld} />
                 </div>
               ))}
             </div>
             <div>
-              <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.14em] text-white/35">Rol</label>
+              <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.14em] text-(color:--ui-t3)">Rol</label>
               <div className="grid grid-cols-2 gap-2">
                 {ROLES_OPT.map(r => (
                   <button key={r.value} type="button" onClick={() => upd('rol', r.value)}
                     className={`rounded-[12px] py-2.5 text-[13px] font-semibold transition-all ${
-                      form.rol === r.value ? 'bg-[#1871D8] text-white' : 'text-white/50 hover:text-white/70'
+                      form.rol === r.value ? 'bg-[#1871D8] text-white' : 'text-(color:--ui-t2) hover:text-(color:--ui-t2)'
                     }`}
                     style={form.rol !== r.value ? fld : {}}>
                     {r.label}
@@ -389,7 +389,7 @@ function InviteModal({ onClose, onInvited }) {
             </div>
           </div>
         </div>
-        <div className="shrink-0 px-5 py-4" style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+        <div className="shrink-0 px-5 py-4" style={{ borderTop: '1px solid var(--ui-s2)' }}>
           <AnimatePresence mode="wait">
             {sent ? (
               <motion.div key="sent"
@@ -401,7 +401,7 @@ function InviteModal({ onClose, onInvited }) {
               </motion.div>
             ) : (
               <motion.div key="methods">
-                <p className="mb-2.5 text-center text-[11px] text-white/25">Enviar invitación por:</p>
+                <p className="mb-2.5 text-center text-[11px] text-(color:--ui-t3)">Enviar invitación por:</p>
                 <div className="grid grid-cols-2 gap-2">
                   {SEND_METHODS.map(({ method, Icon, label, color }) => (
                     <button key={method} type="button" onClick={() => handleSend(method)}
@@ -506,12 +506,12 @@ function ChatList({
 
       {/* ── Header ── */}
       <div className="flex items-center justify-between px-4 pb-3 pt-5">
-        <h2 className="font-['Space_Grotesk'] text-[18px] font-bold text-white">Mensajes</h2>
+        <h2 className="font-['Space_Grotesk'] text-[18px] font-bold text-(color:--ui-t1)">Mensajes</h2>
         <div className="flex items-center gap-2">
           {onOpenAllianceRoom && (
             <button type="button" onClick={onOpenAllianceRoom} title="Alliance Room"
-              className="flex h-8 w-8 items-center justify-center rounded-full transition hover:bg-white/8"
-              style={{ color: 'rgba(255,255,255,0.35)' }}>
+              className="flex h-8 w-8 items-center justify-center rounded-full transition hover:bg-(--ui-s1)"
+              style={{ color: 'var(--ui-t3)' }}>
               <Video className="h-4 w-4" />
             </button>
           )}
@@ -522,16 +522,16 @@ function ChatList({
       {/* ── Search ── */}
       <div className="px-4 pb-3">
         <div className="chat-search flex h-[38px] items-center gap-2.5 rounded-[10px] px-3">
-          <Search className="h-3.5 w-3.5 shrink-0 text-white/30" />
+          <Search className="h-3.5 w-3.5 shrink-0 text-(color:--ui-t3)" />
           <input
-            className="flex-1 bg-transparent text-[13px] text-white outline-none border-0 ring-0 shadow-none placeholder:text-white/25"
+            className="flex-1 bg-transparent text-[13px] text-(color:--ui-t1) outline-none border-0 ring-0 shadow-none placeholder:text-(color:--ui-t3)"
             onChange={handleSearchChange} placeholder="Buscar…" value={query} />
           <AnimatePresence>
             {query && (
               <motion.button initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.7 }}
                 onClick={handleClearSearch} type="button"
-                className="flex h-4 w-4 items-center justify-center rounded-full bg-white/10">
-                <X className="h-2.5 w-2.5 text-white/50" />
+                className="flex h-4 w-4 items-center justify-center rounded-full bg-(--ui-s2)">
+                <X className="h-2.5 w-2.5 text-(color:--ui-t2)" />
               </motion.button>
             )}
           </AnimatePresence>
@@ -539,7 +539,7 @@ function ChatList({
       </div>
 
       {/* ── Segment tabs ── */}
-      <div className="flex gap-0 border-b px-4 pb-0" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
+      <div className="flex gap-0 border-b px-4 pb-0" style={{ borderColor: 'var(--ui-s2)' }}>
         {SEGMENTS.map(seg => {
           const isActive = activeSegment === seg.key;
           const count    = segmentCounts[seg.key];
@@ -547,8 +547,8 @@ function ChatList({
             <button key={seg.key} type="button" onClick={() => setActiveSegment(seg.key)}
               className="shrink-0 pb-2.5 pt-1 text-[12px] font-semibold transition-colors mr-4"
               style={isActive
-                ? { color: 'white', borderBottom: '2px solid #4A9FFF', marginBottom: -1 }
-                : { color: 'rgba(255,255,255,0.30)', borderBottom: '2px solid transparent', marginBottom: -1 }}>
+                ? { color: 'var(--ui-t1)', borderBottom: '2px solid var(--ui-accent-text)', marginBottom: -1 }
+                : { color: 'var(--ui-t3)', borderBottom: '2px solid transparent', marginBottom: -1 }}>
               {seg.label}
               {count > 0 && (
                 <span className="ml-1 text-[10px]" style={{ opacity: isActive ? 0.5 : 0.3 }}>
@@ -577,21 +577,21 @@ function ChatList({
         {isEmpty ? (
           <div className="flex flex-col items-center justify-center gap-3 py-14 text-center">
             <div className="flex h-12 w-12 items-center justify-center rounded-[14px]"
-              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <Search className="h-5 w-5 text-white/25" />
+              style={{ background: 'var(--ui-s1)', border: '1px solid var(--ui-s2)' }}>
+              <Search className="h-5 w-5 text-(color:--ui-t3)" />
             </div>
             <div>
-              <p className="text-[14px] font-semibold text-white/45">
+              <p className="text-[14px] font-semibold text-(color:--ui-t2)">
                 {debouncedQuery ? 'Sin resultados' : 'Sin conversaciones'}
               </p>
-              <p className="mt-1 text-[12px] text-white/25">
+              <p className="mt-1 text-[12px] text-(color:--ui-t3)">
                 {debouncedQuery ? `Para "${debouncedQuery}"` : 'Cambiá el segmento o iniciá una nueva'}
               </p>
             </div>
             {debouncedQuery && (
               <button onClick={handleClearSearch} type="button"
-                className="rounded-full px-5 py-2 text-[13px] font-semibold text-white/55 transition hover:text-white/80"
-                style={{ border: '1px solid rgba(255,255,255,0.10)' }}>
+                className="rounded-full px-5 py-2 text-[13px] font-semibold text-(color:--ui-t2) transition hover:text-(color:--ui-t1)"
+                style={{ border: '1px solid var(--ui-s2)' }}>
                 Limpiar búsqueda
               </button>
             )}
@@ -602,7 +602,7 @@ function ChatList({
             {matchConvs.length > 0 && (
               <>
                 {teamConvs.length > 0 && (
-                  <p className="px-2 pb-1.5 pt-2 text-[10px] font-bold uppercase tracking-[0.20em] text-white/25">Alianzas</p>
+                  <p className="px-2 pb-1.5 pt-2 text-[10px] font-bold uppercase tracking-[0.20em] text-(color:--ui-t3)">Alianzas</p>
                 )}
                 <AnimatePresence initial={false}>
                   {matchConvs.map(conv => (
@@ -621,7 +621,7 @@ function ChatList({
             {/* Team / Internal */}
             {teamConvs.length > 0 && (
               <div className={matchConvs.length > 0 ? 'mt-4' : ''}>
-                <p className="px-2 pb-1.5 pt-2 text-[10px] font-bold uppercase tracking-[0.20em] text-white/25">Interno</p>
+                <p className="px-2 pb-1.5 pt-2 text-[10px] font-bold uppercase tracking-[0.20em] text-(color:--ui-t3)">Interno</p>
                 <AnimatePresence initial={false}>
                   {teamConvs.map(conv => (
                     <motion.div key={conv.id} layout

@@ -183,10 +183,10 @@ function ProposalInput({ onChange, onSend, onSendAudio, value }) {
             <div className="relative">
               <button type="button" onClick={() => setShowAttach(p => !p)}
                 className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition active:scale-90"
-                style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.09)' }}>
+                style={{ background: 'var(--ui-s2)', border: '1px solid var(--ui-s2)' }}>
                 {showAttach
-                  ? <X className="h-4 w-4 text-white/50" />
-                  : <Paperclip className="h-4 w-4 text-white/40" />}
+                  ? <X className="h-4 w-4 text-(color:--ui-t2)" />
+                  : <Paperclip className="h-4 w-4 text-(color:--ui-t3)" />}
               </button>
 
               <AnimatePresence>
@@ -199,18 +199,18 @@ function ProposalInput({ onChange, onSend, onSendAudio, value }) {
                     className="absolute bottom-14 left-0 z-20 overflow-hidden rounded-[16px] py-1.5"
                     style={{
                       background: 'rgba(18,26,54,0.98)',
-                      border: '1px solid rgba(255,255,255,0.10)',
+                      border: '1px solid var(--ui-s2)',
                       boxShadow: '0 16px 48px rgba(0,0,0,0.55)',
                       width: '168px',
                     }}>
                     {ATTACH_OPTIONS.map(({ key, label, icon: Icon, color }) => (
                       <button key={key} type="button" onClick={() => setShowAttach(false)}
-                        className="flex w-full items-center gap-3 px-4 py-2.5 text-left transition hover:bg-white/5">
+                        className="flex w-full items-center gap-3 px-4 py-2.5 text-left transition hover:bg-(--ui-s1)">
                         <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[8px]"
                           style={{ background: `${color}20` }}>
                           <Icon className="h-3.5 w-3.5" style={{ color }} />
                         </div>
-                        <span className="text-[13px] font-medium text-white/75">{label}</span>
+                        <span className="text-[13px] font-medium text-(color:--ui-t2)">{label}</span>
                       </button>
                     ))}
                   </motion.div>
@@ -220,8 +220,8 @@ function ProposalInput({ onChange, onSend, onSendAudio, value }) {
 
             {/* Text field */}
             <input
-              className="h-11 flex-1 rounded-[22px] px-4 text-[14px] text-white/90 outline-none placeholder:text-white/25"
-              style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.09)' }}
+              className="h-11 flex-1 rounded-[22px] px-4 text-[14px] text-(color:--ui-t1) outline-none placeholder:text-(color:--ui-t3)"
+              style={{ background: 'var(--ui-s2)', border: '1px solid var(--ui-s2)' }}
               onChange={handleChange}
               onKeyDown={handleKeyDown}
               placeholder="Escribe un mensaje..."
@@ -231,8 +231,8 @@ function ProposalInput({ onChange, onSend, onSendAudio, value }) {
             {/* Emoji */}
             <button type="button"
               className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition active:scale-90"
-              style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.09)' }}>
-              <Smile className="h-4 w-4 text-white/40" />
+              style={{ background: 'var(--ui-s2)', border: '1px solid var(--ui-s2)' }}>
+              <Smile className="h-4 w-4 text-(color:--ui-t3)" />
             </button>
 
             {/* Mic → starts recording / Send → sends text */}
@@ -248,8 +248,8 @@ function ProposalInput({ onChange, onSend, onSendAudio, value }) {
               <motion.button type="button" onClick={startRecording}
                 whileTap={{ scale: 0.88 }}
                 className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition active:scale-90"
-                style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.09)' }}>
-                <Mic className="h-4 w-4 text-white/40" />
+                style={{ background: 'var(--ui-s2)', border: '1px solid var(--ui-s2)' }}>
+                <Mic className="h-4 w-4 text-(color:--ui-t3)" />
               </motion.button>
             )}
           </motion.div>

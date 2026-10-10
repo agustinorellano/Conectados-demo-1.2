@@ -21,10 +21,10 @@ function Shell({ isOwn, time, status, initials, convId, children }) {
         <div className="flex max-w-[78%] flex-col">
           {children}
           <div className="mt-1 flex items-center justify-end gap-1">
-            <span className="text-[10px] text-white/25">{time}</span>
-            {status === 'read'      && <span className="text-[10px] text-[#4A9FFF]">✓✓</span>}
-            {status === 'delivered' && <span className="text-[10px] text-white/35">✓✓</span>}
-            {!status                && <span className="text-[10px] text-white/35">✓</span>}
+            <span className="text-[10px] text-(color:--ui-t3)">{time}</span>
+            {status === 'read'      && <span className="text-[10px] text-(color:--ui-accent-text)">✓✓</span>}
+            {status === 'delivered' && <span className="text-[10px] text-(color:--ui-t3)">✓✓</span>}
+            {!status                && <span className="text-[10px] text-(color:--ui-t3)">✓</span>}
           </div>
         </div>
       </div>
@@ -38,7 +38,7 @@ function Shell({ isOwn, time, status, initials, convId, children }) {
       </div>
       <div className="flex max-w-[74%] flex-col">
         {children}
-        <span className="mt-1 text-[10px] text-white/25">{time}</span>
+        <span className="mt-1 text-[10px] text-(color:--ui-t3)">{time}</span>
       </div>
     </div>
   );
@@ -54,12 +54,13 @@ function TextBubble({ message, initials, convId }) {
           background: 'linear-gradient(135deg, #3730A3 0%, #4338CA 100%)',
           borderRadius: '18px 18px 4px 18px',
           boxShadow: '0 2px 12px rgba(67,56,202,0.35)',
+    '--ui-t1': '#FFFFFF', '--ui-t2': 'rgba(255,255,255,0.78)', '--ui-t3': 'rgba(255,255,255,0.60)', // texto blanco sobre burbuja propia
         } : {
-          background: 'rgba(255,255,255,0.08)',
-          border: '1px solid rgba(255,255,255,0.09)',
+          background: 'var(--ui-s2)',
+          border: '1px solid var(--ui-s2)',
           borderRadius: '18px 18px 18px 4px',
         }}>
-        <p className="text-[14px] leading-[1.55] text-white">{message.text}</p>
+        <p className="text-[14px] leading-[1.55] text-(color:--ui-t1)">{message.text}</p>
       </div>
     </Shell>
   );
@@ -119,9 +120,10 @@ function AudioBubble({ message, initials, convId }) {
     background: 'linear-gradient(135deg, #3730A3 0%, #4338CA 100%)',
     borderRadius: '18px 18px 4px 18px',
     boxShadow: '0 2px 12px rgba(67,56,202,0.35)',
+    '--ui-t1': '#FFFFFF', '--ui-t2': 'rgba(255,255,255,0.78)', '--ui-t3': 'rgba(255,255,255,0.60)', // texto blanco sobre burbuja propia
   } : {
-    background: 'rgba(255,255,255,0.08)',
-    border: '1px solid rgba(255,255,255,0.09)',
+    background: 'var(--ui-s2)',
+    border: '1px solid var(--ui-s2)',
     borderRadius: '18px 18px 18px 4px',
   };
 
@@ -133,7 +135,7 @@ function AudioBubble({ message, initials, convId }) {
         {/* Play/Pause */}
         <button type="button" onClick={togglePlay}
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition active:scale-90"
-          style={{ background: 'rgba(255,255,255,0.18)' }}>
+          style={{ background: 'var(--ui-s3)' }}>
           {playing
             ? <Pause  className="h-3.5 w-3.5 fill-current text-white" />
             : <Play   className="h-3.5 w-3.5 fill-current text-white" />}
@@ -147,18 +149,18 @@ function AudioBubble({ message, initials, convId }) {
               const filled = progress > i / BARS.length;
               return (
                 <div key={i} className="w-[2px] rounded-full transition-colors"
-                  style={{ height: `${h * 2.2}px`, background: filled ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.25)' }} />
+                  style={{ height: `${h * 2.2}px`, background: filled ? 'var(--ui-t1)' : 'var(--ui-t3)' }} />
               );
             })}
           </div>
           {/* Thin progress track */}
-          <div className="h-0.5 w-full overflow-hidden rounded-full" style={{ background: 'rgba(255,255,255,0.15)' }}>
+          <div className="h-0.5 w-full overflow-hidden rounded-full" style={{ background: 'var(--ui-s3)' }}>
             <div className="h-full rounded-full bg-white/70 transition-all" style={{ width: `${progress * 100}%` }} />
           </div>
         </div>
 
         {/* Time */}
-        <span className="shrink-0 font-['Space_Grotesk'] text-[11px] tabular-nums text-white/50">
+        <span className="shrink-0 font-['Space_Grotesk'] text-[11px] tabular-nums text-(color:--ui-t2)">
           {playing ? elapsed : (message.duration || '0:00')}
         </span>
       </div>
@@ -178,12 +180,12 @@ function TaskBubble({ message, initials, convId }) {
           borderRadius: isOwn ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
         }}>
         <div className="mb-2 flex items-center gap-2">
-          <CheckSquare className="h-3.5 w-3.5 shrink-0 text-[#4A9FFF]" />
-          <span className="text-[10px] font-bold uppercase tracking-wider text-[#4A9FFF]">Task creada</span>
+          <CheckSquare className="h-3.5 w-3.5 shrink-0 text-(color:--ui-accent-text)" />
+          <span className="text-[10px] font-bold uppercase tracking-wider text-(color:--ui-accent-text)">Task creada</span>
         </div>
-        <p className="text-[13px] font-semibold leading-snug text-white/90">{message.taskTitle || message.text}</p>
-        {message.dueDate  && <p className="mt-1.5 text-[11px] text-white/35">Vence: {message.dueDate}</p>}
-        {message.assignee && <p className="mt-0.5 text-[11px] text-white/35">→ {message.assignee}</p>}
+        <p className="text-[13px] font-semibold leading-snug text-(color:--ui-t1)">{message.taskTitle || message.text}</p>
+        {message.dueDate  && <p className="mt-1.5 text-[11px] text-(color:--ui-t3)">Vence: {message.dueDate}</p>}
+        {message.assignee && <p className="mt-0.5 text-[11px] text-(color:--ui-t3)">→ {message.assignee}</p>}
       </div>
     </Shell>
   );
@@ -204,7 +206,7 @@ function MeetingBubble({ message, initials, convId }) {
           <Calendar className="h-3.5 w-3.5 shrink-0 text-[#A78BFA]" />
           <span className="text-[10px] font-bold uppercase tracking-wider text-[#A78BFA]">Reunión agendada</span>
         </div>
-        <p className="text-[13px] font-semibold leading-snug text-white/90">{message.text}</p>
+        <p className="text-[13px] font-semibold leading-snug text-(color:--ui-t1)">{message.text}</p>
         {(message.meetingDate || message.meetingTime) && (
           <p className="mt-1.5 text-[11px] text-[#A78BFA]/60">
             {[message.meetingDate, message.meetingTime].filter(Boolean).join(' · ')}
@@ -232,14 +234,14 @@ function ProposalBubble({ message, initials, convId }) {
     <Shell isOwn={isOwn} time={message.time} status={message.status} initials={initials} convId={convId}>
       <div className="overflow-hidden"
         style={{
-          background: 'rgba(255,255,255,0.05)',
-          border: '1px solid rgba(255,255,255,0.10)',
+          background: 'var(--ui-s1)',
+          border: '1px solid var(--ui-s2)',
           borderRadius: isOwn ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
           minWidth: '230px',
         }}>
         <div className="flex items-center justify-between px-4 py-2.5"
-          style={{ background: 'rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
-          <span className="text-[10px] font-bold uppercase tracking-wider text-white/35">Propuesta comercial</span>
+          style={{ background: 'var(--ui-s1)', borderBottom: '1px solid var(--ui-s2)' }}>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-(color:--ui-t3)">Propuesta comercial</span>
           <div className="flex items-center gap-1.5 rounded-full px-2.5 py-1"
             style={{ background: status.bg, border: `1px solid ${status.border}` }}>
             <SIcon className="h-3 w-3" style={{ color: status.color }} />
@@ -247,14 +249,14 @@ function ProposalBubble({ message, initials, convId }) {
           </div>
         </div>
         <div className="px-4 py-3">
-          <p className="text-[14px] font-bold leading-snug text-white/90">{message.proposalTitle || message.text}</p>
+          <p className="text-[14px] font-bold leading-snug text-(color:--ui-t1)">{message.proposalTitle || message.text}</p>
           {message.proposalDescription && (
-            <p className="mt-1.5 text-[12px] leading-relaxed text-white/40">{message.proposalDescription}</p>
+            <p className="mt-1.5 text-[12px] leading-relaxed text-(color:--ui-t3)">{message.proposalDescription}</p>
           )}
           {message.proposalBenefit && (
-            <div className="mt-2.5 rounded-[10px] px-3 py-2" style={{ background: 'rgba(255,255,255,0.05)' }}>
-              <p className="text-[11px] text-white/25">Beneficio ofrecido</p>
-              <p className="mt-0.5 text-[12px] font-semibold text-white/65">{message.proposalBenefit}</p>
+            <div className="mt-2.5 rounded-[10px] px-3 py-2" style={{ background: 'var(--ui-s1)' }}>
+              <p className="text-[11px] text-(color:--ui-t3)">Beneficio ofrecido</p>
+              <p className="mt-0.5 text-[12px] font-semibold text-(color:--ui-t2)">{message.proposalBenefit}</p>
             </div>
           )}
         </div>

@@ -117,8 +117,8 @@ function ChatItem({
           background: 'linear-gradient(270deg, rgba(107,114,128,0.18) 0%, transparent 80%)',
           opacity: archOpacity, pointerEvents: 'none',
         }}>
-        <span className="mr-2 text-[12px] font-semibold text-white/40">Archivar</span>
-        <Archive className="h-4 w-4 text-white/40" />
+        <span className="mr-2 text-[12px] font-semibold text-(color:--ui-t3)">Archivar</span>
+        <Archive className="h-4 w-4 text-(color:--ui-t3)" />
       </motion.div>
 
       {/* Main card */}
@@ -152,12 +152,12 @@ function ChatItem({
             </div>
             {/* State dot */}
             {!isTeam && (
-              <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full ring-2 ring-[#0A0F1E]"
+              <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full ring-2 ring-(--ui-panel)"
                 style={{ background: cfg.color }} />
             )}
             {/* Unread badge */}
             {unread > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#1871D8] px-1 text-[9px] font-bold text-white">
+              <span className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#1871D8] px-1 text-[9px] font-bold text-(color:--ui-t1)">
                 {unread}
               </span>
             )}
@@ -169,18 +169,18 @@ function ChatItem({
             <div className="flex items-center justify-between gap-2">
               <div className="flex min-w-0 items-center gap-1.5">
                 <p className={`truncate text-[13px] leading-tight ${
-                  isActive ? 'font-bold text-white' : unread > 0 ? 'font-bold text-white' : 'font-semibold text-white/80'
+                  isActive ? 'font-bold text-(color:--ui-t1)' : unread > 0 ? 'font-bold text-(color:--ui-t1)' : 'font-semibold text-(color:--ui-t1)'
                 }`}>
                   {company}
                 </p>
                 {isFavorite && <Star className="h-2.5 w-2.5 shrink-0 fill-amber-400 text-amber-400" />}
               </div>
-              <p className="shrink-0 text-[11px] text-white/25">{lastInteraction}</p>
+              <p className="shrink-0 text-[11px] text-(color:--ui-t3)">{lastInteraction}</p>
             </div>
 
             {/* Row 2: last message */}
             <p className={`mt-0.5 line-clamp-1 text-[12px] leading-snug ${
-              unread > 0 ? 'text-white/60' : 'text-white/30'
+              unread > 0 ? 'text-(color:--ui-t2)' : 'text-(color:--ui-t3)'
             }`}>
               {prefix}{msgText || [sector, contact].filter(Boolean).join(' · ')}
             </p>
@@ -192,15 +192,15 @@ function ChatItem({
       {contextMenu && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           className="absolute inset-0 z-50 flex items-center justify-around rounded-[16px] px-3"
-          style={{ background: 'rgba(10,15,30,0.95)', backdropFilter: 'blur(6px)', border: '1px solid rgba(255,255,255,0.10)' }}
+          style={{ background: 'rgba(10,15,30,0.95)', backdropFilter: 'blur(6px)', border: '1px solid var(--ui-s2)' }}
           onClick={() => setContextMenu(false)}>
           {ACTIONS.map(({ Icon, label, fn }) => (
             <button key={label} onClick={(e) => { e.stopPropagation(); fn(); }} type="button"
               className="flex flex-col items-center gap-1.5">
-              <div className="flex h-10 w-10 items-center justify-center rounded-[12px] bg-white/8 transition hover:bg-white/15">
-                <Icon className="h-4 w-4 text-white/70" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-[12px] bg-(--ui-s1) transition hover:bg-(--ui-s3)">
+                <Icon className="h-4 w-4 text-(color:--ui-t2)" />
               </div>
-              <span className="text-[10px] font-medium text-white/50">{label}</span>
+              <span className="text-[10px] font-medium text-(color:--ui-t2)">{label}</span>
             </button>
           ))}
         </motion.div>

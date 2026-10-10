@@ -11,6 +11,7 @@ import AssistantView from '../components/assistant/AssistantView';
 import PricingView from '../components/pricing/PricingView';
 import SettingsView from '../components/settings/SettingsView';
 import AllianceRoomView from '../components/alliance-room/AllianceRoomView';
+import LikesView from '../components/likes/LikesView';
 import {
   actionItems,
   chatConversations,
@@ -36,7 +37,7 @@ function WebApp() {
     return () => document.body.classList.remove('app-view');
   }, []);
 
-  const [activeView, setActiveView] = useState('dashboard');
+  const [activeView, setActiveView] = useState('alliances');
   const [showAllianceRoom, setShowAllianceRoom] = useState(false);
   const [matches, setMatches] = useState([demoInitialMatch]);
   const [userPlan, setUserPlan] = useState('starter');
@@ -73,6 +74,21 @@ function WebApp() {
     }),
     [companyProfile, companyView.name]
   );
+
+  // Likes recibidos (mock): las primeras empresas recomendadas, la primera como super like
+  const [pendingLikes, setPendingLikes] = useState(() =>
+    personalizeRecommendedCompanies(recommendedCompanies, createInitialProfile(currentCompany))
+      .slice(0, 5)
+      .map((company, index) => ({ company, kind: index % 3 === 0 ? 'super' : 'like' }))
+  );
+
+  const removeLike = (id) =>
+    setPendingLikes((current) => current.filter((item) => item.company.id !== id));
+
+  const handleAcceptLike = (company) => {
+    handleCreateMatch(company);
+    removeLike(company.id);
+  };
 
   const handleToggleMeeting = (id) =>
     setMeetings((prev) => prev.map((m) => (m.id === id ? { ...m, done: !m.done } : m)));
@@ -177,6 +193,10 @@ function WebApp() {
             userPlan={userPlan}
           />
         );
+      case 'likes':
+        return (
+          <LikesView likes={pendingLikes} onAccept={handleAcceptLike} onDismiss={removeLike} />
+        );
       case 'dashboard':
       default:
         return (
@@ -195,11 +215,11 @@ function WebApp() {
     }
   }, [
     activeView, companyProfile, companyView, dailyMatchCount,
-    matches, pendingAiOpportunity, personalizedCompanies,
+    matches, pendingAiOpportunity, pendingLikes, personalizedCompanies,
     personalizedDashboardData, taskState, userPlan, workplaceArea
   ]);
 
-  const fullBleed = ['alliances', 'profile', 'chats', 'workplace'].includes(activeView);
+  const fullBleed = ['alliances', 'profile', 'chats', 'workplace', 'likes'].includes(activeView);
 
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: t.bg, transition: 'background 0.3s ease' }}>
@@ -212,6 +232,7 @@ function WebApp() {
         onNavigate={navigate}
         userPlan={userPlan}
         companyName={companyView.name}
+        likesCount={pendingLikes.length}
       />
 
       <div className="flex flex-1 flex-col min-w-0">

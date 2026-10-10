@@ -69,15 +69,15 @@ function readFileAsDataUrl(file) {
    FIELD — single labeled input (dark glass, inside hero)
 ───────────────────────────────────────────────────────── */
 function DarkField({ label, value, onChange, multiline, placeholder }) {
-  const baseClass = 'w-full rounded-[14px] px-4 py-3 text-sm outline-none transition placeholder:text-white/30 focus:ring-2 focus:ring-[#1871D8]/40';
+  const baseClass = 'w-full rounded-[14px] px-4 py-3 text-sm outline-none transition placeholder:text-(color:--ui-t3) focus:ring-2 focus:ring-[#1871D8]/40';
   const fieldStyle = {
-    background: 'rgba(255,255,255,0.07)',
-    border: '1px solid rgba(255,255,255,0.10)',
+    background: 'var(--ui-s2)',
+    border: '1px solid var(--ui-s2)',
     color: 'white',
   };
   return (
     <div className="space-y-1.5">
-      <label className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/40">{label}</label>
+      <label className="text-[10px] font-semibold uppercase tracking-[0.18em] text-(color:--ui-t3)">{label}</label>
       {multiline ? (
         <textarea
           className={`${baseClass} resize-none`}
@@ -118,11 +118,11 @@ function StickySaveButton({ onClick }) {
           onClick={onClick}
           style={{
             background: 'linear-gradient(135deg, #1871D8 0%, #1459B0 100%)',
-            boxShadow: '0 8px 32px rgba(24,113,216,0.50), inset 0 1px 0 rgba(255,255,255,0.18)',
+            boxShadow: '0 8px 32px rgba(24,113,216,0.50), inset 0 1px 0 var(--ui-s3)',
           }}
           type="button"
           whileTap={{ scale: 0.97 }}
-          whileHover={{ boxShadow: '0 12px 40px rgba(24,113,216,0.60), inset 0 1px 0 rgba(255,255,255,0.18)' }}
+          whileHover={{ boxShadow: '0 12px 40px rgba(24,113,216,0.60), inset 0 1px 0 var(--ui-s3)' }}
         >
           <Check className="h-4 w-4" strokeWidth={2.5} />
           Guardar cambios
@@ -156,28 +156,28 @@ function ImageGuideModal({ type, onClose, onUpload }) {
           onClick={(e) => e.stopPropagation()}
           transition={{ type: 'spring', damping: 30, stiffness: 300 }}
           style={{
-            background: 'linear-gradient(160deg, #0D1526 0%, #141E30 100%)',
-            border: '1px solid rgba(255,255,255,0.10)',
+            background: 'var(--ui-card)',
+            border: '1px solid var(--ui-s2)',
             boxShadow: '0 -8px 48px rgba(0,0,0,0.5)',
           }}
         >
           {/* Handle */}
           <div className="flex justify-center pt-3 pb-1">
-            <div className="h-1 w-10 rounded-full bg-white/20" />
+            <div className="h-1 w-10 rounded-full bg-(--ui-s3)" />
           </div>
 
           <div className="px-6 pb-6">
             {/* Header */}
             <div className="mb-5 flex items-start justify-between">
               <div>
-                <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/35">
+                <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-(color:--ui-t3)">
                   Guía de carga
                 </p>
-                <h3 className="font-['Space_Grotesk'] text-xl font-bold text-white">{spec.title}</h3>
-                <p className="mt-0.5 text-[12px] text-white/45">{spec.subtitle}</p>
+                <h3 className="font-['Space_Grotesk'] text-xl font-bold text-(color:--ui-t1)">{spec.title}</h3>
+                <p className="mt-0.5 text-[12px] text-(color:--ui-t2)">{spec.subtitle}</p>
               </div>
               <button
-                className="flex h-8 w-8 items-center justify-center rounded-full text-white/40 transition hover:bg-white/10 hover:text-white/70"
+                className="flex h-8 w-8 items-center justify-center rounded-full text-(color:--ui-t3) transition hover:bg-(--ui-s2) hover:text-(color:--ui-t2)"
                 onClick={onClose}
                 type="button"
               >
@@ -211,12 +211,12 @@ function ImageGuideModal({ type, onClose, onUpload }) {
                   key={s.label}
                   className="rounded-[14px] px-4 py-3"
                   style={{
-                    background: 'rgba(255,255,255,0.05)',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    background: 'var(--ui-s1)',
+                    border: '1px solid var(--ui-s2)',
                   }}
                 >
-                  <p className="mb-0.5 text-[10px] text-white/35">{s.label}</p>
-                  <p className="text-[13px] font-semibold text-white/85">{s.value}</p>
+                  <p className="mb-0.5 text-[10px] text-(color:--ui-t3)">{s.label}</p>
+                  <p className="text-[13px] font-semibold text-(color:--ui-t1)">{s.value}</p>
                 </div>
               ))}
             </div>
@@ -242,7 +242,7 @@ function ImageGuideModal({ type, onClose, onUpload }) {
 }
 
 /* ── New section constants ─────────────────────────────── */
-const CARD_DARK = { background: 'rgba(20,30,48,0.95)', border: '1px solid rgba(255,255,255,0.07)' };
+const CARD_DARK = { background: 'var(--ui-card)', border: '1px solid var(--ui-s2)' };
 
 /* ── Channel icons — custom SVG, 14×14, stroke-based ──── */
 const ChannelIcons = {
@@ -379,15 +379,15 @@ function TeamSection({ members }) {
         <div className="px-5 pt-5 pb-5">
           <div className="mb-4 flex items-center justify-between">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/40">Equipo</p>
-              <p className="mt-1 font-['Space_Grotesk'] text-[16px] font-bold text-white">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-(color:--ui-t3)">Equipo</p>
+              <p className="mt-1 font-['Space_Grotesk'] text-[16px] font-bold text-(color:--ui-t1)">
                 Equipo Comercial
               </p>
             </div>
             <button
               type="button"
               onClick={() => setShowInvite(true)}
-              className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold text-[#4A9FFF] transition hover:bg-[#1871D8]/12"
+              className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold text-(color:--ui-accent-text) transition hover:bg-[#1871D8]/12"
             >
               <Plus className="h-3 w-3" />
               Invitar
@@ -407,14 +407,14 @@ function TeamSection({ members }) {
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <p className="text-[14px] font-semibold text-white">{m.name}</p>
+                      <p className="text-[14px] font-semibold text-(color:--ui-t1)">{m.name}</p>
                       {m.isLead && (
-                        <span className="rounded-full bg-[#1871D8]/20 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-[#4A9FFF]">
+                        <span className="rounded-full bg-[#1871D8]/20 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-(color:--ui-accent-text)">
                           Lead
                         </span>
                       )}
                     </div>
-                    <p className="text-[12px] text-white/45">{m.role}{m.area ? ` · ${m.area}` : ''}</p>
+                    <p className="text-[12px] text-(color:--ui-t2)">{m.role}{m.area ? ` · ${m.area}` : ''}</p>
                   </div>
                   <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-400" />
                 </div>
@@ -457,12 +457,12 @@ function WorkStyleSection({ workStyle, onChange }) {
       <div className="px-5 pt-5 pb-5">
         <div className="mb-4 flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/40">Forma de Trabajo</p>
-            <p className="mt-1 font-['Space_Grotesk'] text-[16px] font-bold text-white">Gestión de alianzas</p>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-(color:--ui-t3)">Forma de Trabajo</p>
+            <p className="mt-1 font-['Space_Grotesk'] text-[16px] font-bold text-(color:--ui-t1)">Gestión de alianzas</p>
           </div>
           {!editing && (
             <button type="button" onClick={() => setEditing(true)}
-              className="text-[11px] font-semibold text-[#4A9FFF]">Editar</button>
+              className="text-[11px] font-semibold text-(color:--ui-accent-text)">Editar</button>
           )}
         </div>
 
@@ -470,14 +470,14 @@ function WorkStyleSection({ workStyle, onChange }) {
           <div className="space-y-4">
             {FIELDS.map(({ label, field, options }) => (
               <div key={field}>
-                <p className="mb-2 text-[11px] font-semibold text-white/40">{label}</p>
+                <p className="mb-2 text-[11px] font-semibold text-(color:--ui-t3)">{label}</p>
                 <div className="flex flex-wrap gap-1.5">
                   {options.map(opt => (
                     <button key={opt} type="button" onClick={() => upd(field, opt)}
                       className={`rounded-full px-3 py-1.5 text-[12px] font-medium transition-all ${
                         local[field] === opt
                           ? 'bg-[#1871D8] text-white shadow-sm'
-                          : 'bg-white/8 text-white/50 hover:bg-white/12'
+                          : 'bg-(--ui-s1) text-(color:--ui-t2) hover:bg-(--ui-s3)'
                       }`}>
                       {opt}
                     </button>
@@ -492,7 +492,7 @@ function WorkStyleSection({ workStyle, onChange }) {
                 Guardar
               </button>
               <button type="button" onClick={cancel}
-                className="rounded-[12px] border border-white/15 px-5 py-2.5 text-[13px] font-semibold text-white/50">
+                className="rounded-[12px] border border-(--ui-s3) px-5 py-2.5 text-[13px] font-semibold text-(color:--ui-t2)">
                 Cancelar
               </button>
             </div>
@@ -500,9 +500,9 @@ function WorkStyleSection({ workStyle, onChange }) {
         ) : (
           <div className="grid grid-cols-2 gap-3">
             {FIELDS.map(({ label, field }) => (
-              <div key={field} className="rounded-[14px] p-3" style={{ background: 'rgba(255,255,255,0.05)' }}>
-                <p className="text-[10px] text-white/30 mb-0.5">{label}</p>
-                <p className="text-[13px] font-semibold text-white">{workStyle[field] || '—'}</p>
+              <div key={field} className="rounded-[14px] p-3" style={{ background: 'var(--ui-s1)' }}>
+                <p className="text-[10px] text-(color:--ui-t3) mb-0.5">{label}</p>
+                <p className="text-[13px] font-semibold text-(color:--ui-t1)">{workStyle[field] || '—'}</p>
               </div>
             ))}
           </div>
@@ -530,12 +530,12 @@ function CapabilitiesSection({ capabilities, onChange }) {
       <div className="px-5 pt-5 pb-5">
         <div className="mb-4 flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/40">Capacidades de Activación</p>
-            <p className="mt-1 font-['Space_Grotesk'] text-[16px] font-bold text-white">Canales disponibles</p>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-(color:--ui-t3)">Capacidades de Activación</p>
+            <p className="mt-1 font-['Space_Grotesk'] text-[16px] font-bold text-(color:--ui-t1)">Canales disponibles</p>
           </div>
           {!editing && (
             <button type="button" onClick={() => setEditing(true)}
-              className="text-[11px] font-semibold text-[#4A9FFF]">Editar</button>
+              className="text-[11px] font-semibold text-(color:--ui-accent-text)">Editar</button>
           )}
         </div>
 
@@ -547,7 +547,7 @@ function CapabilitiesSection({ capabilities, onChange }) {
                 onClick={() => editing && toggle(cap.id)}
                 className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-medium transition-all ${
                   active ? 'text-white shadow-sm'
-                         : editing ? 'bg-white/8 text-white/40 hover:bg-white/12' : 'bg-white/6 text-white/30'
+                         : editing ? 'bg-(--ui-s1) text-(color:--ui-t3) hover:bg-(--ui-s3)' : 'bg-white/6 text-(color:--ui-t3)'
                 }`}
                 style={active ? { background: 'linear-gradient(135deg, #1871D8, #1459B0)', boxShadow: '0 2px 8px rgba(24,113,216,0.28)' } : {}}
               >
@@ -566,7 +566,7 @@ function CapabilitiesSection({ capabilities, onChange }) {
               Guardar
             </button>
             <button type="button" onClick={cancel}
-              className="rounded-[12px] border border-white/15 px-5 py-2.5 text-[13px] font-semibold text-white/50">
+              className="rounded-[12px] border border-(--ui-s3) px-5 py-2.5 text-[13px] font-semibold text-(color:--ui-t2)">
               Cancelar
             </button>
           </div>
@@ -590,60 +590,60 @@ function AudienceSection({ audience, onChange }) {
     upd('segments', s.includes(seg) ? s.filter(x => x !== seg) : [...s, seg]);
   };
 
-  const fStyle = { background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.10)', color: 'white' };
+  const fStyle = { background: 'var(--ui-s2)', border: '1px solid var(--ui-s2)', color: 'white' };
 
   return (
     <SectionCard>
       <div className="px-5 pt-5 pb-5">
         <div className="mb-4 flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/40">Audiencia</p>
-            <p className="mt-1 font-['Space_Grotesk'] text-[16px] font-bold text-white">Público de la marca</p>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-(color:--ui-t3)">Audiencia</p>
+            <p className="mt-1 font-['Space_Grotesk'] text-[16px] font-bold text-(color:--ui-t1)">Público de la marca</p>
           </div>
           {!editing && (
             <button type="button" onClick={() => setEditing(true)}
-              className="text-[11px] font-semibold text-[#4A9FFF]">Editar</button>
+              className="text-[11px] font-semibold text-(color:--ui-accent-text)">Editar</button>
           )}
         </div>
         {editing ? (
           <div className="space-y-4">
             <div>
-              <p className="mb-1.5 text-[11px] font-semibold text-white/40">Público principal</p>
+              <p className="mb-1.5 text-[11px] font-semibold text-(color:--ui-t3)">Público principal</p>
               <input value={local.primary || ''} onChange={e => upd('primary', e.target.value)}
                 placeholder="Jóvenes 25-35 interesados en moda…"
-                className="w-full rounded-[12px] px-3.5 py-2.5 text-[13px] outline-none placeholder:text-white/20"
+                className="w-full rounded-[12px] px-3.5 py-2.5 text-[13px] outline-none placeholder:text-(color:--ui-t3)"
                 style={fStyle} />
             </div>
             <div>
-              <p className="mb-2 text-[11px] font-semibold text-white/40">Rango etario</p>
+              <p className="mb-2 text-[11px] font-semibold text-(color:--ui-t3)">Rango etario</p>
               <div className="flex flex-wrap gap-1.5">
                 {AGE_OPTS.map(o => (
                   <button key={o} type="button" onClick={() => upd('ageRange', o)}
-                    className={`rounded-full px-3 py-1.5 text-[12px] font-medium transition-all ${local.ageRange === o ? 'bg-[#1871D8] text-white' : 'bg-white/8 text-white/45 hover:bg-white/12'}`}>
+                    className={`rounded-full px-3 py-1.5 text-[12px] font-medium transition-all ${local.ageRange === o ? 'bg-[#1871D8] text-white' : 'bg-(--ui-s1) text-(color:--ui-t2) hover:bg-(--ui-s3)'}`}>
                     {o}
                   </button>
                 ))}
               </div>
             </div>
             <div>
-              <p className="mb-2 text-[11px] font-semibold text-white/40">Cobertura geográfica</p>
+              <p className="mb-2 text-[11px] font-semibold text-(color:--ui-t3)">Cobertura geográfica</p>
               <div className="flex flex-wrap gap-1.5">
                 {COVERAGE_OPTS.map(o => (
                   <button key={o} type="button" onClick={() => upd('coverage', o)}
-                    className={`rounded-full px-3 py-1.5 text-[12px] font-medium transition-all ${local.coverage === o ? 'bg-[#1871D8] text-white' : 'bg-white/8 text-white/45 hover:bg-white/12'}`}>
+                    className={`rounded-full px-3 py-1.5 text-[12px] font-medium transition-all ${local.coverage === o ? 'bg-[#1871D8] text-white' : 'bg-(--ui-s1) text-(color:--ui-t2) hover:bg-(--ui-s3)'}`}>
                     {o}
                   </button>
                 ))}
               </div>
             </div>
             <div>
-              <p className="mb-2 text-[11px] font-semibold text-white/40">Segmentos destacados</p>
+              <p className="mb-2 text-[11px] font-semibold text-(color:--ui-t3)">Segmentos destacados</p>
               <div className="flex flex-wrap gap-1.5">
                 {SEG_OPTS.map(seg => {
                   const on = (local.segments || []).includes(seg);
                   return (
                     <button key={seg} type="button" onClick={() => toggleSeg(seg)}
-                      className={`rounded-full px-3 py-1.5 text-[12px] font-medium transition-all ${on ? 'bg-[#1871D8] text-white' : 'bg-white/8 text-white/45 hover:bg-white/12'}`}>
+                      className={`rounded-full px-3 py-1.5 text-[12px] font-medium transition-all ${on ? 'bg-[#1871D8] text-white' : 'bg-(--ui-s1) text-(color:--ui-t2) hover:bg-(--ui-s3)'}`}>
                       {seg}
                     </button>
                   );
@@ -657,7 +657,7 @@ function AudienceSection({ audience, onChange }) {
                 Guardar
               </button>
               <button type="button" onClick={cancel}
-                className="rounded-[12px] border border-white/15 px-5 py-2.5 text-[13px] font-semibold text-white/50">
+                className="rounded-[12px] border border-(--ui-s3) px-5 py-2.5 text-[13px] font-semibold text-(color:--ui-t2)">
                 Cancelar
               </button>
             </div>
@@ -665,26 +665,26 @@ function AudienceSection({ audience, onChange }) {
         ) : (
           <div className="space-y-3">
             {audience.primary && (
-              <p className="text-[13px] leading-relaxed text-white/70">{audience.primary}</p>
+              <p className="text-[13px] leading-relaxed text-(color:--ui-t2)">{audience.primary}</p>
             )}
             <div className="grid grid-cols-2 gap-3">
               {audience.ageRange && (
-                <div className="rounded-[14px] p-3" style={{ background: 'rgba(255,255,255,0.05)' }}>
-                  <p className="text-[10px] text-white/30 mb-0.5">Rango etario</p>
-                  <p className="text-[13px] font-semibold text-white">{audience.ageRange}</p>
+                <div className="rounded-[14px] p-3" style={{ background: 'var(--ui-s1)' }}>
+                  <p className="text-[10px] text-(color:--ui-t3) mb-0.5">Rango etario</p>
+                  <p className="text-[13px] font-semibold text-(color:--ui-t1)">{audience.ageRange}</p>
                 </div>
               )}
               {audience.coverage && (
-                <div className="rounded-[14px] p-3" style={{ background: 'rgba(255,255,255,0.05)' }}>
-                  <p className="text-[10px] text-white/30 mb-0.5">Cobertura</p>
-                  <p className="text-[13px] font-semibold text-white">{audience.coverage}</p>
+                <div className="rounded-[14px] p-3" style={{ background: 'var(--ui-s1)' }}>
+                  <p className="text-[10px] text-(color:--ui-t3) mb-0.5">Cobertura</p>
+                  <p className="text-[13px] font-semibold text-(color:--ui-t1)">{audience.coverage}</p>
                 </div>
               )}
             </div>
             {(audience.segments || []).length > 0 && (
               <div className="flex flex-wrap gap-1.5">
                 {audience.segments.map(seg => (
-                  <span key={seg} className="rounded-full px-3 py-1 text-[12px] font-medium text-white/65"
+                  <span key={seg} className="rounded-full px-3 py-1 text-[12px] font-medium text-(color:--ui-t2)"
                     style={{ background: 'rgba(24,113,216,0.14)', border: '1px solid rgba(24,113,216,0.18)' }}>
                     {seg}
                   </span>
@@ -710,14 +710,14 @@ function ActivitySection({ activity }) {
     <SectionCard>
       <div className="px-5 pt-5 pb-5">
         <div className="mb-4">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/40">Actividad</p>
-          <p className="mt-1 font-['Space_Grotesk'] text-[16px] font-bold text-white">Participación en la plataforma</p>
-          <p className="mt-0.5 text-[12px] text-white/35">Miembro desde {activity.joinDate}</p>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-(color:--ui-t3)">Actividad</p>
+          <p className="mt-1 font-['Space_Grotesk'] text-[16px] font-bold text-(color:--ui-t1)">Participación en la plataforma</p>
+          <p className="mt-0.5 text-[12px] text-(color:--ui-t3)">Miembro desde {activity.joinDate}</p>
         </div>
         <div className="grid grid-cols-2 gap-3">
           {metrics.map(m => (
-            <div key={m.label} className="rounded-[16px] p-3.5" style={{ background: 'rgba(255,255,255,0.05)' }}>
-              <p className="text-[10px] text-white/30 mb-1">{m.label}</p>
+            <div key={m.label} className="rounded-[16px] p-3.5" style={{ background: 'var(--ui-s1)' }}>
+              <p className="text-[10px] text-(color:--ui-t3) mb-1">{m.label}</p>
               <p className="font-['Space_Grotesk'] text-[20px] font-bold" style={{ color: m.color }}>{m.value}</p>
             </div>
           ))}
@@ -862,15 +862,15 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
   const slug = draft.name.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '');
 
   return (
-    <div className="h-full bg-[#0A0F1E] pb-24 overflow-y-auto [scrollbar-width:none] [-webkit-overflow-scrolling:touch]">
+    <div className="h-full bg-(--ui-page) pb-24 overflow-y-auto [scrollbar-width:none] [-webkit-overflow-scrolling:touch]">
 
       {/* ──────────────── HERO CARD — flush edges ──────────────── */}
-      <div className="overflow-hidden rounded-b-[28px] bg-[#141E30]">
+      <div className="overflow-hidden rounded-b-[28px] bg-(--ui-card)" style={{ boxShadow: "0 1px 2px rgba(15,23,42,0.05)" }}>
 
         {/* Cover strip — shows uploaded image or gradient fallback */}
         <div
           className="relative h-[100px] overflow-hidden"
-          style={draft.coverImage ? undefined : { background: 'linear-gradient(135deg, #1A2C45 0%, #162038 60%, #141E30 100%)' }}
+          style={{ '--ui-t1': '#FFFFFF', '--ui-t2': 'rgba(255,255,255,0.85)', '--ui-s3': 'rgba(255,255,255,0.28)', ...(draft.coverImage ? {} : { background: 'var(--ui-cover)' }) }}
         >
           {draft.coverImage ? (
             <>
@@ -884,14 +884,14 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
           ) : (
             <>
               <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-[#1871D8]/10 blur-2xl" />
-              <div className="absolute -left-4 bottom-0 h-20 w-20 rounded-full bg-white/5 blur-xl" />
+              <div className="absolute -left-4 bottom-0 h-20 w-20 rounded-full bg-(--ui-s1) blur-xl" />
             </>
           )}
           {/* Portada button — always visible */}
           <button
-            className="absolute bottom-3 right-4 flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-semibold text-white/50 backdrop-blur-sm transition hover:bg-white/15 hover:text-white/80"
+            className="absolute bottom-3 right-4 flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-semibold text-(color:--ui-t2) backdrop-blur-sm transition hover:bg-(--ui-s3) hover:text-(color:--ui-t1)"
             onClick={() => setImageGuide('cover')}
-            style={{ border: '1px solid rgba(255,255,255,0.14)' }}
+            style={{ border: '1px solid var(--ui-s3)' }}
             type="button"
           >
             <Camera className="h-3 w-3" />
@@ -903,14 +903,14 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
         <div className="-mt-8 flex items-start justify-between px-5">
           {/* Logo */}
           <button
-            className="relative h-[68px] w-[68px] shrink-0 overflow-hidden rounded-full ring-[3px] ring-[#141E30] transition focus:outline-none"
+            className="relative h-[68px] w-[68px] shrink-0 overflow-hidden rounded-full ring-[3px] ring-(--ui-card) transition focus:outline-none"
             onClick={() => setImageGuide('logo')}
             type="button"
           >
             {draft.logoImage ? (
               <img alt={draft.name} className="h-full w-full object-cover" src={draft.logoImage} />
             ) : (
-              <div className="flex h-full w-full items-center justify-center bg-[#1A2C45]">
+              <div className="flex h-full w-full items-center justify-center bg-[#455BE8]">
                 <span className="font-['Space_Grotesk'] text-xl font-bold text-white">
                   {draft.name.split(' ').slice(0, 2).map((p) => p[0]).join('')}
                 </span>
@@ -932,7 +932,7 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
               .filter((p) => p.isAsset && draft.socialLinks?.[p.key])
               .map((p) => (
                 <a
-                  className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 transition hover:bg-white/20"
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-(--ui-s2) transition hover:bg-(--ui-s3)"
                   href={draft.socialLinks[p.key]}
                   key={p.key}
                   rel="noreferrer"
@@ -945,7 +945,7 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
 
             {/* Settings gear */}
             <button
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white/60 transition hover:bg-white/20 hover:text-white/90"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-(--ui-s2) text-(color:--ui-t2) transition hover:bg-(--ui-s3) hover:text-(color:--ui-t1)"
               onClick={onOpenSettings}
               title="Ajustes"
               type="button"
@@ -956,9 +956,9 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
             {/* Edit — icon-only circle, no text */}
             {!isEditingGeneral && (
               <button
-                className="flex h-8 w-8 items-center justify-center rounded-full text-white/70 transition hover:bg-white/15 hover:text-white"
+                className="flex h-8 w-8 items-center justify-center rounded-full text-(color:--ui-t2) transition hover:bg-(--ui-s3) hover:text-white"
                 onClick={openGeneral}
-                style={{ border: '1px solid rgba(255,255,255,0.18)' }}
+                style={{ border: '1px solid var(--ui-s3)' }}
                 title="Editar perfil"
                 type="button"
               >
@@ -971,14 +971,14 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
         {/* ── VIEW MODE ── */}
         {!isEditingGeneral && (
           <div className="px-5 pb-5 pt-3">
-            <h1 className="font-['Space_Grotesk'] text-[22px] font-bold leading-tight text-white">
+            <h1 className="font-['Space_Grotesk'] text-[22px] font-bold leading-tight text-(color:--ui-t1)">
               {draft.name}
             </h1>
-            <p className="mt-0.5 text-[11px] text-white/35">@{slug}</p>
+            <p className="mt-0.5 text-[11px] text-(color:--ui-t3)">@{slug}</p>
             {draft.description && (
-              <p className="mt-2 text-[13px] leading-relaxed text-white/65">{draft.description}</p>
+              <p className="mt-2 text-[13px] leading-relaxed text-(color:--ui-t2)">{draft.description}</p>
             )}
-            <div className="mt-4 flex flex-wrap gap-3 text-[12px] text-white/50">
+            <div className="mt-4 flex flex-wrap gap-3 text-[12px] text-(color:--ui-t2)">
               <span className="flex items-center gap-1.5">
                 <MapPin className="h-3.5 w-3.5" />
                 {draft.location.city}, {draft.location.country}
@@ -992,7 +992,7 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
             {/* Website text link — only when URL exists */}
             {draft.socialLinks?.website && (
               <a
-                className="mt-3 flex items-center gap-1.5 text-[12px] text-[#4A9FFF]/80 transition hover:text-[#4A9FFF]"
+                className="mt-3 flex items-center gap-1.5 text-[12px] text-(color:--ui-accent-text)/80 transition hover:text-(color:--ui-accent-text)"
                 href={draft.socialLinks.website}
                 rel="noreferrer"
                 target="_blank"
@@ -1023,7 +1023,7 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
 
                 {/* Industry */}
                 <div>
-                  <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.18em] text-white/40">
+                  <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.18em] text-(color:--ui-t3)">
                     Rubro
                   </label>
                   <TagSelector
@@ -1043,26 +1043,26 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
 
                 {/* Redes sociales — all 4 platforms in one loop (includes website) */}
                 <div className="space-y-3">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/40">Redes sociales</p>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-(color:--ui-t3)">Redes sociales</p>
                   {socialPlatforms.map((p) => (
                     <div className="flex items-center gap-3" key={p.key}>
                       <div
                         className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px]"
-                        style={{ background: 'rgba(255,255,255,0.08)' }}
+                        style={{ background: 'var(--ui-s2)' }}
                       >
                         {p.isAsset ? (
                           <img alt={p.label} className="h-4 w-4 rounded-sm" src={p.icon} />
                         ) : (
-                          <Globe className="h-4 w-4 text-white/55" />
+                          <Globe className="h-4 w-4 text-(color:--ui-t2)" />
                         )}
                       </div>
                       <input
-                        className="flex-1 rounded-[12px] px-3.5 py-2.5 text-[13px] outline-none transition placeholder:text-white/25 focus:ring-2 focus:ring-[#1871D8]/40"
+                        className="flex-1 rounded-[12px] px-3.5 py-2.5 text-[13px] outline-none transition placeholder:text-(color:--ui-t3) focus:ring-2 focus:ring-[#1871D8]/40"
                         onChange={(e) => updateSocialLink(p.key, e.target.value)}
                         placeholder={p.key === 'website' ? 'https://tusitio.com' : `URL de ${p.label}`}
                         style={{
-                          background: 'rgba(255,255,255,0.07)',
-                          border: '1px solid rgba(255,255,255,0.10)',
+                          background: 'var(--ui-s2)',
+                          border: '1px solid var(--ui-s2)',
                           color: 'white',
                         }}
                         value={draft.socialLinks?.[p.key] || ''}
@@ -1073,7 +1073,7 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
 
                 {/* Branches */}
                 <div>
-                  <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/40">Sucursales</p>
+                  <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-(color:--ui-t3)">Sucursales</p>
                   <BranchManager
                     branches={draft.branches}
                     onAddBranch={handleAddBranch}
@@ -1095,7 +1095,7 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
                     Guardar
                   </button>
                   <button
-                    className="flex items-center gap-1.5 rounded-[14px] px-5 py-3 text-[13px] font-semibold text-white/60 transition hover:bg-white/10 hover:text-white/80"
+                    className="flex items-center gap-1.5 rounded-[14px] px-5 py-3 text-[13px] font-semibold text-(color:--ui-t2) transition hover:bg-(--ui-s2) hover:text-(color:--ui-t1)"
                     onClick={cancelGeneral}
                     type="button"
                   >
@@ -1131,16 +1131,16 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
       <AudienceSection audience={audience} onChange={setAudience} />
 
       {/* ──────────────── MI GALERÍA ──────────────── */}
-      <div className="mx-4 mt-3 overflow-hidden rounded-[24px]" style={{ background: 'rgba(20,30,48,0.95)', border: '1px solid rgba(255,255,255,0.07)' }}>
+      <div className="mx-4 mt-3 overflow-hidden rounded-[24px]" style={{ background: 'var(--ui-card)', border: '1px solid var(--ui-s2)' }}>
 
         {/* Header */}
         <div className="flex items-center justify-between px-5 pb-3 pt-5">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/45">Mi galería</p>
-            <p className="mt-0.5 text-[11px] text-white/30">Imágenes propias de tu marca</p>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-(color:--ui-t2)">Mi galería</p>
+            <p className="mt-0.5 text-[11px] text-(color:--ui-t3)">Imágenes propias de tu marca</p>
           </div>
           <button
-            className="flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-[11px] font-semibold text-white/70 transition hover:bg-white/15 active:scale-95"
+            className="flex items-center gap-1.5 rounded-full bg-(--ui-s2) px-3 py-1.5 text-[11px] font-semibold text-(color:--ui-t2) transition hover:bg-(--ui-s3) active:scale-95"
             onClick={() => galleryInputRef.current?.click()}
             type="button"
           >
@@ -1153,7 +1153,7 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
         {(draft.gallery?.length ?? 0) > 0 ? (
           <div className="grid grid-cols-3 gap-2 px-5 pb-5">
             {(draft.gallery ?? []).map((img, i) => (
-              <div className="group relative aspect-square overflow-hidden rounded-[12px] bg-white/8" key={i}>
+              <div className="group relative aspect-square overflow-hidden rounded-[12px] bg-(--ui-s1)" key={i}>
                 <img alt="" className="h-full w-full object-cover transition group-hover:scale-105" src={img} />
                 <div className="absolute inset-0 bg-black/0 transition group-hover:bg-black/20" />
                 <button
@@ -1173,12 +1173,12 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
               onClick={() => galleryInputRef.current?.click()}
               type="button"
             >
-              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10">
-                <Camera className="h-5 w-5 text-white/45" />
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-(--ui-s2)">
+                <Camera className="h-5 w-5 text-(color:--ui-t2)" />
               </div>
               <div className="text-center">
-                <p className="text-[13px] font-semibold text-white/60">Subí imágenes de tu marca</p>
-                <p className="mt-0.5 text-[11px] text-white/35">Se mostrarán en tu perfil y en los matches</p>
+                <p className="text-[13px] font-semibold text-(color:--ui-t2)">Subí imágenes de tu marca</p>
+                <p className="mt-0.5 text-[11px] text-(color:--ui-t3)">Se mostrarán en tu perfil y en los matches</p>
               </div>
             </button>
           </div>
@@ -1203,17 +1203,17 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
         className="mx-4 mt-4 overflow-hidden rounded-[24px]"
         style={{
           background: 'linear-gradient(135deg, rgba(10,15,32,0.92) 0%, rgba(8,20,46,0.88) 100%)',
-          border: '1px solid rgba(255,255,255,0.08)',
-          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05), 0 8px 28px rgba(0,0,0,0.20)',
+          border: '1px solid var(--ui-s2)',
+          boxShadow: 'inset 0 1px 0 var(--ui-s1), 0 8px 28px rgba(0,0,0,0.20)',
         }}
       >
         <div className="flex items-center justify-between px-5 py-4">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#4A9FFF]">Tu plan</p>
-            <p className="mt-1 font-['Space_Grotesk'] text-lg font-bold capitalize text-white">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-(color:--ui-accent-text)">Tu plan</p>
+            <p className="mt-1 font-['Space_Grotesk'] text-lg font-bold capitalize text-(color:--ui-t1)">
               {company.plan || 'Starter'}
             </p>
-            <p className="mt-0.5 text-[11px] text-white/45">
+            <p className="mt-0.5 text-[11px] text-(color:--ui-t2)">
               {company.plan === 'scale'
                 ? 'Acceso completo a todas las funciones'
                 : company.plan === 'growth'

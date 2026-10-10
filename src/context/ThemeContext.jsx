@@ -53,70 +53,77 @@ export const THEMES = {
     planBorder:    'rgba(255,255,255,0.10)',
     planText:      'rgba(255,255,255,0.55)',
   },
+  /* Light — estilo Apple sobre la paleta de Conectado Flow (índigo hsl(232 78% 59%), Inter) */
   light: {
     isDark: false,
     /* Backgrounds */
-    bg:            '#EEF2FF',
+    bg:            '#F5F6FA',
     panelBg:       '#FFFFFF',
-    panelBorder:   'rgba(20,30,48,0.08)',
-    sidebarBg:     'linear-gradient(180deg, #F8FAFF 0%, #EEF2FF 100%)',
-    sidebarBorder: 'rgba(20,30,48,0.08)',
-    sidebarDivider:'rgba(20,30,48,0.07)',
+    panelBorder:   'rgba(15,23,42,0.07)',
+    sidebarBg:     'rgba(255,255,255,0.78)',
+    sidebarBorder: 'rgba(15,23,42,0.07)',
+    sidebarDivider:'rgba(15,23,42,0.06)',
     /* Surfaces */
-    surface:       'rgba(20,30,48,0.04)',
-    surface2:      'rgba(20,30,48,0.08)',
-    surfaceBorder: 'rgba(20,30,48,0.08)',
+    surface:       '#FFFFFF',
+    surface2:      '#F0F2F8',
+    surfaceBorder: 'rgba(15,23,42,0.07)',
     /* Text */
-    text1:         '#0F172A',
-    text2:         '#475569',
-    text3:         '#94A3B8',
-    textWhite:     '#0F172A',
+    text1:         '#1D1D1F',
+    text2:         '#515257',
+    text3:         '#86868B',
+    textWhite:     '#1D1D1F',
     /* Accent */
-    accent:        '#2563EB',
-    accentMid:     '#2563EB',
-    accentActive:  'rgba(37,99,235,0.10)',
-    accentBorder:  'rgba(37,99,235,0.25)',
+    accent:        '#455BE8',
+    accentMid:     '#455BE8',
+    accentActive:  'rgba(69,91,232,0.10)',
+    accentBorder:  'rgba(69,91,232,0.22)',
     /* Nav — web sidebar */
-    navIcon:       '#94A3B8',
-    navIconActive: '#2563EB',
-    navText:       '#64748B',
-    navTextActive: '#0F172A',
+    navIcon:       '#86868B',
+    navIconActive: '#455BE8',
+    navText:       '#515257',
+    navTextActive: '#1D1D1F',
     /* Nav — mobile bottom pill */
-    navPill:       'rgba(255,255,255,0.94)',
-    navPillText:   '#64748B',
-    navPillActive: '#0F172A',
-    navPillActiveSub: '#2563EB',
-    navPillActiveBg: 'linear-gradient(135deg, #EEF2FF 0%, #DBEAFE 100%)',
-    navPillShadow: '0 12px 40px rgba(20,30,48,0.12), 0 2px 8px rgba(20,30,48,0.08), 0 0 0 1px rgba(20,30,48,0.08)',
+    navPill:       'rgba(255,255,255,0.86)',
+    navPillText:   '#86868B',
+    navPillActive: '#1D1D1F',
+    navPillActiveSub: '#455BE8',
+    navPillActiveBg: 'linear-gradient(135deg, #EEF0FD 0%, #E0E5FC 100%)',
+    navPillShadow: '0 12px 40px rgba(15,23,42,0.10), 0 2px 8px rgba(15,23,42,0.06), 0 0 0 1px rgba(15,23,42,0.06)',
     /* Sidebar search */
-    searchBg:      'rgba(20,30,48,0.05)',
-    searchBorder:  'rgba(20,30,48,0.10)',
-    searchFocusBg: 'rgba(37,99,235,0.06)',
-    searchFocusBorder: 'rgba(37,99,235,0.30)',
-    searchIcon:    '#94A3B8',
-    searchText:    '#0F172A',
-    searchPlaceholder: '#94A3B8',
+    searchBg:      'rgba(15,23,42,0.05)',
+    searchBorder:  'transparent',
+    searchFocusBg: '#FFFFFF',
+    searchFocusBorder: 'rgba(69,91,232,0.45)',
+    searchIcon:    '#86868B',
+    searchText:    '#1D1D1F',
+    searchPlaceholder: '#A1A1A6',
     /* Dropdown */
-    dropdownBg:    '#FFFFFF',
-    dropdownBorder:'rgba(20,30,48,0.10)',
+    dropdownBg:    'rgba(255,255,255,0.96)',
+    dropdownBorder:'rgba(15,23,42,0.08)',
     /* Plan badge */
-    planBg:        'rgba(20,30,48,0.05)',
-    planBorder:    'rgba(20,30,48,0.10)',
-    planText:      '#64748B',
+    planBg:        'rgba(15,23,42,0.05)',
+    planBorder:    'rgba(15,23,42,0.08)',
+    planText:      '#515257',
   },
 };
 
 const ThemeContext = createContext(null);
 
+// El tema claro (estilo Conectado Flow / Apple) es el predeterminado solo en /web.
+// /app y la landing siguen oscuros por defecto, y cada superficie guarda su propia preferencia.
+const IS_WEB = typeof window !== 'undefined' && window.location.pathname.startsWith('/web');
+const STORAGE_KEY = IS_WEB ? 'app-theme-v2' : 'app-theme';
+const DEFAULT_THEME = IS_WEB ? 'light' : 'dark';
+
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {
-    try { return localStorage.getItem('app-theme') || 'dark'; } catch { return 'dark'; }
+    try { return localStorage.getItem(STORAGE_KEY) || DEFAULT_THEME; } catch { return DEFAULT_THEME; }
   });
 
   const toggleTheme = () => setTheme(t => t === 'dark' ? 'light' : 'dark');
 
   useEffect(() => {
-    try { localStorage.setItem('app-theme', theme); } catch {}
+    try { localStorage.setItem(STORAGE_KEY, theme); } catch {}
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
