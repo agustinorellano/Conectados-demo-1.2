@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Check, Heart, MapPin, Sparkles, Star, Users, X } from 'lucide-react';
+import { Check, Eye, Heart, LayoutGrid, List, MapPin, Sparkles, Star, Users, X } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 
 const FILTERS = [
@@ -128,9 +128,72 @@ function LikePreview({ item, onAccept, onDismiss, onClose }) {
   );
 }
 
+/* Tarjeta (modo tarjetas): portada, datos y acciones; el clic abre la vista previa */
+function LikeCard({ item, onOpen, onAccept, onDismiss }) {
+  const { t } = useTheme();
+  const { company, kind } = item;
+  const cover = company.gallery?.[0];
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.96 }}
+      transition={{ duration: 0.18 }}
+      className="flex flex-col overflow-hidden rounded-[22px]"
+      style={{ background: t.surface, border: `1px solid ${t.surfaceBorder}` }}
+    >
+      <button type="button" onClick={onOpen} aria-label={`Ver vista previa de ${company.name}`}
+        className="relative block aspect-[4/3] w-full overflow-hidden text-left"
+        style={{ background: 'linear-gradient(135deg, #1871D8, #0A3D7A)' }}>
+        {cover
+          ? <img src={cover} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          : <span className="absolute inset-0 flex items-center justify-center text-[36px] font-black text-white/40">{company.logo}</span>}
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(7,12,24,0.45), transparent 55%)' }} />
+        <div className="absolute left-2.5 top-2.5"><KindBadge kind={kind} /></div>
+        <span className="absolute right-2.5 top-2.5 rounded-full px-2 py-0.5 text-[11px] font-extrabold text-white"
+          style={{ background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)' }}>
+          {company.synergyFromThem}%
+        </span>
+      </button>
+
+      <div className="flex flex-1 flex-col gap-3 p-3.5">
+        <div className="min-w-0">
+          <p className="truncate text-[14px] font-bold" style={{ color: t.text1 }}>{company.name}</p>
+          <p className="truncate text-[12px]" style={{ color: t.text3 }}>{company.sector} · {company.location}</p>
+        </div>
+        <div className="mt-auto flex items-center gap-1.5">
+          <button type="button" onClick={onOpen}
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-full py-2 text-[12px] font-semibold transition hover:opacity-80"
+            style={{ background: t.accentActive, color: t.accentMid }}>
+            <Eye size={13} /> Ver perfil
+          </button>
+          <button type="button" aria-label={`Pasar ${company.name}`} onClick={() => onDismiss(company.id)}
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition hover:opacity-80"
+            style={{ background: t.surface2, color: t.text2 }}>
+            <X size={14} />
+          </button>
+          <button type="button" aria-label={`Conectar con ${company.name}`} onClick={() => onAccept(company)}
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-white transition hover:opacity-90"
+            style={{ background: 'linear-gradient(135deg, #455BE8, #2F43C8)' }}>
+            <Check size={14} />
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 function LikesView({ likes, onAccept, onDismiss }) {
   const { t } = useTheme();
   const [filter, setFilter] = useState('all');
+  const [mode, setMode] = useState(() => {
+    try { return localStorage.getItem('likes-view-mode') === 'cards' ? 'cards' : 'rows'; } catch { return 'rows'; }
+  });
+  const changeMode = (next) => {
+    setMode(next);
+    try { localStorage.setItem('likes-view-mode', next); } catch { /* sin storage */ }
+  };
   const [selectedId, setSelectedId] = useState(null);
   const [sheetOpen, setSheetOpen] = useState(false);
 
@@ -160,7 +223,7 @@ function LikesView({ likes, onAccept, onDismiss }) {
         </p>
       </header>
 
-      <div className="mb-4 flex shrink-0 gap-2">
+      <div className="mb-4 flex shrink-0 flex-wrap items-center gap-2">
         {FILTERS.map((item) => {
           const active = item.id === filter;
           return (
@@ -179,8 +242,32 @@ function LikesView({ likes, onAccept, onDismiss }) {
             </button>
           );
         })}
+
+        {/* Selector de vista: filas / tarjetas */}
+        <div className="ml-auto flex rounded-full p-0.5" role="group" aria-label="Tipo de vista"
+          style={{ background: t.surface2, border: `1px solid ${t.surfaceBorder}` }}>
+          {[{ id: 'rows', label: 'Filas', Icon: List }, { id: 'cards', label: 'Tarjetas', Icon: LayoutGrid }].map(({ id, label, Icon }) => (
+            <button key={id} type="button" onClick={() => changeMode(id)} aria-pressed={mode === id} title={label}
+              className="flex h-8 w-9 items-center justify-center rounded-full transition"
+              style={mode === id ? { background: t.panelBg, color: t.accentMid, boxShadow: '0 1px 3px rgba(15,23,42,0.15)' } : { color: t.text3 }}>
+              <Icon size={15} />
+            </button>
+          ))}
+        </div>
       </div>
 
+      {mode === 'cards' ? (
+        <div className="min-h-0 flex-1 overflow-y-auto pb-4 [scrollbar-width:none]">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 xl:grid-cols-4">
+            <AnimatePresence initial={false}>
+              {visible.map((item) => (
+                <LikeCard key={item.company.id} item={item}
+                  onOpen={() => select(item.company.id)} onAccept={handleAccept} onDismiss={handleDismiss} />
+              ))}
+            </AnimatePresence>
+          </div>
+        </div>
+      ) : (
       <div className="grid min-h-0 flex-1 gap-5 lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)]">
         {/* ── Lista ── */}
         <div className="flex min-h-0 flex-col gap-2.5 overflow-y-auto pb-4 [scrollbar-width:none]">
@@ -225,6 +312,16 @@ function LikesView({ likes, onAccept, onDismiss }) {
                   <div className="flex shrink-0 gap-1.5" onClick={(e) => e.stopPropagation()}>
                     <button
                       type="button"
+                      aria-label={`Ver vista previa de ${company.name}`}
+                      title="Vista previa"
+                      onClick={() => select(company.id)}
+                      className="flex h-9 w-9 items-center justify-center rounded-full transition hover:opacity-80 lg:hidden"
+                      style={{ background: t.accentActive, color: t.accentMid }}
+                    >
+                      <Eye size={15} />
+                    </button>
+                    <button
+                      type="button"
                       aria-label={`Pasar ${company.name}`}
                       onClick={() => handleDismiss(company.id)}
                       className="flex h-9 w-9 items-center justify-center rounded-full transition hover:opacity-80"
@@ -255,17 +352,19 @@ function LikesView({ likes, onAccept, onDismiss }) {
           )}
         </div>
       </div>
+      )}
 
-      {/* ── Vista previa (móvil / pantallas chicas): hoja inferior ── */}
+      {/* ── Vista previa en ventana: hoja inferior en pantallas chicas y diálogo en escritorio (modo tarjetas).
+          En modo filas + escritorio ya hay panel lateral, así que solo se usa en pantallas chicas. ── */}
       <AnimatePresence>
         {sheetOpen && selected && (
           <motion.div
-            className="fixed inset-0 z-50 flex items-end bg-black/50 lg:hidden"
+            className={`fixed inset-0 z-50 flex items-end justify-center bg-black/50 lg:items-center ${mode === 'rows' ? 'lg:hidden' : ''}`}
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={() => setSheetOpen(false)}
           >
             <motion.div
-              className="h-[88dvh] w-full"
+              className="h-[88dvh] w-full lg:h-[82vh] lg:max-w-xl lg:px-0"
               initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 32, stiffness: 320 }}
               onClick={(e) => e.stopPropagation()}

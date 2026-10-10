@@ -287,7 +287,7 @@ function App() {
         <AllianceRoomView onExit={() => setShowAllianceRoom(false)} />
       )}
       <div
-        className="flex h-full flex-col pb-[78px]"
+        className="flex h-full flex-col"
         style={{ paddingTop: 'env(safe-area-inset-top)' }}
       >
         {/* ── Full-bleed views ── */}

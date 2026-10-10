@@ -21,22 +21,18 @@ function BottomNav({ activeView, onNavigate, likesCount = 0 }) {
   const { t } = useTheme();
 
   return (
-    <div
-      className="fixed inset-x-0 bottom-0 z-50 flex items-end justify-center"
-      style={{
-        paddingBottom: 'max(14px, env(safe-area-inset-bottom))',
-        paddingLeft: '14px',
-        paddingRight: '14px',
-      }}
-    >
-      {/* Main nav pill */}
+    /* Marco inferior: barra anclada que ocupa su propio espacio (no flota sobre el contenido),
+       así los botones de cada vista nunca chocan con el nav. */
+    <div className="relative z-50 shrink-0">
       <nav
-        className="flex w-full items-center justify-around rounded-[32px] px-2 py-2"
+        className="flex w-full items-center justify-around rounded-t-[28px] px-2 pt-2"
         style={{
           background: t.navPill,
           backdropFilter: 'blur(28px)',
           WebkitBackdropFilter: 'blur(28px)',
-          boxShadow: t.navPillShadow,
+          boxShadow: '0 -6px 24px rgba(0,0,0,0.18)',
+          borderTop: `1px solid ${t.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.08)'}`,
+          paddingBottom: 'max(8px, env(safe-area-inset-bottom))',
           transition: 'background 0.3s ease',
         }}
       >

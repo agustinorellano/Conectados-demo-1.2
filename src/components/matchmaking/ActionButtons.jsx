@@ -16,10 +16,10 @@ function ActionButtons({ onUndo, onSkip, onSave, onLike, onViewProfile }) {
         }}
       />
 
-      {/* Buttons row — paddingBottom clears safe area; parent pb-[78px] clears BottomNav */}
+      {/* Buttons row — el BottomNav ocupa su propio espacio debajo, así que solo hace falta aire propio */}
       <div
         className="absolute inset-x-0 bottom-0 z-50 flex items-center justify-center gap-4"
-        style={{ paddingBottom: 'max(28px, env(safe-area-inset-bottom))', paddingTop: '10px' }}
+        style={{ paddingBottom: '22px', paddingTop: '10px' }}
       >
         <motion.button type="button" onClick={onUndo} whileHover={{ scale: 1.10 }} whileTap={{ scale: 0.86 }}
           className={BTN_SM}
