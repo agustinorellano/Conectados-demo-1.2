@@ -49,3 +49,6 @@
 
 **Vistas convertidas a claro:** Explorar (desktop), Likes, Chats, Empresa, Asistente.
 **Pendiente:** modal de detalle y filtros de Explorar, paneles/modales de Chats, edición en Empresa, historial del Asistente, Planes y Configuración, Dashboard y Proyectos (ocultas).
+
+## App móvil `/app` (misma simplificación)
+Barra inferior: **Empresa · Likes · Explorar · Chats · Asistente** (antes: Empresa · Dashboard · Explorar · Chats · Proyectos). Dashboard y Proyectos siguen en `src/App.jsx`, solo fuera de la barra (`src/components/layout/BottomNav.jsx`). Inicia en Explorar y reutiliza `LikesView` (responsive, con contador en la barra). Sigue en tema oscuro; no se tocó la estructura ni las demás vistas.

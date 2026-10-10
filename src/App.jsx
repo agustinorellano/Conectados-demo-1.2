@@ -16,6 +16,7 @@ import HelpCenterView from './components/manual/HelpCenterView';
 import PricingView from './components/pricing/PricingView';
 import SettingsView from './components/settings/SettingsView';
 import AllianceRoomView from './components/alliance-room/AllianceRoomView';
+import LikesView from './components/likes/LikesView';
 import {
   actionItems,
   chatConversations,
@@ -36,7 +37,7 @@ import {
 function App() {
   const { t } = useTheme();
   const [stage, setStage] = useState('splash');
-  const [activeView, setActiveView] = useState('dashboard');
+  const [activeView, setActiveView] = useState('alliances');
   const [showAllianceRoom, setShowAllianceRoom] = useState(false);
   const [matches, setMatches] = useState([demoInitialMatch]);
   const [userPlan, setUserPlan] = useState('starter');
@@ -45,6 +46,16 @@ function App() {
   const [companyProfile, setCompanyProfile] = useState(() => createInitialProfile(currentCompany));
   const [meetings, setMeetings] = useState(demoMeetings);
   const [pendingAiOpportunity, setPendingAiOpportunity] = useState(null);
+
+  // Likes recibidos (mock): las primeras empresas recomendadas, algunas como super like
+  const [pendingLikes, setPendingLikes] = useState(() =>
+    personalizeRecommendedCompanies(recommendedCompanies, createInitialProfile(currentCompany))
+      .slice(0, 5)
+      .map((company, index) => ({ company, kind: index % 3 === 0 ? 'super' : 'like' }))
+  );
+
+  const removeLike = (id) =>
+    setPendingLikes((current) => current.filter((item) => item.company.id !== id));
 
   const handleToggleMeeting = (id) =>
     setMeetings((prev) =>
@@ -96,6 +107,11 @@ function App() {
       current.some((item) => item.id === company.id) ? current : [company, ...current]
     );
     setDailyMatchCount((current) => current + 1);
+  };
+
+  const handleAcceptLike = (company) => {
+    handleCreateMatch(company);
+    removeLike(company.id);
   };
 
   const handleTaskMove = (taskId, nextStatus) => {
@@ -192,6 +208,10 @@ function App() {
             userPlan={userPlan}
           />
         );
+      case 'likes':
+        return (
+          <LikesView likes={pendingLikes} onAccept={handleAcceptLike} onDismiss={removeLike} />
+        );
       case 'dashboard':
       default:
         return (
@@ -218,6 +238,7 @@ function App() {
     dailyMatchCount,
     matches,
     pendingAiOpportunity,
+    pendingLikes,
     personalizedCompanies,
     personalizedDashboardData,
     taskState,
@@ -271,7 +292,7 @@ function App() {
       >
         {/* ── Full-bleed views ── */}
         <AnimatePresence mode="wait">
-          {['alliances', 'profile', 'dashboard', 'chats', 'workplace'].includes(activeView) ? (
+          {['alliances', 'profile', 'dashboard', 'chats', 'workplace', 'likes'].includes(activeView) ? (
             <motion.div
               key={activeView}
               className="flex-1"
@@ -300,7 +321,7 @@ function App() {
             </motion.main>
           )}
         </AnimatePresence>
-        <BottomNav activeView={activeView} onNavigate={setActiveView} />
+        <BottomNav activeView={activeView} onNavigate={setActiveView} likesCount={pendingLikes.length} />
       </div>
     </div>
   );

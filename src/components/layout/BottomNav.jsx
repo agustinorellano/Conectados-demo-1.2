@@ -1,22 +1,23 @@
 import { motion } from 'framer-motion';
 import {
+  Bot,
   BriefcaseBusiness,
   Building2,
-  LayoutDashboard,
+  Heart,
   MessageSquare,
-  PanelsTopLeft,
 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 
+// Dashboard y Proyectos están ocultos por la simplificación de producto (las vistas siguen en App.jsx).
 const navItems = [
   { id: 'profile',   label: 'Empresa',   icon: Building2 },
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'alliances', label: 'Explorar',   icon: BriefcaseBusiness },
+  { id: 'likes',     label: 'Likes',     icon: Heart },
+  { id: 'alliances', label: 'Explorar',  icon: BriefcaseBusiness },
   { id: 'chats',     label: 'Chats',     icon: MessageSquare },
-  { id: 'workplace', label: 'Proyectos', icon: PanelsTopLeft },
+  { id: 'assistant', label: 'Asistente', icon: Bot },
 ];
 
-function BottomNav({ activeView, onNavigate }) {
+function BottomNav({ activeView, onNavigate, likesCount = 0 }) {
   const { t } = useTheme();
 
   return (
@@ -66,6 +67,14 @@ function BottomNav({ activeView, onNavigate }) {
                 className="relative z-10 transition-colors duration-200"
                 style={{ color: isActive ? t.navPillActive : t.navPillText }}
               />
+              {item.id === 'likes' && likesCount > 0 && (
+                <span
+                  className="absolute right-2 top-1 z-10 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[9px] font-bold text-white"
+                  style={{ background: '#F43F5E' }}
+                >
+                  {likesCount}
+                </span>
+              )}
               <span
                 className="relative z-10 text-[10px] font-semibold leading-none tracking-tight transition-colors duration-200"
                 style={{ color: isActive ? t.navPillActiveSub : t.navPillText }}

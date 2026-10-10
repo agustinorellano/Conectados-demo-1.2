@@ -17,7 +17,7 @@ function LikesView({ likes, onAccept, onDismiss }) {
   const superCount = likes.filter((item) => item.kind === 'super').length;
 
   return (
-    <div className="mx-auto flex h-full max-w-3xl flex-col overflow-y-auto px-6 py-8">
+    <div className="mx-auto flex h-full max-w-3xl flex-col overflow-y-auto px-4 py-6 sm:px-6 sm:py-8">
       <header className="mb-6">
         <h1 className="text-[28px] font-extrabold tracking-tight" style={{ color: t.text1 }}>
           Likes pendientes
@@ -60,11 +60,11 @@ function LikesView({ likes, onAccept, onDismiss }) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, x: -24 }}
               transition={{ duration: 0.18 }}
-              className="flex items-center gap-4 rounded-[20px] p-4"
+              className="flex items-center gap-3 rounded-[20px] p-3 sm:gap-4 sm:p-4"
               style={{ background: t.surface, border: `1px solid ${t.surfaceBorder}` }}
             >
               <div
-                className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[16px] text-[15px] font-extrabold text-white"
+                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] sm:h-14 sm:w-14 sm:rounded-[16px] text-[15px] font-extrabold text-white"
                 style={{ background: 'linear-gradient(135deg, #1871D8, #0A3D7A)' }}
               >
                 {company.logo}
@@ -77,10 +77,10 @@ function LikesView({ likes, onAccept, onDismiss }) {
                   </p>
                   {kind === 'super' ? (
                     <span
-                      className="flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold text-white"
+                      className="flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-bold text-white"
                       style={{ background: 'linear-gradient(135deg, #8B5CF6, #3B82F6)' }}
                     >
-                      <Sparkles size={10} /> Super like
+                      <Sparkles size={10} /> <span className="hidden sm:inline">Super like</span>
                     </span>
                   ) : (
                     <Heart size={13} style={{ color: '#F43F5E' }} fill="#F43F5E" />
@@ -94,7 +94,7 @@ function LikesView({ likes, onAccept, onDismiss }) {
                 </p>
               </div>
 
-              <div className="shrink-0 text-right">
+              <div className="hidden shrink-0 text-right sm:block">
                 <p className="text-[18px] font-extrabold" style={{ color: t.accentMid }}>
                   {company.synergyFromThem}%
                 </p>
