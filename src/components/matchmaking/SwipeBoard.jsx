@@ -279,7 +279,7 @@ const COMMON_CONNECTIONS = ['Bloom Florería', 'Sushi Nakama'];
 function ExploreProfileCard({ company, p }) {
   if (!company) {
     return (
-      <div className="flex flex-1 items-center justify-center">
+      <div className="flex h-full items-center justify-center">
         <p className="text-sm" style={{ color: p.empty }}>Seleccioná una empresa para ver el detalle</p>
       </div>
     );
@@ -291,117 +291,113 @@ function ExploreProfileCard({ company, p }) {
   const hasImage   = Boolean(company.gallery?.[0]);
   const heroBg     = industryBg[company.sector] || 'linear-gradient(135deg, #1871D8 0%, #0A3D7A 100%)';
   const followers  = company.instagramData?.followers ?? null;
-  const photos     = company.instagramData?.feed?.length ? company.instagramData.feed : (company.gallery || []);
+  const photos     = (company.instagramData?.feed?.length ? company.instagramData.feed : (company.gallery || [])).slice(0, 4);
+  const about      = company.description || company.culture || company.headline;
+
+  const sections = [
+    { title: 'Qué ofrece', icon: Users, tags: offerTags, tone: p.offer },
+    { title: 'Qué busca', icon: Star, tags: seekTags, tone: p.seek },
+    { title: 'Segmentos', icon: Users, tags: segments, tone: p.segment },
+  ].filter(s => s.tags.length > 0);
 
   return (
-    <div className="mx-auto max-w-2xl px-6 pb-40">
+    /* Una sola pantalla: foto a la izquierda, datos a la derecha. Si el alto no alcanza, scrollea solo la columna de datos. */
+    <div className="mx-auto grid h-full max-w-5xl grid-cols-[minmax(0,5fr)_minmax(0,6fr)] gap-6 px-6">
 
-      {/* ── Hero cover ── */}
-      <div className="relative overflow-hidden rounded-[26px]" style={{ height: 240, background: heroBg }}>
-        {hasImage && (
+      {/* ── Foto / portada ── */}
+      <div className="relative min-h-0 overflow-hidden rounded-[28px]"
+        style={{ background: heroBg, boxShadow: p.cardShadow }}>
+        {hasImage ? (
           <img src={company.gallery[0]} alt={company.name} className="absolute inset-0 h-full w-full object-cover" />
+        ) : (
+          <span className="absolute inset-0 flex items-center justify-center font-['Space_Grotesk'] text-[96px] font-black text-white/30">
+            {company.logo}
+          </span>
         )}
         <div className="absolute inset-0"
-          style={{ background: 'linear-gradient(to top, rgba(7,12,24,0.55) 0%, rgba(7,12,24,0.05) 55%, transparent 100%)' }} />
+          style={{ background: 'linear-gradient(to top, rgba(7,12,24,0.55) 0%, rgba(7,12,24,0.05) 45%, transparent 100%)' }} />
+        {followers != null && (
+          <span className="absolute bottom-4 left-4 flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-semibold text-white"
+            style={{ background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(10px)' }}>
+            <Users size={12} /> {followers >= 1000 ? `${(followers / 1000).toFixed(1)}k` : followers} seguidores
+          </span>
+        )}
       </div>
 
-      {/* ── Avatar + name overlapping hero ── */}
-      <div className="relative -mt-11 flex items-end gap-4 px-1">
-        <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full text-xl font-black text-white"
-          style={{ background: heroBg, border: `4px solid ${p.avatarRing}`, boxShadow: p.avatarShadow }}>
-          {company.logo}
-        </div>
-        <div className="flex-1 min-w-0 pb-1.5">
-          <div className="flex items-center gap-1.5">
-            <h2 className="font-['Space_Grotesk'] text-[24px] font-bold leading-tight" style={{ color: p.name }}>{company.name}</h2>
-            <BadgeCheck size={19} className="shrink-0 text-emerald-500" />
+      {/* ── Datos ── */}
+      <div className="flex min-h-0 flex-col gap-4 overflow-y-auto pb-1 [scrollbar-width:none]">
+
+        <div className="flex items-center gap-4">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full text-lg font-black text-white"
+            style={{ background: heroBg, border: `3px solid ${p.avatarRing}`, boxShadow: p.avatarShadow }}>
+            {company.logo}
           </div>
-          <div className="mt-1.5 flex flex-wrap items-center gap-3">
-            <span className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
-              style={{ background: p.pillBg, color: p.pillText }}>{company.sector}</span>
-            {company.distance != null && (
-              <span className="flex items-center gap-1 text-[12px]" style={{ color: p.meta }}>
-                <MapPin size={11} /> {company.distance} km
-              </span>
-            )}
-            {followers != null && (
-              <span className="flex items-center gap-1 text-[12px]" style={{ color: p.meta }}>
-                <Users size={11} /> {followers >= 1000 ? `${(followers / 1000).toFixed(1)}k` : followers} seg.
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {(company.description || company.culture || company.headline) && (
-        <p className="mt-4 text-[13px] leading-relaxed" style={{ color: p.body }}>
-          {company.description || company.culture || company.headline}
-        </p>
-      )}
-
-      {/* ── Spacer so the floating action bar doesn't cover content below ── */}
-      <div className="h-24" />
-
-      {/* ── Qué ofrece / Qué busca / Segmentos ── */}
-      {(offerTags.length > 0 || seekTags.length > 0 || segments.length > 0) && (
-        <div className="grid grid-cols-3 gap-4 rounded-[18px] p-4"
-          style={{ background: p.cardBg, border: p.cardBorder, boxShadow: p.cardShadow }}>
-          {[
-            { title: 'Qué ofrece', icon: Users, tags: offerTags, tone: p.offer },
-            { title: 'Qué busca', icon: Star, tags: seekTags, tone: p.seek },
-            { title: 'Segmentos', icon: Users, tags: segments, tone: p.segment },
-          ].map(({ title, icon: Icon, tags, tone }) => (
-            <div key={title}>
-              <p className="mb-2 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.16em]" style={{ color: p.label }}>
-                <Icon size={11} /> {title}
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                {tags.map(tag => (
-                  <span key={tag} className="rounded-full px-2.5 py-1 text-[11px] font-medium"
-                    style={{ color: tone.color, background: tone.bg, border: tone.border }}>{tag}</span>
-                ))}
-              </div>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5">
+              <h2 className="truncate font-['Space_Grotesk'] text-[26px] font-bold leading-tight" style={{ color: p.name }}>{company.name}</h2>
+              <BadgeCheck size={20} className="shrink-0 text-emerald-500" />
             </div>
-          ))}
+            <div className="mt-1 flex flex-wrap items-center gap-3">
+              <span className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
+                style={{ background: p.pillBg, color: p.pillText }}>{company.sector}</span>
+              {company.distance != null && (
+                <span className="flex items-center gap-1 text-[12px]" style={{ color: p.meta }}>
+                  <MapPin size={11} /> {company.distance} km
+                </span>
+              )}
+            </div>
+          </div>
         </div>
-      )}
 
-      {/* ── Conexiones en común ── */}
-      <div className="mt-5 rounded-[18px] p-4"
-        style={{ background: p.cardBg, border: p.cardBorder, boxShadow: p.cardShadow }}>
-        <div className="flex items-center gap-2 mb-3">
+        {about && (
+          <p className="line-clamp-3 text-[13px] leading-relaxed" style={{ color: p.body }}>{about}</p>
+        )}
+
+        {sections.length > 0 && (
+          <div className="flex flex-col gap-3.5 rounded-[18px] p-4"
+            style={{ background: p.cardBg, border: p.cardBorder, boxShadow: p.cardShadow }}>
+            {sections.map(({ title, icon: Icon, tags, tone }) => (
+              <div key={title}>
+                <p className="mb-1.5 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.16em]" style={{ color: p.label }}>
+                  <Icon size={11} /> {title}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {tags.map(tag => (
+                    <span key={tag} className="rounded-full px-2.5 py-1 text-[11px] font-medium"
+                      style={{ color: tone.color, background: tone.bg, border: tone.border }}>{tag}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="flex flex-wrap items-center gap-2 rounded-[18px] px-4 py-3"
+          style={{ background: p.cardBg, border: p.cardBorder, boxShadow: p.cardShadow }}>
           <Users size={12} style={{ color: p.accent }} />
           <span className="text-[11px] font-semibold" style={{ color: p.meta }}>{COMMON_CONNECTIONS.length} conexiones en común</span>
-        </div>
-        <div className="flex flex-wrap gap-2">
           {COMMON_CONNECTIONS.map(c => (
             <span key={c} className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium"
               style={{ background: p.chipBg, border: p.chipBorder, color: p.chipText }}>
-              <div className="h-4 w-4 rounded-full flex items-center justify-center text-[8px] font-bold text-white"
+              <span className="flex h-4 w-4 items-center justify-center rounded-full text-[8px] font-bold text-white"
                 style={{ background: 'linear-gradient(135deg, #1871D8, #0A3D7A)' }}>
                 {c.slice(0, 1)}
-              </div>
+              </span>
               {c}
             </span>
           ))}
         </div>
-      </div>
 
-      {/* ── Fotos del comercio ── */}
-      {photos.length > 0 && (
-        <div className="mt-5">
-          <p className="mb-2.5 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.16em]" style={{ color: p.label }}>
-            Fotos del comercio
-          </p>
-          <div className="grid grid-cols-3 gap-2">
+        {photos.length > 0 && (
+          <div className="grid grid-cols-4 gap-2">
             {photos.map((src, i) => (
-              <div key={i} className="aspect-square overflow-hidden rounded-[14px]">
+              <div key={i} className="aspect-square overflow-hidden rounded-[12px]">
                 <img src={src} alt="" className="h-full w-full object-cover" />
               </div>
             ))}
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
@@ -630,7 +626,7 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
           {activeTab === 'guardados' ? (
             <SavedGrid companies={savedCompanies} onView={c => setViewingCompany(c)} p={p} />
           ) : (
-            <div className="flex-1 min-h-0 overflow-y-auto [scrollbar-width:none]">
+            <div className="flex-1 min-h-0 pb-[150px] pt-1">
               <ExploreProfileCard company={activeCompany} p={p} />
             </div>
           )}

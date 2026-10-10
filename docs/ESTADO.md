@@ -52,3 +52,8 @@
 
 ## App móvil `/app` (misma simplificación)
 Barra inferior: **Empresa · Likes · Explorar · Chats · Asistente** (antes: Empresa · Dashboard · Explorar · Chats · Proyectos). Dashboard y Proyectos siguen en `src/App.jsx`, solo fuera de la barra (`src/components/layout/BottomNav.jsx`). Inicia en Explorar y reutiliza `LikesView` (responsive, con contador en la barra). Sigue en tema oscuro; no se tocó la estructura ni las demás vistas.
+
+## Ajustes posteriores al primer deploy
+- **Explorar (desktop):** la card del cliente ahora entra completa en una pantalla, sin scroll: foto a la izquierda y datos a la derecha (nombre, descripción, qué ofrece/busca/segmentos, conexiones en común, fotos); la barra de acciones queda debajo. Si el alto no alcanza, solo scrollea la columna de datos (`ExploreProfileCard` en `SwipeBoard.jsx`).
+- **Likes:** al elegir un cliente se ve una vista previa (portada, sinergia, propuesta, qué ofrece/busca, segmentos, fotos) con Pasar / Conectar. En escritorio es un panel a la derecha de la lista; en pantallas chicas se abre como hoja inferior.
+- **Chats:** las pestañas (Conversaciones / Oportunidades / Destacadas / Archivadas) se desbordaban y había que arrastrar; ahora el filtro es un botón con menú desplegable y contadores (`ChatList.jsx`).

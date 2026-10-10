@@ -2,8 +2,8 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
-  Archive, Bot, Check, Copy, Link, Mail,
-  Phone, Plus, Search, TrendingUp, Users, Video, X, Zap,
+  Archive, Bot, Check, ChevronDown, Copy, Link, Mail,
+  Phone, Plus, Search, SlidersHorizontal, TrendingUp, Users, Video, X, Zap,
 } from 'lucide-react';
 import ChatItem from './ChatItem';
 
@@ -444,6 +444,7 @@ function ChatList({
   const [query,          setQuery]          = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [activeSegment,  setActiveSegment]  = useState('activos');
+  const [filterOpen,     setFilterOpen]     = useState(false);
   const debounceTimer = useRef(null);
 
   const handleSearchChange = useCallback((e) => {
@@ -538,26 +539,49 @@ function ChatList({
         </div>
       </div>
 
-      {/* ── Segment tabs ── */}
-      <div className="flex gap-0 border-b px-4 pb-0" style={{ borderColor: 'var(--ui-s2)' }}>
-        {SEGMENTS.map(seg => {
-          const isActive = activeSegment === seg.key;
-          const count    = segmentCounts[seg.key];
-          return (
-            <button key={seg.key} type="button" onClick={() => setActiveSegment(seg.key)}
-              className="shrink-0 pb-2.5 pt-1 text-[12px] font-semibold transition-colors mr-4"
-              style={isActive
-                ? { color: 'var(--ui-t1)', borderBottom: '2px solid var(--ui-accent-text)', marginBottom: -1 }
-                : { color: 'var(--ui-t3)', borderBottom: '2px solid transparent', marginBottom: -1 }}>
-              {seg.label}
-              {count > 0 && (
-                <span className="ml-1 text-[10px]" style={{ opacity: isActive ? 0.5 : 0.3 }}>
-                  {count}
-                </span>
-              )}
-            </button>
-          );
-        })}
+      {/* ── Filtro (botón + menú) ── */}
+      <div className="relative flex items-center justify-between gap-2 border-b px-4 pb-3" style={{ borderColor: 'var(--ui-s2)' }}>
+        <button type="button" onClick={() => setFilterOpen(o => !o)}
+          aria-haspopup="menu" aria-expanded={filterOpen}
+          className="flex items-center gap-2 rounded-full px-3.5 py-1.5 text-[12px] font-semibold transition hover:opacity-80"
+          style={{ background: 'var(--ui-s2)', color: 'var(--ui-t1)' }}>
+          <SlidersHorizontal className="h-3.5 w-3.5" style={{ color: 'var(--ui-accent-text)' }} />
+          {SEGMENTS.find(s => s.key === activeSegment)?.label}
+          <ChevronDown className={`h-3.5 w-3.5 transition-transform ${filterOpen ? 'rotate-180' : ''}`} style={{ color: 'var(--ui-t3)' }} />
+        </button>
+        <span className="text-[11px]" style={{ color: 'var(--ui-t3)' }}>
+          {filtered.length} {filtered.length === 1 ? 'chat' : 'chats'}
+        </span>
+
+        <AnimatePresence>
+          {filterOpen && (
+            <>
+              <div className="fixed inset-0 z-30" onClick={() => setFilterOpen(false)} />
+              <motion.div
+                initial={{ opacity: 0, y: -6, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -6, scale: 0.98 }} transition={{ duration: 0.14 }}
+                role="menu"
+                className="absolute left-4 top-full z-40 mt-1.5 w-[220px] overflow-hidden rounded-[16px] p-1.5"
+                style={{ background: t.dropdownBg, border: `1px solid ${t.dropdownBorder}`, boxShadow: '0 12px 32px rgba(15,23,42,0.18)', backdropFilter: 'blur(16px)' }}>
+                {SEGMENTS.map(seg => {
+                  const isActive = activeSegment === seg.key;
+                  return (
+                    <button key={seg.key} type="button" role="menuitemradio" aria-checked={isActive}
+                      onClick={() => { setActiveSegment(seg.key); setFilterOpen(false); }}
+                      className="flex w-full items-center gap-2 rounded-[10px] px-3 py-2 text-left text-[13px] font-medium transition hover:bg-(--ui-s2)"
+                      style={{ color: isActive ? 'var(--ui-accent-text)' : 'var(--ui-t1)' }}>
+                      <span className="flex-1">{seg.label}</span>
+                      {segmentCounts[seg.key] > 0 && (
+                        <span className="text-[11px]" style={{ color: 'var(--ui-t3)' }}>{segmentCounts[seg.key]}</span>
+                      )}
+                      {isActive && <Check className="h-3.5 w-3.5" />}
+                    </button>
+                  );
+                })}
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* ── AI notice ── */}
