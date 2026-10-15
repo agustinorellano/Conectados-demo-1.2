@@ -163,6 +163,173 @@ function FiltersPanel({ filters, onApply, onClose }) {
   );
 }
 
+/* ── Filtros en escritorio: panel lateral flotante (en el teléfono se mantiene la hoja inferior) ───── */
+function FilterSection({ title, aside, c, children }) {
+  return (
+    <section className="py-6" style={{ borderTop: `1px solid ${c.divider}` }}>
+      <div className="mb-3.5 flex items-center justify-between">
+        <h3 className="text-[12px] font-semibold uppercase tracking-[0.12em]" style={{ color: c.label, fontFamily: APPLE_FONT }}>{title}</h3>
+        {aside}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function FiltersDrawer({ filters, onApply, onClose, p }) {
+  const [local, setLocal] = useState(filters);
+  const upd = (key, val) => setLocal(prev => ({ ...prev, [key]: val }));
+  const dark = p.isDark;
+  const ACCENT = '#455BE8';
+
+  const c = dark
+    ? { panel: 'linear-gradient(180deg, #151C30 0%, #0C1122 100%)', border: 'rgba(255,255,255,0.09)', text: '#FFFFFF', body: 'rgba(255,255,255,0.68)',
+        label: 'rgba(255,255,255,0.42)', chip: 'rgba(255,255,255,0.07)', chipText: 'rgba(255,255,255,0.78)', chipBorder: 'rgba(255,255,255,0.10)',
+        field: 'rgba(255,255,255,0.06)', divider: 'rgba(255,255,255,0.08)', track: 'rgba(255,255,255,0.18)', closeBg: 'rgba(255,255,255,0.08)', shadow: '0 30px 80px rgba(0,0,0,0.6)' }
+    : { panel: '#FFFFFF', border: 'rgba(15,23,42,0.08)', text: '#1D1D1F', body: '#515257',
+        label: '#86868B', chip: '#F2F3F8', chipText: '#515257', chipBorder: 'transparent',
+        field: '#F5F6FA', divider: 'rgba(15,23,42,0.08)', track: 'rgba(15,23,42,0.14)', closeBg: 'rgba(15,23,42,0.06)', shadow: '0 30px 80px rgba(15,23,42,0.28)' };
+
+  const activeCount =
+    (local.location ? 1 : 0) + (local.maxDistance !== DEFAULT_FILTERS.maxDistance ? 1 : 0) +
+    local.segments.length + local.offering.length + local.seeking.length +
+    (local.minFollowers ? 1 : 0) + (local.hasWebsite ? 1 : 0) + (local.minLocales > 1 ? 1 : 0);
+
+  // Esc cierra; mientras está abierto, las flechas no deben pasar/conectar empresas del feed
+  useEffect(() => {
+    document.body.dataset.lightbox = '1';
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => { delete document.body.dataset.lightbox; window.removeEventListener('keydown', onKey); };
+  }, [onClose]);
+
+  const chip = (selected) => ({
+    fontSize: 13, fontWeight: 500, lineHeight: 1.2, fontFamily: APPLE_FONT,
+    background: selected ? ACCENT : c.chip,
+    color: selected ? '#FFFFFF' : c.chipText,
+    border: `1px solid ${selected ? ACCENT : c.chipBorder}`,
+    boxShadow: selected ? '0 4px 12px rgba(69,91,232,0.30)' : 'none',
+  });
+
+  const toggleIn = (key, opt) =>
+    upd(key, local[key].includes(opt) ? local[key].filter(v => v !== opt) : [...local[key], opt]);
+
+  const groups = [
+    { key: 'segments', title: 'Segmentos clave', options: SEGMENT_OPTIONS },
+    { key: 'offering', title: 'Qué ofrezco',     options: OFFERING_OPTIONS },
+    { key: 'seeking',  title: 'Qué busco',       options: SEEKING_OPTIONS },
+  ];
+
+  return (
+    <>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        className="fixed inset-0 z-[60]"
+        style={{ background: 'rgba(8,12,24,0.40)', backdropFilter: 'blur(3px)', WebkitBackdropFilter: 'blur(3px)' }}
+        onClick={onClose} />
+
+      <motion.aside
+        initial={{ x: '108%' }} animate={{ x: 0 }} exit={{ x: '108%' }}
+        transition={{ type: 'spring', damping: 32, stiffness: 320, mass: 0.9 }}
+        role="dialog" aria-label="Filtros de búsqueda"
+        className="fixed bottom-4 right-4 top-4 z-[70] flex w-[min(480px,calc(100vw-32px))] flex-col overflow-hidden rounded-[28px]"
+        style={{ background: c.panel, border: `1px solid ${c.border}`, boxShadow: c.shadow, fontFamily: APPLE_FONT }}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Encabezado */}
+        <div className="flex shrink-0 items-start justify-between px-7 pb-5 pt-7">
+          <div>
+            <h2 className="text-[26px] font-bold leading-tight" style={{ color: c.text, letterSpacing: '-0.03em', fontFamily: APPLE_FONT }}>Filtros</h2>
+            <p className="mt-1 text-[14px]" style={{ color: c.body }}>
+              {activeCount === 0 ? 'Sin filtros activos' : `${activeCount} ${activeCount === 1 ? 'filtro activo' : 'filtros activos'}`}
+            </p>
+          </div>
+          <button type="button" onClick={onClose} aria-label="Cerrar filtros"
+            className="flex h-9 w-9 items-center justify-center rounded-full transition hover:opacity-70"
+            style={{ background: c.closeBg, color: c.body }}>
+            <X size={17} />
+          </button>
+        </div>
+
+        {/* Contenido con scroll */}
+        <div className="min-h-0 flex-1 overflow-y-auto px-7 [scrollbar-width:none]">
+          <FilterSection title="Ubicación" c={c}>
+            <input type="text" value={local.location} onChange={e => upd('location', e.target.value)}
+              placeholder="Ej: Buenos Aires, Córdoba…"
+              className="h-12 w-full rounded-2xl px-4 text-[15px] outline-none transition focus:ring-2"
+              style={{ background: c.field, color: c.text, border: `1px solid ${c.divider}`, '--tw-ring-color': 'rgba(69,91,232,0.45)' }} />
+          </FilterSection>
+
+          <FilterSection title="Distancia máxima" c={c}
+            aside={<span className="rounded-full px-2.5 py-0.5 text-[13px] font-semibold" style={{ background: 'rgba(69,91,232,0.14)', color: dark ? '#9FB0FF' : ACCENT }}>{local.maxDistance} km</span>}>
+            <input type="range" min={1} max={200} step={1} value={local.maxDistance}
+              onChange={e => upd('maxDistance', Number(e.target.value))} aria-label="Distancia máxima en kilómetros"
+              className="w-full" style={{ accentColor: ACCENT }} />
+            <div className="mt-1 flex justify-between text-[12px]" style={{ color: c.label }}><span>1 km</span><span>200 km</span></div>
+          </FilterSection>
+
+          {groups.map(({ key, title, options }) => (
+            <FilterSection key={key} title={title} c={c}
+              aside={local[key].length > 0 && <span className="text-[12px] font-medium" style={{ color: dark ? '#9FB0FF' : ACCENT }}>{local[key].length} seleccionados</span>}>
+              <div className="flex flex-wrap gap-2">
+                {options.map(opt => (
+                  <button key={opt} type="button" onClick={() => toggleIn(key, opt)} aria-pressed={local[key].includes(opt)}
+                    className="rounded-full px-3.5 py-2 transition" style={chip(local[key].includes(opt))}>{opt}</button>
+                ))}
+              </div>
+            </FilterSection>
+          ))}
+
+          <FilterSection title="Seguidores mínimos" c={c}>
+            <div className="flex flex-wrap gap-2">
+              {FOLLOWERS_OPTIONS.map(opt => (
+                <button key={opt.value} type="button" onClick={() => upd('minFollowers', opt.value)} aria-pressed={local.minFollowers === opt.value}
+                  className="rounded-full px-3.5 py-2 transition" style={chip(local.minFollowers === opt.value)}>{opt.label}</button>
+              ))}
+            </div>
+          </FilterSection>
+
+          <FilterSection title="Cantidad de locales" c={c}>
+            <div className="grid grid-cols-4 gap-2">
+              {LOCALES_OPTIONS.map(opt => (
+                <button key={opt.value} type="button" onClick={() => upd('minLocales', opt.value)} aria-pressed={local.minLocales === opt.value}
+                  className="rounded-2xl py-2.5 transition" style={{ ...chip(local.minLocales === opt.value), fontWeight: 600 }}>{opt.label}</button>
+              ))}
+            </div>
+          </FilterSection>
+
+          <section className="flex items-center justify-between gap-4 py-6" style={{ borderTop: `1px solid ${c.divider}` }}>
+            <div>
+              <p className="text-[15px] font-semibold" style={{ color: c.text }}>Tiene página web</p>
+              <p className="mt-0.5 text-[13px]" style={{ color: c.body }}>Solo comercios con web propia</p>
+            </div>
+            <button type="button" role="switch" aria-checked={local.hasWebsite} aria-label="Solo comercios con página web"
+              onClick={() => upd('hasWebsite', !local.hasWebsite)}
+              className="relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200"
+              style={{ background: local.hasWebsite ? ACCENT : c.track }}>
+              <span className="absolute top-1 h-5 w-5 rounded-full bg-white shadow transition-transform duration-200"
+                style={{ transform: local.hasWebsite ? 'translateX(24px)' : 'translateX(4px)' }} />
+            </button>
+          </section>
+        </div>
+
+        {/* Pie fijo */}
+        <div className="flex shrink-0 items-center gap-3 px-7 py-5" style={{ borderTop: `1px solid ${c.divider}` }}>
+          <button type="button" onClick={() => setLocal(DEFAULT_FILTERS)} disabled={activeCount === 0}
+            className="h-12 rounded-2xl px-5 transition hover:opacity-70 disabled:opacity-40"
+            style={{ background: 'transparent', color: c.body, fontSize: 14, fontWeight: 600, fontFamily: APPLE_FONT }}>
+            Limpiar
+          </button>
+          <button type="button" onClick={() => { onApply(local); onClose(); }}
+            className="h-12 flex-1 rounded-2xl text-white transition hover:brightness-110 active:scale-[0.99]"
+            style={{ background: `linear-gradient(135deg, ${ACCENT}, #2F43C8)`, boxShadow: '0 10px 24px rgba(69,91,232,0.38)', fontSize: 15, fontWeight: 600, fontFamily: APPLE_FONT }}>
+            Aplicar filtros
+          </button>
+        </div>
+      </motion.aside>
+    </>
+  );
+}
+
 /* ── Saved grid ─────────────────────────────────────────────── */
 const sectorBg = {
   Indumentaria: 'linear-gradient(135deg, #9B8EC4, #C4A882)',
@@ -926,7 +1093,7 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
           )}
         </AnimatePresence>
         <AnimatePresence>
-          {showFilters && <FiltersPanel filters={filters} onApply={setFilters} onClose={() => setShowFilters(false)} />}
+          {showFilters && <FiltersDrawer filters={filters} onApply={setFilters} onClose={() => setShowFilters(false)} p={p} />}
         </AnimatePresence>
       </>
     );
