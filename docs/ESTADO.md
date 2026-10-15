@@ -42,9 +42,9 @@
 **Likes pendientes** (`src/components/likes/LikesView.jsx`): likes y super likes recibidos, filtros, aceptar (crea match) o descartar, contador en el menú. Datos mock.
 
 **Estética:**
-- Tema **claro** (nuevo, predeterminado solo en `/web`) basado en Conectado Flow (índigo `#455BE8`, fondo `#F5F6FA`, tarjetas blancas) con UX tipo Apple. Tema **oscuro** original intacto. Botón para alternar al final del menú.
+- Tema **claro** (opcional) basado en Conectado Flow (índigo `#455BE8`, fondo `#F5F6FA`, tarjetas blancas) con UX tipo Apple. Tema **oscuro** original intacto. Botón para alternar al final del menú.
 - El sidebar se mantiene navy/azul en ambos temas (`#1B2352` en claro).
-- `/web` y `/app` abren en claro por defecto y comparten preferencia (`app-theme-v2`); desde Configuración se puede pasar a oscuro. La landing conserva su propio default (`app-theme`).
+- **Oscuro es el tema por defecto** en toda la plataforma (`/web`, `/app`); el **claro** (estilo Conectado Flow / Apple) se activa desde Configuración (y con el botón del menú en `/web`). Preferencia única en `app-theme-v3`.
 - Variables CSS de tema en `src/index.css` (`--ui-t1/t2/t3`, `--ui-s1/s2/s3`, `--ui-panel`, `--ui-page`, `--ui-card`, `--ui-cover`). Se usan en Chats, Empresa y Asistente. Explorar usa una paleta propia en `SwipeBoard.jsx` (`EXPLORE_PALETTE`).
 
 **Vistas convertidas a claro:** Explorar (desktop), Likes, Chats, Empresa, Asistente.
