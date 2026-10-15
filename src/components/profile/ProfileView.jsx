@@ -863,9 +863,11 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
 
   return (
     <div className="h-full bg-(--ui-page) pb-24 overflow-y-auto [scrollbar-width:none] [-webkit-overflow-scrolling:touch]">
+    {/* Columna acotada en pantallas anchas para que las cards no se estiren a todo el ancho */}
+    <div className="mx-auto w-full max-w-3xl md:px-4 md:pt-4">
 
-      {/* ──────────────── HERO CARD — flush edges ──────────────── */}
-      <div className="overflow-hidden rounded-b-[28px] bg-(--ui-card)" style={{ boxShadow: "0 1px 2px rgba(15,23,42,0.05)" }}>
+      {/* ──────────────── HERO CARD — flush edges en móvil, card en escritorio ──────────────── */}
+      <div className="overflow-hidden rounded-b-[28px] bg-(--ui-card) md:rounded-[28px]" style={{ boxShadow: "0 1px 2px rgba(15,23,42,0.05)" }}>
 
         {/* Cover strip — shows uploaded image or gradient fallback */}
         <div
@@ -1262,6 +1264,7 @@ function CompanyProfile({ company, onAreaSelect, onSave, onOpenSettings }) {
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
     </div>
   );
 }
