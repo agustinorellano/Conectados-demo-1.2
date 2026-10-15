@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   Activity, ArrowRight, BarChart2, Calendar, Check, CheckCircle2, ChevronLeft, ChevronRight,
-  Clock, Compass, Crown, Folder, Globe, Lightbulb, Lock, MessageSquare,
+  Clock, Compass, Folder, Globe, Lightbulb, MessageSquare,
   Mic, MicOff, Plus, Search, Send, Sparkles, Star, Target, TrendingUp,
   Users, Wand2, X, Zap,
 } from 'lucide-react';
@@ -447,59 +447,6 @@ function ActionConfirmCard({ action, onConfirm, onCancel }) {
           style={{ color: 'var(--ui-t3)' }}
         >
           Cancelar
-        </button>
-      </div>
-    </motion.div>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────
-   SCALE PLAN CTA
-───────────────────────────────────────────────────────── */
-function ScalePlanCard() {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="relative mx-4 my-3 overflow-hidden rounded-[20px]"
-      style={{
-        background: 'linear-gradient(135deg, #0F1730 0%, #1B3C7A 100%)',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
-        border: '1px solid rgba(24,113,216,0.22)',
-        boxShadow: '0 8px 32px rgba(24,113,216,0.15)',
-      }}
-    >
-      <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full blur-3xl"
-        style={{ background: 'rgba(24,113,216,0.25)' }} />
-      <div className="relative flex items-start gap-4 p-5">
-        <div
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px]"
-          style={{ background: 'rgba(24,113,216,0.20)', border: '1px solid rgba(24,113,216,0.30)' }}
-        >
-          <Sparkles className="h-5 w-5 text-blue-400" />
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-blue-400">IA Avanzada</p>
-          <p className="mt-0.5 font-['Space_Grotesk'] text-[15px] font-bold text-white">Accedé a inteligencia avanzada</p>
-          <p className="mt-1 text-[12px] leading-relaxed text-white/55">
-            Sugerencias de mercado, análisis predictivo y workflows automáticos disponibles en el plan Scale.
-          </p>
-        </div>
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
-          style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)' }}>
-          <Lock className="h-3.5 w-3.5 text-white/50" />
-        </div>
-      </div>
-      <div className="flex items-center gap-3 border-t border-white/8 px-5 py-3">
-        <Crown className="h-3.5 w-3.5 text-amber-400" />
-        <p className="flex-1 text-[11px] text-white/50">Plan Scale desbloquea todas las funciones</p>
-        <button
-          type="button"
-          className="rounded-[10px] px-3 py-1.5 text-[11px] font-bold text-white transition hover:-translate-y-0.5"
-          style={{ background: 'linear-gradient(135deg, #1871D8, #1459B0)', boxShadow: '0 4px 12px rgba(24,113,216,0.40)' }}
-        >
-          Ver planes
         </button>
       </div>
     </motion.div>
@@ -990,9 +937,6 @@ function AssistantView({
           {showEmpty && !loading && (
             <QuickPromptGrid mode={mode} onSelect={sendMessage} />
           )}
-
-          {/* Scale plan CTA — shown when not aiEnabled */}
-          {!aiEnabled && showEmpty && <ScalePlanCard />}
 
           <div ref={bottomRef} />
         </div>

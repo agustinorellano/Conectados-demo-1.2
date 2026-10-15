@@ -94,12 +94,12 @@ const HELP_SECTIONS = [
 // ─── Shared dark glass style ─────────────────────────────────────────────────
 
 const CARD_STYLE = {
-  background: 'rgba(255,255,255,0.04)',
-  border: '1px solid rgba(255,255,255,0.08)',
-  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)',
+  background: 'var(--ui-s1)',
+  border: '1px solid var(--ui-s2)',
+  boxShadow: 'inset 0 1px 0 var(--ui-s1)',
 };
 
-const DIVIDER = { borderBottom: '1px solid rgba(255,255,255,0.07)' };
+const DIVIDER = { borderBottom: '1px solid var(--ui-s2)' };
 
 // ─── Primitives ──────────────────────────────────────────────────────────────
 
@@ -109,7 +109,7 @@ function Toggle({ checked, onChange }) {
       type="button"
       onClick={() => onChange(!checked)}
       className="relative flex h-[26px] w-[46px] shrink-0 items-center rounded-full transition-colors duration-200"
-      style={{ background: checked ? '#1871D8' : 'rgba(255,255,255,0.14)' }}
+      style={{ background: checked ? '#1871D8' : 'var(--ui-s3)' }}
     >
       <span
         className="absolute h-[22px] w-[22px] rounded-full bg-white shadow-sm transition-transform duration-200"
@@ -126,9 +126,9 @@ function DarkRow({ label, description, children, noBorder }) {
       style={noBorder ? {} : DIVIDER}
     >
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold text-white/90">{label}</p>
+        <p className="text-sm font-semibold text-(color:--ui-t1)">{label}</p>
         {description && (
-          <p className="mt-0.5 text-[11px] leading-4 text-white/40 pr-2">{description}</p>
+          <p className="mt-0.5 text-[11px] leading-4 text-(color:--ui-t3) pr-2">{description}</p>
         )}
       </div>
       {children}
@@ -138,7 +138,7 @@ function DarkRow({ label, description, children, noBorder }) {
 
 function SectionLabel({ text }) {
   return (
-    <p className="mb-3 px-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-white/40">
+    <p className="mb-3 px-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-(color:--ui-t3)">
       {text}
     </p>
   );
@@ -157,13 +157,14 @@ function PlanCard({ plan, isCurrent, onExpand }) {
               background: 'linear-gradient(135deg, rgba(16,32,72,0.95), rgba(24,55,130,0.90))',
               backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
               border: '1px solid rgba(24,113,216,0.35)',
-              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.10), 0 8px 28px rgba(24,113,216,0.20)',
+              boxShadow: 'inset 0 1px 0 var(--ui-s2), 0 8px 28px rgba(24,113,216,0.20)',
+              '--ui-t1': '#FFFFFF', '--ui-t2': 'rgba(255,255,255,0.78)', '--ui-t3': 'rgba(255,255,255,0.58)', // texto claro sobre el plan actual (fondo azul)
             }
           : {
-              background: 'linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03))',
+              background: 'linear-gradient(135deg, var(--ui-s1), rgba(255,255,255,0.03))',
               backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255,255,255,0.09)',
-              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05), 0 8px 24px rgba(0,0,0,0.22)',
+              border: '1px solid var(--ui-s2)',
+              boxShadow: 'inset 0 1px 0 var(--ui-s1), 0 8px 24px rgba(0,0,0,0.22)',
             }
       }
       whileTap={{ scale: 0.97 }}
@@ -186,25 +187,25 @@ function PlanCard({ plan, isCurrent, onExpand }) {
             </span>
           )}
         </div>
-        <p className="mt-3 font-['Space_Grotesk'] text-lg font-bold leading-tight text-white">{plan.name}</p>
-        <p className="mt-0.5 text-[11px] text-white/50">{plan.tagline}</p>
+        <p className="mt-3 font-['Space_Grotesk'] text-lg font-bold leading-tight text-(color:--ui-t1)">{plan.name}</p>
+        <p className="mt-0.5 text-[11px] text-(color:--ui-t2)">{plan.tagline}</p>
         <div className="mt-3 flex items-end gap-1">
-          <span className="font-['Inter'] text-2xl font-extrabold leading-none text-white">
+          <span className="font-['Inter'] text-2xl font-extrabold leading-none text-(color:--ui-t1)">
             {plan.price === 0 ? 'Gratis' : `$${plan.price}`}
           </span>
-          {plan.price > 0 && <span className="pb-1 text-[11px] text-white/40">/mes</span>}
+          {plan.price > 0 && <span className="pb-1 text-[11px] text-(color:--ui-t3)">/mes</span>}
         </div>
         <div className="mt-3 space-y-1.5">
           {plan.quickFeatures.map((f) => (
             <div key={f} className="flex items-center gap-1.5">
               <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: plan.accentColor }} />
-              <span className="text-[11px] leading-tight text-white/65">{f}</span>
+              <span className="text-[11px] leading-tight text-(color:--ui-t2)">{f}</span>
             </div>
           ))}
         </div>
         <div className="mt-4 flex items-center justify-between">
-          <span className="text-[10px] text-white/40">Ver detalles</span>
-          <ChevronRight size={12} className="text-white/30" />
+          <span className="text-[10px] text-(color:--ui-t3)">Ver detalles</span>
+          <ChevronRight size={12} className="text-(color:--ui-t3)" />
         </div>
       </div>
     </motion.div>
@@ -231,16 +232,16 @@ function PlanDetailSheet({ plan, isCurrent, onClose, onCheckout }) {
         style={{
           background: 'linear-gradient(160deg, rgba(10,15,32,0.98), rgba(8,20,46,0.97))',
           backdropFilter: 'blur(28px)', WebkitBackdropFilter: 'blur(28px)',
-          border: '1px solid rgba(255,255,255,0.09)', borderBottom: 'none',
+          border: '1px solid var(--ui-s2)', borderBottom: 'none',
         }}
       >
-        <div className="mx-auto mt-3 h-1 w-10 rounded-full bg-white/20" />
+        <div className="mx-auto mt-3 h-1 w-10 rounded-full bg-(--ui-s3)" />
         <button
           onClick={onClose}
           className="absolute right-5 top-4 flex h-8 w-8 items-center justify-center rounded-full"
-          style={{ background: 'rgba(255,255,255,0.10)' }}
+          style={{ background: 'var(--ui-s2)' }}
         >
-          <X size={16} className="text-white/70" />
+          <X size={16} className="text-(color:--ui-t2)" />
         </button>
         <div className="px-6 pb-12 pt-4">
           <div className="flex items-center gap-4">
@@ -249,15 +250,15 @@ function PlanDetailSheet({ plan, isCurrent, onClose, onCheckout }) {
               <Icon size={22} style={{ color: plan.accentColor }} />
             </div>
             <div>
-              <h2 className="font-['Space_Grotesk'] text-2xl font-bold text-white">{plan.name}</h2>
-              <p className="text-sm text-white/50">{plan.tagline}</p>
+              <h2 className="font-['Space_Grotesk'] text-2xl font-bold text-(color:--ui-t1)">{plan.name}</h2>
+              <p className="text-sm text-(color:--ui-t2)">{plan.tagline}</p>
             </div>
           </div>
           <div className="mt-5 flex items-end gap-1.5">
-            <span className="font-['Inter'] text-4xl font-extrabold leading-none text-white">
+            <span className="font-['Inter'] text-4xl font-extrabold leading-none text-(color:--ui-t1)">
               {plan.price === 0 ? 'Gratis' : `$${plan.price}`}
             </span>
-            {plan.price > 0 && <span className="pb-1 text-sm text-white/40">/mes</span>}
+            {plan.price > 0 && <span className="pb-1 text-sm text-(color:--ui-t3)">/mes</span>}
           </div>
           <div className="mt-6 space-y-3">
             {plan.features.map((f) => (
@@ -266,7 +267,7 @@ function PlanDetailSheet({ plan, isCurrent, onClose, onCheckout }) {
                   style={{ background: `${plan.accentColor}30` }}>
                   <Check size={11} style={{ color: plan.accentColor }} />
                 </div>
-                <span className="text-sm text-white/80">{f}</span>
+                <span className="text-sm text-(color:--ui-t1)">{f}</span>
               </div>
             ))}
           </div>
@@ -275,8 +276,8 @@ function PlanDetailSheet({ plan, isCurrent, onClose, onCheckout }) {
             disabled={isCurrent}
             className="mt-8 w-full rounded-[16px] py-4 text-sm font-bold transition active:opacity-80"
             style={{
-              background: isCurrent ? 'rgba(255,255,255,0.08)' : `linear-gradient(135deg, ${plan.accentColor}, ${plan.accentColor}CC)`,
-              color: isCurrent ? 'rgba(255,255,255,0.30)' : '#fff',
+              background: isCurrent ? 'var(--ui-s2)' : `linear-gradient(135deg, ${plan.accentColor}, ${plan.accentColor}CC)`,
+              color: isCurrent ? 'var(--ui-t3)' : '#fff',
               cursor: isCurrent ? 'not-allowed' : 'pointer',
             }}
           >
@@ -302,8 +303,8 @@ function ExtrasSection() {
             style={{ background: `${accent}20` }}>
             <Icon size={17} style={{ color: accent }} />
           </div>
-          <p className="mt-3 font-['Space_Grotesk'] text-base font-bold leading-tight text-white">{label}</p>
-          <p className="mt-1 text-[11px] leading-tight text-white/45">{sub}</p>
+          <p className="mt-3 font-['Space_Grotesk'] text-base font-bold leading-tight text-(color:--ui-t1)">{label}</p>
+          <p className="mt-1 text-[11px] leading-tight text-(color:--ui-t2)">{sub}</p>
           <button
             className="mt-3 rounded-full px-3 py-1.5 text-[11px] font-semibold transition active:opacity-70"
             style={{ background: `${accent}18`, color: accent, border: `1px solid ${accent}35` }}
@@ -330,11 +331,11 @@ function AccountSection() {
       {rows.map((row, i) => (
         <div key={row.label} className="flex items-center px-5 py-4"
           style={i < rows.length - 1 ? DIVIDER : {}}>
-          <span className="min-w-[100px] text-sm text-white/45">{row.label}</span>
-          <span className="flex-1 text-sm font-semibold text-white/85">{row.value}</span>
+          <span className="min-w-[100px] text-sm text-(color:--ui-t2)">{row.label}</span>
+          <span className="flex-1 text-sm font-semibold text-(color:--ui-t1)">{row.value}</span>
           {row.locked
-            ? <Lock size={14} className="text-white/25" />
-            : <ChevronRight size={16} className="text-white/25" />}
+            ? <Lock size={14} className="text-(color:--ui-t3)" />
+            : <ChevronRight size={16} className="text-(color:--ui-t3)" />}
         </div>
       ))}
     </div>
@@ -363,8 +364,8 @@ function ExplorationSection({ currentPlan }) {
         {/* Exploration toggle */}
         <div className="flex items-start gap-3 px-5 py-4" style={DIVIDER}>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-white/90">Exploración activa</p>
-            <p className="mt-0.5 text-[11px] leading-4 text-white/40 pr-4">
+            <p className="text-sm font-semibold text-(color:--ui-t1)">Exploración activa</p>
+            <p className="mt-0.5 text-[11px] leading-4 text-(color:--ui-t3) pr-4">
               Si se desactiva, tu perfil quedará oculto y solo aparecerá para empresas que te dieron like
             </p>
           </div>
@@ -374,8 +375,8 @@ function ExplorationSection({ currentPlan }) {
         {/* Distance */}
         <div className="px-5 py-4" style={DIVIDER}>
           <div className="mb-3 flex items-center justify-between">
-            <p className="text-sm font-semibold text-white/90">Distancia máxima</p>
-            <span className="text-sm font-bold text-[#4A9FFF]">
+            <p className="text-sm font-semibold text-(color:--ui-t1)">Distancia máxima</p>
+            <span className="text-sm font-bold text-(color:--ui-accent-text)">
               {distanceIdx === 5 ? 'Ilimitado' : `${DISTANCE_VALUES[distanceIdx]} km`}
             </span>
           </div>
@@ -387,17 +388,17 @@ function ExplorationSection({ currentPlan }) {
           />
           <div className="mt-1.5 flex justify-between">
             {['5km', '10km', '25km', '50km', '100km', '∞'].map((l) => (
-              <span key={l} className="text-[9px] text-white/30">{l}</span>
+              <span key={l} className="text-[9px] text-(color:--ui-t3)">{l}</span>
             ))}
           </div>
-          <p className="mt-2 text-[11px] text-white/35">
+          <p className="mt-2 text-[11px] text-(color:--ui-t3)">
             Las empresas fuera de este rango no aparecerán en exploración
           </p>
         </div>
 
         {/* Account types */}
         <div className="px-5 py-4">
-          <p className="mb-3 text-sm font-semibold text-white/90">Con qué tipo conectar</p>
+          <p className="mb-3 text-sm font-semibold text-(color:--ui-t1)">Con qué tipo conectar</p>
           <div className="flex flex-wrap gap-2">
             {ACCOUNT_TYPES.map((type) => {
               const active = selectedTypes.includes(type);
@@ -409,7 +410,7 @@ function ExplorationSection({ currentPlan }) {
                   style={
                     active
                       ? { background: '#1871D8', color: '#fff', border: '1px solid rgba(24,113,216,0.6)' }
-                      : { background: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.60)', border: '1px solid rgba(255,255,255,0.10)' }
+                      : { background: 'var(--ui-s2)', color: 'var(--ui-t2)', border: '1px solid var(--ui-s2)' }
                   }
                 >
                   {type}
@@ -439,14 +440,14 @@ function ExplorationSection({ currentPlan }) {
 
       {/* Visibility control */}
       <div className="overflow-hidden rounded-[24px] px-5 py-4" style={CARD_STYLE}>
-        <p className="mb-3 text-sm font-semibold text-white/90">Control de visibilidad</p>
-        <div className="flex overflow-hidden rounded-[12px]" style={{ border: '1px solid rgba(255,255,255,0.10)' }}>
+        <p className="mb-3 text-sm font-semibold text-(color:--ui-t1)">Control de visibilidad</p>
+        <div className="flex overflow-hidden rounded-[12px]" style={{ border: '1px solid var(--ui-s2)' }}>
           <button
             onClick={() => setVisibility('normal')}
             className="flex-1 py-2.5 text-sm font-semibold transition-colors"
             style={{
-              background: visibility === 'normal' ? '#1871D8' : 'rgba(255,255,255,0.04)',
-              color: visibility === 'normal' ? '#fff' : 'rgba(255,255,255,0.50)',
+              background: visibility === 'normal' ? '#1871D8' : 'var(--ui-s1)',
+              color: visibility === 'normal' ? '#fff' : 'var(--ui-t2)',
             }}
           >
             Normal
@@ -455,16 +456,16 @@ function ExplorationSection({ currentPlan }) {
             onClick={() => !isIncognitoLocked && setVisibility('incognito')}
             className="flex flex-1 items-center justify-center gap-1.5 py-2.5 text-sm font-semibold transition-colors"
             style={{
-              background: visibility === 'incognito' ? '#1871D8' : 'rgba(255,255,255,0.04)',
-              color: isIncognitoLocked ? 'rgba(255,255,255,0.25)' : visibility === 'incognito' ? '#fff' : 'rgba(255,255,255,0.50)',
+              background: visibility === 'incognito' ? '#1871D8' : 'var(--ui-s1)',
+              color: isIncognitoLocked ? 'var(--ui-t3)' : visibility === 'incognito' ? '#fff' : 'var(--ui-t2)',
               cursor: isIncognitoLocked ? 'not-allowed' : 'pointer',
-              borderLeft: '1px solid rgba(255,255,255,0.08)',
+              borderLeft: '1px solid var(--ui-s2)',
             }}
           >
             {isIncognitoLocked && <Lock size={11} />}
             Incógnito
             {isIncognitoLocked && (
-              <span className="text-[9px] text-white/25">Growth+</span>
+              <span className="text-[9px] text-(color:--ui-t3)">Growth+</span>
             )}
           </button>
         </div>
@@ -497,11 +498,11 @@ function HelpSection({ onNavigateToChat }) {
             >
               <div
                 className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[12px]"
-                style={{ background: 'rgba(255,255,255,0.08)' }}
+                style={{ background: 'var(--ui-s2)' }}
               >
-                <Icon size={15} className="text-white/60" />
+                <Icon size={15} className="text-(color:--ui-t2)" />
               </div>
-              <span className="flex-1 text-sm font-semibold text-white/90">{section.label}</span>
+              <span className="flex-1 text-sm font-semibold text-(color:--ui-t1)">{section.label}</span>
               {section.isAI ? (
                 <span
                   className="rounded-full px-3 py-1.5 text-[11px] font-semibold text-white"
@@ -511,7 +512,7 @@ function HelpSection({ onNavigateToChat }) {
                 </span>
               ) : (
                 <motion.div animate={{ rotate: isOpen ? 90 : 0 }} transition={{ duration: 0.18 }}>
-                  <ChevronRight size={16} className="text-white/25" />
+                  <ChevronRight size={16} className="text-(color:--ui-t3)" />
                 </motion.div>
               )}
             </button>
@@ -527,14 +528,14 @@ function HelpSection({ onNavigateToChat }) {
                   className="overflow-hidden"
                 >
                   {section.intro && (
-                    <p className="px-5 pb-3 text-[12px] leading-5 text-white/45">{section.intro}</p>
+                    <p className="px-5 pb-3 text-[12px] leading-5 text-(color:--ui-t2)">{section.intro}</p>
                   )}
                   <div className="space-y-px px-4 pb-4">
                     {section.items?.map((item, ii) => (
                       <div
                         key={item.title}
                         className="rounded-[14px] px-4 py-3.5"
-                        style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
+                        style={{ background: 'var(--ui-s1)', border: '1px solid var(--ui-s1)' }}
                       >
                         <div className="flex items-start gap-3">
                           <span
@@ -544,8 +545,8 @@ function HelpSection({ onNavigateToChat }) {
                             {ii + 1}
                           </span>
                           <div>
-                            <p className="text-sm font-semibold text-white/90">{item.title}</p>
-                            <p className="mt-0.5 text-[12px] leading-5 text-white/50">{item.detail}</p>
+                            <p className="text-sm font-semibold text-(color:--ui-t1)">{item.title}</p>
+                            <p className="mt-0.5 text-[12px] leading-5 text-(color:--ui-t2)">{item.detail}</p>
                             {item.hasAICta && (
                               <button
                                 onClick={onNavigateToChat}
@@ -595,12 +596,12 @@ function LegalSection() {
             >
               <div
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px]"
-                style={{ background: 'rgba(255,255,255,0.07)' }}
+                style={{ background: 'var(--ui-s2)' }}
               >
-                <Icon size={14} className="text-white/50" />
+                <Icon size={14} className="text-(color:--ui-t2)" />
               </div>
-              <span className="flex-1 text-sm font-semibold text-white/75">{item.label}</span>
-              <ChevronRight size={14} className="text-white/20" />
+              <span className="flex-1 text-sm font-semibold text-(color:--ui-t2)">{item.label}</span>
+              <ChevronRight size={14} className="text-(color:--ui-t3)" />
             </button>
           );
         })}
@@ -615,9 +616,9 @@ function LegalSection() {
           >
             DP
           </div>
-          <span className="text-[11px] font-semibold text-white/35">Conectados</span>
+          <span className="text-[11px] font-semibold text-(color:--ui-t3)">Conectados</span>
         </div>
-        <p className="text-[10px] text-white/25">v1.2.0 · © 2026</p>
+        <p className="text-[10px] text-(color:--ui-t3)">v1.2.0 · © 2026</p>
       </div>
     </div>
   );
@@ -669,22 +670,22 @@ function SettingsView({ currentPlan = 'starter', onCheckoutSuccess = () => {}, o
               </div>
               <div className="text-left">
                 <p className="text-sm font-semibold" style={{ color: t.text1 }}>
-                  {theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
+                  Modo oscuro
                 </p>
                 <p className="text-xs mt-0.5" style={{ color: t.text3 }}>
-                  {theme === 'dark' ? 'Cambiar a interfaz clara' : 'Cambiar a interfaz oscura'}
+                  {theme === 'dark' ? 'Activado · tocá para volver al modo claro' : 'Desactivado · tocá para activar la interfaz oscura'}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <div
                 className="relative h-6 w-11 rounded-full transition-all duration-300"
-                style={{ background: theme === 'dark' ? t.surface2 : t.accent }}
+                style={{ background: theme === 'dark' ? t.accent : t.surface2 }}
               >
                 <motion.div
                   className="absolute top-0.5 h-5 w-5 rounded-full shadow-sm"
                   style={{ background: '#FFFFFF' }}
-                  animate={{ x: theme === 'dark' ? 2 : 22 }}
+                  animate={{ x: theme === 'dark' ? 22 : 2 }}
                   transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                 />
               </div>

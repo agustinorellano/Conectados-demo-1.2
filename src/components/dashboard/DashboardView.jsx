@@ -100,7 +100,7 @@ const momentumStyle = {
 
 const CARD = {
   background: 'rgba(20,30,48,0.95)',
-  border: '1px solid rgba(255,255,255,0.07)',
+  border: '1px solid var(--ui-s2)',
 };
 
 function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssistant, onOpenAlliances, onOpenAllianceRoom, onNavigateToChats, onToggleMeeting, userPlan }) {
@@ -134,7 +134,7 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
             style={{ background: notifOpen ? t.accentActive : t.surface }}>
             <Bell size={17} strokeWidth={1.8} style={{ color: t.text2 }} />
             {unreadCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold text-white"
+              <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold text-(color:--ui-t1)"
                 style={{ background: '#EF4444' }}>{unreadCount}</span>
             )}
           </button>
@@ -176,8 +176,8 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
               style={CARD}
               initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.25, delay: i * 0.05 }}>
-              <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-white/40">{m.label}</p>
-              <p className="mt-1.5 font-['Space_Grotesk'] text-[26px] font-black leading-none text-white">{m.value}</p>
+              <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-(color:--ui-t3)">{m.label}</p>
+              <p className="mt-1.5 font-['Space_Grotesk'] text-[26px] font-black leading-none text-(color:--ui-t1)">{m.value}</p>
               <p className={`mt-1.5 text-[10px] font-semibold ${m.trendUp ? 'text-emerald-400' : 'text-amber-400'}`}>{m.trend}</p>
             </motion.div>
           ))}
@@ -192,7 +192,7 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
               <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-amber-400">Hoy</p>
               {pendingCount > 0 && (
                 <button type="button" onClick={resolveAll}
-                  className="text-[10px] font-semibold text-white/40 hover:text-white/60 transition">
+                  className="text-[10px] font-semibold text-(color:--ui-t3) hover:text-(color:--ui-t2) transition">
                   Resolver todo
                 </button>
               )}
@@ -201,11 +201,11 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
             {/* Next meeting hero */}
             <div className="rounded-[14px] p-4 mb-4"
               style={{ background: 'linear-gradient(135deg, rgba(16,32,72,0.9), rgba(24,55,130,0.75))', border: '1px solid rgba(24,113,216,0.28)' }}>
-              <p className="text-[10px] font-semibold text-white/50 mb-1">Próxima reunión</p>
-              <p className="font-['Space_Grotesk'] text-[16px] font-bold text-white leading-tight">Bloom Florería</p>
+              <p className="text-[10px] font-semibold text-(color:--ui-t2) mb-1">Próxima reunión</p>
+              <p className="font-['Space_Grotesk'] text-[16px] font-bold text-(color:--ui-t1) leading-tight">Bloom Florería</p>
               <div className="flex items-center gap-1.5 mt-1 mb-3">
-                <Clock size={11} className="text-white/40" />
-                <span className="text-[11px] text-white/50">Hoy · 15:00 — 16:00 hs</span>
+                <Clock size={11} className="text-(color:--ui-t3)" />
+                <span className="text-[11px] text-(color:--ui-t2)">Hoy · 15:00 — 16:00 hs</span>
               </div>
               <button type="button"
                 className="inline-flex w-full items-center justify-center gap-2 rounded-[12px] py-2.5 text-[13px] font-semibold text-white transition"
@@ -221,16 +221,16 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
                 {reminders.map(r => (
                   <motion.div key={r.id} layout animate={{ opacity: r.done ? 0.4 : 1 }}
                     className="flex items-center gap-3 rounded-[12px] px-3 py-2.5"
-                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
+                    style={{ background: 'var(--ui-s1)', border: '1px solid var(--ui-s2)' }}>
                     <button type="button" onClick={() => toggleReminder(r.id)}
                       className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all ${
-                        r.done ? 'border-emerald-400 bg-emerald-400 text-white' : 'border-white/20 bg-transparent text-transparent hover:border-emerald-400'
+                        r.done ? 'border-emerald-400 bg-emerald-400 text-(color:--ui-t1)' : 'border-(--ui-s3) bg-transparent text-transparent hover:border-emerald-400'
                       }`}>
                       <Check size={10} />
                     </button>
                     <div className="min-w-0 flex-1">
-                      <p className={`text-[12px] font-medium leading-snug ${r.done ? 'text-white/35 line-through' : 'text-white/85'}`}>{r.text}</p>
-                      <p className="text-[10px] text-white/35 mt-0.5">{r.sub}</p>
+                      <p className={`text-[12px] font-medium leading-snug ${r.done ? 'text-(color:--ui-t3) line-through' : 'text-(color:--ui-t1)'}`}>{r.text}</p>
+                      <p className="text-[10px] text-(color:--ui-t3) mt-0.5">{r.sub}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -240,7 +240,7 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
 
           {/* PIPELINE DE ALIANZAS */}
           <section className="rounded-[20px] p-5" style={CARD}>
-            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#4A9FFF] mb-4">Pipeline de alianzas</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-(color:--ui-accent-text) mb-4">Pipeline de alianzas</p>
             <div className="space-y-2.5">
               {PIPELINE.map((p, i) => (
                 <motion.div key={p.stage}
@@ -248,10 +248,10 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
                   transition={{ duration: 0.25, delay: i * 0.06 }}
                   className="flex items-center gap-3">
                   <div className="w-[90px] shrink-0">
-                    <p className="text-[11px] font-medium text-white/55">{p.stage}</p>
+                    <p className="text-[11px] font-medium text-(color:--ui-t2)">{p.stage}</p>
                   </div>
                   {/* Bar */}
-                  <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                  <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ background: 'var(--ui-s1)' }}>
                     <motion.div className="h-full rounded-full"
                       style={{ background: p.color }}
                       initial={{ width: 0 }}
@@ -269,15 +269,15 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
             <div className="my-4 border-t border-white/[0.07]" />
 
             {/* Actividad reciente */}
-            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/30 mb-3">Actividad reciente</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-(color:--ui-t3) mb-3">Actividad reciente</p>
             <div className="space-y-2">
               {RECENT_ACTIVITY.map(a => (
                 <div key={a.id} className="flex items-start gap-2.5">
                   <div className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: a.dot }} />
                   <div className="min-w-0 flex-1">
-                    <p className="text-[12px] text-white/75 leading-snug">{a.text}</p>
+                    <p className="text-[12px] text-(color:--ui-t2) leading-snug">{a.text}</p>
                   </div>
-                  <span className="shrink-0 text-[10px] text-white/30 whitespace-nowrap">{a.time}</span>
+                  <span className="shrink-0 text-[10px] text-(color:--ui-t3) whitespace-nowrap">{a.time}</span>
                 </div>
               ))}
             </div>
@@ -286,29 +286,29 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
 
         {/* ── 3. AGENDA COMPACTA ── */}
         <section className="rounded-[20px] p-5" style={CARD}>
-          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#4A9FFF] mb-4">Próximas reuniones</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-(color:--ui-accent-text) mb-4">Próximas reuniones</p>
           <div className="space-y-2">
             {UPCOMING_MEETINGS.map(m => (
               <div key={m.id}>
                 <button type="button" onClick={() => setExpandedMeeting(expandedMeeting === m.id ? null : m.id)}
                   className="flex w-full items-center gap-3 rounded-[14px] px-4 py-3 text-left transition hover:bg-white/[0.04]"
-                  style={{ background: m.isToday ? 'rgba(24,113,216,0.12)' : 'rgba(255,255,255,0.03)', border: `1px solid ${m.isToday ? 'rgba(24,113,216,0.25)' : 'rgba(255,255,255,0.07)'}` }}>
+                  style={{ background: m.isToday ? 'rgba(24,113,216,0.12)' : 'rgba(255,255,255,0.03)', border: `1px solid ${m.isToday ? 'rgba(24,113,216,0.25)' : 'var(--ui-s2)'}` }}>
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] text-[9px] font-black text-white"
-                    style={{ background: m.isToday ? 'rgba(24,113,216,0.5)' : 'rgba(255,255,255,0.08)' }}>
+                    style={{ background: m.isToday ? 'rgba(24,113,216,0.5)' : 'var(--ui-s2)' }}>
                     {m.company.slice(0, 2).toUpperCase()}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[13px] font-semibold text-white/90">{m.company}</p>
+                    <p className="text-[13px] font-semibold text-(color:--ui-t1)">{m.company}</p>
                     <div className="flex items-center gap-1.5 mt-0.5">
-                      <Clock size={10} className="text-white/35" />
-                      <p className="text-[11px] text-white/45">{m.time}</p>
-                      <span className="text-white/20">·</span>
-                      <p className="text-[11px] text-white/35">{m.tasks.length} {m.tasks.length === 1 ? 'tarea' : 'tareas'}</p>
+                      <Clock size={10} className="text-(color:--ui-t3)" />
+                      <p className="text-[11px] text-(color:--ui-t2)">{m.time}</p>
+                      <span className="text-(color:--ui-t3)">·</span>
+                      <p className="text-[11px] text-(color:--ui-t3)">{m.tasks.length} {m.tasks.length === 1 ? 'tarea' : 'tareas'}</p>
                     </div>
                   </div>
                   {expandedMeeting === m.id
-                    ? <ChevronUp size={14} className="text-white/30 shrink-0" />
-                    : <ChevronDown size={14} className="text-white/30 shrink-0" />}
+                    ? <ChevronUp size={14} className="text-(color:--ui-t3) shrink-0" />
+                    : <ChevronDown size={14} className="text-(color:--ui-t3) shrink-0" />}
                 </button>
                 <AnimatePresence initial={false}>
                   {expandedMeeting === m.id && (
@@ -319,7 +319,7 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
                         {m.tasks.map((task, i) => (
                           <div key={i} className="flex items-center gap-2">
                             <div className="h-1.5 w-1.5 rounded-full bg-[#4A9FFF]" />
-                            <p className="text-[12px] text-white/55">{task}</p>
+                            <p className="text-[12px] text-(color:--ui-t2)">{task}</p>
                           </div>
                         ))}
                       </div>
@@ -335,11 +335,11 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
         <section className="overflow-hidden rounded-[24px]"
           style={{
             background: 'linear-gradient(160deg, rgba(10,15,32,0.93) 0%, rgba(8,20,46,0.90) 100%)',
-            border: '1px solid rgba(255,255,255,0.07)',
+            border: '1px solid var(--ui-s2)',
           }}>
           <div className="p-5">
             <div className="flex items-center justify-between gap-3">
-              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#4A9FFF]">Notas IA</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-(color:--ui-accent-text)">Notas IA</p>
               <button type="button" onClick={onOpenAllianceRoom}
                 className="inline-flex shrink-0 items-center gap-1.5 rounded-[14px] px-3 py-2 text-xs font-bold text-white transition hover:-translate-y-0.5"
                 style={{ background: 'linear-gradient(135deg, #1A2A48, #35577D)' }}>
@@ -347,31 +347,31 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
                 Alliance Room
               </button>
             </div>
-            <h2 className="mt-2 font-['Space_Grotesk'] text-xl font-bold tracking-tight text-white">Notes Alianzas</h2>
-            <p className="mt-0.5 text-[11px] text-white/40">Resúmenes generados por IA de tus reuniones</p>
+            <h2 className="mt-2 font-['Space_Grotesk'] text-xl font-bold tracking-tight text-(color:--ui-t1)">Notes Alianzas</h2>
+            <p className="mt-0.5 text-[11px] text-(color:--ui-t3)">Resúmenes generados por IA de tus reuniones</p>
 
             <div className="mt-4 space-y-2">
               {ALLIANCE_NOTES.map((note, i) => (
                 <motion.div key={note.id} className="overflow-hidden rounded-[18px]"
-                  style={{ border: '1px solid rgba(255,255,255,0.09)' }}
+                  style={{ border: '1px solid var(--ui-s2)' }}
                   initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.22, delay: i * 0.05 }}>
                   <button type="button"
                     className="flex w-full items-start gap-3 px-4 py-3.5 text-left transition hover:bg-white/[0.07]"
-                    style={{ background: 'rgba(255,255,255,0.04)' }}
+                    style={{ background: 'var(--ui-s1)' }}
                     onClick={() => setExpandedNote(expandedNote === note.id ? null : note.id)}>
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-semibold text-white/90">{note.company}</p>
-                      <p className="mt-0.5 text-[11px] text-white/40">{note.date} · {note.duration}</p>
+                      <p className="text-sm font-semibold text-(color:--ui-t1)">{note.company}</p>
+                      <p className="mt-0.5 text-[11px] text-(color:--ui-t3)">{note.date} · {note.duration}</p>
                       <div className="mt-2 flex flex-wrap items-center gap-1.5">
                         <span className={`rounded-full border px-2 py-0.5 text-[10px] font-bold ${scoreStyle(note.score)}`}>{note.score}/100</span>
                         <span className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${momentumStyle[note.momentumColor]}`}>{note.momentum}</span>
-                        <span className="text-[11px] text-white/35">{note.agreements} ac · {note.tasks} tasks</span>
+                        <span className="text-[11px] text-(color:--ui-t3)">{note.agreements} ac · {note.tasks} tasks</span>
                       </div>
                     </div>
                     {expandedNote === note.id
-                      ? <ChevronUp size={14} className="text-white/30 shrink-0 mt-0.5" />
-                      : <ChevronDown size={14} className="text-white/30 shrink-0 mt-0.5" />}
+                      ? <ChevronUp size={14} className="text-(color:--ui-t3) shrink-0 mt-0.5" />
+                      : <ChevronDown size={14} className="text-(color:--ui-t3) shrink-0 mt-0.5" />}
                   </button>
                   <AnimatePresence initial={false}>
                     {expandedNote === note.id && (
@@ -379,15 +379,15 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
                         exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.22 }}
                         className="overflow-hidden" style={{ background: 'rgba(255,255,255,0.03)' }}>
                         <div className="px-4 pb-4 pt-3">
-                          <p className="text-sm leading-relaxed text-white/65">{note.summary}</p>
+                          <p className="text-sm leading-relaxed text-(color:--ui-t2)">{note.summary}</p>
                           {note.agreementList?.length > 0 && (
                             <div className="mt-3">
-                              <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/40">Acuerdos</p>
+                              <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-(color:--ui-t3)">Acuerdos</p>
                               <div className="space-y-1">
                                 {note.agreementList.map((ag, j) => (
                                   <div key={j} className="flex items-center gap-2">
                                     <div className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                                    <span className="text-xs text-white/65">{ag}</span>
+                                    <span className="text-xs text-(color:--ui-t2)">{ag}</span>
                                   </div>
                                 ))}
                               </div>
@@ -407,11 +407,11 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
         <section className="rounded-[24px] p-5" style={CARD}>
           <div className="flex items-start justify-between gap-3 mb-4">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#4A9FFF]">Match Activos</p>
-              <h2 className="mt-1 font-['Space_Grotesk'] text-lg font-bold tracking-tight text-white">Equipos Conectados</h2>
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-(color:--ui-accent-text)">Match Activos</p>
+              <h2 className="mt-1 font-['Space_Grotesk'] text-lg font-bold tracking-tight text-(color:--ui-t1)">Equipos Conectados</h2>
             </div>
             <button type="button" onClick={onNavigateToChats}
-              className="inline-flex items-center gap-1.5 rounded-[14px] bg-white/10 px-3 py-2 text-xs font-semibold text-white/70 transition hover:bg-white/15">
+              className="inline-flex items-center gap-1.5 rounded-[14px] bg-(--ui-s2) px-3 py-2 text-xs font-semibold text-(color:--ui-t2) transition hover:bg-(--ui-s3)">
               Ver chats <ArrowRight size={13} />
             </button>
           </div>
@@ -419,7 +419,7 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
             {teamCollab.map((team, i) => (
               <motion.div key={team.id}
                 className="flex items-center gap-3 rounded-[18px] px-4 py-3.5"
-                style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
+                style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--ui-s2)' }}
                 initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.22, delay: i * 0.05 }}>
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] font-['Space_Grotesk'] text-xs font-bold text-white"
@@ -427,8 +427,8 @@ function DashboardView({ dashboardData, meetings = [], onAreaSelect, onOpenAssis
                   {team.initials}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[13px] font-semibold text-white/90">{team.name}</p>
-                  <p className="mt-0.5 truncate text-[11px] text-white/40">{team.task}</p>
+                  <p className="text-[13px] font-semibold text-(color:--ui-t1)">{team.name}</p>
+                  <p className="mt-0.5 truncate text-[11px] text-(color:--ui-t3)">{team.task}</p>
                 </div>
                 <span className={`shrink-0 rounded-full border px-2.5 py-1 text-[11px] font-semibold ${statusStyle[team.statusTone]}`}>
                   {team.status}

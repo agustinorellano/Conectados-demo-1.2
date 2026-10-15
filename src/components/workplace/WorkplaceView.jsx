@@ -32,7 +32,7 @@ const PRIORITIES = ['urgente', 'alta', 'media', 'baja'];
 const COMMERCIAL_STATUSES = ['negociación', 'activo', 'cerrado'];
 
 const COLUMNS = [
-  { key: 'backlog',     label: 'Backlog',      color: 'border-white/10'    },
+  { key: 'backlog',     label: 'Backlog',      color: 'border-(--ui-s2)'    },
   { key: 'en_progreso', label: 'En Ejecución', color: 'border-blue-400/20' },
   { key: 'revision',    label: 'En Revisión',  color: 'border-amber-400/20'},
   { key: 'completado',  label: 'Cerrado ✓',    color: 'border-emerald-400/20' },
@@ -483,7 +483,7 @@ function AllianceFeaturedCard({ alliance, onOpen }) {
       className="relative overflow-hidden rounded-[24px] cursor-pointer"
       style={{
         background: 'rgba(20,30,48,0.95)',
-        border: '1px solid rgba(255,255,255,0.07)',
+        border: '1px solid var(--ui-s2)',
         boxShadow: isUrgent
           ? `0 0 0 1.5px rgba(239,68,68,0.25), 0 8px 32px rgba(20,30,48,0.1), 0 2px 8px rgba(20,30,48,0.06)`
           : `0 6px 28px rgba(20,30,48,0.09), 0 2px 6px rgba(20,30,48,0.05)`,
@@ -684,7 +684,7 @@ function AllianceIconItem({ alliance, onOpen, size = 64 }) {
               className="flex h-full w-full items-center justify-center"
               style={{
                 background: `linear-gradient(145deg, ${g.a} 0%, ${g.b} 100%)`,
-                boxShadow: `0 4px 14px ${g.shadow}, inset 0 1px 1px rgba(255,255,255,0.25)`,
+                boxShadow: `0 4px 14px ${g.shadow}, inset 0 1px 1px var(--ui-t3)`,
               }}
             >
               <span
@@ -818,7 +818,7 @@ function AllianceEcosystem({ allianceGroups, onOpen }) {
             style={{
               width: HUB_SIZE, height: HUB_SIZE, borderRadius: '50%',
               background: 'linear-gradient(145deg, #141E30 0%, #35577D 100%)',
-              boxShadow: '0 8px 28px rgba(20,30,48,0.45), 0 2px 8px rgba(20,30,48,0.25), inset 0 1px 1px rgba(255,255,255,0.18)',
+              boxShadow: '0 8px 28px rgba(20,30,48,0.45), 0 2px 8px rgba(20,30,48,0.25), inset 0 1px 1px var(--ui-s3)',
               fontSize: 22,
             }}
           >
@@ -987,7 +987,7 @@ function AllianceDetailSheet({ alliance, onClose, onOpenOpp }) {
                 }`}
               >
                 {tab.label}
-                <span className={`ml-1.5 text-[10px] ${isActive ? 'text-white/60' : 'text-slate-400'}`}>
+                <span className={`ml-1.5 text-[10px] ${isActive ? 'text-(color:--ui-t2)' : 'text-slate-400'}`}>
                   {count}
                 </span>
               </button>
@@ -1090,7 +1090,7 @@ function ExpandableFAB({ onAction }) {
         transition={{ type: 'spring', damping: 18, stiffness: 320 }}
         whileTap={{ scale: 0.92 }}
         className="flex h-14 w-14 items-center justify-center rounded-full bg-[#141E30] text-white"
-        style={{ boxShadow: '0 8px 32px rgba(20,30,48,0.38), 0 2px 8px rgba(20,30,48,0.22), inset 0 1px 0 rgba(255,255,255,0.08)' }}
+        style={{ boxShadow: '0 8px 32px rgba(20,30,48,0.38), 0 2px 8px rgba(20,30,48,0.22), inset 0 1px 0 var(--ui-s2)' }}
       >
         <Plus className="h-6 w-6" />
       </motion.button>
@@ -1141,7 +1141,7 @@ function FilterDropdown({ quickFilter, setQuickFilter, statusFilter, setStatusFi
       >
         <SlidersHorizontal className="h-4 w-4" />
         {activeCount > 0 && (
-          <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#1871D8] text-[9px] font-bold text-white shadow-sm">
+          <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#1871D8] text-[9px] font-bold text-(color:--ui-t1) shadow-sm">
             {activeCount}
           </span>
         )}
@@ -1486,7 +1486,7 @@ function MobileKanban({ filtered, onOpen, onAddCard }) {
               }`}
             >
               {label}
-              <span className={`ml-1.5 text-[11px] font-normal ${isActive ? 'text-white/60' : 'text-slate-400'}`}>{count}</span>
+              <span className={`ml-1.5 text-[11px] font-normal ${isActive ? 'text-(color:--ui-t2)' : 'text-slate-400'}`}>{count}</span>
             </button>
           );
         })}
@@ -1539,11 +1539,11 @@ function KanbanBoard({ filtered, onDrop, onOpen, onAddCard }) {
             <div className={`flex items-center justify-between rounded-t-[20px] border-b px-4 py-3 ${color}`}
               style={{ background: 'rgba(20,30,48,0.95)' }}>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-white/80">{label}</span>
-                <span className="rounded-full bg-white/10 px-2 py-0.5 text-[11px] font-bold text-white/50">{cards.length}</span>
+                <span className="text-sm font-semibold text-(color:--ui-t1)">{label}</span>
+                <span className="rounded-full bg-(--ui-s2) px-2 py-0.5 text-[11px] font-bold text-(color:--ui-t2)">{cards.length}</span>
               </div>
               <button type="button" onClick={() => setAddingTo(addingTo === key ? null : key)}
-                className="p-1 rounded-lg hover:bg-white/10 transition text-white/40 hover:text-white/70">
+                className="p-1 rounded-lg hover:bg-(--ui-s2) transition text-(color:--ui-t3) hover:text-(color:--ui-t2)">
                 <Plus className="w-4 h-4" />
               </button>
             </div>

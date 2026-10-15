@@ -367,7 +367,7 @@ function CalendarWidget({ meetings = [], onToggleMeeting, onScheduleMeeting }) {
                 {selectedDate === todayIso() ? 'Hoy' : 'Día seleccionado'}
               </p>
               {selectedDayMeetings.length > 0 && (
-                <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#141E30] text-[10px] font-bold text-white">
+                <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#141E30] text-[10px] font-bold text-(color:--ui-t1)">
                   {selectedDayMeetings.length}
                 </span>
               )}

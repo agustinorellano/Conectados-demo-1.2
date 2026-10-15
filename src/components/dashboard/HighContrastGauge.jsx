@@ -41,7 +41,7 @@ function HighContrastGauge({
           arcWidth: 10,
           text: 'text-[2.35rem]',
           labelTop: dark ? 'text-emerald-100/70' : 'text-slate-500',
-          badge: dark ? 'bg-white/10 text-emerald-100' : currentTone.badge
+          badge: dark ? 'bg-(--ui-s2) text-emerald-100' : currentTone.badge
         }
       : {
           width: 228,
@@ -49,7 +49,7 @@ function HighContrastGauge({
           arcWidth: 12,
           text: 'text-[3.6rem]',
           labelTop: dark ? 'text-emerald-100/70' : 'text-slate-500',
-          badge: dark ? 'bg-white/10 text-emerald-100' : currentTone.badge
+          badge: dark ? 'bg-(--ui-s2) text-emerald-100' : currentTone.badge
         };
 
   const centerX = dimensions.width / 2;
@@ -93,7 +93,7 @@ function HighContrastGauge({
           <path
             d={arcPath}
             fill="none"
-            stroke={dark ? 'rgba(255,255,255,0.12)' : '#F2F2F2'}
+            stroke={dark ? 'var(--ui-s3)' : '#F2F2F2'}
             strokeLinecap="round"
             strokeWidth={dimensions.arcWidth}
           />

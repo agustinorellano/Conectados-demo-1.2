@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import { AnimatePresence, motion } from 'framer-motion';
-import WebSidebar from './WebSidebar';
+import WebTopNav from './WebTopNav';
 import DashboardView from '../components/dashboard/DashboardView';
 import SwipeBoard from '../components/matchmaking/SwipeBoard';
 import ProfileView from '../components/profile/ProfileView';
@@ -222,12 +222,13 @@ function WebApp() {
   const fullBleed = ['alliances', 'profile', 'chats', 'workplace', 'likes'].includes(activeView);
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: t.bg, transition: 'background 0.3s ease' }}>
+    <div className="relative flex h-screen flex-col overflow-hidden" style={{ background: t.bg, transition: 'background 0.3s ease' }}>
       {showAllianceRoom && (
         <AllianceRoomView onExit={() => setShowAllianceRoom(false)} />
       )}
 
-      <WebSidebar
+      {/* Isla de navegación flotante */}
+      <WebTopNav
         activeView={activeView}
         onNavigate={navigate}
         userPlan={userPlan}
@@ -235,7 +236,8 @@ function WebApp() {
         likesCount={pendingLikes.length}
       />
 
-      <div className="flex flex-1 flex-col min-w-0">
+      {/* El contenido empieza debajo de la isla */}
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col pt-[68px]">
         <AnimatePresence mode="wait">
           {fullBleed ? (
             <motion.div
