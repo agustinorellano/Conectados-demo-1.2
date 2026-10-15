@@ -6,7 +6,6 @@ import {
   Heart,
   MessageSquare,
 } from 'lucide-react';
-import { useTheme } from '../../context/ThemeContext';
 
 // Dashboard y Proyectos están ocultos por la simplificación de producto (las vistas siguen en App.jsx).
 const navItems = [
@@ -20,31 +19,20 @@ const navItems = [
 const spring = { type: 'spring', stiffness: 460, damping: 36, mass: 0.7 };
 
 /**
- * Isla dinámica inferior con efecto "liquid glass" (estilo iOS).
- * Flota sobre el contenido, translúcida: la sección activa se expande con su nombre y las demás quedan como íconos.
+ * Isla dinámica inferior (oscura, como la barra original).
+ * Flota sobre el contenido: la sección activa se expande con su nombre y las demás quedan como íconos.
  * Cada vista reserva espacio abajo para que nada quede tapado (ver App.jsx).
  */
 function BottomNav({ activeView, onNavigate, likesCount = 0 }) {
-  const { t } = useTheme();
-  const dark = t.isDark;
-
-  const glass = dark
-    ? {
-        background: 'linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.06) 100%)',
-        border: '1px solid rgba(255,255,255,0.22)',
-        boxShadow:
-          '0 14px 36px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.40), inset 0 -1px 0 rgba(255,255,255,0.06)',
-      }
-    : {
-        background: 'linear-gradient(180deg, rgba(255,255,255,0.72) 0%, rgba(255,255,255,0.46) 100%)',
-        border: '1px solid rgba(255,255,255,0.75)',
-        boxShadow:
-          '0 14px 36px rgba(15,23,42,0.16), inset 0 1px 0 rgba(255,255,255,0.95), inset 0 -1px 0 rgba(15,23,42,0.05)',
-      };
-
-  const idleColor   = dark ? 'rgba(255,255,255,0.78)' : '#515257';
-  const activeColor = dark ? '#FFFFFF' : '#1D1D1F';
-  const capsule     = dark ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.85)';
+  // Siempre oscura (igual en tema claro y oscuro), como la barra anterior de la app.
+  const pill = {
+    background: "rgba(16,20,34,0.88)",
+    border: "1px solid rgba(255,255,255,0.09)",
+    boxShadow: "0 14px 36px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.06)",
+  };
+  const idleColor = "rgba(255,255,255,0.55)";
+  const activeColor = "#FFFFFF";
+  const capsule = "linear-gradient(135deg, #243B55 0%, #35577D 100%)";
 
   return (
     <div
@@ -57,7 +45,7 @@ function BottomNav({ activeView, onNavigate, likesCount = 0 }) {
         aria-label="Navegación principal"
         className="pointer-events-auto flex max-w-full items-center gap-0.5 rounded-full p-1.5"
         style={{
-          ...glass,
+          ...pill,
           backdropFilter: 'blur(26px) saturate(190%)',
           WebkitBackdropFilter: 'blur(26px) saturate(190%)',
         }}
@@ -81,12 +69,7 @@ function BottomNav({ activeView, onNavigate, likesCount = 0 }) {
                   layoutId="bottom-nav-active"
                   transition={spring}
                   className="absolute inset-0 rounded-full"
-                  style={{
-                    background: capsule,
-                    boxShadow: dark
-                      ? 'inset 0 1px 0 rgba(255,255,255,0.35)'
-                      : '0 2px 8px rgba(15,23,42,0.10), inset 0 1px 0 rgba(255,255,255,1)',
-                  }}
+                  style={{ background: capsule, boxShadow: "inset 0 1px 0 rgba(255,255,255,0.10)" }}
                 />
               )}
 

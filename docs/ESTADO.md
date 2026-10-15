@@ -74,7 +74,7 @@ Barra inferior: **Empresa · Likes · Explorar · Chats · Asistente** (antes: E
   - **♥ Conectar** (igual que antes; doble toque sobre la tarjeta en móvil), **★ Guardar**, compartir y ver perfil.
   - Web: rueda/trackpad o ↑/↓ navegan, ← pasa, → conecta, S guarda. Riel de puntos en el borde derecho indica la posición. Al final del feed: "Llegaste al final" + ajustar filtros.
   - Código: `SwipeBoard.jsx` (`renderFeed`, `resolveCompany`, `FeedRail`, `EndOfFeed`). Se eliminó `CardStack.jsx` (el arrastre horizontal ya no existe).
-- **App móvil:** la barra inferior pasó a ser una **isla dinámica flotante con vidrio transparente (liquid glass, estilo iOS)** (`BottomNav.jsx`): la sección activa se expande con su nombre, las demás quedan como íconos. Flota sobre el contenido; cada vista reserva espacio abajo (`navSpace` en `App.jsx`) y en Explorar los botones quedan por encima de la isla. En la web la isla superior se mantiene como estaba.
+- **App móvil:** la barra inferior pasó a ser una **isla dinámica flotante oscura** (`BottomNav.jsx`; se probó una versión de vidrio transparente tipo iOS y se descartó por verse rara sobre contenido claro): la sección activa se expande con su nombre, las demás quedan como íconos. Flota sobre el contenido; cada vista reserva espacio abajo (`navSpace` en `App.jsx`) y en Explorar los botones quedan por encima de la isla. En la web la isla superior se mantiene como estaba.
 
 ## Explorar (web): rediseño de la ficha
 Criterio: en web no se copia la lógica móvil. Se priorizó **claridad, jerarquía y navegación fácil** (referencias: Pinterest / Instagram para la galería, pero como plataforma directa de conexión, no red social).
