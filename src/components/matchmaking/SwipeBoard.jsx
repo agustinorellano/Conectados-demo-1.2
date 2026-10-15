@@ -609,10 +609,11 @@ function ExploreProfileCard({ company, p, actions, saved }) {
   // El tamaño de letra va en línea porque una regla global de "button" pisa las clases de Tailwind.
   const tones = p.isDark
     ? {
-        pass:  { color: '#F87171', background: 'rgba(248,113,113,0.12)', border: '1px solid rgba(248,113,113,0.30)' },
-        save:  { color: '#FBBF24', background: 'rgba(251,191,36,0.12)',  border: '1px solid rgba(251,191,36,0.30)' },
-        saved: { color: '#FBBF24', background: 'rgba(251,191,36,0.24)',  border: '1px solid rgba(251,191,36,0.55)' },
-        share: { color: '#38BDF8', background: 'rgba(56,189,248,0.12)',  border: '1px solid rgba(56,189,248,0.30)' },
+        // En oscuro: botones blancos con el ícono y la etiqueta de su color, para que resalten
+        pass:  { color: '#E5484D', background: '#FFFFFF', border: '1px solid transparent', boxShadow: '0 6px 16px rgba(0,0,0,0.35)' },
+        save:  { color: '#D97706', background: '#FFFFFF', border: '1px solid transparent', boxShadow: '0 6px 16px rgba(0,0,0,0.35)' },
+        saved: { color: '#B45309', background: '#FEF3C7', border: '1px solid #F59E0B',    boxShadow: '0 6px 16px rgba(0,0,0,0.35)' },
+        share: { color: '#0284C7', background: '#FFFFFF', border: '1px solid transparent', boxShadow: '0 6px 16px rgba(0,0,0,0.35)' },
       }
     : {
         pass:  { color: '#E5484D', background: 'rgba(229,72,77,0.09)',  border: '1px solid rgba(229,72,77,0.26)' },
