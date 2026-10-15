@@ -234,6 +234,7 @@ const industryBg = {
 /* ── Desktop palette — oscuro (original) y claro (Conectado Flow / Apple) ── */
 const EXPLORE_PALETTE = {
   dark: {
+    isDark: true,
     bg: 'linear-gradient(160deg, #070C18 0%, #0F1828 55%, #141E30 100%)',
     name: '#FFFFFF', body: 'rgba(255,255,255,0.55)', meta: 'rgba(255,255,255,0.40)', label: 'rgba(255,255,255,0.30)',
     avatarRing: '#0D1424', avatarShadow: '0 10px 28px rgba(0,0,0,0.45)',
@@ -254,6 +255,7 @@ const EXPLORE_PALETTE = {
     divider: 'rgba(255,255,255,0.09)',
   },
   light: {
+    isDark: false,
     bg: '#F5F6FA',
     name: '#1D1D1F', body: '#515257', meta: '#86868B', label: '#86868B',
     avatarRing: '#FFFFFF', avatarShadow: '0 8px 24px rgba(15,23,42,0.14)',
@@ -436,8 +438,28 @@ function ExploreProfileCard({ company, p, actions, saved }) {
     { title: 'Qué busca', icon: Star, tags: seekTags, tone: p.seek },
   ].filter(s => s.tags.length > 0);
 
-  // Botones cuadrados redondeados, uno al lado del otro
-  const square = 'flex h-[72px] w-[72px] flex-col items-center justify-center gap-1.5 rounded-[20px] text-[11px] font-semibold transition hover:-translate-y-0.5 active:scale-95';
+  // Botones cuadrados redondeados, uno al lado del otro; cada uno con su color.
+  // El tamaño de letra va en línea porque una regla global de "button" pisa las clases de Tailwind.
+  const tones = p.isDark
+    ? {
+        pass:  { color: '#F87171', background: 'rgba(248,113,113,0.12)', border: '1px solid rgba(248,113,113,0.30)' },
+        save:  { color: '#FBBF24', background: 'rgba(251,191,36,0.12)',  border: '1px solid rgba(251,191,36,0.30)' },
+        saved: { color: '#FBBF24', background: 'rgba(251,191,36,0.24)',  border: '1px solid rgba(251,191,36,0.55)' },
+        share: { color: '#38BDF8', background: 'rgba(56,189,248,0.12)',  border: '1px solid rgba(56,189,248,0.30)' },
+      }
+    : {
+        pass:  { color: '#E5484D', background: 'rgba(229,72,77,0.09)',  border: '1px solid rgba(229,72,77,0.26)' },
+        save:  { color: '#D97706', background: 'rgba(245,158,11,0.10)', border: '1px solid rgba(245,158,11,0.30)' },
+        saved: { color: '#B45309', background: 'rgba(245,158,11,0.22)', border: '1px solid rgba(245,158,11,0.50)' },
+        share: { color: '#0284C7', background: 'rgba(14,165,233,0.10)', border: '1px solid rgba(14,165,233,0.28)' },
+      };
+  const actionButtons = [
+    { key: 'pass',  label: 'Pasar',    icon: <X size={22} strokeWidth={2.3} />,                         onClick: actions.onPass,  style: tones.pass },
+    { key: 'save',  label: saved ? 'Guardada' : 'Guardar', icon: <Star size={21} fill={saved ? 'currentColor' : 'none'} />, onClick: actions.onSave, style: saved ? tones.saved : tones.save },
+    { key: 'share', label: 'Compartir', icon: <Share2 size={20} />,                                      onClick: actions.onShare, style: tones.share },
+    { key: 'like',  label: 'Conectar',  icon: <Heart size={22} strokeWidth={2.2} />,                     onClick: actions.onLike,
+      style: { color: '#FFFFFF', background: 'linear-gradient(135deg, #455BE8, #2F43C8)', border: '1px solid transparent', boxShadow: '0 10px 22px rgba(69,91,232,0.38)' } },
+  ];
   const kbd = { background: p.pillBg, color: p.pillText };
 
   return (
@@ -517,22 +539,14 @@ function ExploreProfileCard({ company, p, actions, saved }) {
         {/* ── Acciones: cuadrados redondeados en fila (en escritorio van junto a los datos, no flotando) ── */}
         <div className="shrink-0 border-t pt-5" style={{ borderColor: p.divider }}>
           <div className="flex items-center gap-3">
-            <button type="button" onClick={actions.onPass} className={square}
-              style={{ background: p.btnBg, border: p.btnBorder, color: '#E5484D' }}>
-              <X size={22} strokeWidth={2.3} /> Pasar
-            </button>
-            <button type="button" onClick={actions.onSave} className={square}
-              style={{ background: p.btnBg, border: p.btnBorder, color: saved ? '#D97706' : p.btnText }}>
-              <Star size={21} fill={saved ? 'currentColor' : 'none'} /> {saved ? 'Guardada' : 'Guardar'}
-            </button>
-            <button type="button" onClick={actions.onShare} className={square}
-              style={{ background: p.btnBg, border: p.btnBorder, color: p.btnText }}>
-              <Share2 size={20} /> Compartir
-            </button>
-            <button type="button" onClick={actions.onLike} className={`${square} text-white`}
-              style={{ background: 'linear-gradient(135deg, #455BE8, #2F43C8)', boxShadow: '0 10px 22px rgba(69,91,232,0.38)' }}>
-              <Heart size={22} strokeWidth={2.2} /> Conectar
-            </button>
+            {actionButtons.map(({ key, label, icon, onClick, style }) => (
+              <button key={key} type="button" onClick={onClick}
+                className="flex h-[76px] w-[88px] shrink-0 flex-col items-center justify-center gap-2 rounded-[20px] transition hover:-translate-y-0.5 active:scale-95"
+                style={{ ...style, fontSize: 12, lineHeight: 1, fontWeight: 600, whiteSpace: 'nowrap' }}>
+                {icon}
+                <span>{label}</span>
+              </button>
+            ))}
           </div>
           <div className="mt-4 flex items-center justify-between text-[11px]" style={{ color: p.label }}>
             <span className="flex items-center gap-2">
@@ -541,7 +555,7 @@ function ExploreProfileCard({ company, p, actions, saved }) {
               <kbd className="ml-1 rounded-md px-1.5 py-0.5 font-sans" style={kbd}>↑↓</kbd> Navegar
             </span>
             {actions.canUndo && (
-              <button type="button" onClick={actions.onUndo} className="flex items-center gap-1 font-semibold transition hover:opacity-70" style={{ color: p.accent }}>
+              <button type="button" onClick={actions.onUndo} className="flex items-center gap-1 font-semibold transition hover:opacity-70" style={{ color: p.accent, fontSize: 11 }}>
                 <RotateCcw size={12} /> Deshacer
               </button>
             )}
