@@ -188,11 +188,11 @@ function LikesView({ likes, onAccept, onDismiss }) {
   const { t } = useTheme();
   const [filter, setFilter] = useState('all');
   const [mode, setMode] = useState(() => {
-    try { return localStorage.getItem('likes-view-mode') === 'cards' ? 'cards' : 'rows'; } catch { return 'rows'; }
+    try { return localStorage.getItem('likes-view-mode-v2') === 'rows' ? 'rows' : 'cards'; } catch { return 'cards'; }
   });
   const changeMode = (next) => {
     setMode(next);
-    try { localStorage.setItem('likes-view-mode', next); } catch { /* sin storage */ }
+    try { localStorage.setItem('likes-view-mode-v2', next); } catch { /* sin storage */ }
   };
   const [selectedId, setSelectedId] = useState(null);
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -246,7 +246,7 @@ function LikesView({ likes, onAccept, onDismiss }) {
         {/* Selector de vista: filas / tarjetas */}
         <div className="ml-auto flex rounded-full p-0.5" role="group" aria-label="Tipo de vista"
           style={{ background: t.surface2, border: `1px solid ${t.surfaceBorder}` }}>
-          {[{ id: 'rows', label: 'Filas', Icon: List }, { id: 'cards', label: 'Tarjetas', Icon: LayoutGrid }].map(({ id, label, Icon }) => (
+          {[{ id: 'cards', label: 'Tarjetas', Icon: LayoutGrid }, { id: 'rows', label: 'Lista', Icon: List }].map(({ id, label, Icon }) => (
             <button key={id} type="button" onClick={() => changeMode(id)} aria-pressed={mode === id} title={label}
               className="flex h-8 w-9 items-center justify-center rounded-full transition"
               style={mode === id ? { background: t.panelBg, color: t.accentMid, boxShadow: '0 1px 3px rgba(15,23,42,0.15)' } : { color: t.text3 }}>
