@@ -94,12 +94,12 @@ function ModalSection({ data }) {
             <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
               Instagram
             </p>
-            <p className="text-[12px] font-semibold text-slate-600">@{data.handle}</p>
+            <p className="text-[12px] font-semibold text-white/80">@{data.handle}</p>
           </div>
         </div>
         {data.url && (
           <a
-            className="flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1.5 text-[11px] font-semibold text-slate-600 transition hover:bg-slate-200"
+            className="flex items-center gap-1 rounded-full bg-white/10 px-3 py-1.5 text-[11px] font-semibold text-white/75 transition hover:bg-white/15"
             href={data.url}
             rel="noreferrer"
             target="_blank"
@@ -119,9 +119,9 @@ function ModalSection({ data }) {
         ].map((stat) => (
           <div
             key={stat.label}
-            className="flex-1 rounded-[12px] bg-slate-50 px-3 py-2.5 text-center"
+            className="flex-1 rounded-[12px] bg-white/[0.07] px-3 py-2.5 text-center"
           >
-            <p className="text-[13px] font-bold text-[#1A1A1A]">{stat.value}</p>
+            <p className="text-[13px] font-bold text-white">{stat.value}</p>
             <p className="mt-0.5 text-[9px] font-medium uppercase tracking-wide text-slate-400">{stat.label}</p>
           </div>
         ))}

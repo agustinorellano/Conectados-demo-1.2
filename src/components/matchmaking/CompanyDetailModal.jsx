@@ -20,9 +20,9 @@ const industryBg = {
 /* ── Pill chip ───────────────────────────────────────────── */
 function Chip({ children, tone = 'slate' }) {
   const tones = {
-    slate:   'bg-slate-100  text-slate-600',
-    blue:    'bg-blue-50    text-blue-700',
-    emerald: 'bg-emerald-50 text-emerald-700',
+    slate:   'bg-white/10 text-white/75',
+    blue:    'bg-blue-400/15 text-blue-300',
+    emerald: 'bg-emerald-400/15 text-emerald-300',
   };
   return (
     <span className={`rounded-full px-3 py-1 text-xs font-medium capitalize ${tones[tone]}`}>
@@ -108,20 +108,21 @@ function CompanyDetailModal({ company, onClose, onLike }) {
         dragMomentum={false}
         onDrag={(_, info) => dragY.set(Math.max(0, info.offset.y))}
         onDragEnd={handleDragEnd}
-        className="fixed inset-x-0 bottom-0 z-[70] flex flex-col"
+        className="fixed inset-x-2 z-[70] mx-auto flex max-w-lg flex-col overflow-hidden"
         style={{
           scale: sheetScale,
-          height: 'calc(100dvh - 48px)',
-          borderRadius: '28px 28px 0 0',
-          background: '#FFFFFF',
-          boxShadow: '0 -6px 40px rgba(0,0,0,0.20), 0 0 0 0.5px rgba(0,0,0,0.05)',
-          paddingBottom: 'env(safe-area-inset-bottom)',
+          bottom: 'max(8px, env(safe-area-inset-bottom))',
+          height: 'calc(100dvh - 64px)',
+          borderRadius: 32,
+          background: 'linear-gradient(180deg, #151C30 0%, #0C1122 100%)',
+          border: '1px solid rgba(255,255,255,0.09)',
+          boxShadow: '0 24px 60px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06)',
         }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Pull handle */}
         <div className="pointer-events-none absolute top-3 left-1/2 z-10 -translate-x-1/2">
-          <div className="h-[4px] w-[38px] rounded-full bg-black/12" />
+          <div className="h-[4px] w-[38px] rounded-full bg-white/25" />
         </div>
 
         {/* ══════════════════════════════════
@@ -131,10 +132,10 @@ function CompanyDetailModal({ company, onClose, onLike }) {
           className="sticky top-0 z-30 shrink-0 flex items-center gap-3 px-4 pb-3"
           style={{
             paddingTop: 'max(20px, calc(env(safe-area-inset-top) + 12px))',
-            background: 'rgba(255,255,255,0.94)',
+            background: 'rgba(21,28,48,0.92)',
             backdropFilter: 'blur(18px)',
             WebkitBackdropFilter: 'blur(18px)',
-            borderBottom: '1px solid rgba(0,0,0,0.06)',
+            borderBottom: '1px solid rgba(255,255,255,0.08)',
           }}
         >
           {/* Close — always visible */}
@@ -143,17 +144,17 @@ function CompanyDetailModal({ company, onClose, onLike }) {
             onClick={onClose}
             aria-label="Cerrar"
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition active:scale-90"
-            style={{ background: 'rgba(0,0,0,0.07)' }}
+            style={{ background: 'rgba(255,255,255,0.10)' }}
           >
-            <X className="h-[18px] w-[18px] text-[#141E30]" strokeWidth={2.2} />
+            <X className="h-[18px] w-[18px] text-white" strokeWidth={2.2} />
           </button>
 
           {/* Name + sector */}
           <div className="flex-1 min-w-0">
-            <p className="truncate font-['Space_Grotesk'] text-[15px] font-bold text-[#141E30]">
+            <p className="truncate font-['Space_Grotesk'] text-[15px] font-bold text-white">
               {company.name}
             </p>
-            <p className="text-[11px] font-medium text-slate-400">{company.sector}</p>
+            <p className="text-[11px] font-medium text-white/50">{company.sector}</p>
           </div>
 
           {/* Score + share */}
@@ -162,9 +163,9 @@ function CompanyDetailModal({ company, onClose, onLike }) {
             <button
               type="button"
               className="flex h-9 w-9 items-center justify-center rounded-full transition active:scale-90"
-              style={{ background: 'rgba(0,0,0,0.06)' }}
+              style={{ background: 'rgba(255,255,255,0.08)' }}
             >
-              <Share2 className="h-4 w-4 text-slate-500" />
+              <Share2 className="h-4 w-4 text-white/70" />
             </button>
           </div>
         </div>
@@ -223,7 +224,7 @@ function CompanyDetailModal({ company, onClose, onLike }) {
               <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
                 Perfil de Empresa
               </p>
-              <p className="text-[14px] leading-[1.65] text-slate-600">
+              <p className="text-[14px] leading-[1.65] text-white/70">
                 {company.description || company.culture || company.headline}
               </p>
               {(company.size || company.businessType) && (
@@ -242,7 +243,7 @@ function CompanyDetailModal({ company, onClose, onLike }) {
                 </p>
                 {offersArr.length > 0 && (
                   <div className="mb-3">
-                    <p className="mb-1.5 text-[11px] font-semibold text-slate-500">Qué ofrece</p>
+                    <p className="mb-1.5 text-[11px] font-semibold text-white/55">Qué ofrece</p>
                     <div className="flex flex-wrap gap-1.5">
                       {offersArr.map((t) => <Chip key={t} tone="emerald">{t}</Chip>)}
                     </div>
@@ -250,7 +251,7 @@ function CompanyDetailModal({ company, onClose, onLike }) {
                 )}
                 {needsArr.length > 0 && (
                   <div className="mb-3">
-                    <p className="mb-1.5 text-[11px] font-semibold text-slate-500">Qué busca</p>
+                    <p className="mb-1.5 text-[11px] font-semibold text-white/55">Qué busca</p>
                     <div className="flex flex-wrap gap-1.5">
                       {needsArr.map((t) => <Chip key={t} tone="blue">{t}</Chip>)}
                     </div>
@@ -258,7 +259,7 @@ function CompanyDetailModal({ company, onClose, onLike }) {
                 )}
                 {segments.length > 0 && (
                   <div>
-                    <p className="mb-1.5 text-[11px] font-semibold text-slate-500">Segmentos clave</p>
+                    <p className="mb-1.5 text-[11px] font-semibold text-white/55">Segmentos clave</p>
                     <div className="flex flex-wrap gap-1.5">
                       {segments.map((t) => <Chip key={t}>{t}</Chip>)}
                     </div>
@@ -269,7 +270,7 @@ function CompanyDetailModal({ company, onClose, onLike }) {
 
             {/* Stats */}
             {(company.capacityScore || company.score) && (
-              <section className="rounded-[20px] bg-slate-50/80 px-4 py-4">
+              <section className="rounded-[20px] bg-white/[0.06] px-4 py-4">
                 <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
                   Indicadores
                 </p>
@@ -280,8 +281,8 @@ function CompanyDetailModal({ company, onClose, onLike }) {
                     { label: 'Afinidad',   value: company.size === 'Mediana' ? 'Alta' : 'Media' },
                   ].map(({ label, value }) => (
                     <div key={label} className="text-center">
-                      <p className="font-['Space_Grotesk'] text-[18px] font-bold text-[#141E30]">{value}</p>
-                      <p className="mt-0.5 text-[10px] font-medium text-slate-400">{label}</p>
+                      <p className="font-['Space_Grotesk'] text-[18px] font-bold text-white">{value}</p>
+                      <p className="mt-0.5 text-[10px] font-medium text-white/45">{label}</p>
                     </div>
                   ))}
                 </div>
@@ -299,10 +300,10 @@ function CompanyDetailModal({ company, onClose, onLike }) {
           className="shrink-0 px-4 pt-3"
           style={{
             paddingBottom: 'max(16px, env(safe-area-inset-bottom))',
-            background: 'rgba(255,255,255,0.96)',
+            background: 'rgba(12,17,34,0.94)',
             backdropFilter: 'blur(12px)',
             WebkitBackdropFilter: 'blur(12px)',
-            borderTop: '1px solid rgba(0,0,0,0.06)',
+            borderTop: '1px solid rgba(255,255,255,0.08)',
           }}
         >
           <div className="flex gap-2.5">
@@ -312,8 +313,8 @@ function CompanyDetailModal({ company, onClose, onLike }) {
               onClick={() => { onLike(); onClose(); }}
               className="flex flex-1 items-center justify-center gap-2 rounded-[18px] py-4 text-[14px] font-bold text-white"
               style={{
-                background: 'linear-gradient(135deg, #141E30 0%, #1D3557 100%)',
-                boxShadow: '0 6px 24px rgba(20,30,48,0.28)',
+                background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                boxShadow: '0 8px 24px rgba(37,99,235,0.40)',
               }}
             >
               <Heart className="h-4 w-4 fill-current" />
@@ -323,8 +324,8 @@ function CompanyDetailModal({ company, onClose, onLike }) {
               type="button"
               whileTap={{ scale: 0.96 }}
               onClick={onClose}
-              className="flex items-center justify-center rounded-[18px] px-5 py-4 text-[14px] font-semibold text-slate-600"
-              style={{ background: 'rgba(0,0,0,0.06)' }}
+              className="flex items-center justify-center rounded-[18px] px-5 py-4 text-[14px] font-semibold text-white/75"
+              style={{ background: 'rgba(255,255,255,0.08)' }}
             >
               Cerrar
             </motion.button>

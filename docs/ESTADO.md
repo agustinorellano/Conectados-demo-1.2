@@ -84,3 +84,4 @@ Criterio: en web no se copia la lógica móvil. Se priorizó **claridad, jerarqu
 - **Composición:** contenido alineado a un ancho máximo (1180 px) junto con la barra superior; contador "N de M"; botones ▲▼ en el borde derecho para recorrer el feed.
 - Móvil: el nombre de la tarjeta adopta la misma tipografía.
 - Pendiente: bloque "Por qué hacen match" (razones concretas) y "Le interesa tu empresa".
+- **Perfil de empresa (modal "ver perfil", app y web):** ahora es una **hoja flotante oscura con las cuatro esquinas redondeadas** (32 px, margen de 8 px), por encima de la isla de navegación; incluye el feed de Instagram, chips, indicadores y botones (Dar LIKE en azul) en tema oscuro (`CompanyDetailModal.jsx`, `InstagramFeedPreview.jsx`).
