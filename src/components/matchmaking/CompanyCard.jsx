@@ -102,7 +102,7 @@ function SeekPill({ children }) {
   );
 }
 
-function CompanyCard({ company, onViewProfile }) {
+function CompanyCard({ company, onViewProfile, bottomInset = 92 }) {
   const bg     = industryBg[company.sector]     || industryBg.Tecnologia;
   const accent = industryAccent[company.sector] || 'rgba(24,113,216,0.55)';
   const hasImage = Boolean(company.gallery?.[0]);
@@ -154,7 +154,7 @@ function CompanyCard({ company, onViewProfile }) {
       </div>
 
       {/* ── Bottom info — visible without tapping ── */}
-      <div className="absolute bottom-0 left-0 right-0 z-10 px-5 pb-[92px] pt-4">
+      <div className="absolute bottom-0 left-0 right-0 z-10 px-5 pt-4" style={{ paddingBottom: bottomInset }}>
 
         {/* Distance + Sector + arrow */}
         <div className="flex items-center justify-between gap-3">

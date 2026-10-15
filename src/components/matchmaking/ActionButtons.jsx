@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 const BTN_SM = 'flex h-[52px] w-[52px] items-center justify-center rounded-full';
 const BTN_LG = 'flex h-[64px] w-[64px] items-center justify-center rounded-full';
 
-function ActionButtons({ onUndo, onSkip, onSave, onLike, onViewProfile }) {
+function ActionButtons({ onUndo, onSkip, onSave, onLike, onViewProfile, bottomOffset = 22 }) {
   return (
     <>
       {/* Bottom gradient */}
@@ -19,7 +19,7 @@ function ActionButtons({ onUndo, onSkip, onSave, onLike, onViewProfile }) {
       {/* Buttons row — el BottomNav ocupa su propio espacio debajo, así que solo hace falta aire propio */}
       <div
         className="absolute inset-x-0 bottom-0 z-50 flex items-center justify-center gap-4"
-        style={{ paddingBottom: '22px', paddingTop: '10px' }}
+        style={{ paddingBottom: bottomOffset, paddingTop: '10px' }}
       >
         <motion.button type="button" onClick={onUndo} whileHover={{ scale: 1.10 }} whileTap={{ scale: 0.86 }}
           className={BTN_SM}

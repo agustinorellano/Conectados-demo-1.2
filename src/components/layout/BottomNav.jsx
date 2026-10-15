@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   Bot,
   BriefcaseBusiness,
@@ -11,29 +11,55 @@ import { useTheme } from '../../context/ThemeContext';
 // Dashboard y Proyectos están ocultos por la simplificación de producto (las vistas siguen en App.jsx).
 const navItems = [
   { id: 'profile',   label: 'Mi Empresa', icon: Building2 },
-  { id: 'likes',     label: 'Likes',     icon: Heart },
-  { id: 'alliances', label: 'Explorar',  icon: BriefcaseBusiness },
-  { id: 'chats',     label: 'Chats',     icon: MessageSquare },
-  { id: 'assistant', label: 'Asistente', icon: Bot },
+  { id: 'likes',     label: 'Likes',      icon: Heart },
+  { id: 'alliances', label: 'Explorar',   icon: BriefcaseBusiness },
+  { id: 'chats',     label: 'Chats',      icon: MessageSquare },
+  { id: 'assistant', label: 'Asistente',  icon: Bot },
 ];
 
+const spring = { type: 'spring', stiffness: 460, damping: 36, mass: 0.7 };
+
+/**
+ * Isla dinámica inferior con efecto "liquid glass" (estilo iOS).
+ * Flota sobre el contenido, translúcida: la sección activa se expande con su nombre y las demás quedan como íconos.
+ * Cada vista reserva espacio abajo para que nada quede tapado (ver App.jsx).
+ */
 function BottomNav({ activeView, onNavigate, likesCount = 0 }) {
   const { t } = useTheme();
+  const dark = t.isDark;
+
+  const glass = dark
+    ? {
+        background: 'linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.06) 100%)',
+        border: '1px solid rgba(255,255,255,0.22)',
+        boxShadow:
+          '0 14px 36px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.40), inset 0 -1px 0 rgba(255,255,255,0.06)',
+      }
+    : {
+        background: 'linear-gradient(180deg, rgba(255,255,255,0.72) 0%, rgba(255,255,255,0.46) 100%)',
+        border: '1px solid rgba(255,255,255,0.75)',
+        boxShadow:
+          '0 14px 36px rgba(15,23,42,0.16), inset 0 1px 0 rgba(255,255,255,0.95), inset 0 -1px 0 rgba(15,23,42,0.05)',
+      };
+
+  const idleColor   = dark ? 'rgba(255,255,255,0.78)' : '#515257';
+  const activeColor = dark ? '#FFFFFF' : '#1D1D1F';
+  const capsule     = dark ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.85)';
 
   return (
-    /* Marco inferior: barra anclada que ocupa su propio espacio (no flota sobre el contenido),
-       así los botones de cada vista nunca chocan con el nav. */
-    <div className="relative z-50 shrink-0">
-      <nav
-        className="flex w-full items-center justify-around rounded-t-[28px] px-2 pt-2"
+    <div
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex justify-center px-3"
+      style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}
+    >
+      <motion.nav
+        layout
+        transition={spring}
+        aria-label="Navegación principal"
+        className="pointer-events-auto flex max-w-full items-center gap-0.5 rounded-full p-1.5"
         style={{
-          background: t.navPill,
-          backdropFilter: 'blur(28px)',
-          WebkitBackdropFilter: 'blur(28px)',
-          boxShadow: '0 -6px 24px rgba(0,0,0,0.18)',
-          borderTop: `1px solid ${t.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.08)'}`,
-          paddingBottom: 'max(8px, env(safe-area-inset-bottom))',
-          transition: 'background 0.3s ease',
+          ...glass,
+          backdropFilter: 'blur(26px) saturate(190%)',
+          WebkitBackdropFilter: 'blur(26px) saturate(190%)',
         }}
       >
         {navItems.map((item) => {
@@ -45,42 +71,54 @@ function BottomNav({ activeView, onNavigate, likesCount = 0 }) {
               key={item.id}
               type="button"
               onClick={() => onNavigate(item.id)}
-              className="relative flex flex-col items-center justify-center gap-[3px] rounded-[22px] px-3 py-2 transition-all duration-200"
-              style={{ minWidth: 56 }}
+              aria-label={item.label}
+              aria-current={isActive ? 'page' : undefined}
+              className="relative flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-full px-3"
+              style={{ color: isActive ? activeColor : idleColor }}
             >
               {isActive && (
-                <motion.div
-                  layoutId="nav-active"
-                  className="absolute inset-0 rounded-[22px]"
-                  style={{ background: t.navPillActiveBg }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                <motion.span
+                  layoutId="bottom-nav-active"
+                  transition={spring}
+                  className="absolute inset-0 rounded-full"
+                  style={{
+                    background: capsule,
+                    boxShadow: dark
+                      ? 'inset 0 1px 0 rgba(255,255,255,0.35)'
+                      : '0 2px 8px rgba(15,23,42,0.10), inset 0 1px 0 rgba(255,255,255,1)',
+                  }}
                 />
               )}
 
-              <Icon
-                size={21}
-                strokeWidth={isActive ? 2.2 : 1.6}
-                className="relative z-10 transition-colors duration-200"
-                style={{ color: isActive ? t.navPillActive : t.navPillText }}
-              />
-              {item.id === 'likes' && likesCount > 0 && (
-                <span
-                  className="absolute right-2 top-1 z-10 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[9px] font-bold text-white"
-                  style={{ background: '#F43F5E' }}
-                >
-                  {likesCount}
-                </span>
-              )}
-              <span
-                className="relative z-10 text-[10px] font-semibold leading-none tracking-tight transition-colors duration-200"
-                style={{ color: isActive ? t.navPillActiveSub : t.navPillText }}
-              >
-                {item.label}
+              <span className="relative z-10 flex items-center justify-center">
+                <Icon size={21} strokeWidth={isActive ? 2.2 : 1.8} />
+                {item.id === 'likes' && likesCount > 0 && (
+                  <span
+                    className="absolute -right-2 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[9px] font-bold text-white"
+                    style={{ background: '#F43F5E' }}
+                  >
+                    {likesCount}
+                  </span>
+                )}
               </span>
+
+              <AnimatePresence initial={false}>
+                {isActive && (
+                  <motion.span
+                    initial={{ opacity: 0, width: 0 }}
+                    animate={{ opacity: 1, width: 'auto' }}
+                    exit={{ opacity: 0, width: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="relative z-10 overflow-hidden whitespace-nowrap text-[12px] font-semibold leading-none"
+                  >
+                    {item.label}
+                  </motion.span>
+                )}
+              </AnimatePresence>
             </button>
           );
         })}
-      </nav>
+      </motion.nav>
     </div>
   );
 }

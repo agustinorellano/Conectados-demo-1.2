@@ -67,3 +67,11 @@ Barra inferior: **Empresa · Likes · Explorar · Chats · Asistente** (antes: E
 - **Asistente:** se quitó el banner "Accedé a inteligencia avanzada / Plan Scale" (`ScalePlanCard`) en web y app.
 - **Modo claro:** se corrigió el texto ilegible en Configuración (variables `--ui-*`), el plan actual (texto blanco sobre azul) y el interruptor "Modo oscuro", que ahora refleja su estado real. `PricingView` ya usaba colores propios y se dejó como estaba.
 - **Pendiente / a revisar en claro:** Dashboard y Proyectos (ocultas), modales de detalle de Explorar. **Explorar:** el cambio de swipe a scroll está en definición.
+
+## Explorar como feed con scroll + isla inferior en la app
+- **Explorar (web y app):** pasó de swipe a un **feed vertical, una empresa por pantalla**, con el scroll "encajando" en cada tarjeta (como un reel). El scroll solo pasa a la siguiente y **nunca rechaza**.
+  - **✕ Pasar** rechaza: la tarjeta sale, el feed avanza y esa empresa deja de aparecer. Aviso "Empresa descartada · Deshacer" por 5 s; el botón de deshacer también sigue disponible.
+  - **♥ Conectar** (igual que antes; doble toque sobre la tarjeta en móvil), **★ Guardar**, compartir y ver perfil.
+  - Web: rueda/trackpad o ↑/↓ navegan, ← pasa, → conecta, S guarda. Riel de puntos en el borde derecho indica la posición. Al final del feed: "Llegaste al final" + ajustar filtros.
+  - Código: `SwipeBoard.jsx` (`renderFeed`, `resolveCompany`, `FeedRail`, `EndOfFeed`). Se eliminó `CardStack.jsx` (el arrastre horizontal ya no existe).
+- **App móvil:** la barra inferior pasó a ser una **isla dinámica flotante con vidrio transparente (liquid glass, estilo iOS)** (`BottomNav.jsx`): la sección activa se expande con su nombre, las demás quedan como íconos. Flota sobre el contenido; cada vista reserva espacio abajo (`navSpace` en `App.jsx`) y en Explorar los botones quedan por encima de la isla. En la web la isla superior se mantiene como estaba.

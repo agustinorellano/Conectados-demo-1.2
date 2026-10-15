@@ -281,6 +281,9 @@ function App() {
     );
   }
 
+  // La isla de navegación flota sobre el contenido: cada vista reserva su alto abajo (Explorar va a pantalla completa y lo maneja solo).
+  const navSpace = activeView === "alliances" ? 0 : "calc(env(safe-area-inset-bottom, 0px) + 84px)";
+
   return (
     <div className="h-screen overflow-hidden" style={{ background: t.bg, transition: 'background 0.3s ease' }}>
       {showAllianceRoom && (
@@ -300,7 +303,7 @@ function App() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
-              style={{ minHeight: 0 }}
+              style={{ minHeight: 0, paddingBottom: navSpace }}
             >
               <div className="h-full overflow-hidden">
                 {view}
@@ -314,6 +317,7 @@ function App() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
+              style={{ paddingBottom: navSpace }}
             >
               <div className="mx-auto min-w-0 max-w-6xl px-5 py-5 sm:px-6 sm:py-6">
                 {view}

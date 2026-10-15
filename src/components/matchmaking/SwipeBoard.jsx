@@ -1,4 +1,4 @@
-import { AnimatePresence, animate, motion, useMotionValue, useTransform } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowLeft, ArrowRight, BadgeCheck, Heart, MapPin, RotateCcw,
@@ -7,12 +7,11 @@ import {
 import CompanyDetailModal from './CompanyDetailModal';
 import MatchOverlay from './MatchOverlay';
 import SwipeHeader from './SwipeHeader';
-import CardStack from './CardStack';
+import CompanyCard from './CompanyCard';
 import ActionButtons from './ActionButtons';
 import { useTheme } from '../../context/ThemeContext';
 import { calculateMatchScore, shouldRevealCompany, willCreateMatch } from '../../utils/matchmaking';
 
-const SWIPE_THRESHOLD_X = 100;
 
 /* ── Filter options ─────────────────────────────────────────── */
 const SEGMENT_OPTIONS = [
@@ -403,24 +402,73 @@ function ExploreProfileCard({ company, p }) {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   SWIPE BOARD — main component
+   FEED — una empresa por pantalla, el scroll "encaja" en cada una
+══════════════════════════════════════════════════════════════ */
+const EXIT_MS = 280;
+// Espacio que deja libre el nav flotante de la app móvil (alto de la isla + margen + aire)
+const MOBILE_NAV_CLEARANCE = 'calc(env(safe-area-inset-bottom, 0px) + 96px)';
+
+function EndOfFeed({ dark, p, onOpenFilters }) {
+  return (
+    <div className="flex h-full items-center justify-center px-8 text-center">
+      <div>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.26em]" style={{ color: dark ? '#4A9FFF' : p.accent }}>
+          Llegaste al final
+        </p>
+        <h3 className="mt-3 font-['Space_Grotesk'] text-[22px] font-bold tracking-tight" style={{ color: dark ? 'rgba(255,255,255,0.9)' : p.name }}>
+          No hay más empresas por evaluar
+        </h3>
+        <p className="mt-2 text-[13px]" style={{ color: dark ? 'rgba(255,255,255,0.45)' : p.meta }}>
+          Volvé más tarde o ajustá tus filtros
+        </p>
+        <button type="button" onClick={onOpenFilters}
+          className="mt-5 rounded-full px-5 py-2.5 text-[13px] font-semibold transition hover:opacity-80"
+          style={{ background: dark ? 'rgba(255,255,255,0.10)' : p.btnBg, color: dark ? 'rgba(255,255,255,0.75)' : p.btnText, border: dark ? 'none' : p.btnBorder }}>
+          Ajustar filtros
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* Riel de puntos en el borde derecho: muestra dónde estás dentro del feed */
+function FeedRail({ count, index, color, activeColor }) {
+  if (count < 2) return null;
+  const visible = Math.min(count, 7);
+  const active = Math.min(index, visible - 1);
+  return (
+    <div className="pointer-events-none absolute right-2 top-1/2 z-30 flex -translate-y-1/2 flex-col items-center gap-1.5" aria-hidden="true">
+      {Array.from({ length: visible }).map((_, i) => (
+        <span key={i} className="block w-1 rounded-full transition-all duration-200"
+          style={{ height: i === active ? 18 : 5, background: i === active ? activeColor : color }} />
+      ))}
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SWIPE BOARD — main component (ahora es un feed vertical con scroll)
 ══════════════════════════════════════════════════════════════ */
 function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPlan, myCompany }) {
   const { theme } = useTheme();
   const p = EXPLORE_PALETTE[theme] ?? EXPLORE_PALETTE.dark;
-  const deck = useMemo(
+  const baseDeck = useMemo(
     () => companies
       .map(c => ({ ...c, score: calculateMatchScore(c) }))
       .filter(c => shouldRevealCompany(c.score)),
     [companies]
   );
 
-  /* ── Deck navigation ── */
+  /* ── Feed state ──
+     decided: historial de empresas resueltas (conectar / pasar), sirve para deshacer.
+     leaving: empresa que está saliendo con animación antes de quitarse del feed. */
+  const [decided,        setDecided]        = useState([]);
+  const [leaving,        setLeaving]        = useState(null);
+  const [restoreId,      setRestoreId]      = useState(null);
   const [activeIndex,    setActiveIndex]    = useState(0);
-  const [history,        setHistory]        = useState([]);
   const [flashMessage,   setFlashMessage]   = useState(null);
-  const [exitState,      setExitState]      = useState({ x: 0, y: 0 });
   const [viewingCompany, setViewingCompany] = useState(null);
+  const feedRef = useRef(null);
 
   /* ── UI state ── */
   const [matchedCompany, setMatchedCompany] = useState(null);
@@ -430,27 +478,12 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
   const [savedIds,    setSavedIds]    = useState(() => new Set());
   const [isDesktop,   setIsDesktop]   = useState(() => window.innerWidth >= 1024);
 
-  /* ── Drag motion values ── */
-  const x      = useMotionValue(0);
-  const y      = useMotionValue(0);
-  const rotate = useTransform(x, [-240, 240], [-12, 12]);
-  const flyAnimX = useRef(null);
-  const flyAnimY = useRef(null);
-
-  const likeOpacity    = useTransform(x, [20,  SWIPE_THRESHOLD_X],  [0, 1]);
-  const nopeOpacity    = useTransform(x, [-20, -SWIPE_THRESHOLD_X], [0, 1]);
-  const nextScale      = useTransform(x, [-200, 0, 200], [1,    0.95, 1]);
-  const nextOpacity    = useTransform(x, [-200, 0, 200], [1,    0.72, 1]);
-  const nextTranslateY = useTransform(x, [-200, 0, 200], [0,    14,   0]);
-  const thirdScale     = useTransform(x, [-200, 0, 200], [0.915, 0.90, 0.915]);
-  const thirdOpacity   = useTransform(x, [-200, 0, 200], [0.45,  0.30, 0.45]);
-
-  const activeCompany  = deck[activeIndex];
-  const nextCompany    = deck[activeIndex + 1];
-  const thirdCompany   = deck[activeIndex + 2];
+  const decidedIds = useMemo(() => new Set(decided.map(d => d.id)), [decided]);
+  const deck = useMemo(() => baseDeck.filter(c => !decidedIds.has(c.id)), [baseDeck, decidedIds]);
+  const activeCompany = deck[Math.min(activeIndex, deck.length - 1)] ?? null;
   const matchLimitReached = userPlan === 'starter' && dailyMatchCount >= 10;
 
-  const savedCompanies = useMemo(() => deck.filter(c => savedIds.has(c.id)), [deck, savedIds]);
+  const savedCompanies = useMemo(() => baseDeck.filter(c => savedIds.has(c.id)), [baseDeck, savedIds]);
 
   /* ── Resize listener ── */
   useEffect(() => {
@@ -459,45 +492,54 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
     return () => window.removeEventListener('resize', fn);
   }, []);
 
-  /* ── Flash toast ── */
-  const showFlash = (message) => {
-    setFlashMessage(message);
+  /* ── Flash toast (con "Deshacer" opcional) ── */
+  const showFlash = (text, { undo = false } = {}) => {
+    setFlashMessage({ text, undo });
     window.clearTimeout(showFlash._t);
-    showFlash._t = window.setTimeout(() => setFlashMessage(null), 1300);
+    showFlash._t = window.setTimeout(() => setFlashMessage(null), undo ? 5000 : 1300);
   };
 
-  /* ── Reset drag on new card ── */
+  /* ── Scroll del feed ── */
+  const handleScroll = () => {
+    const el = feedRef.current;
+    if (!el || !el.clientHeight) return;
+    setActiveIndex(Math.round(el.scrollTop / el.clientHeight));
+  };
+
+  const scrollPage = (dir) => {
+    const el = feedRef.current;
+    if (el) el.scrollBy({ top: dir * el.clientHeight, behavior: 'smooth' });
+  };
+
+  // Al deshacer, volvemos a la empresa restaurada
   useEffect(() => {
-    flyAnimX.current?.stop();
-    flyAnimY.current?.stop();
-    x.set(0);
-    y.set(0);
-  }, [activeIndex]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (!restoreId) return;
+    const idx = deck.findIndex(c => c.id === restoreId);
+    const el = feedRef.current;
+    if (idx >= 0 && el) {
+      el.scrollTo({ top: idx * el.clientHeight, behavior: 'auto' });
+      setActiveIndex(idx);
+    }
+    setRestoreId(null);
+  }, [restoreId, deck]);
 
-  /* ── Actions ── */
-  const queueNextCompany = (state) => {
-    if (!activeCompany) return;
-    setHistory(curr => [...curr, { index: activeIndex }]);
-    setExitState(state);
-    window.setTimeout(() => setActiveIndex(curr => curr + 1), 250);
+  /* ── Acciones ── */
+  const resolveCompany = (company, type) => {
+    setLeaving({ id: company.id, type });
+    window.setTimeout(() => {
+      setDecided(curr => [...curr, { id: company.id, type }]);
+      setLeaving(null);
+    }, EXIT_MS);
   };
 
-  const handleUndo = () => {
-    if (history.length === 0) return;
-    const prev = history[history.length - 1];
-    setHistory(h => h.slice(0, -1));
-    x.set(0); y.set(0);
-    setActiveIndex(prev.index);
-    showFlash('Deshecho');
-  };
-
-  const handleSkip = () => {
-    showFlash('Descartada');
-    queueNextCompany({ x: -220, y: 20 });
+  const handlePass = () => {
+    if (!activeCompany || leaving) return;
+    showFlash('Empresa descartada', { undo: true });
+    resolveCompany(activeCompany, 'pass');
   };
 
   const handleLike = () => {
-    if (!activeCompany) return;
+    if (!activeCompany || leaving) return;
     if (matchLimitReached) { showFlash('Límite diario alcanzado'); return; }
     if (willCreateMatch(activeCompany, activeCompany.score)) {
       onMatch?.(activeCompany);
@@ -505,7 +547,15 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
     } else {
       showFlash('Like enviado');
     }
-    queueNextCompany({ x: 220, y: -20 });
+    resolveCompany(activeCompany, 'like');
+  };
+
+  const handleUndo = () => {
+    if (decided.length === 0 || leaving) return;
+    const last = decided[decided.length - 1];
+    setDecided(curr => curr.slice(0, -1));
+    setRestoreId(last.id);
+    showFlash('Deshecho');
   };
 
   const handleSave = () => {
@@ -535,50 +585,80 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
     setViewingCompany({ ...activeCompany });
   };
 
-  const handleDragEnd = (_, info) => {
-    if (info.offset.x < -SWIPE_THRESHOLD_X) {
-      flyAnimX.current = animate(x, -520, { duration: 0.28, ease: [0.32, 0, 0.67, 0] });
-      flyAnimY.current = animate(y, 20,   { duration: 0.28 });
-      handleSkip(); return;
-    }
-    if (info.offset.x > SWIPE_THRESHOLD_X) {
-      flyAnimX.current = animate(x, 520,  { duration: 0.28, ease: [0.32, 0, 0.67, 0] });
-      flyAnimY.current = animate(y, -20,  { duration: 0.28 });
-      handleLike(); return;
-    }
-    animate(x, 0, { type: 'spring', stiffness: 500, damping: 40 });
-    animate(y, 0, { type: 'spring', stiffness: 500, damping: 40 });
-  };
-
-  /* ── Keyboard navigation (desktop) ── */
-  const handleSkipRef = useRef(handleSkip);
-  const handleLikeRef = useRef(handleLike);
-  const handleSaveRef = useRef(handleSave);
-  useEffect(() => { handleSkipRef.current = handleSkip; handleLikeRef.current = handleLike; handleSaveRef.current = handleSave; });
+  /* ── Teclado (escritorio): ← pasar · → conectar · ↑/↓ navegar · S guardar ── */
+  const actionsRef = useRef({});
+  useEffect(() => {
+    actionsRef.current = { handlePass, handleLike, handleSave, scrollPage };
+  });
 
   useEffect(() => {
     if (!isDesktop) return;
     const fn = (e) => {
-      if (e.key === 'ArrowLeft')  handleSkipRef.current();
-      if (e.key === 'ArrowRight') handleLikeRef.current();
-      if (e.key === 'ArrowUp')    handleSaveRef.current();
+      if (/^(INPUT|TEXTAREA|SELECT)$/.test(e.target?.tagName)) return;
+      const a = actionsRef.current;
+      if (e.key === 'ArrowLeft')  a.handlePass();
+      if (e.key === 'ArrowRight') a.handleLike();
+      if (e.key === 'ArrowDown') { e.preventDefault(); a.scrollPage(1); }
+      if (e.key === 'ArrowUp')   { e.preventDefault(); a.scrollPage(-1); }
+      if (e.key === 's' || e.key === 'S') a.handleSave();
     };
     window.addEventListener('keydown', fn);
     return () => window.removeEventListener('keydown', fn);
   }, [isDesktop]);
 
-  /* ── Shared card stack props ── */
-  const cardStackProps = {
-    activeCompany, nextCompany, thirdCompany,
-    x, y, rotate, likeOpacity, nopeOpacity,
-    nextScale, nextOpacity, nextTranslateY,
-    thirdScale, thirdOpacity, exitState,
-    onDragEnd: handleDragEnd,
-    onViewProfile: handleViewProfile,
-    onOpenFilters: () => setShowFilters(true),
-  };
+  /* ── Feed compartido: cada empresa es una "página" que ocupa todo el alto ── */
+  const renderFeed = (renderPage, endProps) => (
+    <div
+      ref={feedRef}
+      onScroll={handleScroll}
+      className="h-full snap-y snap-mandatory overflow-y-auto overscroll-contain [scrollbar-width:none]"
+    >
+      {deck.map((company) => {
+        const isLeaving = leaving?.id === company.id;
+        const dx = leaving?.type === 'like' ? 56 : -56;
+        return (
+          <section key={company.id} className="h-full snap-start snap-always">
+            <div
+              className="h-full"
+              style={{
+                transition: `opacity ${EXIT_MS}ms ease-out, transform ${EXIT_MS}ms ease-out`,
+                opacity: isLeaving ? 0 : 1,
+                transform: isLeaving ? `translateX(${dx}px) scale(0.98)` : 'none',
+              }}
+            >
+              {renderPage(company)}
+            </div>
+          </section>
+        );
+      })}
+      <section className="h-full snap-start">
+        <EndOfFeed {...endProps} onOpenFilters={() => setShowFilters(true)} />
+      </section>
+    </div>
+  );
 
   const BG = 'linear-gradient(160deg, #070C18 0%, #0F1828 55%, #141E30 100%)';
+
+  const toast = (cls, style) => (
+    <AnimatePresence>
+      {flashMessage && (
+        <motion.div
+          initial={{ opacity: 0, y: -8, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -4, scale: 0.96 }}
+          transition={{ duration: 0.18 }}
+          className={`absolute z-[60] flex items-center gap-3 text-[13px] font-semibold ${cls} ${flashMessage.undo ? '' : 'pointer-events-none'}`}
+          style={style}>
+          <span>{flashMessage.text}</span>
+          {flashMessage.undo && (
+            <button type="button" onClick={handleUndo} className="rounded-full bg-white/20 px-2.5 py-0.5 text-[12px] font-bold text-white transition hover:bg-white/30">
+              Deshacer
+            </button>
+          )}
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
 
   /* ════════════════════════════════════════════════════════════
      DESKTOP LAYOUT
@@ -626,8 +706,12 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
           {activeTab === 'guardados' ? (
             <SavedGrid companies={savedCompanies} onView={c => setViewingCompany(c)} p={p} />
           ) : (
-            <div className="flex-1 min-h-0 pb-[150px] pt-1">
-              <ExploreProfileCard company={activeCompany} p={p} />
+            <div className="relative min-h-0 flex-1 pb-[150px] pt-1">
+              {renderFeed(
+                (company) => <ExploreProfileCard company={company} p={p} />,
+                { dark: false, p }
+              )}
+              <FeedRail count={deck.length} index={activeIndex} color={p.label} activeColor={p.accent} />
             </div>
           )}
 
@@ -637,14 +721,15 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
               <div className="pointer-events-auto flex items-center gap-5 rounded-[28px] px-7 py-4"
                 style={{ background: p.floatBg, backdropFilter: 'saturate(180%) blur(20px)', WebkitBackdropFilter: 'saturate(180%) blur(20px)', border: p.floatBorder, boxShadow: p.floatShadow }}>
 
-                <motion.button type="button" onClick={handleUndo}
+                <motion.button type="button" onClick={handleUndo} disabled={decided.length === 0}
                   whileHover={{ scale: 1.10 }} whileTap={{ scale: 0.88 }}
-                  className="flex h-10 w-10 items-center justify-center rounded-full"
+                  aria-label="Deshacer"
+                  className="flex h-10 w-10 items-center justify-center rounded-full disabled:opacity-40"
                   style={{ background: p.undoBg, border: p.undoBorder }}>
                   <RotateCcw size={15} style={{ color: p.undoIcon }} />
                 </motion.button>
 
-                <motion.button type="button" onClick={handleSkip}
+                <motion.button type="button" onClick={handlePass}
                   whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.90 }}
                   className="flex flex-col items-center gap-1.5">
                   <span className="flex h-16 w-16 items-center justify-center rounded-full"
@@ -678,19 +763,10 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
           )}
 
           {/* Flash toast — top center on desktop */}
-          <AnimatePresence>
-            {flashMessage && (
-              <motion.div
-                initial={{ opacity: 0, y: -8, scale: 0.96 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -4, scale: 0.96 }}
-                transition={{ duration: 0.18 }}
-                className="pointer-events-none absolute left-1/2 top-5 z-[60] -translate-x-1/2 rounded-[14px] px-5 py-2.5 text-[13px] font-semibold"
-                style={{ background: p.toastBg, color: p.toastText, backdropFilter: 'blur(16px)', border: p.toastBorder }}>
-                {flashMessage}
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {toast(
+            'left-1/2 top-5 -translate-x-1/2 rounded-[14px] px-5 py-2.5',
+            { background: p.toastBg, color: p.toastText, backdropFilter: 'blur(16px)', border: p.toastBorder }
+          )}
         </div>
 
         {/* Shared modals */}
@@ -713,14 +789,14 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
   }
 
   /* ════════════════════════════════════════════════════════════
-     MOBILE LAYOUT (unchanged)
+     MOBILE LAYOUT — feed vertical a pantalla completa
   ════════════════════════════════════════════════════════════ */
   return (
     <>
       <div className="relative h-full overflow-hidden" style={{ background: BG }}>
 
         {activeTab === 'guardados' && (
-          <div className="flex h-full flex-col">
+          <div className="flex h-full flex-col" style={{ paddingBottom: MOBILE_NAV_CLEARANCE }}>
             <div className="shrink-0 flex items-center justify-between px-4 pb-2 pt-3">
               <motion.button type="button" onClick={() => setShowFilters(true)} whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.90 }}
                 className="flex h-10 w-10 items-center justify-center rounded-full"
@@ -750,42 +826,50 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
 
         {activeTab !== 'guardados' && (
           <>
-            <CardStack {...cardStackProps} />
+            <div className="absolute inset-0">
+              {renderFeed(
+                (company) => (
+                  <div className="h-full" onDoubleClick={handleLike}>
+                    <CompanyCard
+                      company={company}
+                      onViewProfile={() => setViewingCompany({ ...company })}
+                      bottomInset={`calc(env(safe-area-inset-bottom, 0px) + 176px)`}
+                    />
+                  </div>
+                ),
+                { dark: true, p }
+              )}
+            </div>
+            <FeedRail count={deck.length} index={activeIndex} color="rgba(255,255,255,0.35)" activeColor="#FFFFFF" />
             <SwipeHeader
               activeTab={activeTab}
               onTabChange={setActiveTab}
               savedCount={savedIds.size}
               onOpenFilters={() => setShowFilters(true)}
             />
-            <ActionButtons
-              onUndo={handleUndo}
-              onSkip={handleSkip}
-              onSave={handleSave}
-              onLike={handleLike}
-              onViewProfile={handleViewProfile}
-            />
+            {activeCompany && (
+              <ActionButtons
+                onUndo={handleUndo}
+                onSkip={handlePass}
+                onSave={handleSave}
+                onLike={handleLike}
+                onViewProfile={handleViewProfile}
+                bottomOffset={MOBILE_NAV_CLEARANCE}
+              />
+            )}
 
-            <AnimatePresence>
-              {flashMessage && (
-                <motion.div
-                  initial={{ opacity: 0, y: 8, scale: 0.96 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -4, scale: 0.96 }}
-                  transition={{ duration: 0.18 }}
-                  className="absolute inset-x-6 z-[60] rounded-[18px] px-5 py-2.5 text-center text-[13px] font-semibold text-white/90"
-                  style={{
-                    bottom: 'calc(max(22px, env(safe-area-inset-bottom)) + 76px)',
-                    background: 'rgba(255,255,255,0.11)', backdropFilter: 'blur(16px)',
-                    border: '1px solid rgba(255,255,255,0.15)',
-                  }}>
-                  {flashMessage}
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {toast(
+              'inset-x-6 justify-center rounded-[18px] px-5 py-2.5 text-center',
+              {
+                bottom: 'calc(env(safe-area-inset-bottom, 0px) + 184px)',
+                background: 'rgba(20,24,40,0.78)', color: 'rgba(255,255,255,0.92)',
+                backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.15)',
+              }
+            )}
 
             {matchLimitReached && (
               <div className="absolute inset-x-4 z-[60] rounded-[16px] border border-amber-400/20 bg-amber-400/8 p-3.5 text-center text-[13px] leading-6 text-amber-200"
-                style={{ bottom: 'calc(max(22px, env(safe-area-inset-bottom)) + 80px)' }}>
+                style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 184px)' }}>
                 Llegaste al límite diario del plan Starter.
                 <button type="button" onClick={onOpenPricing} className="mt-2 inline-flex rounded-full bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white">
                   Ver planes
