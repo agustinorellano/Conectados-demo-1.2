@@ -109,11 +109,11 @@ export const THEMES = {
 
 const ThemeContext = createContext(null);
 
-// El tema claro (estilo Conectado Flow / Apple) es el predeterminado solo en /web.
-// /app y la landing siguen oscuros por defecto, y cada superficie guarda su propia preferencia.
-const IS_WEB = typeof window !== 'undefined' && window.location.pathname.startsWith('/web');
-const STORAGE_KEY = IS_WEB ? 'app-theme-v2' : 'app-theme';
-const DEFAULT_THEME = IS_WEB ? 'light' : 'dark';
+// El tema claro (estilo Conectado Flow / Apple) es el predeterminado en la web app (/web) y en la app móvil (/app);
+// desde Configuración se puede pasar a oscuro. La landing conserva su propio default y preferencia.
+const IS_PRODUCT = typeof window !== 'undefined' && /^\/(web|app)(\/|$)/.test(window.location.pathname);
+const STORAGE_KEY = IS_PRODUCT ? 'app-theme-v2' : 'app-theme';
+const DEFAULT_THEME = IS_PRODUCT ? 'light' : 'dark';
 
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {

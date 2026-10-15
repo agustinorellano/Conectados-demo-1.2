@@ -164,9 +164,9 @@ function LikeCard({ item, onOpen, onAccept, onDismiss }) {
         </div>
         <div className="mt-auto flex items-center gap-1.5">
           <button type="button" onClick={onOpen}
-            className="flex flex-1 items-center justify-center gap-1.5 rounded-full py-2 text-[12px] font-semibold transition hover:opacity-80"
+            className="flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-full py-2 text-[12px] font-semibold transition hover:opacity-80"
             style={{ background: t.accentActive, color: t.accentMid }}>
-            <Eye size={13} /> Ver perfil
+            <Eye size={13} /> Ver<span className="hidden min-[420px]:inline"> perfil</span>
           </button>
           <button type="button" aria-label={`Pasar ${company.name}`} onClick={() => onDismiss(company.id)}
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition hover:opacity-80"

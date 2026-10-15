@@ -44,7 +44,7 @@
 **Estética:**
 - Tema **claro** (nuevo, predeterminado solo en `/web`) basado en Conectado Flow (índigo `#455BE8`, fondo `#F5F6FA`, tarjetas blancas) con UX tipo Apple. Tema **oscuro** original intacto. Botón para alternar al final del menú.
 - El sidebar se mantiene navy/azul en ambos temas (`#1B2352` en claro).
-- `/app` y la landing siguen oscuras por defecto; cada superficie guarda su propia preferencia (`app-theme-v2` en `/web`, `app-theme` en el resto).
+- `/web` y `/app` abren en claro por defecto y comparten preferencia (`app-theme-v2`); desde Configuración se puede pasar a oscuro. La landing conserva su propio default (`app-theme`).
 - Variables CSS de tema en `src/index.css` (`--ui-t1/t2/t3`, `--ui-s1/s2/s3`, `--ui-panel`, `--ui-page`, `--ui-card`, `--ui-cover`). Se usan en Chats, Empresa y Asistente. Explorar usa una paleta propia en `SwipeBoard.jsx` (`EXPLORE_PALETTE`).
 
 **Vistas convertidas a claro:** Explorar (desktop), Likes, Chats, Empresa, Asistente.
