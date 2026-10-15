@@ -32,7 +32,7 @@ function RecordingWave() {
   );
 }
 
-function ProposalInput({ onChange, onSend, onSendAudio, value }) {
+function ProposalInput({ onChange, onSend, onSendAudio, value, gutter }) {
   const { t } = useTheme();
   const [inputValue,   setInputValue]   = useState(value || '');
   const [showAttach,   setShowAttach]   = useState(false);
@@ -130,7 +130,7 @@ function ProposalInput({ onChange, onSend, onSendAudio, value }) {
 
   return (
     <div className="shrink-0 px-4 pt-3 pb-4"
-      style={{ borderTop: `1px solid ${t.panelBorder}`, background: t.panelBg, transition: 'background 0.3s ease' }}>
+      style={{ borderTop: `1px solid ${t.panelBorder}`, background: t.panelBg, transition: 'background 0.3s ease', ...gutter }}>
 
       {/* ── Mic permission error ── */}
       <AnimatePresence>

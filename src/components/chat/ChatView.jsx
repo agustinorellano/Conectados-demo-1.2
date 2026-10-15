@@ -268,10 +268,13 @@ function ChatView({
   /* ── DESKTOP: two-column layout ── */
   if (isDesktop) {
     return (
-      <div className="flex h-full" style={{ background: t.bg, transition: 'background 0.3s ease' }}>
+      <div className="h-full px-6 pb-6 pt-1" style={{ background: t.bg, transition: 'background 0.3s ease' }}>
+      {/* Tarjeta centrada de ancho máximo: en pantallas grandes no se estira de borde a borde */}
+      <div className="mx-auto flex h-full max-w-[1320px] overflow-hidden rounded-[28px]"
+        style={{ background: t.panelBg, border: `1px solid ${t.panelBorder}`, boxShadow: '0 1px 2px rgba(15,23,42,0.05), 0 20px 50px rgba(15,23,42,0.10)' }}>
 
         {/* Left column — conversation list */}
-        <div className="h-full w-[340px] shrink-0 overflow-hidden" style={{ borderRight: `1px solid ${t.panelBorder}` }}>
+        <div className="h-full w-[clamp(300px,28%,380px)] shrink-0 overflow-hidden" style={{ borderRight: `1px solid ${t.panelBorder}` }}>
           <ChatList {...chatListProps} />
         </div>
 
@@ -301,6 +304,7 @@ function ChatView({
             )}
           </AnimatePresence>
         </div>
+      </div>
       </div>
     );
   }

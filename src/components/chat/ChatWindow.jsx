@@ -450,6 +450,10 @@ function ChatWindow({
     setTimeout(() => setMeetingScheduled(false), 3500);
   };
 
+  // En escritorio el contenido de la conversación se centra con un ancho de lectura cómodo (el fondo y las líneas siguen a todo el ancho).
+  const sideGutter = 'max(24px, calc((100% - 860px) / 2))';
+  const gutter = isDesktop ? { paddingLeft: sideGutter, paddingRight: sideGutter } : null;
+
   const initials = getInitials(conversation.logo, conversation.company);
   const contact  = conversation.contact || conversation.sector || '';
   const iaData   = getIaData(conversation);
@@ -460,7 +464,7 @@ function ChatWindow({
 
       {/* ══ HEADER ══════════════════════════════════════════════════ */}
       <header className="shrink-0 px-4 pt-4 pb-3"
-        style={{ background: t.panelBg, borderBottom: `1px solid ${t.panelBorder}` }}>
+        style={{ background: t.panelBg, borderBottom: `1px solid ${t.panelBorder}`, ...gutter }}>
         <div className="flex items-start gap-3">
           {/* Back — hidden on desktop */}
           {!isDesktop && (
@@ -507,7 +511,7 @@ function ChatWindow({
       {/* ══ QUICK ACTION CARDS ══════════════════════════════════════ */}
       {!conversation.isTeam && (
         <div className="flex shrink-0 gap-3 px-4 py-3"
-          style={{ borderBottom: '1px solid var(--ui-s1)' }}>
+          style={{ borderBottom: '1px solid var(--ui-s1)', ...gutter }}>
           <button type="button" onClick={() => setShowMeetingModal(true)}
             className="flex flex-1 items-center gap-3 rounded-[16px] px-4 py-3.5 text-left transition hover:brightness-110 active:scale-[0.98]"
             style={{ background: 'var(--ui-s1)', border: '1px solid var(--ui-s2)' }}>
@@ -550,7 +554,7 @@ function ChatWindow({
 
       {/* ══ MESSAGES ════════════════════════════════════════════════ */}
       <div className="flex-1 overflow-y-auto px-4 py-4 [scrollbar-width:none] space-y-3"
-        style={{ overscrollBehavior: 'contain' }}>
+        style={{ overscrollBehavior: 'contain', ...gutter }}>
 
         {/* Empty team state */}
         {conversation.isTeam && conversation.isEmpty && (
@@ -696,6 +700,7 @@ function ChatWindow({
         onSend={onSend}
         onSendAudio={onSendAudio}
         value={proposalDraft}
+        gutter={gutter}
       />
 
       {/* ══ CONTEXT BOTTOM SHEET ════════════════════════════════════ */}
