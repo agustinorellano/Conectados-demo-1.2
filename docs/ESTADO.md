@@ -75,3 +75,12 @@ Barra inferior: **Empresa · Likes · Explorar · Chats · Asistente** (antes: E
   - Web: rueda/trackpad o ↑/↓ navegan, ← pasa, → conecta, S guarda. Riel de puntos en el borde derecho indica la posición. Al final del feed: "Llegaste al final" + ajustar filtros.
   - Código: `SwipeBoard.jsx` (`renderFeed`, `resolveCompany`, `FeedRail`, `EndOfFeed`). Se eliminó `CardStack.jsx` (el arrastre horizontal ya no existe).
 - **App móvil:** la barra inferior pasó a ser una **isla dinámica flotante con vidrio transparente (liquid glass, estilo iOS)** (`BottomNav.jsx`): la sección activa se expande con su nombre, las demás quedan como íconos. Flota sobre el contenido; cada vista reserva espacio abajo (`navSpace` en `App.jsx`) y en Explorar los botones quedan por encima de la isla. En la web la isla superior se mantiene como estaba.
+
+## Explorar (web): rediseño de la ficha
+Criterio: en web no se copia la lógica móvil. Se priorizó **claridad, jerarquía y navegación fácil** (referencias: Pinterest / Instagram para la galería, pero como plataforma directa de conexión, no red social).
+- **Galería tipo mosaico** (1 foto grande + 2, con "+N" si hay más): cada foto abre un **visor a pantalla completa** (Esc cierra, ← → navegan). Chip de sinergia sobre la foto principal.
+- **Panel de datos con tipografía del sistema Apple** (SF Pro en dispositivos Apple, Inter de respaldo): rubro · ciudad, nombre grande (40 px, tracking ajustado), descripción, **fila de datos clave** (sinergia · distancia · seguidores · equipo), Qué ofrece / Qué busca, segmentos y conexiones en común. Sin cajas ni bordes pesados: espacio y líneas finas.
+- **Acciones propias de escritorio:** botón primario **Conectar** + Pasar / Guardar / Compartir con etiqueta, **anclados bajo los datos** (ya no hay barra flotante tipo móvil). Atajos visibles (← → ↑↓) y "Deshacer".
+- **Composición:** contenido alineado a un ancho máximo (1180 px) junto con la barra superior; contador "N de M"; botones ▲▼ en el borde derecho para recorrer el feed.
+- Móvil: el nombre de la tarjeta adopta la misma tipografía.
+- Pendiente: bloque "Por qué hacen match" (razones concretas) y "Le interesa tu empresa".

@@ -146,8 +146,8 @@ function CompanyCard({ company, onViewProfile, bottomInset = 92 }) {
       {/* ── Name — top left, below floating header ── */}
       <div className="absolute left-4 right-16 top-[68px] z-10">
         <h3
-          className="font-['Space_Grotesk'] text-[28px] font-bold leading-tight tracking-tight text-white"
-          style={{ textShadow: '0 2px 20px rgba(0,0,0,0.7)' }}
+          className="text-[30px] font-bold leading-[1.05] tracking-[-0.03em] text-white"
+          style={{ textShadow: '0 2px 20px rgba(0,0,0,0.7)', fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', system-ui, sans-serif" }}
         >
           {company.name}
         </h3>

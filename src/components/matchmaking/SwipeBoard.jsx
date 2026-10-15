@@ -1,7 +1,8 @@
 import { AnimatePresence, motion } from 'framer-motion';
+import { createPortal } from 'react-dom';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  ArrowLeft, ArrowRight, BadgeCheck, Heart, MapPin, RotateCcw,
+  ArrowLeft, ArrowRight, BadgeCheck, ChevronDown, ChevronUp, Heart, MapPin, RotateCcw,
   Share2, SlidersHorizontal, Star, TrendingUp, Users, X, Zap,
 } from 'lucide-react';
 import CompanyDetailModal from './CompanyDetailModal';
@@ -250,6 +251,7 @@ const EXPLORE_PALETTE = {
     undoBg: 'rgba(255,255,255,0.07)', undoBorder: '1.5px solid rgba(255,255,255,0.14)', undoIcon: 'rgba(255,255,255,0.45)',
     toastBg: 'rgba(255,255,255,0.10)', toastBorder: '1px solid rgba(255,255,255,0.15)', toastText: 'rgba(255,255,255,0.90)',
     empty: 'rgba(255,255,255,0.20)',
+    divider: 'rgba(255,255,255,0.09)',
   },
   light: {
     bg: '#F5F6FA',
@@ -269,13 +271,125 @@ const EXPLORE_PALETTE = {
     undoBg: '#F5F6FA', undoBorder: '1px solid rgba(15,23,42,0.09)', undoIcon: '#86868B',
     toastBg: 'rgba(29,29,31,0.88)', toastBorder: '1px solid rgba(255,255,255,0.08)', toastText: '#FFFFFF',
     empty: '#A1A1A6',
+    divider: 'rgba(15,23,42,0.09)',
   },
 };
 
-/* ── Desktop profile — reference-style single card layout ───── */
+/* ── Desktop: ficha de empresa — galería (mosaico) + panel de datos con acciones propias ───── */
 const COMMON_CONNECTIONS = ['Bloom Florería', 'Sushi Nakama'];
 
-function ExploreProfileCard({ company, p }) {
+// Tipografía del sistema Apple (SF Pro en dispositivos Apple, Inter como respaldo en el resto)
+const APPLE_FONT = "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter', system-ui, sans-serif";
+
+/* Visor de fotos a pantalla completa (Esc cierra, ← → navegan) */
+function Lightbox({ photos, index, name, onClose, onChange }) {
+  useEffect(() => {
+    document.body.dataset.lightbox = '1';
+    const onKey = (e) => {
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'ArrowRight') onChange((index + 1) % photos.length);
+      if (e.key === 'ArrowLeft') onChange((index - 1 + photos.length) % photos.length);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      delete document.body.dataset.lightbox;
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [index, photos.length, onClose, onChange]);
+
+  const nav = 'absolute top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full text-white transition hover:bg-white/25';
+  return createPortal(
+    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/85 backdrop-blur-md" onClick={onClose} role="dialog" aria-label={`Fotos de ${name}`}>
+      <img src={photos[index]} alt={`${name} ${index + 1}`} onClick={(e) => e.stopPropagation()}
+        className="max-h-[86vh] max-w-[88vw] rounded-[20px] object-contain shadow-2xl" />
+      <button type="button" aria-label="Cerrar" onClick={onClose}
+        className="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-white transition hover:bg-white/25">
+        <X size={18} />
+      </button>
+      {photos.length > 1 && (
+        <>
+          <button type="button" aria-label="Anterior" className={`${nav} left-5 bg-white/15`}
+            onClick={(e) => { e.stopPropagation(); onChange((index - 1 + photos.length) % photos.length); }}>
+            <ArrowLeft size={20} />
+          </button>
+          <button type="button" aria-label="Siguiente" className={`${nav} right-5 bg-white/15`}
+            onClick={(e) => { e.stopPropagation(); onChange((index + 1) % photos.length); }}>
+            <ArrowRight size={20} />
+          </button>
+          <span className="absolute bottom-5 left-1/2 -translate-x-1/2 rounded-full bg-white/15 px-3 py-1 text-[12px] font-medium text-white">
+            {index + 1} / {photos.length}
+          </span>
+        </>
+      )}
+    </div>,
+    document.body
+  );
+}
+
+/* Mosaico de fotos: una grande + dos más, con "+N" si hay más. Cada foto abre el visor. */
+function PhotoMosaic({ photos, company, heroBg, onOpen, p }) {
+  const tile = 'group relative min-h-0 overflow-hidden rounded-[24px] focus:outline-none focus-visible:ring-2';
+  const img = (src, alt) => (
+    <img src={src} alt={alt} loading="lazy"
+      className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]" />
+  );
+  const syn = company.synergyFromThem;
+
+  const heroBadge = syn != null && (
+    <span className="absolute left-4 top-4 flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-semibold text-white"
+      style={{ background: 'rgba(0,0,0,0.38)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)' }}>
+      <TrendingUp size={13} /> {syn}% sinergia
+    </span>
+  );
+
+  if (photos.length === 0) {
+    return (
+      <div className="relative h-full overflow-hidden rounded-[24px]" style={{ background: heroBg, boxShadow: p.cardShadow }}>
+        <span className="absolute inset-0 flex items-center justify-center text-[96px] font-black text-white/30">{company.logo}</span>
+        {heroBadge}
+      </div>
+    );
+  }
+
+  const open = (i) => () => onOpen(i);
+
+  if (photos.length === 1) {
+    return (
+      <button type="button" onClick={open(0)} className={`${tile} h-full w-full cursor-zoom-in`} style={{ background: heroBg, boxShadow: p.cardShadow }}>
+        {img(photos[0], company.name)}
+        {heroBadge}
+      </button>
+    );
+  }
+
+  const extra = photos.length - 3;
+  return (
+    <div className={`grid h-full gap-2.5 ${photos.length === 2 ? 'grid-cols-2' : 'grid-cols-[1.35fr_1fr] grid-rows-2'}`}>
+      <button type="button" onClick={open(0)} className={`${tile} cursor-zoom-in ${photos.length > 2 ? 'row-span-2' : ''}`}
+        style={{ background: heroBg, boxShadow: p.cardShadow }}>
+        {img(photos[0], company.name)}
+        {heroBadge}
+      </button>
+      <button type="button" onClick={open(1)} className={`${tile} cursor-zoom-in`} style={{ background: p.pillBg }}>
+        {img(photos[1], `${company.name} 2`)}
+      </button>
+      {photos.length > 2 && (
+        <button type="button" onClick={open(2)} className={`${tile} cursor-zoom-in`} style={{ background: p.pillBg }}>
+          {img(photos[2], `${company.name} 3`)}
+          {extra > 0 && (
+            <span className="absolute inset-0 flex items-center justify-center bg-black/40 text-[22px] font-semibold text-white backdrop-blur-[2px]">
+              +{extra}
+            </span>
+          )}
+        </button>
+      )}
+    </div>
+  );
+}
+
+function ExploreProfileCard({ company, p, actions, saved }) {
+  const [lightbox, setLightbox] = useState(null);
+
   if (!company) {
     return (
       <div className="flex h-full items-center justify-center">
@@ -284,119 +398,146 @@ function ExploreProfileCard({ company, p }) {
     );
   }
 
-  const offerTags  = parseTags(company.offer || '');
-  const seekTags   = parseTags(company.seeking || '');
-  const segments   = company.segments || [];
-  const hasImage   = Boolean(company.gallery?.[0]);
-  const heroBg     = industryBg[company.sector] || 'linear-gradient(135deg, #1871D8 0%, #0A3D7A 100%)';
-  const followers  = company.instagramData?.followers ?? null;
-  const photos     = (company.instagramData?.feed?.length ? company.instagramData.feed : (company.gallery || [])).slice(0, 4);
-  const about      = company.description || company.culture || company.headline;
+  const offerTags = parseTags(company.offer || '');
+  const seekTags  = parseTags(company.seeking || '');
+  const segments  = company.segments || [];
+  const heroBg    = industryBg[company.sector] || 'linear-gradient(135deg, #1871D8 0%, #0A3D7A 100%)';
+  const followers = company.instagramData?.followers ?? null;
+  const about     = company.description || company.culture || company.headline;
+  const photos    = [...new Set([
+    company.gallery?.[0],
+    ...(company.instagramData?.feed || []),
+    ...(company.gallery?.slice(1) || []),
+  ].filter(Boolean))].slice(0, 6);
+
+  const facts = [
+    company.synergyFromThem != null && { label: 'Sinergia', value: `${company.synergyFromThem}%`, accent: true },
+    company.distance != null && { label: 'Distancia', value: `${company.distance} km` },
+    followers != null && { label: 'Seguidores', value: followers >= 1000 ? `${(followers / 1000).toFixed(1)}k` : String(followers) },
+    company.size && { label: 'Equipo', value: String(company.size).replace(' personas', '') },
+  ].filter(Boolean);
 
   const sections = [
     { title: 'Qué ofrece', icon: Users, tags: offerTags, tone: p.offer },
     { title: 'Qué busca', icon: Star, tags: seekTags, tone: p.seek },
-    { title: 'Segmentos', icon: Users, tags: segments, tone: p.segment },
   ].filter(s => s.tags.length > 0);
 
+  const secondary = 'flex h-11 items-center justify-center gap-2 rounded-2xl text-[13px] font-semibold transition hover:opacity-80 active:scale-[0.98]';
+  const kbd = { background: p.pillBg, color: p.pillText };
+
   return (
-    /* Una sola pantalla: foto a la izquierda, datos a la derecha. Si el alto no alcanza, scrollea solo la columna de datos. */
-    <div className="mx-auto grid h-full max-w-5xl grid-cols-[minmax(0,5fr)_minmax(0,6fr)] gap-6 px-6">
+    <div className="mx-auto grid h-full max-w-[1180px] grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-10 px-8" style={{ fontFamily: APPLE_FONT }}>
 
-      {/* ── Foto / portada ── */}
-      <div className="relative min-h-0 overflow-hidden rounded-[28px]"
-        style={{ background: heroBg, boxShadow: p.cardShadow }}>
-        {hasImage ? (
-          <img src={company.gallery[0]} alt={company.name} className="absolute inset-0 h-full w-full object-cover" />
-        ) : (
-          <span className="absolute inset-0 flex items-center justify-center font-['Space_Grotesk'] text-[96px] font-black text-white/30">
-            {company.logo}
-          </span>
-        )}
-        <div className="absolute inset-0"
-          style={{ background: 'linear-gradient(to top, rgba(7,12,24,0.55) 0%, rgba(7,12,24,0.05) 45%, transparent 100%)' }} />
-        {followers != null && (
-          <span className="absolute bottom-4 left-4 flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-semibold text-white"
-            style={{ background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(10px)' }}>
-            <Users size={12} /> {followers >= 1000 ? `${(followers / 1000).toFixed(1)}k` : followers} seguidores
-          </span>
-        )}
-      </div>
+      {/* ── Galería ── */}
+      <PhotoMosaic photos={photos} company={company} heroBg={heroBg} p={p} onOpen={setLightbox} />
 
-      {/* ── Datos ── */}
-      <div className="flex min-h-0 flex-col gap-4 overflow-y-auto pb-1 [scrollbar-width:none]">
-
-        <div className="flex items-center gap-4">
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full text-lg font-black text-white"
-            style={{ background: heroBg, border: `3px solid ${p.avatarRing}`, boxShadow: p.avatarShadow }}>
-            {company.logo}
+      {/* ── Datos + acciones ── */}
+      <div className="flex min-h-0 flex-col">
+        <div className="min-h-0 flex-1 overflow-y-auto pr-1 [scrollbar-width:none]">
+          <p className="text-[12px] font-semibold uppercase tracking-[0.14em]" style={{ color: p.meta }}>
+            {[company.sector, company.location].filter(Boolean).join(' · ')}
+          </p>
+          <div className="mt-2 flex items-center gap-2.5">
+            <h2 className="truncate text-[40px] font-bold leading-[1.05] tracking-[-0.03em]" style={{ color: p.name, fontFamily: APPLE_FONT }}>{company.name}</h2>
+            <BadgeCheck size={24} className="shrink-0 text-emerald-500" />
           </div>
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5">
-              <h2 className="truncate font-['Space_Grotesk'] text-[26px] font-bold leading-tight" style={{ color: p.name }}>{company.name}</h2>
-              <BadgeCheck size={20} className="shrink-0 text-emerald-500" />
-            </div>
-            <div className="mt-1 flex flex-wrap items-center gap-3">
-              <span className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
-                style={{ background: p.pillBg, color: p.pillText }}>{company.sector}</span>
-              {company.distance != null && (
-                <span className="flex items-center gap-1 text-[12px]" style={{ color: p.meta }}>
-                  <MapPin size={11} /> {company.distance} km
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
+          {about && (
+            <p className="mt-3 line-clamp-3 text-[16px] leading-[1.5]" style={{ color: p.body }}>{about}</p>
+          )}
 
-        {about && (
-          <p className="line-clamp-3 text-[13px] leading-relaxed" style={{ color: p.body }}>{about}</p>
-        )}
-
-        {sections.length > 0 && (
-          <div className="flex flex-col gap-3.5 rounded-[18px] p-4"
-            style={{ background: p.cardBg, border: p.cardBorder, boxShadow: p.cardShadow }}>
-            {sections.map(({ title, icon: Icon, tags, tone }) => (
-              <div key={title}>
-                <p className="mb-1.5 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.16em]" style={{ color: p.label }}>
-                  <Icon size={11} /> {title}
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {tags.map(tag => (
-                    <span key={tag} className="rounded-full px-2.5 py-1 text-[11px] font-medium"
-                      style={{ color: tone.color, background: tone.bg, border: tone.border }}>{tag}</span>
-                  ))}
+          {facts.length > 0 && (
+            <dl className="mt-6 grid gap-4 border-y py-4" style={{ borderColor: p.divider, gridTemplateColumns: `repeat(${facts.length}, minmax(0, 1fr))` }}>
+              {facts.map(f => (
+                <div key={f.label}>
+                  <dt className="text-[11px] font-semibold uppercase tracking-[0.12em]" style={{ color: p.label }}>{f.label}</dt>
+                  <dd className="mt-1 text-[22px] font-semibold leading-none tracking-[-0.02em]" style={{ color: f.accent ? p.accent : p.name }}>{f.value}</dd>
                 </div>
+              ))}
+            </dl>
+          )}
+
+          {sections.length > 0 && (
+            <div className={`mt-5 grid gap-6 ${sections.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+              {sections.map(({ title, icon: Icon, tags, tone }) => (
+                <div key={title}>
+                  <p className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em]" style={{ color: p.label }}>
+                    <Icon size={12} /> {title}
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {tags.map(tag => (
+                      <span key={tag} className="rounded-full px-3 py-1.5 text-[13px] font-medium"
+                        style={{ color: tone.color, background: tone.bg, border: tone.border }}>{tag}</span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {segments.length > 0 && (
+            <div className="mt-5">
+              <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.12em]" style={{ color: p.label }}>Segmentos</p>
+              <div className="flex flex-wrap gap-1.5">
+                {segments.map(tag => (
+                  <span key={tag} className="rounded-full px-3 py-1.5 text-[13px] font-medium"
+                    style={{ color: p.segment.color, background: p.segment.bg, border: p.segment.border }}>{tag}</span>
+                ))}
               </div>
+            </div>
+          )}
+
+          <div className="mt-5 flex flex-wrap items-center gap-2 pb-2">
+            <span className="text-[12px] font-medium" style={{ color: p.meta }}>{COMMON_CONNECTIONS.length} conexiones en común</span>
+            {COMMON_CONNECTIONS.map(c => (
+              <span key={c} className="inline-flex items-center gap-1.5 rounded-full py-1 pl-1 pr-3 text-[12px] font-medium"
+                style={{ background: p.chipBg, border: p.chipBorder, color: p.chipText }}>
+                <span className="flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-bold text-white"
+                  style={{ background: 'linear-gradient(135deg, #455BE8, #2F43C8)' }}>{c.slice(0, 1)}</span>
+                {c}
+              </span>
             ))}
           </div>
-        )}
-
-        <div className="flex flex-wrap items-center gap-2 rounded-[18px] px-4 py-3"
-          style={{ background: p.cardBg, border: p.cardBorder, boxShadow: p.cardShadow }}>
-          <Users size={12} style={{ color: p.accent }} />
-          <span className="text-[11px] font-semibold" style={{ color: p.meta }}>{COMMON_CONNECTIONS.length} conexiones en común</span>
-          {COMMON_CONNECTIONS.map(c => (
-            <span key={c} className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium"
-              style={{ background: p.chipBg, border: p.chipBorder, color: p.chipText }}>
-              <span className="flex h-4 w-4 items-center justify-center rounded-full text-[8px] font-bold text-white"
-                style={{ background: 'linear-gradient(135deg, #1871D8, #0A3D7A)' }}>
-                {c.slice(0, 1)}
-              </span>
-              {c}
-            </span>
-          ))}
         </div>
 
-        {photos.length > 0 && (
-          <div className="grid grid-cols-4 gap-2">
-            {photos.map((src, i) => (
-              <div key={i} className="aspect-square overflow-hidden rounded-[12px]">
-                <img src={src} alt="" className="h-full w-full object-cover" />
-              </div>
-            ))}
+        {/* ── Acciones: en escritorio van con etiqueta, junto a los datos (no flotando como en móvil) ── */}
+        <div className="shrink-0 border-t pt-4" style={{ borderColor: p.divider }}>
+          <button type="button" onClick={actions.onLike}
+            className="flex h-[52px] w-full items-center justify-center gap-2 rounded-2xl text-[16px] font-semibold text-white transition hover:brightness-110 active:scale-[0.99]"
+            style={{ background: 'linear-gradient(135deg, #455BE8, #2F43C8)', boxShadow: '0 10px 24px rgba(69,91,232,0.35)' }}>
+            <Heart size={19} strokeWidth={2.2} /> Conectar
+          </button>
+          <div className="mt-2.5 grid grid-cols-3 gap-2.5">
+            <button type="button" onClick={actions.onPass} className={secondary}
+              style={{ background: p.btnBg, border: p.btnBorder, color: '#E5484D' }}>
+              <X size={16} strokeWidth={2.4} /> Pasar
+            </button>
+            <button type="button" onClick={actions.onSave} className={secondary}
+              style={{ background: p.btnBg, border: p.btnBorder, color: saved ? '#D97706' : p.btnText }}>
+              <Star size={16} fill={saved ? 'currentColor' : 'none'} /> {saved ? 'Guardada' : 'Guardar'}
+            </button>
+            <button type="button" onClick={actions.onShare} className={secondary}
+              style={{ background: p.btnBg, border: p.btnBorder, color: p.btnText }}>
+              <Share2 size={16} /> Compartir
+            </button>
           </div>
-        )}
+          <div className="mt-3 flex items-center justify-between text-[11px]" style={{ color: p.label }}>
+            <span className="flex items-center gap-2">
+              <kbd className="rounded-md px-1.5 py-0.5 font-sans" style={kbd}>←</kbd> Pasar
+              <kbd className="ml-1 rounded-md px-1.5 py-0.5 font-sans" style={kbd}>→</kbd> Conectar
+              <kbd className="ml-1 rounded-md px-1.5 py-0.5 font-sans" style={kbd}>↑↓</kbd> Navegar
+            </span>
+            {actions.canUndo && (
+              <button type="button" onClick={actions.onUndo} className="flex items-center gap-1 font-semibold transition hover:opacity-70" style={{ color: p.accent }}>
+                <RotateCcw size={12} /> Deshacer
+              </button>
+            )}
+          </div>
+        </div>
       </div>
+
+      {lightbox !== null && (
+        <Lightbox photos={photos} index={lightbox} name={company.name} onClose={() => setLightbox(null)} onChange={setLightbox} />
+      )}
     </div>
   );
 }
@@ -595,6 +736,7 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
     if (!isDesktop) return;
     const fn = (e) => {
       if (/^(INPUT|TEXTAREA|SELECT)$/.test(e.target?.tagName)) return;
+      if (document.body.dataset.lightbox) return; // el visor de fotos usa las flechas
       const a = actionsRef.current;
       if (e.key === 'ArrowLeft')  a.handlePass();
       if (e.key === 'ArrowRight') a.handleLike();
@@ -664,12 +806,19 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
      DESKTOP LAYOUT
   ════════════════════════════════════════════════════════════ */
   if (isDesktop) {
+    const actions = {
+      onPass: handlePass, onLike: handleLike, onSave: handleSave,
+      onShare: handleShare, onUndo: handleUndo, canUndo: decided.length > 0,
+    };
+    const atStart = activeIndex <= 0;
+    const atEnd = activeIndex >= deck.length;
+
     return (
       <>
-        <div className="relative flex flex-col h-full" style={{ background: p.bg }}>
+        <div className="relative flex flex-col h-full" style={{ background: p.bg, fontFamily: APPLE_FONT }}>
 
-          {/* ── Top bar: tabs + save + filters ── */}
-          <div className="flex shrink-0 items-center justify-between px-6 py-4">
+          {/* ── Barra superior: alineada al ancho del contenido ── */}
+          <div className="mx-auto flex w-full max-w-[1180px] shrink-0 items-center justify-between px-8 pb-3 pt-4">
             <div className="flex items-center rounded-full p-1"
               style={{ background: p.tabsBg, border: p.tabsBorder }}>
               {[{ id: 'paraTi', label: 'Para ti' }, { id: 'guardados', label: 'Guardados' }].map(tab => (
@@ -685,13 +834,12 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
                 </button>
               ))}
             </div>
-            <div className="flex items-center gap-2">
-              <motion.button type="button" onClick={handleSave}
-                whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.90 }}
-                className="flex h-9 w-9 items-center justify-center rounded-full"
-                style={{ background: 'rgba(251,191,36,0.10)', border: '1.5px solid rgba(251,191,36,0.24)' }}>
-                <Star size={15} className="text-amber-400" />
-              </motion.button>
+            <div className="flex items-center gap-3">
+              {activeTab === 'paraTi' && deck.length > 0 && (
+                <span className="text-[12px] font-medium tabular-nums" style={{ color: p.meta }}>
+                  {Math.min(activeIndex + 1, deck.length)} de {deck.length}
+                </span>
+              )}
               <motion.button type="button" onClick={() => setShowFilters(true)}
                 whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.94 }}
                 className="flex items-center gap-2 rounded-full px-4 py-2"
@@ -702,67 +850,35 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
             </div>
           </div>
 
-          {/* ── Main content ── */}
+          {/* ── Contenido ── */}
           {activeTab === 'guardados' ? (
             <SavedGrid companies={savedCompanies} onView={c => setViewingCompany(c)} p={p} />
           ) : (
-            <div className="relative min-h-0 flex-1 pb-[150px] pt-1">
+            <div className="relative min-h-0 flex-1 pb-6 pt-1">
               {renderFeed(
-                (company) => <ExploreProfileCard company={company} p={p} />,
+                (company) => <ExploreProfileCard company={company} p={p} actions={actions} saved={savedIds.has(company.id)} />,
                 { dark: false, p }
               )}
-              <FeedRail count={deck.length} index={activeIndex} color={p.label} activeColor={p.accent} />
+
+              {/* Navegación vertical del feed: ▲ puntos ▼ */}
+              {deck.length > 0 && (
+                <div className="absolute right-6 top-1/2 z-30 flex -translate-y-1/2 flex-col items-center gap-3">
+                  <button type="button" aria-label="Empresa anterior" onClick={() => scrollPage(-1)} disabled={atStart}
+                    className="flex h-10 w-10 items-center justify-center rounded-full transition hover:opacity-80 disabled:opacity-30"
+                    style={{ background: p.btnBg, border: p.btnBorder, color: p.btnText, boxShadow: p.cardShadow }}>
+                    <ChevronUp size={18} />
+                  </button>
+                  <button type="button" aria-label="Siguiente empresa" onClick={() => scrollPage(1)} disabled={atEnd}
+                    className="flex h-10 w-10 items-center justify-center rounded-full transition hover:opacity-80 disabled:opacity-30"
+                    style={{ background: p.btnBg, border: p.btnBorder, color: p.btnText, boxShadow: p.cardShadow }}>
+                    <ChevronDown size={18} />
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
-          {/* ── Floating action buttons — centered at the bottom ── */}
-          {activeTab !== 'guardados' && activeCompany && (
-            <div className="pointer-events-none absolute inset-x-0 bottom-7 z-40 flex items-center justify-center">
-              <div className="pointer-events-auto flex items-center gap-5 rounded-[28px] px-7 py-4"
-                style={{ background: p.floatBg, backdropFilter: 'saturate(180%) blur(20px)', WebkitBackdropFilter: 'saturate(180%) blur(20px)', border: p.floatBorder, boxShadow: p.floatShadow }}>
-
-                <motion.button type="button" onClick={handleUndo} disabled={decided.length === 0}
-                  whileHover={{ scale: 1.10 }} whileTap={{ scale: 0.88 }}
-                  aria-label="Deshacer"
-                  className="flex h-10 w-10 items-center justify-center rounded-full disabled:opacity-40"
-                  style={{ background: p.undoBg, border: p.undoBorder }}>
-                  <RotateCcw size={15} style={{ color: p.undoIcon }} />
-                </motion.button>
-
-                <motion.button type="button" onClick={handlePass}
-                  whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.90 }}
-                  className="flex flex-col items-center gap-1.5">
-                  <span className="flex h-16 w-16 items-center justify-center rounded-full"
-                    style={{ background: 'rgba(244,63,94,0.14)', border: '2px solid rgba(244,63,94,0.40)' }}>
-                    <X size={26} strokeWidth={2.5} className="text-[#F87171]" />
-                  </span>
-                  <span className="text-[12px] font-semibold text-[#F87171]">Pasar</span>
-                </motion.button>
-
-                <motion.button type="button" onClick={handleLike}
-                  whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.90 }}
-                  className="flex flex-col items-center gap-1.5">
-                  <span className="flex h-16 w-16 items-center justify-center rounded-full"
-                    style={{ background: 'rgba(34,197,94,0.14)', border: '2px solid rgba(34,197,94,0.40)' }}>
-                    <Heart size={26} strokeWidth={2} className="text-[#4ADE80]" />
-                  </span>
-                  <span className="text-[12px] font-semibold text-[#4ADE80]">Conectar</span>
-                </motion.button>
-
-                <motion.button type="button" onClick={handleShare}
-                  whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.90 }}
-                  className="flex flex-col items-center gap-1.5">
-                  <span className="flex h-16 w-16 items-center justify-center rounded-full"
-                    style={{ background: 'rgba(251,191,36,0.14)', border: '2px solid rgba(251,191,36,0.40)' }}>
-                    <Share2 size={23} strokeWidth={2} className="text-amber-400" />
-                  </span>
-                  <span className="text-[12px] font-semibold text-amber-400">Compartir</span>
-                </motion.button>
-              </div>
-            </div>
-          )}
-
-          {/* Flash toast — top center on desktop */}
+          {/* Aviso (con "Deshacer") — arriba al centro */}
           {toast(
             'left-1/2 top-5 -translate-x-1/2 rounded-[14px] px-5 py-2.5',
             { background: p.toastBg, color: p.toastText, backdropFilter: 'blur(16px)', border: p.toastBorder }
