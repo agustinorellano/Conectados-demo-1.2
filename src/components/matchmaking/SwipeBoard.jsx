@@ -2,8 +2,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  ArrowLeft, ArrowRight, BadgeCheck, ChevronDown, ChevronUp, Heart, MapPin, RotateCcw,
-  Share2, SlidersHorizontal, Star, TrendingUp, Users, X, Zap,
+  ArrowLeft, ArrowRight, BadgeCheck, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Heart, MapPin, RotateCcw,
+  Share2, SlidersHorizontal, Star, Users, X, Zap,
 } from 'lucide-react';
 import CompanyDetailModal from './CompanyDetailModal';
 import MatchOverlay from './MatchOverlay';
@@ -326,62 +326,76 @@ function Lightbox({ photos, index, name, onClose, onChange }) {
   );
 }
 
-/* Mosaico de fotos: una grande + dos más, con "+N" si hay más. Cada foto abre el visor. */
-function PhotoMosaic({ photos, company, heroBg, onOpen, p }) {
-  const tile = 'group relative min-h-0 overflow-hidden rounded-[24px] focus:outline-none focus-visible:ring-2';
-  const img = (src, alt) => (
-    <img src={src} alt={alt} loading="lazy"
-      className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]" />
-  );
-  const syn = company.synergyFromThem;
+/* Carrusel de fotos estilo publicación de Instagram: una foto por vez, se pasa con flechas, puntos o deslizando.
+   Tocar la foto la abre en el visor a pantalla completa. */
+function PhotoCarousel({ photos, company, heroBg, onOpen, p }) {
+  const ref = useRef(null);
+  const [index, setIndex] = useState(0);
+  const count = photos.length;
 
-  const heroBadge = syn != null && (
-    <span className="absolute left-4 top-4 flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-semibold text-white"
-      style={{ background: 'rgba(0,0,0,0.38)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)' }}>
-      <TrendingUp size={13} /> {syn}% sinergia
-    </span>
-  );
+  const goTo = (i) => {
+    const el = ref.current;
+    if (el) el.scrollTo({ left: i * el.clientWidth, behavior: 'smooth' });
+  };
+  const handleScroll = () => {
+    const el = ref.current;
+    if (el?.clientWidth) setIndex(Math.round(el.scrollLeft / el.clientWidth));
+  };
 
-  if (photos.length === 0) {
+  if (count === 0) {
     return (
-      <div className="relative h-full overflow-hidden rounded-[24px]" style={{ background: heroBg, boxShadow: p.cardShadow }}>
+      <div className="relative h-full overflow-hidden rounded-[28px]" style={{ background: heroBg, boxShadow: p.cardShadow }}>
         <span className="absolute inset-0 flex items-center justify-center text-[96px] font-black text-white/30">{company.logo}</span>
-        {heroBadge}
       </div>
     );
   }
 
-  const open = (i) => () => onOpen(i);
+  const arrow = 'absolute top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full text-[#1D1D1F] opacity-0 shadow-lg transition group-hover:opacity-100 hover:scale-105 focus-visible:opacity-100';
 
-  if (photos.length === 1) {
-    return (
-      <button type="button" onClick={open(0)} className={`${tile} h-full w-full cursor-zoom-in`} style={{ background: heroBg, boxShadow: p.cardShadow }}>
-        {img(photos[0], company.name)}
-        {heroBadge}
-      </button>
-    );
-  }
-
-  const extra = photos.length - 3;
   return (
-    <div className={`grid h-full gap-2.5 ${photos.length === 2 ? 'grid-cols-2' : 'grid-cols-[1.35fr_1fr] grid-rows-2'}`}>
-      <button type="button" onClick={open(0)} className={`${tile} cursor-zoom-in ${photos.length > 2 ? 'row-span-2' : ''}`}
-        style={{ background: heroBg, boxShadow: p.cardShadow }}>
-        {img(photos[0], company.name)}
-        {heroBadge}
-      </button>
-      <button type="button" onClick={open(1)} className={`${tile} cursor-zoom-in`} style={{ background: p.pillBg }}>
-        {img(photos[1], `${company.name} 2`)}
-      </button>
-      {photos.length > 2 && (
-        <button type="button" onClick={open(2)} className={`${tile} cursor-zoom-in`} style={{ background: p.pillBg }}>
-          {img(photos[2], `${company.name} 3`)}
-          {extra > 0 && (
-            <span className="absolute inset-0 flex items-center justify-center bg-black/40 text-[22px] font-semibold text-white backdrop-blur-[2px]">
-              +{extra}
-            </span>
+    <div className="group relative h-full overflow-hidden rounded-[28px]" style={{ background: heroBg, boxShadow: p.cardShadow }}>
+      <div ref={ref} onScroll={handleScroll}
+        className="flex h-full snap-x snap-mandatory overflow-x-auto overscroll-x-contain [scrollbar-width:none]">
+        {photos.map((src, i) => (
+          <button key={src} type="button" onClick={() => onOpen(i)} aria-label={`Ver foto ${i + 1} de ${count}`}
+            className="relative h-full w-full shrink-0 cursor-zoom-in snap-center snap-always">
+            <img src={src} alt={`${company.name} ${i + 1}`} loading={i === 0 ? 'eager' : 'lazy'} draggable={false}
+              className="absolute inset-0 h-full w-full object-cover" />
+          </button>
+        ))}
+      </div>
+
+      {count > 1 && (
+        <>
+          <span className="absolute right-4 top-4 rounded-full px-3 py-1 text-[12px] font-semibold tabular-nums text-white"
+            style={{ background: 'rgba(0,0,0,0.38)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)' }}>
+            {index + 1}/{count}
+          </span>
+
+          {index > 0 && (
+            <button type="button" aria-label="Foto anterior" onClick={() => goTo(index - 1)}
+              className={`${arrow} left-4`} style={{ background: 'rgba(255,255,255,0.92)' }}>
+              <ChevronLeft size={20} />
+            </button>
           )}
-        </button>
+          {index < count - 1 && (
+            <button type="button" aria-label="Foto siguiente" onClick={() => goTo(index + 1)}
+              className={`${arrow} right-4`} style={{ background: 'rgba(255,255,255,0.92)' }}>
+              <ChevronRight size={20} />
+            </button>
+          )}
+
+          <div className="pointer-events-none absolute inset-x-0 bottom-4 flex justify-center">
+            <div className="pointer-events-auto flex items-center gap-1.5 rounded-full px-2.5 py-2"
+              style={{ background: 'rgba(0,0,0,0.30)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)' }}>
+              {photos.map((src, i) => (
+                <button key={src} type="button" aria-label={`Ir a la foto ${i + 1}`} onClick={() => goTo(i)}
+                  className="rounded-full transition-all duration-200"
+                  style={{ width: i === index ? 18 : 6, height: 6, background: i === index ? '#FFFFFF' : 'rgba(255,255,255,0.5)' }} />
+              ))}
+            </div>
+          </div>
+        </>
       )}
     </div>
   );
@@ -408,10 +422,10 @@ function ExploreProfileCard({ company, p, actions, saved }) {
     company.gallery?.[0],
     ...(company.instagramData?.feed || []),
     ...(company.gallery?.slice(1) || []),
-  ].filter(Boolean))].slice(0, 6);
+  ].filter(Boolean))].slice(0, 8);
 
+  // La sinergia no se muestra en el perfil de la web (se decidió mantenerlo limpio)
   const facts = [
-    company.synergyFromThem != null && { label: 'Sinergia', value: `${company.synergyFromThem}%`, accent: true },
     company.distance != null && { label: 'Distancia', value: `${company.distance} km` },
     followers != null && { label: 'Seguidores', value: followers >= 1000 ? `${(followers / 1000).toFixed(1)}k` : String(followers) },
     company.size && { label: 'Equipo', value: String(company.size).replace(' personas', '') },
@@ -422,50 +436,51 @@ function ExploreProfileCard({ company, p, actions, saved }) {
     { title: 'Qué busca', icon: Star, tags: seekTags, tone: p.seek },
   ].filter(s => s.tags.length > 0);
 
-  const secondary = 'flex h-11 items-center justify-center gap-2 rounded-2xl text-[13px] font-semibold transition hover:opacity-80 active:scale-[0.98]';
+  // Botones cuadrados redondeados, uno al lado del otro
+  const square = 'flex h-[72px] w-[72px] flex-col items-center justify-center gap-1.5 rounded-[20px] text-[11px] font-semibold transition hover:-translate-y-0.5 active:scale-95';
   const kbd = { background: p.pillBg, color: p.pillText };
 
   return (
-    <div className="mx-auto grid h-full max-w-[1180px] grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-10 px-8" style={{ fontFamily: APPLE_FONT }}>
+    <div className="mx-auto grid h-full max-w-[1240px] grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] gap-14 px-10" style={{ fontFamily: APPLE_FONT }}>
 
-      {/* ── Galería ── */}
-      <PhotoMosaic photos={photos} company={company} heroBg={heroBg} p={p} onOpen={setLightbox} />
+      {/* ── Galería (carrusel) ── */}
+      <PhotoCarousel photos={photos} company={company} heroBg={heroBg} p={p} onOpen={setLightbox} />
 
       {/* ── Datos + acciones ── */}
       <div className="flex min-h-0 flex-col">
-        <div className="min-h-0 flex-1 overflow-y-auto pr-1 [scrollbar-width:none]">
+        <div className="min-h-0 flex-1 overflow-y-auto pr-2 pt-1 [scrollbar-width:none]">
           <p className="text-[12px] font-semibold uppercase tracking-[0.14em]" style={{ color: p.meta }}>
             {[company.sector, company.location].filter(Boolean).join(' · ')}
           </p>
-          <div className="mt-2 flex items-center gap-2.5">
+          <div className="mt-3 flex items-center gap-2.5">
             <h2 className="truncate text-[40px] font-bold leading-[1.05] tracking-[-0.03em]" style={{ color: p.name, fontFamily: APPLE_FONT }}>{company.name}</h2>
             <BadgeCheck size={24} className="shrink-0 text-emerald-500" />
           </div>
           {about && (
-            <p className="mt-3 line-clamp-3 text-[16px] leading-[1.5]" style={{ color: p.body }}>{about}</p>
+            <p className="mt-4 line-clamp-3 text-[16px] leading-[1.6]" style={{ color: p.body }}>{about}</p>
           )}
 
           {facts.length > 0 && (
-            <dl className="mt-6 grid gap-4 border-y py-4" style={{ borderColor: p.divider, gridTemplateColumns: `repeat(${facts.length}, minmax(0, 1fr))` }}>
+            <dl className="mt-9 grid gap-6 border-y py-6" style={{ borderColor: p.divider, gridTemplateColumns: `repeat(${facts.length}, minmax(0, 1fr))` }}>
               {facts.map(f => (
                 <div key={f.label}>
                   <dt className="text-[11px] font-semibold uppercase tracking-[0.12em]" style={{ color: p.label }}>{f.label}</dt>
-                  <dd className="mt-1 text-[22px] font-semibold leading-none tracking-[-0.02em]" style={{ color: f.accent ? p.accent : p.name }}>{f.value}</dd>
+                  <dd className="mt-1.5 text-[22px] font-semibold leading-none tracking-[-0.02em]" style={{ color: p.name }}>{f.value}</dd>
                 </div>
               ))}
             </dl>
           )}
 
           {sections.length > 0 && (
-            <div className={`mt-5 grid gap-6 ${sections.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+            <div className={`mt-8 grid gap-8 ${sections.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
               {sections.map(({ title, icon: Icon, tags, tone }) => (
                 <div key={title}>
-                  <p className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em]" style={{ color: p.label }}>
+                  <p className="mb-3 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em]" style={{ color: p.label }}>
                     <Icon size={12} /> {title}
                   </p>
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="flex flex-wrap gap-2">
                     {tags.map(tag => (
-                      <span key={tag} className="rounded-full px-3 py-1.5 text-[13px] font-medium"
+                      <span key={tag} className="rounded-full px-3.5 py-1.5 text-[13px] font-medium"
                         style={{ color: tone.color, background: tone.bg, border: tone.border }}>{tag}</span>
                     ))}
                   </div>
@@ -475,18 +490,18 @@ function ExploreProfileCard({ company, p, actions, saved }) {
           )}
 
           {segments.length > 0 && (
-            <div className="mt-5">
-              <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.12em]" style={{ color: p.label }}>Segmentos</p>
-              <div className="flex flex-wrap gap-1.5">
+            <div className="mt-8">
+              <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.12em]" style={{ color: p.label }}>Segmentos</p>
+              <div className="flex flex-wrap gap-2">
                 {segments.map(tag => (
-                  <span key={tag} className="rounded-full px-3 py-1.5 text-[13px] font-medium"
+                  <span key={tag} className="rounded-full px-3.5 py-1.5 text-[13px] font-medium"
                     style={{ color: p.segment.color, background: p.segment.bg, border: p.segment.border }}>{tag}</span>
                 ))}
               </div>
             </div>
           )}
 
-          <div className="mt-5 flex flex-wrap items-center gap-2 pb-2">
+          <div className="mt-8 flex flex-wrap items-center gap-2.5 pb-3">
             <span className="text-[12px] font-medium" style={{ color: p.meta }}>{COMMON_CONNECTIONS.length} conexiones en común</span>
             {COMMON_CONNECTIONS.map(c => (
               <span key={c} className="inline-flex items-center gap-1.5 rounded-full py-1 pl-1 pr-3 text-[12px] font-medium"
@@ -499,28 +514,27 @@ function ExploreProfileCard({ company, p, actions, saved }) {
           </div>
         </div>
 
-        {/* ── Acciones: en escritorio van con etiqueta, junto a los datos (no flotando como en móvil) ── */}
-        <div className="shrink-0 border-t pt-4" style={{ borderColor: p.divider }}>
-          <button type="button" onClick={actions.onLike}
-            className="flex h-[52px] w-full items-center justify-center gap-2 rounded-2xl text-[16px] font-semibold text-white transition hover:brightness-110 active:scale-[0.99]"
-            style={{ background: 'linear-gradient(135deg, #455BE8, #2F43C8)', boxShadow: '0 10px 24px rgba(69,91,232,0.35)' }}>
-            <Heart size={19} strokeWidth={2.2} /> Conectar
-          </button>
-          <div className="mt-2.5 grid grid-cols-3 gap-2.5">
-            <button type="button" onClick={actions.onPass} className={secondary}
+        {/* ── Acciones: cuadrados redondeados en fila (en escritorio van junto a los datos, no flotando) ── */}
+        <div className="shrink-0 border-t pt-5" style={{ borderColor: p.divider }}>
+          <div className="flex items-center gap-3">
+            <button type="button" onClick={actions.onPass} className={square}
               style={{ background: p.btnBg, border: p.btnBorder, color: '#E5484D' }}>
-              <X size={16} strokeWidth={2.4} /> Pasar
+              <X size={22} strokeWidth={2.3} /> Pasar
             </button>
-            <button type="button" onClick={actions.onSave} className={secondary}
+            <button type="button" onClick={actions.onSave} className={square}
               style={{ background: p.btnBg, border: p.btnBorder, color: saved ? '#D97706' : p.btnText }}>
-              <Star size={16} fill={saved ? 'currentColor' : 'none'} /> {saved ? 'Guardada' : 'Guardar'}
+              <Star size={21} fill={saved ? 'currentColor' : 'none'} /> {saved ? 'Guardada' : 'Guardar'}
             </button>
-            <button type="button" onClick={actions.onShare} className={secondary}
+            <button type="button" onClick={actions.onShare} className={square}
               style={{ background: p.btnBg, border: p.btnBorder, color: p.btnText }}>
-              <Share2 size={16} /> Compartir
+              <Share2 size={20} /> Compartir
+            </button>
+            <button type="button" onClick={actions.onLike} className={`${square} text-white`}
+              style={{ background: 'linear-gradient(135deg, #455BE8, #2F43C8)', boxShadow: '0 10px 22px rgba(69,91,232,0.38)' }}>
+              <Heart size={22} strokeWidth={2.2} /> Conectar
             </button>
           </div>
-          <div className="mt-3 flex items-center justify-between text-[11px]" style={{ color: p.label }}>
+          <div className="mt-4 flex items-center justify-between text-[11px]" style={{ color: p.label }}>
             <span className="flex items-center gap-2">
               <kbd className="rounded-md px-1.5 py-0.5 font-sans" style={kbd}>←</kbd> Pasar
               <kbd className="ml-1 rounded-md px-1.5 py-0.5 font-sans" style={kbd}>→</kbd> Conectar
