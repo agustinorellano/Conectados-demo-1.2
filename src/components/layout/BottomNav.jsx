@@ -3,14 +3,14 @@ import {
   Bot,
   BriefcaseBusiness,
   Building2,
-  Heart,
+  Handshake,
   MessageSquare,
 } from 'lucide-react';
 
 // Dashboard y Proyectos están ocultos por la simplificación de producto (las vistas siguen en App.jsx).
 const navItems = [
   { id: 'profile',   label: 'Mi Empresa', icon: Building2 },
-  { id: 'likes',     label: 'Likes',      icon: Heart },
+  { id: 'likes',     label: 'Alianzas',   icon: Handshake },
   { id: 'alliances', label: 'Explorar',   icon: BriefcaseBusiness },
   { id: 'chats',     label: 'Chats',      icon: MessageSquare },
   { id: 'assistant', label: 'Asistente',  icon: Bot },

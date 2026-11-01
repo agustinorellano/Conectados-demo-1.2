@@ -2,8 +2,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  ArrowLeft, ArrowRight, BadgeCheck, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Heart, MapPin, RotateCcw,
-  Share2, SlidersHorizontal, Star, Users, X, Zap,
+  ArrowLeft, ArrowRight, BadgeCheck, Bookmark, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Heart, MapPin, RotateCcw,
+  Search, Share2, SlidersHorizontal, Star, Store, Tag, Users, UsersRound, X, Zap,
 } from 'lucide-react';
 import CompanyDetailModal from './CompanyDetailModal';
 import MatchOverlay from './MatchOverlay';
@@ -495,12 +495,166 @@ function Lightbox({ photos, index, name, onClose, onChange }) {
   );
 }
 
-/* Carrusel de fotos estilo publicación de Instagram: una foto por vez, se pasa con flechas, puntos o deslizando.
-   Tocar la foto la abre en el visor a pantalla completa. */
-function PhotoCarousel({ photos, company, heroBg, onOpen, p }) {
+/* ── Reseñas de alianzas (datos de ejemplo: se generan de forma estable a partir de cada empresa) ───── */
+const REVIEWER_POOL = [
+  { name: 'Bloom Florería', sector: 'Floreria' },
+  { name: 'Luna Beauty',    sector: 'Belleza' },
+  { name: 'Sushi Nakama',   sector: 'Gastronomia' },
+  { name: 'Fit Studio',     sector: 'Gimnasio' },
+  { name: 'Core Wellness',  sector: 'Bienestar' },
+  { name: 'Digital Craft',  sector: 'Tecnologia' },
+  { name: 'Verde Market',   sector: 'Moda' },
+  { name: 'Aether Studio',  sector: 'Marketing Digital' },
+  { name: 'Nomad Co.',      sector: 'Indumentaria' },
+  { name: 'Café Patio',     sector: 'Cafeteria' },
+];
+const REVIEW_TEXTS = [
+  { text: 'Armamos un cupón cruzado y en dos semanas duplicamos el tráfico al local. Muy profesionales.', type: 'Cupón cruzado' },
+  { text: 'Respondieron rápido y cumplieron todo lo acordado. Volveríamos a hacer una alianza.', type: 'Co-marketing' },
+  { text: 'El evento conjunto trajo clientes nuevos para las dos marcas. Excelente comunicación.', type: 'Evento conjunto' },
+  { text: 'Buena coordinación y comunicación clara. La campaña salió mejor de lo esperado.', type: 'Campaña conjunta' },
+  { text: 'Cumplen los plazos y cuidan la imagen de la marca. Totalmente recomendables.', type: 'Co-branding' },
+  { text: 'Una alianza simple y con resultados desde el primer mes.', type: 'Cross-selling' },
+  { text: 'Muy buena onda y ganas de hacer cosas distintas. Nos presentaron clientes nuevos.', type: 'Networking' },
+  { text: 'Tuvimos que ajustar algunos tiempos, pero el resultado final valió la pena.', type: 'Campaña conjunta' },
+];
+const REVIEW_DATES = ['Hace 2 semanas', 'Hace 1 mes', 'Hace 1 mes', 'Hace 2 meses', 'Hace 3 meses', 'Hace 3 meses', 'Hace 4 meses', 'Hace 5 meses'];
+const REVIEW_RATINGS = [5, 5, 4.5, 5, 4, 5, 4.5, 5];
+
+const normalizeName = (s = '') => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+const hashString = (s = '') => [...s].reduce((h, ch) => (h * 31 + ch.charCodeAt(0)) >>> 0, 7);
+
+function getAllianceReviews(company) {
+  const seed = hashString(company.id || company.name);
+  const pool = REVIEWER_POOL.filter(r => normalizeName(r.name) !== normalizeName(company.name));
+  const items = Array.from({ length: 8 }, (_, i) => {
+    const reviewer = pool[(seed + i) % pool.length];
+    const t = REVIEW_TEXTS[(seed + i * 3) % REVIEW_TEXTS.length];
+    return { id: `${seed}-${i}`, reviewer, text: t.text, type: t.type, rating: REVIEW_RATINGS[(seed + i) % REVIEW_RATINGS.length], date: REVIEW_DATES[i] };
+  });
+  const average = Math.round((items.reduce((sum, r) => sum + r.rating, 0) / items.length) * 10) / 10;
+  return { items, average, total: 14 + (seed % 90) };
+}
+
+function Stars({ value, size = 14 }) {
+  return (
+    <span className="inline-flex items-center gap-0.5" role="img" aria-label={`${value} de 5 estrellas`}>
+      {[0, 1, 2, 3, 4].map(i => {
+        const fill = Math.max(0, Math.min(1, value - i));
+        return (
+          <span key={i} className="relative inline-block" style={{ width: size, height: size }}>
+            <Star size={size} strokeWidth={1.6} style={{ color: '#F5B301', opacity: 0.35 }} />
+            <span className="absolute inset-y-0 left-0 overflow-hidden" style={{ width: `${fill * 100}%` }}>
+              <Star size={size} fill="#F5B301" strokeWidth={1.6} style={{ color: '#F5B301' }} />
+            </span>
+          </span>
+        );
+      })}
+    </span>
+  );
+}
+
+function ReviewerAvatar({ reviewer, size = 44 }) {
+  const initials = reviewer.name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
+  return (
+    <span className="flex shrink-0 items-center justify-center text-white"
+      style={{
+        width: size, height: size, borderRadius: size * 0.32, fontWeight: 700, fontSize: size * 0.34,
+        background: sectorBg[reviewer.sector] || 'linear-gradient(135deg, #455BE8, #2F43C8)',
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.25)',
+      }}>
+      {initials}
+    </span>
+  );
+}
+
+function ReviewCard({ review, p, compact = false, dense = false }) {
+  const bg = p.isDark ? 'rgba(255,255,255,0.06)' : '#FFFFFF';
+  const border = p.isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(15,23,42,0.06)';
+
+  if (dense) {
+    return (
+      <article className="min-w-0 rounded-[16px] p-3" style={{ background: bg, border }}>
+        <div className="flex items-center gap-2.5">
+          <ReviewerAvatar reviewer={review.reviewer} size={32} />
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-[13px] font-semibold leading-tight" style={{ color: p.name }}>{review.reviewer.name}</p>
+            <div className="mt-0.5"><Stars value={review.rating} size={12} /></div>
+          </div>
+          <span className="shrink-0 self-start text-[11px]" style={{ color: p.label }}>{review.date}</span>
+        </div>
+        <p className="mt-1.5 line-clamp-1 text-[12.5px] leading-[1.4]" style={{ color: p.body }}>“{review.text}”</p>
+      </article>
+    );
+  }
+
+  return (
+    <article className="min-w-0 rounded-[18px] p-4" style={{ background: bg, border }}>
+      <div className="flex items-center gap-3">
+        <ReviewerAvatar reviewer={review.reviewer} size={compact ? 40 : 44} />
+        <div className="min-w-0">
+          <p className="truncate text-[14px] font-semibold leading-tight" style={{ color: p.name }}>{review.reviewer.name}</p>
+          <div className="mt-1"><Stars value={review.rating} size={13} /></div>
+        </div>
+      </div>
+      <p className={`mt-3 text-[13px] leading-[1.5] ${compact ? 'line-clamp-2' : ''}`} style={{ color: p.body }}>“{review.text}”</p>
+      <p className="mt-2 text-[12px]" style={{ color: p.label }}>{review.date} · Alianza: {review.type}</p>
+    </article>
+  );
+}
+
+/* Diálogo con todas las reseñas */
+function ReviewsDialog({ company, reviews, p, onClose }) {
+  useEffect(() => {
+    document.body.dataset.lightbox = '1';
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => { delete document.body.dataset.lightbox; window.removeEventListener('keydown', onKey); };
+  }, [onClose]);
+
+  return createPortal(
+    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/55 px-4 backdrop-blur-sm" onClick={onClose}>
+      <div role="dialog" aria-label={`Reseñas de alianzas de ${company.name}`} onClick={e => e.stopPropagation()}
+        className="flex max-h-[82vh] w-full max-w-[680px] flex-col overflow-hidden rounded-[28px]"
+        style={{
+          background: p.isDark ? 'linear-gradient(180deg, #151C30 0%, #0C1122 100%)' : '#FFFFFF',
+          border: p.isDark ? '1px solid rgba(255,255,255,0.09)' : '1px solid rgba(15,23,42,0.08)',
+          boxShadow: '0 40px 100px rgba(0,0,0,0.5)', fontFamily: APPLE_FONT,
+        }}>
+        <div className="flex items-start justify-between gap-4 px-7 pb-4 pt-7">
+          <div>
+            <h3 className="text-[24px] font-bold leading-tight" style={{ color: p.name, letterSpacing: '-0.03em', fontFamily: APPLE_FONT }}>Reseñas de alianzas</h3>
+            <p className="mt-1 text-[14px]" style={{ color: p.body }}>Opiniones de empresas que se aliaron con {company.name}</p>
+            <div className="mt-3 flex items-center gap-2.5">
+              <span className="text-[28px] font-bold leading-none" style={{ color: p.name, letterSpacing: '-0.02em' }}>{reviews.average.toFixed(1)}</span>
+              <Stars value={reviews.average} size={17} />
+              <span className="text-[13px]" style={{ color: p.meta }}>({reviews.total} reseñas)</span>
+            </div>
+          </div>
+          <button type="button" onClick={onClose} aria-label="Cerrar reseñas"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition hover:opacity-70"
+            style={{ background: p.pillBg, color: p.body }}>
+            <X size={17} />
+          </button>
+        </div>
+        <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-7 pb-7 [scrollbar-width:none]">
+          {reviews.items.map(r => <ReviewCard key={r.id} review={r} p={p} />)}
+          <p className="pt-1 text-center text-[12px]" style={{ color: p.label }}>
+            Mostrando las {reviews.items.length} más recientes de {reviews.total}
+          </p>
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+/* Galería: foto principal (se desliza o se pasa con flechas) + miniaturas que la controlan */
+function ProfileGallery({ photos, company, heroBg, onOpen, p, compact = false }) {
   const ref = useRef(null);
   const [index, setIndex] = useState(0);
   const count = photos.length;
+  const initials = (company.logo || company.name.slice(0, 2)).toString().slice(0, 3).toUpperCase();
 
   const goTo = (i) => {
     const el = ref.current;
@@ -511,67 +665,100 @@ function PhotoCarousel({ photos, company, heroBg, onOpen, p }) {
     if (el?.clientWidth) setIndex(Math.round(el.scrollLeft / el.clientWidth));
   };
 
-  if (count === 0) {
-    return (
-      <div className="relative h-full overflow-hidden rounded-[28px]" style={{ background: heroBg, boxShadow: p.cardShadow }}>
-        <span className="absolute inset-0 flex items-center justify-center text-[96px] font-black text-white/30">{company.logo}</span>
-      </div>
-    );
-  }
-
+  const showThumbs = count > 1;
+  const maxThumbs = 4;
+  const thumbs = count > maxThumbs + 1 ? photos.slice(0, maxThumbs) : photos;
+  const extra = count - thumbs.length;
   const arrow = 'absolute top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full text-[#1D1D1F] opacity-0 shadow-lg transition group-hover:opacity-100 hover:scale-105 focus-visible:opacity-100';
 
   return (
-    <div className="group relative h-full overflow-hidden rounded-[28px]" style={{ background: heroBg, boxShadow: p.cardShadow }}>
-      <div ref={ref} onScroll={handleScroll}
-        className="flex h-full snap-x snap-mandatory overflow-x-auto overscroll-x-contain [scrollbar-width:none]">
-        {photos.map((src, i) => (
-          <button key={src} type="button" onClick={() => onOpen(i)} aria-label={`Ver foto ${i + 1} de ${count}`}
-            className="relative h-full w-full shrink-0 cursor-zoom-in snap-center snap-always">
-            <img src={src} alt={`${company.name} ${i + 1}`} loading={i === 0 ? 'eager' : 'lazy'} draggable={false}
-              className="absolute inset-0 h-full w-full object-cover" />
-          </button>
-        ))}
+    <div className="flex min-h-0 flex-col gap-3">
+      <div className="group relative min-h-0 flex-1 overflow-hidden rounded-[22px]" style={{ background: heroBg }}>
+        {count > 0 ? (
+          <div ref={ref} onScroll={handleScroll}
+            className="flex h-full snap-x snap-mandatory overflow-x-auto overscroll-x-contain [scrollbar-width:none]">
+            {photos.map((src, i) => (
+              <button key={src} type="button" onClick={() => onOpen(i)} aria-label={`Ver foto ${i + 1} de ${count}`}
+                className="relative h-full w-full shrink-0 cursor-zoom-in snap-center snap-always">
+                <img src={src} alt={`${company.name} ${i + 1}`} loading={i === 0 ? 'eager' : 'lazy'} draggable={false}
+                  className="absolute inset-0 h-full w-full object-cover" />
+              </button>
+            ))}
+          </div>
+        ) : (
+          <span className="absolute inset-0 flex items-center justify-center text-[96px] font-black text-white/30">{initials}</span>
+        )}
+
+        {/* Identidad de la empresa sobre la foto */}
+        <div className="pointer-events-none absolute bottom-4 left-4 flex h-[72px] w-[72px] items-center justify-center rounded-full text-white"
+          style={{ background: heroBg, border: '4px solid rgba(255,255,255,0.92)', boxShadow: '0 10px 26px rgba(0,0,0,0.30)', fontWeight: 800, fontSize: 22, letterSpacing: '-0.02em' }}>
+          {initials}
+        </div>
+
+        {count > 1 && (
+          <>
+            <span className="absolute right-4 top-4 rounded-full px-3 py-1 text-[12px] font-semibold tabular-nums text-white"
+              style={{ background: 'rgba(0,0,0,0.42)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)' }}>
+              {index + 1}/{count}
+            </span>
+            {index > 0 && (
+              <button type="button" aria-label="Foto anterior" onClick={() => goTo(index - 1)}
+                className={`${arrow} left-4`} style={{ background: 'rgba(255,255,255,0.92)' }}>
+                <ChevronLeft size={20} />
+              </button>
+            )}
+            {index < count - 1 && (
+              <button type="button" aria-label="Foto siguiente" onClick={() => goTo(index + 1)}
+                className={`${arrow} right-4`} style={{ background: 'rgba(255,255,255,0.92)' }}>
+                <ChevronRight size={20} />
+              </button>
+            )}
+          </>
+        )}
       </div>
 
-      {count > 1 && (
-        <>
-          <span className="absolute right-4 top-4 rounded-full px-3 py-1 text-[12px] font-semibold tabular-nums text-white"
-            style={{ background: 'rgba(0,0,0,0.38)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)' }}>
-            {index + 1}/{count}
-          </span>
-
-          {index > 0 && (
-            <button type="button" aria-label="Foto anterior" onClick={() => goTo(index - 1)}
-              className={`${arrow} left-4`} style={{ background: 'rgba(255,255,255,0.92)' }}>
-              <ChevronLeft size={20} />
+      {showThumbs && (
+        <div className="grid shrink-0 gap-2.5" style={{ gridTemplateColumns: `repeat(${thumbs.length + (extra > 0 ? 1 : 0)}, minmax(0, 1fr))` }}>
+          {thumbs.map((src, i) => (
+            <button key={src} type="button" onClick={() => goTo(i)} aria-label={`Ir a la foto ${i + 1}`} aria-current={i === index}
+              className="relative overflow-hidden rounded-[14px] transition"
+              style={{ height: compact ? 52 : 68, outline: i === index ? '2px solid #455BE8' : '2px solid transparent', outlineOffset: 2, opacity: i === index ? 1 : 0.85 }}>
+              <img src={src} alt="" loading="lazy" draggable={false} className="h-full w-full object-cover" />
+            </button>
+          ))}
+          {extra > 0 && (
+            <button type="button" onClick={() => onOpen(thumbs.length)} aria-label={`Ver ${extra} fotos más`}
+              className="flex items-center justify-center rounded-[14px] transition hover:opacity-85"
+              style={{ height: compact ? 52 : 68, background: p.isDark ? 'rgba(255,255,255,0.10)' : '#1D1D1F', color: '#FFFFFF', fontSize: 18, fontWeight: 600 }}>
+              +{extra}
             </button>
           )}
-          {index < count - 1 && (
-            <button type="button" aria-label="Foto siguiente" onClick={() => goTo(index + 1)}
-              className={`${arrow} right-4`} style={{ background: 'rgba(255,255,255,0.92)' }}>
-              <ChevronRight size={20} />
-            </button>
-          )}
-
-          <div className="pointer-events-none absolute inset-x-0 bottom-4 flex justify-center">
-            <div className="pointer-events-auto flex items-center gap-1.5 rounded-full px-2.5 py-2"
-              style={{ background: 'rgba(0,0,0,0.30)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)' }}>
-              {photos.map((src, i) => (
-                <button key={src} type="button" aria-label={`Ir a la foto ${i + 1}`} onClick={() => goTo(i)}
-                  className="rounded-full transition-all duration-200"
-                  style={{ width: i === index ? 18 : 6, height: 6, background: i === index ? '#FFFFFF' : 'rgba(255,255,255,0.5)' }} />
-              ))}
-            </div>
-          </div>
-        </>
+        </div>
       )}
     </div>
   );
 }
 
+/* Pantallas de poca altura (notebooks): el perfil pasa a un modo compacto para seguir entrando sin scroll */
+function useCompactHeight(max = 830) {
+  const query = `(max-height: ${max}px)`;
+  const [compact, setCompact] = useState(() => typeof window !== 'undefined' && window.matchMedia(query).matches);
+  useEffect(() => {
+    const m = window.matchMedia(query);
+    const fn = () => setCompact(m.matches);
+    fn();
+    m.addEventListener('change', fn);
+    return () => m.removeEventListener('change', fn);
+  }, [query]);
+  return compact;
+}
+
 function ExploreProfileCard({ company, p, actions, saved }) {
   const [lightbox, setLightbox] = useState(null);
+  const [reviewsOpen, setReviewsOpen] = useState(false);
+  const reviews = useMemo(() => (company ? getAllianceReviews(company) : null), [company]);
+  const compact = useCompactHeight();
+  const tight = useCompactHeight(760); // notebooks muy bajos: se afina un poco más
 
   if (!company) {
     return (
@@ -581,6 +768,7 @@ function ExploreProfileCard({ company, p, actions, saved }) {
     );
   }
 
+  const dark      = p.isDark;
   const offerTags = parseTags(company.offer || '');
   const seekTags  = parseTags(company.seeking || '');
   const segments  = company.segments || [];
@@ -594,145 +782,182 @@ function ExploreProfileCard({ company, p, actions, saved }) {
   ].filter(Boolean))].slice(0, 8);
 
   // La sinergia no se muestra en el perfil de la web (se decidió mantenerlo limpio)
-  const facts = [
-    company.distance != null && { label: 'Distancia', value: `${company.distance} km` },
-    followers != null && { label: 'Seguidores', value: followers >= 1000 ? `${(followers / 1000).toFixed(1)}k` : String(followers) },
-    company.size && { label: 'Equipo', value: String(company.size).replace(' personas', '') },
+  const metrics = [
+    company.distance != null && { icon: MapPin, value: `${company.distance} km`, label: 'Distancia' },
+    followers != null && { icon: Users, value: followers >= 1000 ? `${(followers / 1000).toFixed(1)}k` : String(followers), label: 'Seguidores' },
+    company.size && { icon: UsersRound, value: String(company.size).replace(' personas', ''), label: 'Equipo' },
   ].filter(Boolean);
 
-  const sections = [
-    { title: 'Qué ofrece', icon: Users, tags: offerTags, tone: p.offer },
-    { title: 'Qué busca', icon: Star, tags: seekTags, tone: p.seek },
-  ].filter(s => s.tags.length > 0);
+  const peach = dark
+    ? { color: '#FDBA74', bg: 'rgba(251,146,60,0.14)', border: '1px solid rgba(251,146,60,0.28)' }
+    : { color: '#B45309', bg: 'rgba(251,146,60,0.14)', border: '1px solid rgba(251,146,60,0.30)' };
+  const infoBlocks = [
+    { title: 'Qué ofrece', icon: Store,  tags: offerTags, tone: p.offer },
+    { title: 'Qué busca',  icon: Search, tags: seekTags,  tone: p.seek },
+    { title: 'Segmentos',  icon: Tag,    tags: segments,  tone: peach },
+  ].filter(b => b.tags.length > 0);
 
-  // Botones cuadrados redondeados, uno al lado del otro; cada uno con su color.
-  // El tamaño de letra va en línea porque una regla global de "button" pisa las clases de Tailwind.
-  const tones = p.isDark
+  // Acciones en cuadrados redondeados, siempre visibles arriba a la derecha (el tamaño de letra va en línea por la regla global de "button")
+  const tones = dark
     ? {
-        // En oscuro: botones blancos con el ícono y la etiqueta de su color, para que resalten
-        pass:  { color: '#E5484D', background: '#FFFFFF', border: '1px solid transparent', boxShadow: '0 6px 16px rgba(0,0,0,0.35)' },
-        save:  { color: '#D97706', background: '#FFFFFF', border: '1px solid transparent', boxShadow: '0 6px 16px rgba(0,0,0,0.35)' },
-        saved: { color: '#B45309', background: '#FEF3C7', border: '1px solid #F59E0B',    boxShadow: '0 6px 16px rgba(0,0,0,0.35)' },
-        share: { color: '#0284C7', background: '#FFFFFF', border: '1px solid transparent', boxShadow: '0 6px 16px rgba(0,0,0,0.35)' },
+        pass:  { color: '#E5484D', background: '#FFFFFF', border: '1px solid transparent' },
+        save:  { color: '#D97706', background: '#FFFFFF', border: '1px solid transparent' },
+        saved: { color: '#B45309', background: '#FEF3C7', border: '1px solid #F59E0B' },
+        share: { color: '#0284C7', background: '#FFFFFF', border: '1px solid transparent' },
       }
     : {
-        pass:  { color: '#E5484D', background: 'rgba(229,72,77,0.09)',  border: '1px solid rgba(229,72,77,0.26)' },
-        save:  { color: '#D97706', background: 'rgba(245,158,11,0.10)', border: '1px solid rgba(245,158,11,0.30)' },
-        saved: { color: '#B45309', background: 'rgba(245,158,11,0.22)', border: '1px solid rgba(245,158,11,0.50)' },
-        share: { color: '#0284C7', background: 'rgba(14,165,233,0.10)', border: '1px solid rgba(14,165,233,0.28)' },
+        pass:  { color: '#E5484D', background: 'rgba(229,72,77,0.10)',  border: '1px solid rgba(229,72,77,0.26)' },
+        save:  { color: '#D97706', background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.10)' },
+        saved: { color: '#B45309', background: 'rgba(245,158,11,0.20)', border: '1px solid rgba(245,158,11,0.50)' },
+        share: { color: '#0284C7', background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.10)' },
       };
-  const actionButtons = [
-    { key: 'pass',  label: 'Pasar',    icon: <X size={22} strokeWidth={2.3} />,                         onClick: actions.onPass,  style: tones.pass },
-    { key: 'save',  label: saved ? 'Guardada' : 'Guardar', icon: <Star size={21} fill={saved ? 'currentColor' : 'none'} />, onClick: actions.onSave, style: saved ? tones.saved : tones.save },
-    { key: 'share', label: 'Compartir', icon: <Share2 size={20} />,                                      onClick: actions.onShare, style: tones.share },
-    { key: 'like',  label: 'Conectar',  icon: <Heart size={22} strokeWidth={2.2} />,                     onClick: actions.onLike,
-      style: { color: '#FFFFFF', background: 'linear-gradient(135deg, #455BE8, #2F43C8)', border: '1px solid transparent', boxShadow: '0 10px 22px rgba(69,91,232,0.38)' } },
-  ];
-  const kbd = { background: p.pillBg, color: p.pillText };
+  const sq = compact ? 44 : 52;
+  const square = 'flex shrink-0 items-center justify-center rounded-[16px] transition hover:-translate-y-0.5 active:scale-95';
+  const tileBg = dark ? 'rgba(255,255,255,0.05)' : '#F5F6FA';
+  const stripBg = dark ? 'rgba(255,255,255,0.04)' : '#F5F6FA';
 
   return (
-    <div className="mx-auto grid h-full max-w-[1240px] grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] gap-14 px-10" style={{ fontFamily: APPLE_FONT }}>
+    <div className="mx-auto h-full max-w-[1320px] px-8" style={{ fontFamily: APPLE_FONT }}>
+      <div className={`flex h-full flex-col rounded-[28px] ${compact ? 'gap-2.5 p-3' : 'gap-4 p-5'}`}
+        style={{ background: p.cardBg, border: p.cardBorder, boxShadow: p.cardShadow }}>
 
-      {/* ── Galería (carrusel) ── */}
-      <PhotoCarousel photos={photos} company={company} heroBg={heroBg} p={p} onOpen={setLightbox} />
+        <div className={`grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)] ${compact ? 'gap-5' : 'gap-8'}`}>
+          {/* ── Galería ── */}
+          <ProfileGallery photos={photos} company={company} heroBg={heroBg} p={p} onOpen={setLightbox} compact={compact} />
 
-      {/* ── Datos + acciones ── */}
-      <div className="flex min-h-0 flex-col">
-        <div className="min-h-0 flex-1 overflow-y-auto pr-2 pt-1 [scrollbar-width:none]">
-          <p className="text-[12px] font-semibold uppercase tracking-[0.14em]" style={{ color: p.meta }}>
-            {[company.sector, company.location].filter(Boolean).join(' · ')}
-          </p>
-          <div className="mt-3 flex items-center gap-2.5">
-            <h2 className="truncate text-[40px] font-bold leading-[1.05] tracking-[-0.03em]" style={{ color: p.name, fontFamily: APPLE_FONT }}>{company.name}</h2>
-            <BadgeCheck size={24} className="shrink-0 text-emerald-500" />
-          </div>
-          {about && (
-            <p className="mt-4 line-clamp-3 text-[16px] leading-[1.6]" style={{ color: p.body }}>{about}</p>
-          )}
-
-          {facts.length > 0 && (
-            <dl className="mt-9 grid gap-6 border-y py-6" style={{ borderColor: p.divider, gridTemplateColumns: `repeat(${facts.length}, minmax(0, 1fr))` }}>
-              {facts.map(f => (
-                <div key={f.label}>
-                  <dt className="text-[11px] font-semibold uppercase tracking-[0.12em]" style={{ color: p.label }}>{f.label}</dt>
-                  <dd className="mt-1.5 text-[22px] font-semibold leading-none tracking-[-0.02em]" style={{ color: p.name }}>{f.value}</dd>
+          {/* ── Perfil comercial ── */}
+          <div className="min-h-0 overflow-y-auto pr-1 [scrollbar-width:none]">
+            <div className="flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <p className="text-[12px] font-semibold uppercase tracking-[0.14em]" style={{ color: p.meta }}>
+                  {[company.sector, company.location].filter(Boolean).join(' · ')}
+                </p>
+                <div className={`flex items-center gap-2.5 ${compact ? 'mt-1' : 'mt-2'}`}>
+                  <h2 className="truncate font-bold leading-[1.05] tracking-[-0.03em]" style={{ color: p.name, fontFamily: APPLE_FONT, fontSize: compact ? 30 : 38 }}>{company.name}</h2>
+                  <BadgeCheck size={24} className="shrink-0 text-emerald-500" aria-label="Empresa verificada" />
                 </div>
-              ))}
-            </dl>
-          )}
+              </div>
 
-          {sections.length > 0 && (
-            <div className={`mt-8 grid gap-8 ${sections.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
-              {sections.map(({ title, icon: Icon, tags, tone }) => (
-                <div key={title}>
-                  <p className="mb-3 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em]" style={{ color: p.label }}>
-                    <Icon size={12} /> {title}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {tags.map(tag => (
-                      <span key={tag} className="rounded-full px-3.5 py-1.5 text-[13px] font-medium"
-                        style={{ color: tone.color, background: tone.bg, border: tone.border }}>{tag}</span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {segments.length > 0 && (
-            <div className="mt-8">
-              <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.12em]" style={{ color: p.label }}>Segmentos</p>
-              <div className="flex flex-wrap gap-2">
-                {segments.map(tag => (
-                  <span key={tag} className="rounded-full px-3.5 py-1.5 text-[13px] font-medium"
-                    style={{ color: p.segment.color, background: p.segment.bg, border: p.segment.border }}>{tag}</span>
-                ))}
+              <div className="flex shrink-0 items-center gap-2.5">
+                <button type="button" onClick={actions.onPass} className={square} style={{ ...tones.pass, width: sq, height: sq }} aria-label="Pasar" title="Pasar (←)">
+                  <X size={22} strokeWidth={2.4} />
+                </button>
+                <button type="button" onClick={actions.onSave} className={square} style={{ ...(saved ? tones.saved : tones.save), width: sq, height: sq }}
+                  aria-label={saved ? 'Guardada' : 'Guardar'} title="Guardar (S)">
+                  <Bookmark size={21} fill={saved ? 'currentColor' : 'none'} />
+                </button>
+                <button type="button" onClick={actions.onShare} className={square} style={{ ...tones.share, width: sq, height: sq }} aria-label="Compartir" title="Compartir">
+                  <Share2 size={20} />
+                </button>
+                <button type="button" onClick={actions.onLike} title="Conectar (→)"
+                  className="flex shrink-0 items-center justify-center gap-2 rounded-[16px] px-5 text-white transition hover:-translate-y-0.5 hover:brightness-110 active:scale-95"
+                  style={{ height: sq, background: 'linear-gradient(135deg, #455BE8, #2F43C8)', boxShadow: '0 10px 22px rgba(69,91,232,0.38)', fontSize: 15, fontWeight: 600, fontFamily: APPLE_FONT }}>
+                  <Heart size={20} strokeWidth={2.2} /> Conectar
+                </button>
               </div>
             </div>
-          )}
 
-          <div className="mt-8 flex flex-wrap items-center gap-2.5 pb-3">
-            <span className="text-[12px] font-medium" style={{ color: p.meta }}>{COMMON_CONNECTIONS.length} conexiones en común</span>
-            {COMMON_CONNECTIONS.map(c => (
-              <span key={c} className="inline-flex items-center gap-1.5 rounded-full py-1 pl-1 pr-3 text-[12px] font-medium"
-                style={{ background: p.chipBg, border: p.chipBorder, color: p.chipText }}>
-                <span className="flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-bold text-white"
-                  style={{ background: 'linear-gradient(135deg, #455BE8, #2F43C8)' }}>{c.slice(0, 1)}</span>
-                {c}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* ── Acciones: cuadrados redondeados en fila (en escritorio van junto a los datos, no flotando) ── */}
-        <div className="shrink-0 border-t pt-5" style={{ borderColor: p.divider }}>
-          <div className="flex items-center gap-3">
-            {actionButtons.map(({ key, label, icon, onClick, style }) => (
-              <button key={key} type="button" onClick={onClick}
-                className="flex h-[76px] w-[88px] shrink-0 flex-col items-center justify-center gap-2 rounded-[20px] transition hover:-translate-y-0.5 active:scale-95"
-                style={{ ...style, fontSize: 12, lineHeight: 1, fontWeight: 600, whiteSpace: 'nowrap' }}>
-                {icon}
-                <span>{label}</span>
-              </button>
-            ))}
-          </div>
-          <div className="mt-4 flex items-center justify-between text-[11px]" style={{ color: p.label }}>
-            <span className="flex items-center gap-2">
-              <kbd className="rounded-md px-1.5 py-0.5 font-sans" style={kbd}>←</kbd> Pasar
-              <kbd className="ml-1 rounded-md px-1.5 py-0.5 font-sans" style={kbd}>→</kbd> Conectar
-              <kbd className="ml-1 rounded-md px-1.5 py-0.5 font-sans" style={kbd}>↑↓</kbd> Navegar
-            </span>
-            {actions.canUndo && (
-              <button type="button" onClick={actions.onUndo} className="flex items-center gap-1 font-semibold transition hover:opacity-70" style={{ color: p.accent, fontSize: 11 }}>
-                <RotateCcw size={12} /> Deshacer
-              </button>
+            {about && (
+              <p className={`leading-[1.55] ${compact ? 'mt-3 line-clamp-2 text-[15px]' : 'mt-4 line-clamp-3 text-[16px]'}`} style={{ color: p.body }}>{about}</p>
             )}
+
+            {metrics.length > 0 && (
+              compact ? (
+                <div className={`flex items-center gap-6 ${tight ? 'mt-2' : 'mt-3'}`}>
+                  {metrics.map(({ icon: Icon, value, label }) => (
+                    <div key={label} className="flex items-center gap-1.5" title={label}>
+                      <Icon size={16} strokeWidth={1.9} style={{ color: p.meta }} />
+                      <span className="text-[15px] font-semibold leading-none tracking-[-0.01em]" style={{ color: p.name }}>{value}</span>
+                      <span className="text-[12px]" style={{ color: p.meta }}>{label}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="mt-4 grid gap-3" style={{ gridTemplateColumns: `repeat(${metrics.length}, minmax(0, 1fr))` }}>
+                  {metrics.map(({ icon: Icon, value, label }) => (
+                    <div key={label} className="flex flex-col items-center rounded-[16px] px-3 py-2.5" style={{ background: tileBg }}>
+                      <div className="flex items-center gap-2" style={{ color: p.name }}>
+                        <Icon size={19} strokeWidth={1.9} style={{ color: p.meta }} />
+                        <span className="text-[21px] font-semibold leading-none tracking-[-0.02em]">{value}</span>
+                      </div>
+                      <span className="mt-1.5 text-[12px]" style={{ color: p.meta }}>{label}</span>
+                    </div>
+                  ))}
+                </div>
+              )
+            )}
+
+            {infoBlocks.length > 0 && (
+              <div className={`grid border-y ${compact ? (tight ? 'mt-2.5 py-2.5' : 'mt-3 py-3') : 'mt-4 py-4'}`} style={{ borderColor: p.divider, gridTemplateColumns: `repeat(${infoBlocks.length}, minmax(0, 1fr))` }}>
+                {infoBlocks.map(({ title, icon: Icon, tags, tone }, i) => (
+                  <div key={title} className="min-w-0 px-4 first:pl-0 last:pr-0" style={i > 0 ? { borderLeft: `1px solid ${p.divider}` } : undefined}>
+                    <p className={`flex items-center gap-2 font-semibold ${compact ? 'mb-2 text-[14px]' : 'mb-3 text-[15px]'}`} style={{ color: p.name }}>
+                      <Icon size={18} strokeWidth={1.9} style={{ color: p.meta }} /> {title}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {tags.slice(0, compact ? 3 : tags.length).map(tag => (
+                        <span key={tag} className={`rounded-full font-medium ${compact ? 'px-2.5 py-1 text-[12px]' : 'px-3 py-1.5 text-[13px]'}`}
+                          style={{ color: tone.color, background: tone.bg, border: tone.border }}>{tag}</span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className={`flex items-center justify-between gap-4 ${compact ? (tight ? 'mt-2.5 pb-0' : 'mt-3 pb-1') : 'mt-4 pb-1'}`}>
+              <div className="flex min-w-0 items-center gap-3.5">
+                <div className="flex shrink-0 items-center">
+                  {COMMON_CONNECTIONS.map((c, i) => (
+                    <span key={c} className="flex items-center justify-center rounded-full text-[13px] font-bold text-white"
+                      style={{ width: compact ? 34 : 40, height: compact ? 34 : 40, marginLeft: i ? -10 : 0, background: 'linear-gradient(135deg, #455BE8, #2F43C8)', border: `2px solid ${dark ? '#151C30' : '#FFFFFF'}` }}>
+                      {c.slice(0, 1)}
+                    </span>
+                  ))}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[15px] font-semibold leading-tight" style={{ color: p.name }}>{COMMON_CONNECTIONS.length} conexiones en común</p>
+                  {!tight && <p className="mt-0.5 truncate text-[13px]" style={{ color: p.meta }}>{COMMON_CONNECTIONS.join(' · ')}</p>}
+                </div>
+              </div>
+              <button type="button" onClick={actions.onViewProfile}
+                className="flex shrink-0 items-center gap-1.5 rounded-full px-4 transition hover:opacity-70"
+                style={{ height: compact ? 36 : 40, background: p.btnBg, border: p.btnBorder, color: p.btnText, fontSize: 13, fontWeight: 600, fontFamily: APPLE_FONT }}>
+                Perfil completo <ArrowRight size={14} />
+              </button>
+            </div>
           </div>
         </div>
+
+        {/* ── Reseñas de alianzas ── */}
+        <section className={`shrink-0 rounded-[20px] ${compact ? 'p-3' : 'p-4'}`} style={{ background: stripBg }} aria-label="Reseñas de alianzas">
+          <div className={`flex items-center justify-between gap-4 ${compact ? 'mb-2' : 'mb-3'}`}>
+            <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
+              <h3 className="text-[18px] font-semibold leading-none tracking-[-0.02em]" style={{ color: p.name, fontFamily: APPLE_FONT }}>Reseñas de alianzas</h3>
+              <div className="flex items-center gap-2">
+                <Stars value={reviews.average} size={15} />
+                <span className="text-[15px] font-semibold" style={{ color: p.name }}>{reviews.average.toFixed(1)}</span>
+                <span className="text-[13px]" style={{ color: p.meta }}>({reviews.total} reseñas)</span>
+              </div>
+              <span className="hidden text-[13px] min-[1500px]:inline" style={{ color: p.meta }}>· De empresas que se aliaron con {company.name}</span>
+            </div>
+            <button type="button" onClick={() => setReviewsOpen(true)}
+              className="flex h-9 shrink-0 items-center gap-1.5 rounded-full px-4 transition hover:opacity-70"
+              style={{ background: p.btnBg, border: p.btnBorder, color: p.btnText, fontSize: 13, fontWeight: 600, fontFamily: APPLE_FONT }}>
+              Ver todas las reseñas <ArrowRight size={14} />
+            </button>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            {reviews.items.slice(0, 3).map(r => <ReviewCard key={r.id} review={r} p={p} compact dense={compact} />)}
+          </div>
+        </section>
       </div>
 
       {lightbox !== null && (
         <Lightbox photos={photos} index={lightbox} name={company.name} onClose={() => setLightbox(null)} onChange={setLightbox} />
+      )}
+      {reviewsOpen && (
+        <ReviewsDialog company={company} reviews={reviews} p={p} onClose={() => setReviewsOpen(false)} />
       )}
     </div>
   );
@@ -789,6 +1014,7 @@ function FeedRail({ count, index, color, activeColor }) {
 function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPlan, myCompany }) {
   const { theme } = useTheme();
   const p = EXPLORE_PALETTE[theme] ?? EXPLORE_PALETTE.dark;
+  const shortScreen = useCompactHeight();
   const baseDeck = useMemo(
     () => companies
       .map(c => ({ ...c, score: calculateMatchScore(c) }))
@@ -1004,7 +1230,7 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
   if (isDesktop) {
     const actions = {
       onPass: handlePass, onLike: handleLike, onSave: handleSave,
-      onShare: handleShare, onUndo: handleUndo, canUndo: decided.length > 0,
+      onShare: handleShare, onUndo: handleUndo, canUndo: decided.length > 0, onViewProfile: handleViewProfile,
     };
     const atStart = activeIndex <= 0;
     const atEnd = activeIndex >= deck.length;
@@ -1014,7 +1240,7 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
         <div className="relative flex flex-col h-full" style={{ background: p.bg, fontFamily: APPLE_FONT }}>
 
           {/* ── Barra superior: alineada al ancho del contenido ── */}
-          <div className="mx-auto flex w-full max-w-[1180px] shrink-0 items-center justify-between px-8 pb-3 pt-4">
+          <div className={`mx-auto flex w-full max-w-[1320px] shrink-0 items-center justify-between px-8 ${shortScreen ? 'pb-2 pt-1' : 'pb-3 pt-4'}`}>
             <div className="flex items-center rounded-full p-1"
               style={{ background: p.tabsBg, border: p.tabsBorder }}>
               {[{ id: 'paraTi', label: 'Para ti' }, { id: 'guardados', label: 'Guardados' }].map(tab => (
@@ -1031,6 +1257,13 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
               ))}
             </div>
             <div className="flex items-center gap-3">
+              {activeTab === 'paraTi' && decided.length > 0 && (
+                <button type="button" onClick={handleUndo}
+                  className="flex items-center gap-1.5 rounded-full px-3 py-1.5 transition hover:opacity-70"
+                  style={{ color: p.accent, fontSize: 12, fontWeight: 600 }}>
+                  <RotateCcw size={13} /> Deshacer
+                </button>
+              )}
               {activeTab === 'paraTi' && deck.length > 0 && (
                 <span className="text-[12px] font-medium tabular-nums" style={{ color: p.meta }}>
                   {Math.min(activeIndex + 1, deck.length)} de {deck.length}
@@ -1050,7 +1283,7 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
           {activeTab === 'guardados' ? (
             <SavedGrid companies={savedCompanies} onView={c => setViewingCompany(c)} p={p} />
           ) : (
-            <div className="relative min-h-0 flex-1 pb-6 pt-1">
+            <div className={`relative min-h-0 flex-1 pt-1 ${shortScreen ? 'pb-3' : 'pb-6'}`}>
               {renderFeed(
                 (company) => <ExploreProfileCard company={company} p={p} actions={actions} saved={savedIds.has(company.id)} />,
                 { dark: false, p }
@@ -1058,7 +1291,7 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
 
               {/* Navegación vertical del feed: ▲ puntos ▼ */}
               {deck.length > 0 && (
-                <div className="absolute right-6 top-1/2 z-30 flex -translate-y-1/2 flex-col items-center gap-3">
+                <div className="absolute right-4 top-1/2 z-30 hidden -translate-y-1/2 flex-col items-center gap-3 min-[1480px]:flex">
                   <button type="button" aria-label="Empresa anterior" onClick={() => scrollPage(-1)} disabled={atStart}
                     className="flex h-10 w-10 items-center justify-center rounded-full transition hover:opacity-80 disabled:opacity-30"
                     style={{ background: p.btnBg, border: p.btnBorder, color: p.btnText, boxShadow: p.cardShadow }}>

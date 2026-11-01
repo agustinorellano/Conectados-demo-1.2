@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
-  Bell, Bot, BriefcaseBusiness, Building2, CreditCard, Heart,
+  Bell, Bot, BriefcaseBusiness, Building2, CreditCard, Handshake,
   MessageSquare, Moon, Search, Settings, Sun, X, Zap,
 } from 'lucide-react';
 import { THEMES, useTheme } from '../context/ThemeContext';
@@ -17,7 +17,7 @@ const NOTIFICATIONS = [
 // Dashboard y Proyectos están ocultos por la simplificación de producto (las vistas siguen en WebApp.jsx).
 const NAV = [
   { id: 'alliances', label: 'Explorar',   icon: BriefcaseBusiness },
-  { id: 'likes',     label: 'Likes',      icon: Heart },
+  { id: 'likes',     label: 'Alianzas',   icon: Handshake },
   { id: 'chats',     label: 'Chats',      icon: MessageSquare },
   { id: 'profile',   label: 'Mi Empresa', icon: Building2 },
   { id: 'assistant', label: 'Asistente',  icon: Bot },

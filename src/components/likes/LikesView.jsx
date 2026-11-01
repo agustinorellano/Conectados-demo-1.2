@@ -4,9 +4,9 @@ import { Check, Eye, Heart, LayoutGrid, List, MapPin, Sparkles, Star, Users, X }
 import { useTheme } from '../../context/ThemeContext';
 
 const FILTERS = [
-  { id: 'all', label: 'Todos' },
-  { id: 'super', label: 'Super likes' },
-  { id: 'like', label: 'Likes' },
+  { id: 'all', label: 'Todas' },
+  { id: 'super', label: 'Destacadas' },
+  { id: 'like', label: 'Solicitudes' },
 ];
 
 const splitTags = (value = '') => value.split(',').map(tag => tag.trim()).filter(Boolean);
@@ -15,7 +15,7 @@ function KindBadge({ kind }) {
   return kind === 'super' ? (
     <span className="flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-bold text-white"
       style={{ background: 'linear-gradient(135deg, #8B5CF6, #3B82F6)' }}>
-      <Sparkles size={10} /> <span className="hidden sm:inline">Super like</span>
+      <Sparkles size={10} /> <span className="hidden sm:inline">Destacada</span>
     </span>
   ) : (
     <Heart size={13} style={{ color: '#F43F5E' }} fill="#F43F5E" />
@@ -214,12 +214,12 @@ function LikesView({ likes, onAccept, onDismiss }) {
     <div className="mx-auto flex h-full max-w-6xl flex-col px-4 py-6 sm:px-6 sm:py-8">
       <header className="mb-5 shrink-0">
         <h1 className="text-[28px] font-extrabold tracking-tight" style={{ color: t.text1 }}>
-          Likes pendientes
+          Alianzas pendientes
         </h1>
         <p className="mt-1 text-[14px]" style={{ color: t.text3 }}>
           {likes.length === 0
-            ? 'Cuando otra empresa te dé like, aparecerá acá.'
-            : `${likes.length} empresas quieren conectar con vos · ${superCount} super likes`}
+            ? 'Cuando otra empresa quiera aliarse con vos, aparecerá acá.'
+            : `${likes.length} empresas quieren aliarse con vos · ${superCount} destacadas`}
         </p>
       </header>
 
