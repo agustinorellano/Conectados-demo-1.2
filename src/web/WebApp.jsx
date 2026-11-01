@@ -2,6 +2,7 @@ import { useMemo, useState, useEffect } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import { AnimatePresence, motion } from 'framer-motion';
 import WebTopNav from './WebTopNav';
+import { computeWebZoom, setWebZoomEnabled } from './uiZoom';
 import DashboardView from '../components/dashboard/DashboardView';
 import SwipeBoard from '../components/matchmaking/SwipeBoard';
 import ProfileView from '../components/profile/ProfileView';
@@ -35,6 +36,24 @@ function WebApp() {
   useEffect(() => {
     document.body.classList.add('app-view');
     return () => document.body.classList.remove('app-view');
+  }, []);
+
+  // Escala automática: en ventanas chicas se aplica un zoom equivalente al de bajar el zoom del navegador a mano.
+  // (el estado inicial activa el flag antes de que rendericen los hijos que leen el alto efectivo)
+  const [zoom, setZoom] = useState(() => { setWebZoomEnabled(true); return computeWebZoom(); });
+  useEffect(() => {
+    const apply = () => {
+      const z = computeWebZoom();
+      setZoom(z);
+      document.documentElement.style.zoom = z === 1 ? '' : String(z);
+    };
+    apply();
+    window.addEventListener('resize', apply);
+    return () => {
+      window.removeEventListener('resize', apply);
+      document.documentElement.style.zoom = '';
+      setWebZoomEnabled(false);
+    };
   }, []);
 
   const [activeView, setActiveView] = useState('alliances');
@@ -222,7 +241,7 @@ function WebApp() {
   const fullBleed = ['alliances', 'profile', 'chats', 'workplace', 'likes'].includes(activeView);
 
   return (
-    <div className="relative flex h-screen flex-col overflow-hidden" style={{ background: t.bg, transition: 'background 0.3s ease' }}>
+    <div className="relative flex flex-col overflow-hidden" style={{ height: `${100 / zoom}vh`, background: t.bg, transition: 'background 0.3s ease' }}>
       {showAllianceRoom && (
         <AllianceRoomView onExit={() => setShowAllianceRoom(false)} />
       )}

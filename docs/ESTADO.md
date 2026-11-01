@@ -103,3 +103,10 @@ Criterio: en web no se copia la lógica móvil. Se priorizó **claridad, jerarqu
 - **Lección:** al medir "sin desborde" hay que revisar que ningún hijo flex esté siendo comprimido (la descripción quedaba en 8 px de alto); la columna de datos ya no es flex.
 - **Perfil de Explorar: más "card" y más ancho (ajuste):** la ficha ahora ocupa casi todo el ancho de la pantalla (hasta 1760 px, márgenes parejos de ~100 px en una pantalla de 1915) con una **card de más presencia** (radio 32 px, borde definido y sombra marcada). Métricas, **Qué ofrece / Qué busca / Segmentos** y **conexiones en común** pasaron a **tarjetas** con fondo propio. La galería gana protagonismo (columna 1.15fr) y la columna de datos **reparte el espacio vertical sobrante entre sus bloques** (`justify-between`), así no quedan huecos.
 - **Modos por altura (reajustados):** normal (≥ 921 px), **compacto** (≤ 920) y **ajustado** (≤ 760); además **amplio** (≥ 1040 px: nombre de 44 px, letra y miniaturas mayores). Medido sin scroll en 1920×1080, 1915×868, 1600×925, 1440×900, 1366×768 y 1280×720. Las flechas ▲▼ del borde derecho solo aparecen si sobra margen (≥ 1840 px de ancho).
+
+## Escala automática de la web (reemplaza "bajar el zoom a mano")
+- **Problema:** en notebooks con escala de Windows del 125–150 % (p. ej. 1920×1080 → ~1280×600 útiles) la web solo se veía completa bajando el zoom del navegador a ~67 %.
+- **Solución:** `src/web/uiZoom.js` calcula un factor `min(1, ancho/1900, alto/880)` (mínimo 0.62) y `WebApp.jsx` lo aplica como `zoom` en `<html>` **solo en `/web`** (con alto de contenedor `100/zoom vh`). Ventana grande (≥1900×880) → sin cambios; 1536×730 → 0.81; 1280×600 → 0.67. Equivale a bajar el zoom, pero automático y también para diálogos/visor.
+- Los modos por altura de Explorar (compacto/ajustado/amplio) usan el **alto efectivo** (`useEffectiveHeight`), no el de la ventana real. `/app` (móvil) y la landing no se tocan.
+- Ajustes: referencias y mínimo en `uiZoom.js` (`REF_WIDTH`, `REF_HEIGHT`, `MIN_ZOOM`). Si el texto se ve demasiado chico, bajar `REF_HEIGHT`/`REF_WIDTH`.
+- **Nota:** `zoom` CSS lo soportan Chrome/Edge/Safari y Firefox ≥ 126.

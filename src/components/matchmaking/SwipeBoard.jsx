@@ -11,6 +11,7 @@ import SwipeHeader from './SwipeHeader';
 import CompanyCard from './CompanyCard';
 import ActionButtons from './ActionButtons';
 import { useTheme } from '../../context/ThemeContext';
+import { useEffectiveHeight } from '../../web/uiZoom';
 import { calculateMatchScore, shouldRevealCompany, willCreateMatch } from '../../utils/matchmaking';
 
 
@@ -651,7 +652,7 @@ function ReviewsDialog({ company, reviews, p, onClose }) {
 
 /* Galería: foto principal (se desliza o se pasa con flechas) + miniaturas que la controlan */
 function ProfileGallery({ photos, company, heroBg, onOpen, p, compact = false }) {
-  const roomy = useMedia('(min-height: 1040px)');
+  const roomy = useRoomy();
   const thumbH = compact ? 52 : roomy ? 84 : 68;
   const ref = useRef(null);
   const [index, setIndex] = useState(0);
@@ -742,25 +743,15 @@ function ProfileGallery({ photos, company, heroBg, onOpen, p, compact = false })
 }
 
 /* Pantallas de poca altura (notebooks): el perfil pasa a un modo compacto para seguir entrando sin scroll */
-function useMedia(query) {
-  const [matches, setMatches] = useState(() => typeof window !== 'undefined' && window.matchMedia(query).matches);
-  useEffect(() => {
-    const m = window.matchMedia(query);
-    const fn = () => setMatches(m.matches);
-    fn();
-    m.addEventListener('change', fn);
-    return () => m.removeEventListener('change', fn);
-  }, [query]);
-  return matches;
-}
-const useCompactHeight = (max = 920) => useMedia(`(max-height: ${max}px)`);
+const useCompactHeight = (max = 920) => useEffectiveHeight() <= max;
+const useRoomy = () => useEffectiveHeight() >= 1040;
 
 function ExploreProfileCard({ company, p, actions, saved }) {
   const [lightbox, setLightbox] = useState(null);
   const [reviewsOpen, setReviewsOpen] = useState(false);
   const reviews = useMemo(() => (company ? getAllianceReviews(company) : null), [company]);
   const compact = useCompactHeight();
-  const roomy = useMedia('(min-height: 1040px)'); // pantallas altas: más aire y letra un poco mayor
+  const roomy = useRoomy(); // pantallas altas: más aire y letra un poco mayor
   const tight = useCompactHeight(760); // notebooks muy bajos: se afina un poco más
 
   if (!company) {
