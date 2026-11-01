@@ -651,6 +651,8 @@ function ReviewsDialog({ company, reviews, p, onClose }) {
 
 /* Galería: foto principal (se desliza o se pasa con flechas) + miniaturas que la controlan */
 function ProfileGallery({ photos, company, heroBg, onOpen, p, compact = false }) {
+  const roomy = useMedia('(min-height: 1040px)');
+  const thumbH = compact ? 52 : roomy ? 84 : 68;
   const ref = useRef(null);
   const [index, setIndex] = useState(0);
   const count = photos.length;
@@ -722,14 +724,14 @@ function ProfileGallery({ photos, company, heroBg, onOpen, p, compact = false })
           {thumbs.map((src, i) => (
             <button key={src} type="button" onClick={() => goTo(i)} aria-label={`Ir a la foto ${i + 1}`} aria-current={i === index}
               className="relative overflow-hidden rounded-[14px] transition"
-              style={{ height: compact ? 52 : 68, outline: i === index ? '2px solid #455BE8' : '2px solid transparent', outlineOffset: 2, opacity: i === index ? 1 : 0.85 }}>
+              style={{ height: thumbH, outline: i === index ? '2px solid #455BE8' : '2px solid transparent', outlineOffset: 2, opacity: i === index ? 1 : 0.85 }}>
               <img src={src} alt="" loading="lazy" draggable={false} className="h-full w-full object-cover" />
             </button>
           ))}
           {extra > 0 && (
             <button type="button" onClick={() => onOpen(thumbs.length)} aria-label={`Ver ${extra} fotos más`}
               className="flex items-center justify-center rounded-[14px] transition hover:opacity-85"
-              style={{ height: compact ? 52 : 68, background: p.isDark ? 'rgba(255,255,255,0.10)' : '#1D1D1F', color: '#FFFFFF', fontSize: 18, fontWeight: 600 }}>
+              style={{ height: thumbH, background: p.isDark ? 'rgba(255,255,255,0.10)' : '#1D1D1F', color: '#FFFFFF', fontSize: 18, fontWeight: 600 }}>
               +{extra}
             </button>
           )}
@@ -740,24 +742,25 @@ function ProfileGallery({ photos, company, heroBg, onOpen, p, compact = false })
 }
 
 /* Pantallas de poca altura (notebooks): el perfil pasa a un modo compacto para seguir entrando sin scroll */
-function useCompactHeight(max = 830) {
-  const query = `(max-height: ${max}px)`;
-  const [compact, setCompact] = useState(() => typeof window !== 'undefined' && window.matchMedia(query).matches);
+function useMedia(query) {
+  const [matches, setMatches] = useState(() => typeof window !== 'undefined' && window.matchMedia(query).matches);
   useEffect(() => {
     const m = window.matchMedia(query);
-    const fn = () => setCompact(m.matches);
+    const fn = () => setMatches(m.matches);
     fn();
     m.addEventListener('change', fn);
     return () => m.removeEventListener('change', fn);
   }, [query]);
-  return compact;
+  return matches;
 }
+const useCompactHeight = (max = 920) => useMedia(`(max-height: ${max}px)`);
 
 function ExploreProfileCard({ company, p, actions, saved }) {
   const [lightbox, setLightbox] = useState(null);
   const [reviewsOpen, setReviewsOpen] = useState(false);
   const reviews = useMemo(() => (company ? getAllianceReviews(company) : null), [company]);
   const compact = useCompactHeight();
+  const roomy = useMedia('(min-height: 1040px)'); // pantallas altas: más aire y letra un poco mayor
   const tight = useCompactHeight(760); // notebooks muy bajos: se afina un poco más
 
   if (!company) {
@@ -811,29 +814,33 @@ function ExploreProfileCard({ company, p, actions, saved }) {
         saved: { color: '#B45309', background: 'rgba(245,158,11,0.20)', border: '1px solid rgba(245,158,11,0.50)' },
         share: { color: '#0284C7', background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.10)' },
       };
-  const sq = compact ? 44 : 52;
+  const sq = compact ? (tight ? 40 : 44) : 52;
   const square = 'flex shrink-0 items-center justify-center rounded-[16px] transition hover:-translate-y-0.5 active:scale-95';
   const tileBg = dark ? 'rgba(255,255,255,0.05)' : '#F5F6FA';
+  // Card con más presencia: borde definido y sombra marcada
+  const cardStyle = dark
+    ? { background: 'linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)', border: '1px solid rgba(255,255,255,0.09)', boxShadow: '0 30px 70px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.05)' }
+    : { background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.07)', boxShadow: '0 2px 6px rgba(15,23,42,0.04), 0 30px 70px rgba(15,23,42,0.12)' };
   const stripBg = dark ? 'rgba(255,255,255,0.04)' : '#F5F6FA';
 
   return (
-    <div className="mx-auto h-full max-w-[1320px] px-8" style={{ fontFamily: APPLE_FONT }}>
-      <div className={`flex h-full flex-col rounded-[28px] ${compact ? 'gap-2.5 p-3' : 'gap-4 p-5'}`}
-        style={{ background: p.cardBg, border: p.cardBorder, boxShadow: p.cardShadow }}>
+    <div className="mx-auto h-full max-w-[1760px] px-6" style={{ fontFamily: APPLE_FONT }}>
+      <div className={`flex h-full flex-col rounded-[32px] ${compact ? 'gap-3 p-4' : 'gap-4 p-5'}`}
+        style={cardStyle}>
 
-        <div className={`grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)] ${compact ? 'gap-5' : 'gap-8'}`}>
+        <div className={`grid min-h-0 flex-1 grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] ${compact ? 'gap-6' : 'gap-10'}`}>
           {/* ── Galería ── */}
           <ProfileGallery photos={photos} company={company} heroBg={heroBg} p={p} onOpen={setLightbox} compact={compact} />
 
           {/* ── Perfil comercial ── */}
-          <div className="min-h-0 overflow-y-auto pr-1 [scrollbar-width:none]">
-            <div className="flex items-start justify-between gap-4">
+          <div className="flex min-h-0 flex-col justify-between overflow-y-auto pr-1 [scrollbar-width:none]">
+            <div className="flex shrink-0 items-start justify-between gap-4">
               <div className="min-w-0">
                 <p className="text-[12px] font-semibold uppercase tracking-[0.14em]" style={{ color: p.meta }}>
                   {[company.sector, company.location].filter(Boolean).join(' · ')}
                 </p>
                 <div className={`flex items-center gap-2.5 ${compact ? 'mt-1' : 'mt-2'}`}>
-                  <h2 className="truncate font-bold leading-[1.05] tracking-[-0.03em]" style={{ color: p.name, fontFamily: APPLE_FONT, fontSize: compact ? 30 : 38 }}>{company.name}</h2>
+                  <h2 className="truncate font-bold leading-[1.05] tracking-[-0.03em]" style={{ color: p.name, fontFamily: APPLE_FONT, fontSize: compact ? 30 : roomy ? 44 : 38 }}>{company.name}</h2>
                   <BadgeCheck size={24} className="shrink-0 text-emerald-500" aria-label="Empresa verificada" />
                 </div>
               </div>
@@ -858,45 +865,43 @@ function ExploreProfileCard({ company, p, actions, saved }) {
             </div>
 
             {about && (
-              <p className={`leading-[1.55] ${compact ? 'mt-3 line-clamp-2 text-[15px]' : 'mt-4 line-clamp-3 text-[16px]'}`} style={{ color: p.body }}>{about}</p>
+              <p className={`shrink-0 leading-[1.55] ${compact ? 'mt-3 line-clamp-2 text-[15px]' : roomy ? 'mt-5 line-clamp-3 text-[18px]' : 'mt-4 line-clamp-3 text-[16px]'}`} style={{ color: p.body }}>{about}</p>
             )}
 
             {metrics.length > 0 && (
-              compact ? (
-                <div className={`flex items-center gap-6 ${tight ? 'mt-2' : 'mt-3'}`}>
-                  {metrics.map(({ icon: Icon, value, label }) => (
-                    <div key={label} className="flex items-center gap-1.5" title={label}>
-                      <Icon size={16} strokeWidth={1.9} style={{ color: p.meta }} />
-                      <span className="text-[15px] font-semibold leading-none tracking-[-0.01em]" style={{ color: p.name }}>{value}</span>
-                      <span className="text-[12px]" style={{ color: p.meta }}>{label}</span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="mt-4 grid gap-3" style={{ gridTemplateColumns: `repeat(${metrics.length}, minmax(0, 1fr))` }}>
-                  {metrics.map(({ icon: Icon, value, label }) => (
-                    <div key={label} className="flex flex-col items-center rounded-[16px] px-3 py-2.5" style={{ background: tileBg }}>
-                      <div className="flex items-center gap-2" style={{ color: p.name }}>
-                        <Icon size={19} strokeWidth={1.9} style={{ color: p.meta }} />
-                        <span className="text-[21px] font-semibold leading-none tracking-[-0.02em]">{value}</span>
-                      </div>
-                      <span className="mt-1.5 text-[12px]" style={{ color: p.meta }}>{label}</span>
-                    </div>
-                  ))}
-                </div>
-              )
+              <div className={`grid shrink-0 gap-3 ${compact ? (tight ? 'mt-2' : 'mt-3') : 'mt-4'}`} style={{ gridTemplateColumns: `repeat(${metrics.length}, minmax(0, 1fr))` }}>
+                {metrics.map(({ icon: Icon, value, label }) => (
+                  <div key={label} className={`flex items-center justify-center rounded-[18px] ${compact ? (tight ? 'gap-2 px-3 py-2' : 'gap-2 px-3 py-2.5') : 'flex-col px-3 py-3'}`} style={{ background: tileBg }}>
+                    {compact ? (
+                      <>
+                        <Icon size={16} strokeWidth={1.9} style={{ color: p.meta }} />
+                        <span className="text-[16px] font-semibold leading-none tracking-[-0.01em]" style={{ color: p.name }}>{value}</span>
+                        <span className="text-[12px]" style={{ color: p.meta }}>{label}</span>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex items-center gap-2" style={{ color: p.name }}>
+                          <Icon size={roomy ? 22 : 19} strokeWidth={1.9} style={{ color: p.meta }} />
+                          <span className={`font-semibold leading-none tracking-[-0.02em] ${roomy ? 'text-[26px]' : 'text-[22px]'}`}>{value}</span>
+                        </div>
+                        <span className="mt-1.5 text-[12px]" style={{ color: p.meta }}>{label}</span>
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
             )}
 
             {infoBlocks.length > 0 && (
-              <div className={`grid border-y ${compact ? (tight ? 'mt-2.5 py-2.5' : 'mt-3 py-3') : 'mt-4 py-4'}`} style={{ borderColor: p.divider, gridTemplateColumns: `repeat(${infoBlocks.length}, minmax(0, 1fr))` }}>
-                {infoBlocks.map(({ title, icon: Icon, tags, tone }, i) => (
-                  <div key={title} className="min-w-0 px-4 first:pl-0 last:pr-0" style={i > 0 ? { borderLeft: `1px solid ${p.divider}` } : undefined}>
-                    <p className={`flex items-center gap-2 font-semibold ${compact ? 'mb-2 text-[14px]' : 'mb-3 text-[15px]'}`} style={{ color: p.name }}>
+              <div className={`grid shrink-0 gap-3 ${compact ? (tight ? 'mt-2' : 'mt-3') : 'mt-4'}`} style={{ gridTemplateColumns: `repeat(${infoBlocks.length}, minmax(0, 1fr))` }}>
+                {infoBlocks.map(({ title, icon: Icon, tags, tone }) => (
+                  <div key={title} className={`min-w-0 rounded-[18px] ${compact ? (tight ? 'p-2.5' : 'p-3') : 'p-4'}`} style={{ background: tileBg }}>
+                    <p className={`flex items-center gap-2 font-semibold ${compact ? (tight ? 'mb-1.5 text-[14px]' : 'mb-2 text-[14px]') : 'mb-3 text-[15px]'}`} style={{ color: p.name }}>
                       <Icon size={18} strokeWidth={1.9} style={{ color: p.meta }} /> {title}
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {tags.slice(0, compact ? 3 : tags.length).map(tag => (
-                        <span key={tag} className={`rounded-full font-medium ${compact ? 'px-2.5 py-1 text-[12px]' : 'px-3 py-1.5 text-[13px]'}`}
+                        <span key={tag} className={`rounded-full font-medium ${compact ? 'px-2.5 py-1 text-[12px]' : roomy ? 'px-3.5 py-2 text-[14px]' : 'px-3 py-1.5 text-[13px]'}`}
                           style={{ color: tone.color, background: tone.bg, border: tone.border }}>{tag}</span>
                       ))}
                     </div>
@@ -905,12 +910,12 @@ function ExploreProfileCard({ company, p, actions, saved }) {
               </div>
             )}
 
-            <div className={`flex items-center justify-between gap-4 ${compact ? (tight ? 'mt-2.5 pb-0' : 'mt-3 pb-1') : 'mt-4 pb-1'}`}>
+            <div className={`flex shrink-0 items-center justify-between gap-4 rounded-[18px] ${compact ? (tight ? 'mt-2 px-3 py-2' : 'mt-3 px-3 py-2.5') : 'mt-4 px-4 py-3'}`} style={{ background: tileBg }}>
               <div className="flex min-w-0 items-center gap-3.5">
                 <div className="flex shrink-0 items-center">
                   {COMMON_CONNECTIONS.map((c, i) => (
                     <span key={c} className="flex items-center justify-center rounded-full text-[13px] font-bold text-white"
-                      style={{ width: compact ? 34 : 40, height: compact ? 34 : 40, marginLeft: i ? -10 : 0, background: 'linear-gradient(135deg, #455BE8, #2F43C8)', border: `2px solid ${dark ? '#151C30' : '#FFFFFF'}` }}>
+                      style={{ width: compact ? 34 : 40, height: compact ? 34 : 40, marginLeft: i ? -10 : 0, background: 'linear-gradient(135deg, #455BE8, #2F43C8)', border: `2px solid ${dark ? '#1B2338' : '#F5F6FA'}` }}>
                       {c.slice(0, 1)}
                     </span>
                   ))}
@@ -930,7 +935,7 @@ function ExploreProfileCard({ company, p, actions, saved }) {
         </div>
 
         {/* ── Reseñas de alianzas ── */}
-        <section className={`shrink-0 rounded-[20px] ${compact ? 'p-3' : 'p-4'}`} style={{ background: stripBg }} aria-label="Reseñas de alianzas">
+        <section className={`shrink-0 rounded-[24px] ${compact ? 'p-3' : 'p-4'}`} style={{ background: stripBg }} aria-label="Reseñas de alianzas">
           <div className={`flex items-center justify-between gap-4 ${compact ? 'mb-2' : 'mb-3'}`}>
             <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
               <h3 className="text-[18px] font-semibold leading-none tracking-[-0.02em]" style={{ color: p.name, fontFamily: APPLE_FONT }}>Reseñas de alianzas</h3>
@@ -1240,7 +1245,7 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
         <div className="relative flex flex-col h-full" style={{ background: p.bg, fontFamily: APPLE_FONT }}>
 
           {/* ── Barra superior: alineada al ancho del contenido ── */}
-          <div className={`mx-auto flex w-full max-w-[1320px] shrink-0 items-center justify-between px-8 ${shortScreen ? 'pb-2 pt-1' : 'pb-3 pt-4'}`}>
+          <div className={`mx-auto flex w-full max-w-[1760px] shrink-0 items-center justify-between px-6 ${shortScreen ? 'pb-2 pt-1' : 'pb-3 pt-4'}`}>
             <div className="flex items-center rounded-full p-1"
               style={{ background: p.tabsBg, border: p.tabsBorder }}>
               {[{ id: 'paraTi', label: 'Para ti' }, { id: 'guardados', label: 'Guardados' }].map(tab => (
@@ -1291,7 +1296,7 @@ function SwipeBoard({ companies, dailyMatchCount, onMatch, onOpenPricing, userPl
 
               {/* Navegación vertical del feed: ▲ puntos ▼ */}
               {deck.length > 0 && (
-                <div className="absolute right-4 top-1/2 z-30 hidden -translate-y-1/2 flex-col items-center gap-3 min-[1480px]:flex">
+                <div className="absolute right-4 top-1/2 z-30 hidden -translate-y-1/2 flex-col items-center gap-3 min-[1840px]:flex">
                   <button type="button" aria-label="Empresa anterior" onClick={() => scrollPage(-1)} disabled={atStart}
                     className="flex h-10 w-10 items-center justify-center rounded-full transition hover:opacity-80 disabled:opacity-30"
                     style={{ background: p.btnBg, border: p.btnBorder, color: p.btnText, boxShadow: p.cardShadow }}>
